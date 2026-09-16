@@ -1,10 +1,10 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `██░░░░░░░░ 18%`
+**Overall progress:** `██░░░░░░░░ 20%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
-## Phase 0 — Foundation — 90%
+## Phase 0 — Foundation — 100%
 - [x] Project identity and concept
 - [x] Legal/open development asset policy
 - [x] Build system for PK3
@@ -13,7 +13,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Smoke-test script
 - [x] GitHub repository created
 - [x] GitHub Actions build workflow
-- [ ] First successful CI artifact verified
+- [x] First successful CI artifact verified
 
 ## Phase 1 — Playable Prototype — 50%
 - [x] Emergency Mop
