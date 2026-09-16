@@ -20,18 +20,23 @@
 
 The project generates an original retail atmosphere/combat pack during the build:
 store walls, shelf fronts, Staff Only surfaces, floor/ceiling materials, objective pickup
-sprites, interaction/PA cues, the Emergency Mop first-person animation set and the Night
-Manager prototype animation/attack presentation. The Night Manager also uses an original
-Manager Memo projectile instead of inheriting a commercial/IWAD projectile visual.
+sprites, interaction/PA cues and an expanding set of project-owned combat presentation.
+
+Current project-owned signature combat presentation includes:
+- Emergency Mop first-person animation + swing cue,
+- Receipt Ripper pickup + five-frame first-person animation + fire/cycle cues,
+- Angry Self-Checkout animation set + hostile receipt projectile + combat cues,
+- Night Manager animation set + Manager Memo projectile + boss cues.
 
 Generated sprite PNGs include ZDoom-compatible `grAb` offsets so their placement is
-explicit and reproducible. The generator uses only Python's standard library and therefore
-does not add a new runtime or build dependency.
+explicit and reproducible. The original atmosphere generator and the combat-asset extension
+use only Python's standard library and therefore do not add a new runtime or build dependency.
 
 Combat actors and weapon view sprites that have not yet received original art may still
 reference compatible IWAD-provided placeholders at runtime. Those placeholder assets are
 never copied into this repository or release package. Current remaining examples include
-the Receipt Ripper, Price-Gun SMG, Turbo Can Launcher and several non-boss enemy actors.
+the Price-Gun SMG, Turbo Can Launcher, Cart of Doom, Security Price Scanner, Possessed
+Pallet Jack and Regional Manager prototype.
 
 ## Final strategy
 

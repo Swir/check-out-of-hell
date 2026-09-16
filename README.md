@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.8-dev — signature combat art pass  
-> **Project progress:** `████░░░░░░ 40%`
+> **Status:** Prototype 0.9-dev — signature retail combat pass  
+> **Project progress:** `████░░░░░░ 42%`
 
 ## Premise
 
@@ -44,15 +44,28 @@ security barrier powers down and opens an optional employee room with an **Emplo
 the Month Stash**. No mandatory breaker is hidden in that room, so the reward is a real
 side route rather than a disguised progression lock.
 
-The original art/audio layer now reaches the signature first fight. `Closing Time` uses
-project-owned supermarket wall, shelf, Staff Only, floor and ceiling surfaces. Breaker
-fuses, the Staff Only shutter and the employee stash have original generated sprites.
-The **Emergency Mop** now uses four original first-person attack frames with its own swing
-cue instead of the compatible-IWAD fist view, and the **Night Manager** now has a complete
-original prototype sprite sequence for idle/chase/attack/pain/death plus an original glowing
-**Manager Memo** projectile and dedicated attack/down cues. Generated sprite PNGs carry
-ZDoom `grAb` offsets so weapon/world placement is deterministic. All of this is produced
-from repository code using Python's standard library and verified inside the final PK3 by CI.
+## Original combat presentation
+
+The first combat encounters are progressively moving away from compatible-IWAD placeholders.
+`Closing Time` already uses project-owned supermarket wall, shelf, Staff Only, floor and
+ceiling surfaces plus original breaker, shutter and stash sprites.
+
+The **Emergency Mop** uses four original first-person attack frames with its own swing cue.
+The **Night Manager** uses an original animation set and the glowing **Manager Memo**
+projectile with dedicated attack/down cues.
+
+Prototype `0.9-dev` adds a second complete signature slice:
+
+- **Receipt Ripper** — original world pickup, five-frame first-person firing/cycling
+  animation and dedicated fire/cycle sounds. Its view states no longer reference the
+  compatible-IWAD shotgun sprite.
+- **Angry Self-Checkout** — original ten-frame kiosk animation set, original hostile
+  receipt projectile, original idle/attack/pain/down sounds and custom attack behavior.
+  Its visible states no longer reference the compatible-IWAD shotgun-guy sprite.
+
+All current project-owned prototype combat art/audio is generated deterministically from
+repository code using Python's standard library. Sprite PNGs carry ZDoom `grAb` offsets,
+and CI verifies generated files, PK3 packaging, sound mappings and actor wiring.
 
 `MAP02 — Warehouse 13.5` remains the heavier arena-style prototype while its dedicated
 objective flow is developed.
@@ -118,8 +131,9 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - first original supermarket wall/shelf/staff/floor/ceiling material pack,
 - original breaker, shutter and stash prototype sprites,
 - original **Emergency Mop** first-person sprite/animation set with combat swing cue,
-- original **Night Manager** prototype animation set, Manager Memo projectile and boss combat cues,
-- original breaker/shutter/boss/clock-out/Overtime interaction audio cues,
+- original **Receipt Ripper** pickup/view sprite set with fire/cycle cues,
+- original **Angry Self-Checkout** animation set, receipt projectile and combat cues,
+- original **Night Manager** animation set, Manager Memo projectile and boss combat cues,
 - deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contract,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
@@ -153,7 +167,7 @@ python tools/test_portable_package.py
 ## Prototype weapons
 
 - Slot 1: Emergency Mop — original prototype view sprites + original swing cue
-- Shotgun pickup: Receipt Ripper — placeholder runtime view sprites remain
+- Shotgun pickup: Receipt Ripper — original pickup/view sprites + original fire/cycle cues
 - Chaingun pickup: Price-Gun SMG — placeholder runtime view sprites remain
 - Rocket Launcher pickup: Turbo Can Launcher — placeholder runtime view sprites remain
 
@@ -168,7 +182,11 @@ See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 
 ## Asset policy
 
-No proprietary Doom, Star Wars or other commercial game assets belong in this repository. The original runtime art/audio pack is generated from our own source code during the build. The Emergency Mop and Night Manager no longer depend on compatible-IWAD view/actor sprites, but several remaining weapons/enemies still use runtime placeholders and must be replaced before standalone release.
+No proprietary Doom, Star Wars or other commercial game assets belong in this repository.
+The current runtime art/audio pack is generated from our own source code during the build.
+Emergency Mop, Receipt Ripper, Angry Self-Checkout and Night Manager now have project-owned
+visible combat presentation, while several remaining weapons/enemies still use runtime
+placeholders and must be replaced before standalone release.
 
 See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md).
 

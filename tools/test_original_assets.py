@@ -19,10 +19,24 @@ world_sprite_pngs = [
     "sprites/COFUA0.png",
     "sprites/COSTA0.png",
 ]
-weapon_sprite_pngs = [f"sprites/CMOP{frame}0.png" for frame in "ABCD"]
+mop_sprite_pngs = [f"sprites/CMOP{frame}0.png" for frame in "ABCD"]
+ripper_view_pngs = [f"sprites/RRPV{frame}0.png" for frame in "ABCDE"]
+ripper_pickup_pngs = ["sprites/RRPKA0.png"]
 manager_sprite_pngs = [f"sprites/MNGR{frame}0.png" for frame in "ABCDEFGHIJK"]
 memo_sprite_pngs = [f"sprites/MEMO{frame}0.png" for frame in "ABCD"]
-required_pngs = surface_pngs + world_sprite_pngs + weapon_sprite_pngs + manager_sprite_pngs + memo_sprite_pngs
+checkout_sprite_pngs = [f"sprites/SCKO{frame}0.png" for frame in "ABCDEFGHIJ"]
+receipt_projectile_pngs = [f"sprites/RCPT{frame}0.png" for frame in "ABCD"]
+required_pngs = (
+    surface_pngs
+    + world_sprite_pngs
+    + mop_sprite_pngs
+    + ripper_view_pngs
+    + ripper_pickup_pngs
+    + manager_sprite_pngs
+    + memo_sprite_pngs
+    + checkout_sprite_pngs
+    + receipt_projectile_pngs
+)
 
 required_wavs = [
     "sounds/fuse.wav",
@@ -33,6 +47,12 @@ required_wavs = [
     "sounds/mopswing.wav",
     "sounds/managerattack.wav",
     "sounds/managerdown.wav",
+    "sounds/ripperfire.wav",
+    "sounds/rippercycle.wav",
+    "sounds/checkoutidle.wav",
+    "sounds/checkoutattack.wav",
+    "sounds/checkouthit.wav",
+    "sounds/checkoutdown.wav",
 ]
 
 
@@ -58,7 +78,17 @@ for rel in required_pngs:
     if width < 32 or height < 32:
         raise SystemExit(f"Generated PNG is unexpectedly small: {rel} -> {width}x{height}")
 
-for rel in world_sprite_pngs + weapon_sprite_pngs + manager_sprite_pngs + memo_sprite_pngs:
+sprite_pngs = (
+    world_sprite_pngs
+    + mop_sprite_pngs
+    + ripper_view_pngs
+    + ripper_pickup_pngs
+    + manager_sprite_pngs
+    + memo_sprite_pngs
+    + checkout_sprite_pngs
+    + receipt_projectile_pngs
+)
+for rel in sprite_pngs:
     data = (GAME / rel).read_bytes()
     offsets = [payload for kind, payload in png_chunks(data) if kind == b"grAb"]
     if len(offsets) != 1 or len(offsets[0]) != 8:
@@ -85,7 +115,28 @@ for texture in ("CHKFLR", "CHKCEIL", "CHKWALL", "CHKSHELF", "CHKSTAF"):
         raise SystemExit(f"Closing Time does not reference original surface: {texture}")
 
 actors = (GAME / "DECORATE").read_text(encoding="utf-8")
-for sprite in ("COFU A", "COST A", "CMOP A", "CMOP B", "CMOP C", "CMOP D", "MNGR A", "MNGR F", "MNGR K", "MEMO A", "MEMO D"):
+for sprite in (
+    "COFU A",
+    "COST A",
+    "CMOP A",
+    "CMOP B",
+    "CMOP C",
+    "CMOP D",
+    "RRPK A",
+    "RRPV A",
+    "RRPV C",
+    "RRPV E",
+    "MNGR A",
+    "MNGR F",
+    "MNGR K",
+    "MEMO A",
+    "MEMO D",
+    "SCKO A",
+    "SCKO F",
+    "SCKO J",
+    "RCPT A",
+    "RCPT D",
+):
     if sprite not in actors:
         raise SystemExit(f"Original sprite state missing: {sprite}")
 
@@ -94,6 +145,32 @@ if "PUNG" in mop_block:
     raise SystemExit("Emergency Mop still references the placeholder IWAD fist sprite")
 if 'A_PlaySound("coh/mopswing"' not in mop_block:
     raise SystemExit("Emergency Mop original swing cue is not wired into its attack")
+
+ripper_block = actors.split("actor ReceiptRipper", 1)[1].split("actor PriceGunSMG", 1)[0]
+for marker in (
+    "RRPK A -1",
+    "RRPV A 1 A_WeaponReady",
+    'A_PlaySound("coh/ripperfire"',
+    'A_PlaySound("coh/rippercycle"',
+    "A_FireBullets(7.0, 5.0, 9, 5",
+):
+    if marker not in ripper_block:
+        raise SystemExit(f"Receipt Ripper signature presentation is incomplete: {marker}")
+if "SHTG" in ripper_block:
+    raise SystemExit("Receipt Ripper still references placeholder IWAD shotgun sprites")
+
+checkout_block = actors.split("actor AngrySelfCheckout", 1)[1].split("actor CartOfDoom", 1)[0]
+for marker in (
+    "SCKO A 10 A_Look",
+    'A_PlaySound("coh/checkoutattack"',
+    'A_CustomMissile("CheckoutReceiptProjectile"',
+    'PainSound "coh/checkouthit"',
+    'DeathSound "coh/checkoutdown"',
+):
+    if marker not in checkout_block:
+        raise SystemExit(f"Angry Self-Checkout signature presentation is incomplete: {marker}")
+if "SPOS" in checkout_block:
+    raise SystemExit("Angry Self-Checkout still references placeholder shotgun-guy sprites")
 
 manager_block = actors.split("actor NightManager", 1)[1].split("actor ScannerTurret", 1)[0]
 for marker in ("MNGR A 10 A_Look", 'A_CustomMissile("ManagerMemoProjectile"', 'A_PlaySound("coh/managerattack"', 'A_PlaySound("coh/managerdown"'):
@@ -117,9 +194,15 @@ for cue in (
     "coh/mopswing",
     "coh/managerattack",
     "coh/managerdown",
+    "coh/ripperfire",
+    "coh/rippercycle",
+    "coh/checkoutidle",
+    "coh/checkoutattack",
+    "coh/checkouthit",
+    "coh/checkoutdown",
 ):
     if cue not in sndinfo:
         raise SystemExit(f"SNDINFO cue missing: {cue}")
 
 print("Original asset contract: PASS")
-print("Closing Time packages original retail surfaces plus signature Emergency Mop/Night Manager combat presentation.")
+print("Closing Time packages original retail surfaces plus Emergency Mop, Receipt Ripper, Angry Self-Checkout and Night Manager combat presentation.")

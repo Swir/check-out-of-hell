@@ -1,9 +1,15 @@
 // CHECKOUT OF HELL - original prototype interaction/combat cues
-coh/fuse          sounds/fuse
-coh/shutter       sounds/shutter
-coh/bossalarm     sounds/bossalarm
-coh/clockout      sounds/clockout
-coh/overtime      sounds/overtime
-coh/mopswing      sounds/mopswing
-coh/managerattack sounds/managerattack
-coh/managerdown   sounds/managerdown
+coh/fuse            sounds/fuse
+coh/shutter         sounds/shutter
+coh/bossalarm       sounds/bossalarm
+coh/clockout        sounds/clockout
+coh/overtime        sounds/overtime
+coh/mopswing        sounds/mopswing
+coh/managerattack   sounds/managerattack
+coh/managerdown     sounds/managerdown
+coh/ripperfire      sounds/ripperfire
+coh/rippercycle     sounds/rippercycle
+coh/checkoutidle    sounds/checkoutidle
+coh/checkoutattack  sounds/checkoutattack
+coh/checkouthit     sounds/checkouthit
+coh/checkoutdown    sounds/checkoutdown
