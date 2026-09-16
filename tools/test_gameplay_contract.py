@@ -22,7 +22,11 @@ if "next = \"MAP02\"" not in MAPINFO or "next = \"MAP01\"" not in MAPINFO:
     raise SystemExit("Prototype map loop is not connected")
 
 if "bossCleared && fuses >= 3" not in ZSCRIPT:
-    raise SystemExit("Level exit must require both the supervisor and three breakers")
+    raise SystemExit("Clock-out must require both the supervisor and three breakers")
+if 'taskText = "TASK: RETURN TO FRONT CHECKOUT"' not in ZSCRIPT:
+    raise SystemExit("Completed combat must send the player back to the front checkout")
+if "TIMECARD ACCEPTED - SHIFT COMPLETE" not in ZSCRIPT:
+    raise SystemExit("Clock-out zone must acknowledge successful shift completion")
 
 if "class CheckoutManagerSpawner : Actor" not in ZSCRIPT:
     raise SystemExit("Closing Time needs a staged supervisor spawner")
