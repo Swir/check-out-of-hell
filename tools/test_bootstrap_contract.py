@@ -18,7 +18,7 @@ assert "browser_download_url" in runtime
 assert "Get-FileHash" in runtime
 assert "freedoom2.wad" in runtime
 assert "gzdoom.exe" in runtime
-assert "www.python.org" in python_bootstrap
+assert "$Lock.python.url" in python_bootstrap
 assert "bootstrap_runtime.ps1" in play
 assert "bootstrap_python.ps1" in play
 
