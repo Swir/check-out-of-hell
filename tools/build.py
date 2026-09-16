@@ -42,7 +42,7 @@ for map_name in MAPS:
 
 pk3 = DIST / "checkout-of-hell-prototype.pk3"
 with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
-    for lump in ["DECORATE", "MAPINFO", "LANGUAGE"]:
+    for lump in ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT"]:
         archive.write(GAME / lump, lump)
     for map_wad in built_maps:
         archive.write(map_wad, f"maps/{map_wad.name}")
