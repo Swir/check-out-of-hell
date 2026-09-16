@@ -5,7 +5,7 @@
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
 > **Status:** Prototype 0.4-dev — structured Closing Time progression  
-> **Project progress:** `██░░░░░░░░ 25%`
+> **Project progress:** `███░░░░░░░ 28%`
 
 ## Premise
 
