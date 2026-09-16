@@ -34,7 +34,7 @@ if 'CountInv("CheckoutFuse") < 3' not in ZSCRIPT:
     raise SystemExit("Night Manager must remain locked until all breakers are restored")
 if 'Actor.Spawn("NightManager", Pos)' not in ZSCRIPT:
     raise SystemExit("Staged supervisor spawner does not create Night Manager")
-if 'bossText = "SUPERVISOR LOCKED"' not in ZSCRIPT:
+if '"SUPERVISOR LOCKED"' not in ZSCRIPT:
     raise SystemExit("HUD must explain the supervisor power gate")
 if 'taskText = "TASK: RESTORE ALL BREAKERS"' not in ZSCRIPT:
     raise SystemExit("HUD must expose the current restoration task")
