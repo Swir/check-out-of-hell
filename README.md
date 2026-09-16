@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.4-dev — structured Closing Time progression  
-> **Project progress:** `███░░░░░░░ 28%`
+> **Status:** Prototype 0.4-dev — structured Closing Time + portable Windows artifact  
+> **Project progress:** `███░░░░░░░ 30%`
 
 ## Premise
 
@@ -69,19 +69,15 @@ See [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) for runtime sources and license
 
 ## Portable Windows development artifact
 
-The repository can also build a player-facing portable ZIP that already contains the
-prebuilt PK3 and therefore requires **no Python or source build toolchain on the player's PC**:
-
-```powershell
-python tools/package_portable.py
-python tools/test_portable_package.py
-```
+CI now builds and verifies a player-facing portable ZIP that already contains the prebuilt
+PK3 and therefore requires **no Python or source build toolchain on the player's PC**.
+The verified artifact is named `checkout-of-hell-windows-portable-dev` in GitHub Actions.
 
 The generated `CHECKOUT-OF-HELL-Windows-Portable-dev.zip` contains a dedicated
 `PLAY.bat`, the prebuilt game package, runtime lock, official-source bootstrap and license
 notices. The first launch downloads only the pinned legal runtime dependencies; the player
-does not need to find an engine, WAD or Python manually. CI builds this ZIP and publishes it
-as a development artifact, not as a public demo release.
+does not need to find an engine, WAD or Python manually. A SHA-256 sidecar is generated and
+validated in CI. This remains a development artifact, not a public demo release.
 
 See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
@@ -108,11 +104,11 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - one-click Windows dependency bootstrap,
 - pinned reproducible runtime lock,
 - Windows development launchers,
-- portable Windows artifact builder with SHA-256 sidecar,
+- verified portable Windows artifact builder with SHA-256 sidecar,
 - player-facing portable launcher with no Python/build dependency,
 - automated build + smoke + gameplay + MAP01 layout + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
-- verified GitHub Actions artifact build,
+- verified GitHub Actions PK3 and portable Windows artifacts,
 - original project icon concept,
 - documented asset, weapon, level and packaging direction.
 
