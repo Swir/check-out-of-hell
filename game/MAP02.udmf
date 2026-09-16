@@ -1,0 +1,45 @@
+namespace = "ZDoom";
+
+vertex { x = -640.0; y = -448.0; }
+vertex { x =  640.0; y = -448.0; }
+vertex { x =  640.0; y =  448.0; }
+vertex { x = -640.0; y =  448.0; }
+
+sector
+{
+    heightfloor = 0;
+    heightceiling = 192;
+    texturefloor = "FLOOR0_1";
+    textureceiling = "CEIL1_1";
+    lightlevel = 144;
+}
+
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+
+linedef { v1 = 0; v2 = 1; sidefront = 0; blocking = true; }
+linedef { v1 = 1; v2 = 2; sidefront = 1; blocking = true; }
+linedef { v1 = 2; v2 = 3; sidefront = 2; blocking = true; }
+linedef { v1 = 3; v2 = 0; sidefront = 3; blocking = true; }
+
+thing
+{
+    x = 0.0; y = -340.0; angle = 90; type = 1;
+    skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true;
+    single = true; coop = true; dm = true;
+}
+
+thing { x = -300.0; y = -90.0; angle = 0; type = 2001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  300.0; y = -90.0; angle = 180; type = 2002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 0.0; y = -70.0; angle = 0; type = 17010; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -430.0; y = 80.0; angle = 315; type = 17004; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  430.0; y = 80.0; angle = 225; type = 17004; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -260.0; y = 210.0; angle = 315; type = 17005; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  260.0; y = 210.0; angle = 225; type = 17005; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 0.0; y = 330.0; angle = 270; type = 17006; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -100.0; y = -210.0; angle = 0; type = 2011; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  100.0; y = -210.0; angle = 0; type = 2011; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
