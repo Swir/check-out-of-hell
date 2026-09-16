@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `███░░░░░░░ 28%`
+**Overall progress:** `███░░░░░░░ 30%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -55,9 +55,9 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [ ] Original soundtrack
 - [ ] Save/load validation
 
-## Phase 3 — Demo Release — 10%
+## Phase 3 — Demo Release — 20%
 - [x] Automatic first-run dependency bootstrap design implemented
-- [ ] Portable Windows development artifact builder verified in CI
+- [x] Portable Windows development artifact builder verified in CI
 - [ ] Installer/portable Windows release package
 - [ ] Standalone legal content package
 - [ ] Controller support pass
