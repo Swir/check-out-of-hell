@@ -1,5 +1,6 @@
 // CHECKOUT OF HELL - Prototype actors
-// Placeholder visual states intentionally reference the active compatible IWAD.
+// Original prototype pickups/barriers are shipped with the project.
+// Remaining placeholder combat visuals intentionally reference the active compatible IWAD.
 // No proprietary sprites are distributed in this repository.
 
 actor EmergencyMop : Fist replaces Fist
@@ -201,12 +202,13 @@ actor CheckoutFuse : Inventory 17111
 {
     Tag "Breaker Fuse"
     Inventory.PickupMessage "Breaker fuse restored. One less excuse for Maintenance."
+    Inventory.PickupSound "coh/fuse"
     Inventory.MaxAmount 3
 
     States
     {
     Spawn:
-        BON2 A -1 Bright
+        COFU A -1 Bright
         Stop
     }
 }
@@ -215,4 +217,11 @@ actor StaffRoomStash : Backpack 17112
 {
     Tag "Employee of the Month Stash"
     Inventory.PickupMessage "Employee of the Month emergency stash. Payroll does not need to know."
+
+    States
+    {
+    Spawn:
+        COST A -1
+        Stop
+    }
 }
