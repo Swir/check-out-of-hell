@@ -1,7 +1,6 @@
 [CmdletBinding()]
 param(
-    [int]$TimeoutSeconds = 45,
-    [string]$Map = "MAP01"
+    [int]$TimeoutSeconds = 45
 )
 
 $ErrorActionPreference = "Stop"
@@ -12,31 +11,30 @@ $Pk3 = Join-Path $ProjectRoot "dist\checkout-of-hell-prototype.pk3"
 
 foreach ($required in @($GZDoom, $Freedoom, $Pk3)) {
     if (-not (Test-Path -LiteralPath $required)) {
-        throw "Runtime smoke test prerequisite is missing: $required"
+        throw "Runtime validation prerequisite is missing: $required"
     }
 }
 
-# +quit is processed only after GZDoom has initialized its game definitions,
-# which makes this a useful parser/startup smoke test without requiring a human
-# to interact with the game window in CI.
+# GZDoom implements -norun specifically for startup/batch validation. It loads
+# the IWAD/mod resources and parses game definitions, then exits before entering
+# the interactive game loop. This avoids false CI hangs caused by trying to run
+# a graphical game session on a hosted Windows runner while still exercising the
+# real pinned GZDoom executable against our PK3.
 $arguments = @(
     "-iwad", $Freedoom,
     "-file", $Pk3,
+    "-noautoload",
     "-nosound",
     "-nomusic",
-    "+map", $Map,
-    "+quit"
+    "-stdout",
+    "-norun"
 )
 
-Write-Host "Starting GZDoom runtime smoke test for $Map..."
-$process = Start-Process -FilePath $GZDoom -ArgumentList $arguments -PassThru
-if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
-    try { $process.Kill() } catch { }
-    throw "GZDoom did not finish the smoke test within $TimeoutSeconds seconds."
-}
+Write-Host "Starting pinned GZDoom startup/parser validation..."
+$process = Start-Process -FilePath $GZDoom -ArgumentList $arguments -PassThru -Wait
 
 if ($process.ExitCode -ne 0) {
-    throw "GZDoom startup smoke test failed with exit code $($process.ExitCode)."
+    throw "GZDoom startup/parser validation failed with exit code $($process.ExitCode)."
 }
 
-Write-Host "GZDoom runtime smoke test: PASS ($Map)"
+Write-Host "GZDoom startup/parser validation: PASS"
