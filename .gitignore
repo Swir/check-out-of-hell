@@ -1,0 +1,7 @@
+external/*
+!external/README.md
+dist/*
+!dist/.gitkeep
+*.bak
+*.tmp
+__pycache__/
