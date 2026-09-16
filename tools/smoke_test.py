@@ -44,15 +44,40 @@ required_actors = [
     "ScannerTurret",
     "PalletJack",
     "RegionalManager",
+    "OvertimeDirector",
+    "WarehouseOvertimeDirector",
 ]
 for actor in required_actors:
     if not re.search(rf"\bactor\s+{re.escape(actor)}\b", source):
         raise SystemExit(f"Actor missing from DECORATE: {actor}")
+
+# Guard the design contract: both directors must contain staged waits followed by
+# dynamic enemy spawns, rather than being empty map placeholders.
+for director in ("OvertimeDirector", "WarehouseOvertimeDirector"):
+    match = re.search(
+        rf"actor\s+{director}\b(?P<body>.*?)(?=\nactor\s+|\Z)",
+        source,
+        flags=re.DOTALL,
+    )
+    if not match:
+        raise SystemExit(f"Overtime director body missing: {director}")
+    body = match.group("body")
+    if body.count("A_SpawnItemEx") < 4:
+        raise SystemExit(f"Overtime director has too few pressure spawns: {director}")
+    if "TNT1 A 700" not in body and "TNT1 A 1050" not in body:
+        raise SystemExit(f"Overtime director has no timed escalation: {director}")
 
 mapinfo = MAPINFO.read_text(encoding="utf-8")
 for map_name in ("MAP01", "MAP02"):
     if f"map {map_name} " not in mapinfo:
         raise SystemExit(f"MAPINFO entry missing: {map_name}")
 
+map01 = (ROOT / "game" / "MAP01.udmf").read_text(encoding="utf-8")
+map02 = (ROOT / "game" / "MAP02.udmf").read_text(encoding="utf-8")
+if not re.search(r"\btype\s*=\s*17100\s*;", map01):
+    raise SystemExit("MAP01 is missing the OvertimeDirector map thing (17100)")
+if not re.search(r"\btype\s*=\s*17101\s*;", map02):
+    raise SystemExit("MAP02 is missing the WarehouseOvertimeDirector map thing (17101)")
+
 print("Smoke test: PASS")
-print("PK3 structure, two generated maps and prototype actor registry look valid.")
+print("PK3 structure, maps, actor registry and staged Overtime pressure contract look valid.")
