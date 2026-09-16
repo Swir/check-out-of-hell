@@ -16,6 +16,7 @@
 - MAP01 no longer pre-places Night Manager before the power objective is complete.
 - MAP01 enemy positions now support left/right/rear traversal instead of a single flat arena engagement.
 - Gameplay and level-design documentation now describe the staged Closing Time progression contract.
+- README/ROADMAP project progress raised to 28% after both PR CI and post-merge `main` CI passed the build, smoke, gameplay, Closing Time layout, bootstrap and pinned-GZDoom parser gates.
 
 ## 0.3.0-dev — 2026-09-16
 
