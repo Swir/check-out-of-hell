@@ -1,5 +1,5 @@
 // CHECKOUT OF HELL - Prototype actors
-// Original prototype pickups/barriers are shipped with the project.
+// Original prototype pickups, signature combat art and barriers are shipped with the project.
 // Remaining placeholder combat visuals intentionally reference the active compatible IWAD.
 // No proprietary sprites are distributed in this repository.
 
@@ -13,20 +13,19 @@ actor EmergencyMop : Fist replaces Fist
     States
     {
     Ready:
-        PUNG A 1 A_WeaponReady
+        CMOP A 1 A_WeaponReady
         Loop
     Deselect:
-        PUNG A 1 A_Lower
+        CMOP A 1 A_Lower
         Loop
     Select:
-        PUNG A 1 A_Raise
+        CMOP A 1 A_Raise
         Loop
     Fire:
-        PUNG B 3
-        PUNG C 3 A_CustomPunch(28, 1, CPF_USEAMMO, "BulletPuff", 72)
-        PUNG D 4
-        PUNG C 3
-        PUNG B 3 A_ReFire
+        CMOP B 2 A_PlaySound("coh/mopswing", CHAN_WEAPON)
+        CMOP C 3 A_CustomPunch(30, 1, 0, "BulletPuff", 80)
+        CMOP D 4
+        CMOP B 3 A_ReFire
         Goto Ready
     }
 }
@@ -144,6 +143,28 @@ actor TurboCanLauncher : RocketLauncher replaces RocketLauncher
     }
 }
 
+actor ManagerMemoProjectile
+{
+    Radius 8
+    Height 8
+    Speed 14
+    Damage 9
+    Projectile
+    +RANDOMIZE
+
+    States
+    {
+    Spawn:
+        MEMO A 3 Bright
+        MEMO B 3 Bright
+        Loop
+    Death:
+        MEMO C 3 Bright A_Explode(36, 64)
+        MEMO D 5 Bright
+        Stop
+    }
+}
+
 actor AngrySelfCheckout : ShotgunGuy 17001
 {
     Tag "Angry Self-Checkout"
@@ -167,6 +188,41 @@ actor NightManager : BaronOfHell 17003
     Health 650
     Speed 10
     PainChance 90
+
+    States
+    {
+    Spawn:
+        MNGR A 10 A_Look
+        Loop
+    See:
+        MNGR A 4 A_Chase
+        MNGR B 4 A_Chase
+        MNGR C 4 A_Chase
+        MNGR D 4 A_Chase
+        Loop
+    Missile:
+        MNGR E 6 A_FaceTarget
+        MNGR F 7 Bright A_PlaySound("coh/managerattack", CHAN_WEAPON)
+        MNGR F 0 Bright A_CustomMissile("ManagerMemoProjectile", 32, 0, 0)
+        MNGR E 6
+        Goto See
+    Pain:
+        MNGR G 4
+        MNGR G 4 A_Pain
+        Goto See
+    Death:
+        MNGR H 6 A_PlaySound("coh/managerdown", CHAN_BODY)
+        MNGR I 6
+        MNGR J 6 A_NoBlocking
+        MNGR K -1
+        Stop
+    Raise:
+        MNGR K 5
+        MNGR J 5
+        MNGR I 5
+        MNGR H 5
+        Goto See
+    }
 }
 
 actor ScannerTurret : ChaingunGuy 17004
