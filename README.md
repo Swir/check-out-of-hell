@@ -4,7 +4,7 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.3-dev — first objective loop + Overtime director  
+> **Status:** Prototype 0.4-dev — structured Closing Time progression  
 > **Project progress:** `██░░░░░░░░ 25%`
 
 ## Premise
@@ -18,22 +18,28 @@ weapons, jokes, levels and final art.
 
 ## Current playable loop
 
-The prototype now has its first real shift objective instead of pure arena combat:
+The prototype has a real shift objective instead of pure arena combat:
 
 1. enter the department,
 2. find and collect **three Breaker Fuses**,
-3. survive the supervisor and hostile store equipment,
+3. survive hostile store equipment and escalating Overtime pressure,
 4. defeat the department supervisor,
-5. clock out automatically when both conditions are complete.
+5. clock out automatically when both objective conditions are complete.
+
+`MAP01 — Closing Time` now stages that loop across a larger supermarket floor. Internal
+retail barriers split traversal into lanes, the three breakers pull the player into left,
+right and rear routes, and the **Night Manager does not enter the floor until all three
+breakers are restored**. The HUD explicitly moves from `RESTORE ALL BREAKERS` to
+`CLEAR THE SUPERVISOR` and finally `CLOCK OUT`.
+
+`MAP02 — Warehouse 13.5` remains the heavier arena-style prototype while its dedicated
+objective flow is developed.
 
 Waiting around is increasingly dangerous. The **Overtime** director escalates through
 `SHIFT ACTIVE` → `STORE UNSTABLE` → `OVERTIME` → `HELL RUSH`. Dedicated map
 spawners add increasingly aggressive reinforcements as the shift drags on, while the
-HUD shows the shift timer, current Overtime state, breaker progress and supervisor state.
-
-The two current prototype maps use the same loop with different enemy sets. The final
-campaign will replace these simple arenas with fully structured supermarket departments,
-objectives, secrets and environmental interactions.
+HUD shows the shift timer, current Overtime state, breaker progress, supervisor state
+and the current task.
 
 See [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
 
@@ -64,8 +70,8 @@ See [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) for runtime sources and license
 ## What already works
 
 - buildable `.pk3` prototype,
-- generated UDMF `MAP01 — Closing Time`,
-- generated UDMF `MAP02 — Warehouse 13.5`,
+- structured UDMF `MAP01 — Closing Time` objective prototype,
+- generated UDMF `MAP02 — Warehouse 13.5` arena prototype,
 - **Emergency Mop**,
 - **Receipt Ripper**,
 - **Price-Gun SMG**,
@@ -77,13 +83,14 @@ See [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) for runtime sources and license
 - **Possessed Pallet Jack**,
 - **The Regional Manager** prototype boss,
 - three-breaker + supervisor-clear objective loop,
+- power-gated Night Manager arrival in MAP01,
 - Overtime escalation director with timed reinforcement spawners,
-- shift/objective/Overtime HUD overlay,
+- shift/objective/Overtime HUD overlay with contextual task text,
 - automatic map completion once the shift objective is satisfied,
 - one-click Windows dependency bootstrap,
 - pinned reproducible runtime lock,
 - Windows development launchers,
-- automated build + smoke + gameplay contract tests,
+- automated build + smoke + gameplay + MAP01 layout contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - verified GitHub Actions artifact build,
 - original project icon concept,
@@ -103,6 +110,7 @@ Manual developer commands remain available:
 python tools/build.py
 python tools/smoke_test.py
 python tools/test_gameplay_contract.py
+python tools/test_closing_time_layout.py
 .\tools\gzdoom_runtime_smoke.ps1
 ```
 
@@ -117,8 +125,8 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ## Maps
 
-- `MAP01` — **Closing Time**
-- `MAP02` — **Warehouse 13.5**
+- `MAP01` — **Closing Time** — structured objective prototype
+- `MAP02` — **Warehouse 13.5** — combat/pressure prototype
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 
