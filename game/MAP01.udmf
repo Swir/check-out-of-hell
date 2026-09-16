@@ -16,6 +16,12 @@ vertex { x =  650.0; y =   40.0; }
 vertex { x = -180.0; y =  300.0; }
 vertex { x =  180.0; y =  300.0; }
 
+vertex { x = -768.0; y = 250.0; }
+vertex { x = -560.0; y = 250.0; }
+vertex { x = -464.0; y = 250.0; }
+vertex { x = -420.0; y = 250.0; }
+vertex { x = -420.0; y = 512.0; }
+
 sector
 {
     heightfloor = 0;
@@ -41,9 +47,18 @@ sidedef { sector = 0; texturemiddle = "STARTAN3"; }
 sidedef { sector = 0; texturemiddle = "STARTAN3"; }
 sidedef { sector = 0; texturemiddle = "STARTAN3"; }
 
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+sidedef { sector = 0; texturemiddle = "STARTAN3"; }
+
 linedef { v1 = 0; v2 = 1; sidefront = 0; blocking = true; }
 linedef { v1 = 1; v2 = 2; sidefront = 1; blocking = true; }
-linedef { v1 = 2; v2 = 3; sidefront = 2; blocking = true; }
+linedef { v1 = 2; v2 = 18; sidefront = 2; blocking = true; }
+linedef { v1 = 18; v2 = 3; sidefront = 20; blocking = true; }
 linedef { v1 = 3; v2 = 0; sidefront = 3; blocking = true; }
 
 linedef { v1 = 4;  v2 = 5;  sidefront = 4;  sideback = 5;  blocking = true; }
@@ -51,6 +66,10 @@ linedef { v1 = 6;  v2 = 7;  sidefront = 6;  sideback = 7;  blocking = true; }
 linedef { v1 = 8;  v2 = 9;  sidefront = 8;  sideback = 9;  blocking = true; }
 linedef { v1 = 10; v2 = 11; sidefront = 10; sideback = 11; blocking = true; }
 linedef { v1 = 12; v2 = 13; sidefront = 12; sideback = 13; blocking = true; }
+
+linedef { v1 = 14; v2 = 15; sidefront = 14; sideback = 15; blocking = true; }
+linedef { v1 = 16; v2 = 17; sidefront = 16; sideback = 17; blocking = true; }
+linedef { v1 = 17; v2 = 18; sidefront = 18; sideback = 19; blocking = true; }
 
 thing
 {
@@ -74,15 +93,20 @@ thing { x = -510.0; y =  170.0; angle = 315; type = 17002; skill1 = true; skill2
 thing { x =  510.0; y =  170.0; angle = 225; type = 17002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -120.0; y =   90.0; angle = 270; type = 17001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  120.0; y =   90.0; angle = 270; type = 17001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x = -420.0; y =  360.0; angle = 315; type = 17004; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -330.0; y =  360.0; angle = 315; type = 17004; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  420.0; y =  360.0; angle = 225; type = 17004; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
-thing { x = -620.0; y =  340.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -640.0; y =  140.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  620.0; y =  340.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =    0.0; y =  440.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 thing { x = 0.0; y = 350.0; angle = 270; type = 17101; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
-thing { x = -700.0; y =  440.0; angle = 315; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -330.0; y =  430.0; angle = 315; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  700.0; y =  440.0; angle = 225; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =    0.0; y =  -40.0; angle = 180; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -544.0; y = 250.0; angle = 0; type = 17102; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -512.0; y = 250.0; angle = 0; type = 17102; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -480.0; y = 250.0; angle = 0; type = 17102; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -620.0; y = 390.0; angle = 0; type = 17112; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

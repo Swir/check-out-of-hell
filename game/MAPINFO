@@ -8,6 +8,7 @@ DoomEdNums
 {
     17100 = "CheckoutOvertimeSpawner"
     17101 = "CheckoutManagerSpawner"
+    17102 = "CheckoutStaffShutter"
 }
 
 episode MAP01

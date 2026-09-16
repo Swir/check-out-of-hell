@@ -210,3 +210,9 @@ actor CheckoutFuse : Inventory 17111
         Stop
     }
 }
+
+actor StaffRoomStash : Backpack 17112
+{
+    Tag "Employee of the Month Stash"
+    Inventory.PickupMessage "Employee of the Month emergency stash. Payroll does not need to know."
+}
