@@ -11,15 +11,25 @@ Current prototype includes:
 - three Overtime reinforcement anchors spread across the floor,
 - Security Price Scanner crossfire near the rear route,
 - Night Manager spawned only after all three breakers are restored,
-- contextual HUD task text that moves from power restoration to supervisor clearance.
+- contextual HUD task text that moves from power restoration to supervisor clearance,
+- short visible feedback after each breaker is restored,
+- an optional rear-left Staff Only room with a physical security barrier,
+- Staff Only access unlocking at `2/3` breakers instead of waiting for full power,
+- an `Employee of the Month Stash` reward inside the optional room,
+- no mandatory breaker inside the optional room, preserving route clarity.
+
+The Staff Only room is deliberately a reward loop rather than a key hunt. Partial power gives the
+player a useful side benefit before the main objective is complete, teaching that restoring store
+systems can change the environment without making every side route mandatory.
 
 Next polish:
 - entrance shutters visibly slam shut behind the player,
-- powered staff-only shutter opens after `3/3` breakers,
+- replace temporary Staff Only barrier visuals with original shutter/sign art,
 - stronger authored checkout-lane cover and sightlines,
+- authored lighting changes for each breaker state,
 - PA announcements react to breaker restoration and supervisor arrival,
-- hidden staff-room reward/shortcut,
 - original signs, props, lighting and retail textures,
+- deliberate Night Manager arena presentation,
 - original Night Manager presentation instead of runtime placeholder visuals.
 
 ## MAP02 — Warehouse 13.5
