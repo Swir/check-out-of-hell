@@ -36,6 +36,9 @@ jobs:
       - name: Staff Only route contract test
         run: python tools/test_staff_room_contract.py
 
+      - name: Boss + escape contract test
+        run: python tools/test_boss_escape_contract.py
+
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 
