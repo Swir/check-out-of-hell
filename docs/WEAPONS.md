@@ -17,12 +17,25 @@ separate original fire/cycle cues. Its active weapon states no longer reference 
 compatible-IWAD shotgun sprite.
 
 ## Price-Gun SMG
-Fast automatic weapon. Final projectiles and impacts should use price labels,
-barcode sparks and checkout-style feedback. Original view sprites/audio remain pending.
+Fast automatic weapon built around a handheld pricing-gun silhouette rather than a normal firearm.
+
+Prototype 0.10-dev adds a project-owned world pickup and five-frame first-person animation.
+Its hitscan shots now spawn short-lived barcode-label puffs at impact points, with original
+trigger and label-feed cues. The active weapon states no longer reference the compatible-IWAD
+chaingun view sprites.
 
 ## Turbo Can Launcher
-Explosive soda-can launcher. The can projectile is already implemented;
-original sprite/audio work is still pending.
+Explosive soda-can launcher.
+
+Prototype 0.10-dev gives the launcher a project-owned pickup and five-frame first-person
+animation plus a fully original soda-can projectile/explosion sequence. Launch and impact
+cues are generated with the same deterministic standard-library asset pipeline, so the
+weapon no longer needs compatible-IWAD rocket launcher or rocket projectile visuals.
+
+## Security Price Scanner synergy
+The mid-range weapon pass also gives the hostile Security Price Scanner an original turret
+animation and custom scan-beam projectile. This keeps the Price-Gun/Scanner visual language
+consistent while making friend and foe silhouettes readable at a glance.
 
 ## Planned
 - Fire-Exit Extinguisher
