@@ -61,11 +61,14 @@ if 'AddEventHandlers = "CheckoutShiftDirector"' not in mapinfo:
     raise SystemExit("CheckoutShiftDirector is not registered in MAPINFO")
 if '17100 = "CheckoutOvertimeSpawner"' not in mapinfo:
     raise SystemExit("Overtime spawner DoomEdNum is missing")
+if '17101 = "CheckoutManagerSpawner"' not in mapinfo:
+    raise SystemExit("Gated supervisor spawner DoomEdNum is missing")
 
 zscript = ZSCRIPT.read_text(encoding="utf-8")
 for required in (
     "class CheckoutShiftDirector : EventHandler",
     "class CheckoutOvertimeSpawner : Actor",
+    "class CheckoutManagerSpawner : Actor",
     "ExitLevel(0, false)",
     'CountInv("CheckoutFuse")',
 ):
@@ -79,5 +82,11 @@ for map_name in ("MAP01", "MAP02"):
     if "type = 17100" not in source_map:
         raise SystemExit(f"{map_name} must contain at least one Overtime spawner")
 
+map01 = (ROOT / "game" / "MAP01.udmf").read_text(encoding="utf-8")
+if map01.count("type = 17101") != 1:
+    raise SystemExit("MAP01 must contain exactly one gated Night Manager spawner")
+if "type = 17003" in map01:
+    raise SystemExit("MAP01 must not pre-place Night Manager before power restoration")
+
 print("Smoke test: PASS")
-print("PK3 structure, objective loop, Overtime contract and two generated maps look valid.")
+print("PK3 structure, staged MAP01 objective loop, Overtime contract and generated maps look valid.")
