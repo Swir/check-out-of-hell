@@ -5,6 +5,9 @@ class CheckoutShiftDirector : EventHandler
     bool bossCleared;
     bool exitPending;
     int exitTic;
+    int lastFuseCount;
+    int powerPulseUntil;
+    String powerPulseText;
 
     static int GetOvertimeStage()
     {
@@ -47,6 +50,9 @@ class CheckoutShiftDirector : EventHandler
         bossCleared = false;
         exitPending = false;
         exitTic = 0;
+        lastFuseCount = 0;
+        powerPulseUntil = 0;
+        powerPulseText = "";
     }
 
     override void WorldThingDied(WorldEvent e)
@@ -77,6 +83,27 @@ class CheckoutShiftDirector : EventHandler
         }
 
         int fuses = p.CountInv("CheckoutFuse");
+
+        if (fuses > lastFuseCount)
+        {
+            lastFuseCount = fuses;
+            powerPulseUntil = Level.maptime + 35 * 3;
+
+            if (fuses == 1)
+            {
+                powerPulseText = "POWER ROUTE 1/3 - CHECKOUT LIGHTS RESPOND";
+            }
+            else if (fuses == 2)
+            {
+                powerPulseText = "POWER ROUTE 2/3 - STAFF SECURITY ONLINE";
+            }
+            else
+            {
+                powerPulseText = "FULL POWER - SUPERVISOR ACCESS RESTORED";
+            }
+
+            Actor.Spawn("TeleportFog", p.Pos);
+        }
 
         if (!exitPending && bossCleared && fuses >= 3)
         {
@@ -151,6 +178,12 @@ class CheckoutShiftDirector : EventHandler
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
         Screen.DrawText(smallfont, Font.CR_WHITE, 12, 56, taskText,
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+
+        if (powerPulseUntil > Level.maptime && powerPulseText.Len() > 0)
+        {
+            Screen.DrawText(smallfont, Font.CR_GOLD, 150, 196, powerPulseText,
+                DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        }
 
         if (exitPending)
         {
@@ -256,5 +289,51 @@ class CheckoutManagerSpawner : Actor
         {
             spawned = true;
         }
+    }
+}
+
+class CheckoutStaffShutter : Actor
+{
+    bool opened;
+
+    Default
+    {
+        Radius 18;
+        Height 72;
+        +SOLID
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        COLU A -1 Bright
+        Stop
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        opened = false;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (opened || !players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p || p.CountInv("CheckoutFuse") < 2)
+        {
+            return;
+        }
+
+        opened = true;
+        Actor.Spawn("TeleportFog", Pos);
+        Destroy();
     }
 }
