@@ -5,7 +5,7 @@
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
 > **Status:** Prototype 0.2-dev — two-map combat foundation  
-> **Project progress:** `██░░░░░░░░ 18%`
+> **Project progress:** `██░░░░░░░░ 20%`
 
 ## Premise
 
@@ -33,7 +33,7 @@ weapons, jokes, levels and final art.
 - **The Regional Manager** prototype boss,
 - Windows development launchers,
 - automated build + smoke tests,
-- GitHub Actions artifact build,
+- verified GitHub Actions artifact build,
 - original project icon concept,
 - documented asset policy, weapon plan and level direction.
 
