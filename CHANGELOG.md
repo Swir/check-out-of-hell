@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.4.0-dev — 2026-09-16
+
+### Added
+- First structured `MAP01 — Closing Time` supermarket-floor pass with internal aisle/counter barriers and a larger traversal footprint.
+- Breaker route separation across left, right and rear store zones.
+- `CheckoutManagerSpawner` ZScript actor and DoomEdNum `17101`.
+- Power-gated Night Manager arrival after the player restores all three breakers.
+- Contextual HUD task line that changes from breaker restoration to supervisor clearance and clock-out.
+- Third Overtime reinforcement anchor in MAP01 to distribute escalation across the expanded floor.
+- `tools/test_closing_time_layout.py` contract test covering floor scale, route separation, supervisor staging and Overtime coverage.
+- CI execution of the Closing Time layout contract.
+
+### Changed
+- MAP01 no longer pre-places Night Manager before the power objective is complete.
+- MAP01 enemy positions now support left/right/rear traversal instead of a single flat arena engagement.
+- Gameplay and level-design documentation now describe the staged Closing Time progression contract.
+
 ## 0.3.0-dev — 2026-09-16
 
 ### Added
