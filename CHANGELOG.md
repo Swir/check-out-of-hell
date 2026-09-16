@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.5.0-dev — 2026-09-16
+
+### Added
+- First optional power-gated side route in `MAP01 — Closing Time`.
+- Rear-left Staff Only room with a physical three-blocker security barrier.
+- `CheckoutStaffShutter` ZScript actor and DoomEdNum `17102`.
+- Staff Only access unlocking after `2/3` breakers so partial power has a useful gameplay consequence.
+- `Employee of the Month Stash` optional reward with workplace-comedy pickup text.
+- Visible breaker-restoration feedback banners for `1/3`, `2/3` and `3/3` power states.
+- Short teleport-fog power pulse when a breaker is restored.
+- `tools/test_staff_room_contract.py` protecting the optional-room geometry, unlock threshold, reward and non-mandatory progression contract.
+- CI execution of the Staff Only route contract.
+
+### Changed
+- The left-side mandatory breaker and Overtime anchor were moved outside the Staff Only room so the side route cannot become a hidden required path.
+- MAP01 rear-left geometry now creates an actual employee-room pocket instead of another open arena corner.
+- Gameplay and level-design documentation now define optional powered side routes as part of the department loop.
+
 ## 0.4.0-dev — 2026-09-16
 
 ### Added
