@@ -57,7 +57,8 @@ The percentage reflects implemented/testable milestones, not ideas.
 
 ## Phase 3 — Demo Release — 10%
 - [x] Automatic first-run dependency bootstrap design implemented
-- [ ] Installer/portable Windows package
+- [ ] Portable Windows development artifact builder verified in CI
+- [ ] Installer/portable Windows release package
 - [ ] Standalone legal content package
 - [ ] Controller support pass
 - [ ] Accessibility options
