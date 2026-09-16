@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.6.0-dev — 2026-09-16
+
+### Added
+- `CheckoutBossWaveSpawner` ZScript actor and DoomEdNum `17103`.
+- Two dedicated rear supervisor-response anchors in `MAP01 — Closing Time`.
+- Deterministic full-power boss-response sequence: Angry Self-Checkout at 12s, Cart of Doom at 26s, Security Price Scanner at 42s and Possessed Pallet Jack at 58s.
+- Teleport-fog arrival cues for the Night Manager and each staged reinforcement wave.
+- Physical return-to-front-checkout clock-out objective after supervisor clearance.
+- Explicit `TIMECARD ACCEPTED` completion feedback and one-second clock-out beat before level transition.
+- `tools/test_boss_escape_contract.py` covering boss-wave anchors, wave order/timing and front-checkout completion geometry.
+- CI execution of the boss + escape contract.
+
+### Changed
+- Killing the supervisor no longer auto-completes the level from anywhere on the map.
+- HUD progression now ends with `RETURN TO FRONT CHECKOUT`, then `TIMECARD ACCEPTED` when the player reaches the front timecard zone.
+- Closing Time now behaves as restoration → supervisor response → escape/clock-out instead of restoration → boss → automatic exit.
+- README/ROADMAP progress raised to 35% to reflect the implemented and contract-tested supervisor encounter/clock-out milestone.
+
 ## 0.5.0-dev — 2026-09-16
 
 ### Added
@@ -26,7 +44,7 @@
 - Breaker route separation across left, right and rear store zones.
 - `CheckoutManagerSpawner` ZScript actor and DoomEdNum `17101`.
 - Power-gated Night Manager arrival after the player restores all three breakers.
-- Contextual HUD task line that changes from breaker restoration to supervisor clearance and clock-out.
+- Contextual HUD task line that changes from power restoration to supervisor clearance and clock-out.
 - Third Overtime reinforcement anchor in MAP01 to distribute escalation across the expanded floor.
 - `tools/test_closing_time_layout.py` contract test covering floor scale, route separation, supervisor staging and Overtime coverage.
 - CI execution of the Closing Time layout contract.
