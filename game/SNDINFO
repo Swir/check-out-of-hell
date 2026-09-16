@@ -1,0 +1,6 @@
+// CHECKOUT OF HELL - original prototype interaction cues
+coh/fuse       sounds/fuse
+coh/shutter    sounds/shutter
+coh/bossalarm  sounds/bossalarm
+coh/clockout   sounds/clockout
+coh/overtime   sounds/overtime
