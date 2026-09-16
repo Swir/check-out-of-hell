@@ -63,6 +63,20 @@ actor ReceiptRipper : Shotgun replaces Shotgun
     }
 }
 
+actor PriceLabelPuff : BulletPuff
+{
+    +NOGRAVITY
+
+    States
+    {
+    Spawn:
+        PLBL A 1 Bright
+        PLBL B 2
+        PLBL C 3
+        Stop
+    }
+}
+
 actor PriceGunSMG : Chaingun replaces Chaingun
 {
     Tag "Price-Gun SMG"
@@ -74,20 +88,25 @@ actor PriceGunSMG : Chaingun replaces Chaingun
 
     States
     {
+    Spawn:
+        PGPK A -1
+        Stop
     Ready:
-        CHGG A 1 A_WeaponReady
+        PGUN A 1 A_WeaponReady
         Loop
     Deselect:
-        CHGG A 1 A_Lower
+        PGUN A 1 A_Lower
         Loop
     Select:
-        CHGG A 1 A_Raise
+        PGUN A 1 A_Raise
         Loop
     Fire:
-        CHGG A 0 A_JumpIfNoAmmo("Ready")
-        CHGG B 2 Bright A_FireBullets(4.0, 3.0, 1, 7, "BulletPuff", FBF_USEAMMO)
-        CHGG C 2 Bright A_FireBullets(4.0, 3.0, 1, 7, "BulletPuff", FBF_USEAMMO)
-        CHGG B 0 A_ReFire
+        PGUN A 0 A_JumpIfNoAmmo("Ready")
+        PGUN B 2 Bright A_PlaySound("coh/pricefire", CHAN_WEAPON)
+        PGUN C 2 Bright A_FireBullets(4.0, 3.0, 1, 7, "PriceLabelPuff", FBF_USEAMMO)
+        PGUN D 1 A_PlaySound("coh/pricelabel", CHAN_AUTO)
+        PGUN E 1
+        PGUN B 0 A_ReFire
         Goto Ready
     }
 }
@@ -105,12 +124,13 @@ actor TurboCanProjectile
     States
     {
     Spawn:
-        MISL A 1 Bright
+        TCAN A 1 Bright
+        TCAN B 1 Bright
         Loop
     Death:
-        MISL B 3 Bright
-        MISL C 3 Bright A_Explode(48, 80)
-        MISL D 3 Bright
+        TCAN C 2 Bright A_PlaySound("coh/canexplode", CHAN_BODY)
+        TCAN D 3 Bright A_Explode(48, 80)
+        TCAN E 4 Bright
         Stop
     }
 }
@@ -126,20 +146,23 @@ actor TurboCanLauncher : RocketLauncher replaces RocketLauncher
 
     States
     {
+    Spawn:
+        TCNP A -1
+        Stop
     Ready:
-        MISG A 1 A_WeaponReady
+        TCNV A 1 A_WeaponReady
         Loop
     Deselect:
-        MISG A 1 A_Lower
+        TCNV A 1 A_Lower
         Loop
     Select:
-        MISG A 1 A_Raise
+        TCNV A 1 A_Raise
         Loop
     Fire:
-        MISG B 3 A_GunFlash
-        MISG C 2 A_FireCustomMissile("TurboCanProjectile", 0, 1, 0, 0)
-        MISG B 3
-        MISG A 4 A_ReFire
+        TCNV B 2 Bright A_PlaySound("coh/canlaunch", CHAN_WEAPON)
+        TCNV C 2 Bright A_FireCustomMissile("TurboCanProjectile", 0, 1, 0, 0)
+        TCNV D 3
+        TCNV E 3 A_ReFire
         Goto Ready
     }
 }
@@ -184,6 +207,28 @@ actor CheckoutReceiptProjectile
     Death:
         RCPT C 3 Bright A_Explode(10, 24)
         RCPT D 4 Bright
+        Stop
+    }
+}
+
+actor ScannerBeamProjectile
+{
+    Radius 5
+    Height 5
+    Speed 28
+    Damage 7
+    Projectile
+    +RANDOMIZE
+
+    States
+    {
+    Spawn:
+        SBEA A 1 Bright
+        SBEA B 1 Bright
+        Loop
+    Death:
+        SBEA C 2 Bright A_Explode(14, 28)
+        SBEA D 3 Bright
         Stop
     }
 }
@@ -291,6 +336,43 @@ actor ScannerTurret : ChaingunGuy 17004
     Health 110
     Speed 0
     PainChance 110
+    SeeSound "coh/scanneridle"
+    ActiveSound "coh/scanneridle"
+    PainSound "coh/scannerhit"
+    DeathSound "coh/scannerdown"
+
+    States
+    {
+    Spawn:
+        SCNR A 10 A_Look
+        Loop
+    See:
+        SCNR A 5 A_Chase
+        SCNR B 5 A_Chase
+        SCNR C 5 A_Chase
+        SCNR D 5 A_Chase
+        Loop
+    Missile:
+        SCNR E 5 A_FaceTarget
+        SCNR F 4 Bright A_PlaySound("coh/scannerattack", CHAN_WEAPON)
+        SCNR F 0 Bright A_CustomMissile("ScannerBeamProjectile", 34, 0, 0)
+        SCNR E 5
+        Goto See
+    Pain:
+        SCNR G 3
+        SCNR G 3 A_Pain
+        Goto See
+    Death:
+        SCNR G 4
+        SCNR H 5 A_NoBlocking
+        SCNR I -1
+        Stop
+    Raise:
+        SCNR I 5
+        SCNR H 5
+        SCNR G 5
+        Goto See
+    }
 }
 
 actor PalletJack : Demon 17005
