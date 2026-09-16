@@ -37,7 +37,7 @@ jobs:
           path: dist/checkout-of-hell-prototype.pk3
           if-no-files-found: error
 
-  runtime-validation:
+  windows-runtime-resolution:
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -58,16 +58,79 @@ jobs:
         shell: powershell
         run: .\tools\bootstrap_python.ps1 -DryRun
 
-      - name: Build prototype for runtime validation
-        shell: powershell
-        run: python .\tools\build.py
-
-      - name: Download pinned runtime from official sources
+      - name: Download and verify the Windows runtime
         shell: powershell
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: .\tools\bootstrap_runtime.ps1
 
-      - name: GZDoom startup and parser validation
+      - name: Verify Windows runtime payload
         shell: powershell
-        run: .\tools\runtime_smoke.ps1
+        run: |
+          if (-not (Test-Path .\external\gzdoom\gzdoom.exe)) { throw "gzdoom.exe missing after bootstrap" }
+          if (-not (Test-Path .\external\freedoom2.wad)) { throw "freedoom2.wad missing after bootstrap" }
+          if (-not (Test-Path .\external\runtime-manifest.json)) { throw "runtime-manifest.json missing after bootstrap" }
+          Get-Content .\external\runtime-manifest.json
+
+  engine-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build prototype for real engine validation
+        run: python tools/build.py
+
+      - name: Install headless graphics/runtime prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 unzip curl
+
+      - name: Download pinned official GZDoom Linux build
+        run: |
+          curl --fail --location --retry 3 \
+            https://github.com/ZDoom/gzdoom/releases/download/g4.14.2/gzdoom_4.14.2_amd64.deb \
+            --output /tmp/gzdoom_4.14.2_amd64.deb
+          sudo apt-get install -y /tmp/gzdoom_4.14.2_amd64.deb
+
+      - name: Download and verify pinned official Freedoom
+        run: |
+          mkdir -p external-linux /tmp/freedoom-stage
+          curl --fail --location --retry 3 \
+            https://github.com/freedoom/freedoom/releases/download/v0.13.0/freedoom-0.13.0.zip \
+            --output /tmp/freedoom-0.13.0.zip
+          curl --fail --location --retry 3 \
+            https://github.com/freedoom/freedoom/releases/download/v0.13.0/freedoom-0.13.0-CHECKSUM \
+            --output /tmp/freedoom-0.13.0-CHECKSUM
+          expected="$(grep 'freedoom-0.13.0.zip' /tmp/freedoom-0.13.0-CHECKSUM | grep -Eo '[A-Fa-f0-9]{64}' | head -n 1)"
+          if [ -z "$expected" ]; then
+            echo "Could not parse official Freedoom SHA-256 entry." >&2
+            exit 1
+          fi
+          actual="$(sha256sum /tmp/freedoom-0.13.0.zip | awk '{print $1}')"
+          test "${actual,,}" = "${expected,,}"
+          unzip -q /tmp/freedoom-0.13.0.zip -d /tmp/freedoom-stage
+          wad="$(find /tmp/freedoom-stage -type f -name freedoom2.wad -print -quit)"
+          test -n "$wad"
+          cp "$wad" external-linux/freedoom2.wad
+
+      - name: Validate PK3 with pinned GZDoom
+        run: |
+          chmod +x tools/runtime_smoke_linux.sh
+          GZDOOM="$(command -v gzdoom || true)"
+          if [ -z "$GZDOOM" ] && [ -x /usr/games/gzdoom ]; then GZDOOM=/usr/games/gzdoom; fi
+          test -n "$GZDOOM"
+          tools/runtime_smoke_linux.sh "$GZDOOM" external-linux/freedoom2.wad dist/checkout-of-hell-prototype.pk3
+
+      - name: Upload GZDoom validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gzdoom-engine-validation-log
+          path: dist/gzdoom-linux-validation.log
+          if-no-files-found: ignore
