@@ -30,7 +30,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Security Price Scanner
 - [x] Possessed Pallet Jack
 - [x] Regional Manager prototype boss
-- [x] MAP01 combat sandbox
+- [x] MAP01 structured objective prototype with separated breaker routes and a power-gated supervisor
 - [x] MAP02 combat sandbox
 - [x] Three-breaker + supervisor-clear objective loop
 - [x] Overtime escalation prototype with timed reinforcements
