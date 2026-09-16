@@ -66,6 +66,8 @@ class CheckoutShiftDirector : EventHandler
         if (cls == 'NightManager' || cls == 'RegionalManager')
         {
             bossCleared = true;
+            powerPulseUntil = Level.maptime + 35 * 6;
+            powerPulseText = "SUPERVISOR DOWN - FINISH THE SHIFT";
         }
     }
 
@@ -105,10 +107,13 @@ class CheckoutShiftDirector : EventHandler
             Actor.Spawn("TeleportFog", p.Pos);
         }
 
-        if (!exitPending && bossCleared && fuses >= 3)
+        if (!exitPending && bossCleared && fuses >= 3 &&
+            p.Pos.X >= -140 && p.Pos.X <= 140 && p.Pos.Y <= -350)
         {
             exitPending = true;
-            exitTic = Level.maptime + 70;
+            exitTic = Level.maptime + 35;
+            powerPulseUntil = Level.maptime + 35;
+            powerPulseText = "TIMECARD ACCEPTED - SHIFT COMPLETE";
         }
 
         if (exitPending && Level.maptime >= exitTic)
@@ -143,15 +148,20 @@ class CheckoutShiftDirector : EventHandler
         String bossText = "SUPERVISOR ACTIVE";
         String taskText = "TASK: CLEAR THE SUPERVISOR";
 
-        if (bossCleared)
+        if (fuses < 3)
         {
-            bossText = "SUPERVISOR CLEARED";
-            taskText = "TASK: CLOCK OUT";
-        }
-        else if (fuses < 3)
-        {
-            bossText = "SUPERVISOR LOCKED";
+            bossText = bossCleared ? "SUPERVISOR CLEARED" : "SUPERVISOR LOCKED";
             taskText = "TASK: RESTORE ALL BREAKERS";
+        }
+        else if (bossCleared)
+        {
+            bossText = "CLOCK-OUT READY";
+            taskText = "TASK: RETURN TO FRONT CHECKOUT";
+        }
+
+        if (exitPending)
+        {
+            taskText = "TASK: TIMECARD ACCEPTED";
         }
 
         int stageColor = Font.CR_GREEN;
@@ -187,7 +197,7 @@ class CheckoutShiftDirector : EventHandler
 
         if (exitPending)
         {
-            Screen.DrawText(smallfont, Font.CR_GOLD, 240, 220, "SHIFT CLEAR - CLOCKING OUT...",
+            Screen.DrawText(smallfont, Font.CR_GOLD, 220, 220, "TIMECARD ACCEPTED - CLOCKING OUT...",
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
         }
     }
@@ -284,10 +294,95 @@ class CheckoutManagerSpawner : Actor
             return;
         }
 
+        Actor.Spawn("TeleportFog", Pos);
         Actor manager = Actor.Spawn("NightManager", Pos);
         if (manager)
         {
             spawned = true;
+        }
+    }
+}
+
+class CheckoutBossWaveSpawner : Actor
+{
+    int startTic;
+    int nextWave;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        startTic = -1;
+        nextWave = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p || p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        if (startTic < 0)
+        {
+            startTic = Level.maptime;
+            nextWave = 1;
+            Actor.Spawn("TeleportFog", Pos);
+            return;
+        }
+
+        int elapsed = (Level.maptime - startTic) / 35;
+
+        if (nextWave == 1 && elapsed >= 12)
+        {
+            Actor.Spawn("TeleportFog", Pos);
+            Actor.Spawn("AngrySelfCheckout", Pos);
+            nextWave = 2;
+            return;
+        }
+
+        if (nextWave == 2 && elapsed >= 26)
+        {
+            Actor.Spawn("TeleportFog", Pos);
+            Actor.Spawn("CartOfDoom", Pos);
+            nextWave = 3;
+            return;
+        }
+
+        if (nextWave == 3 && elapsed >= 42)
+        {
+            Actor.Spawn("TeleportFog", Pos);
+            Actor.Spawn("ScannerTurret", Pos);
+            nextWave = 4;
+            return;
+        }
+
+        if (nextWave == 4 && elapsed >= 58)
+        {
+            Actor.Spawn("TeleportFog", Pos);
+            Actor.Spawn("PalletJack", Pos);
+            nextWave = 5;
         }
     }
 }

@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.5-dev — powered side routes + portable Windows artifact  
-> **Project progress:** `███░░░░░░░ 32%`
+> **Status:** Prototype 0.6-dev — staged supervisor fight + physical clock-out  
+> **Project progress:** `████░░░░░░ 35%`
 
 ## Premise
 
@@ -24,16 +24,23 @@ The prototype has a real shift objective instead of pure arena combat:
 2. find and collect **three Breaker Fuses**,
 3. survive hostile store equipment and escalating Overtime pressure,
 4. exploit optional powered side routes when partial power comes back,
-5. defeat the department supervisor,
-6. clock out automatically when both objective conditions are complete.
+5. defeat the department supervisor while management reinforcements escalate,
+6. return to the **front checkout** and physically clock out to finish the shift.
 
 `MAP01 — Closing Time` stages that loop across a larger supermarket floor. Internal
 retail barriers split traversal into lanes, the three breakers pull the player into left,
 right and rear routes, and the **Night Manager does not enter the floor until all three
 breakers are restored**. The HUD explicitly moves from `RESTORE ALL BREAKERS` to
-`CLEAR THE SUPERVISOR` and finally `CLOCK OUT`.
+`CLEAR THE SUPERVISOR`, then to `RETURN TO FRONT CHECKOUT` after the boss falls.
 
-Partial power now changes the level. At `2/3` breakers, a rear-left **Staff Only**
+Full power now starts a deliberate supervisor encounter instead of just spawning one boss.
+Two rear-arena management-response anchors feed staged reinforcements into the fight:
+**Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack**.
+After the Night Manager is defeated, the level no longer exits by itself. The player must
+fight back through the store to the front checkout/timecard zone, where the shift is finally
+accepted and the map advances.
+
+Partial power also changes the level. At `2/3` breakers, a rear-left **Staff Only**
 security barrier powers down and opens an optional employee room with an **Employee of
 the Month Stash**. No mandatory breaker is hidden in that room, so the reward is a real
 side route rather than a disguised progression lock. Each breaker also triggers a short
@@ -105,18 +112,20 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - **The Regional Manager** prototype boss,
 - three-breaker + supervisor-clear objective loop,
 - power-gated Night Manager arrival in MAP01,
+- staged Night Manager reinforcement waves from two arena anchors,
+- post-boss return-to-front-checkout objective,
 - optional Staff Only side room unlocked by partial power,
 - Employee of the Month reward stash,
 - visible per-breaker power-restoration feedback,
 - Overtime escalation director with timed reinforcement spawners,
 - shift/objective/Overtime HUD overlay with contextual task text,
-- automatic map completion once the shift objective is satisfied,
+- clock-out completion only after returning to the front timecard zone,
 - one-click Windows dependency bootstrap,
 - pinned reproducible runtime lock,
 - Windows development launchers,
 - verified portable Windows artifact builder with SHA-256 sidecar,
 - player-facing portable launcher with no Python/build dependency,
-- automated build + smoke + gameplay + MAP01 layout + Staff Only route + packaging contract tests,
+- automated build + smoke + gameplay + MAP01 layout + Staff Only route + boss/escape + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - verified GitHub Actions PK3 and portable Windows artifacts,
 - original project icon concept,
@@ -138,6 +147,7 @@ python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
+python tools/test_boss_escape_contract.py
 python tools/package_portable.py
 python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
@@ -154,7 +164,7 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ## Maps
 
-- `MAP01` — **Closing Time** — structured objective prototype with optional powered side route
+- `MAP01` — **Closing Time** — structured objective prototype with powered side route, staged supervisor fight and checkout escape
 - `MAP02` — **Warehouse 13.5** — combat/pressure prototype
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).

@@ -22,7 +22,11 @@ if "next = \"MAP02\"" not in MAPINFO or "next = \"MAP01\"" not in MAPINFO:
     raise SystemExit("Prototype map loop is not connected")
 
 if "bossCleared && fuses >= 3" not in ZSCRIPT:
-    raise SystemExit("Level exit must require both the supervisor and three breakers")
+    raise SystemExit("Clock-out must require both the supervisor and three breakers")
+if 'taskText = "TASK: RETURN TO FRONT CHECKOUT"' not in ZSCRIPT:
+    raise SystemExit("Completed combat must send the player back to the front checkout")
+if "TIMECARD ACCEPTED - SHIFT COMPLETE" not in ZSCRIPT:
+    raise SystemExit("Clock-out zone must acknowledge successful shift completion")
 
 if "class CheckoutManagerSpawner : Actor" not in ZSCRIPT:
     raise SystemExit("Closing Time needs a staged supervisor spawner")
@@ -30,7 +34,7 @@ if 'CountInv("CheckoutFuse") < 3' not in ZSCRIPT:
     raise SystemExit("Night Manager must remain locked until all breakers are restored")
 if 'Actor.Spawn("NightManager", Pos)' not in ZSCRIPT:
     raise SystemExit("Staged supervisor spawner does not create Night Manager")
-if 'bossText = "SUPERVISOR LOCKED"' not in ZSCRIPT:
+if '"SUPERVISOR LOCKED"' not in ZSCRIPT:
     raise SystemExit("HUD must explain the supervisor power gate")
 if 'taskText = "TASK: RESTORE ALL BREAKERS"' not in ZSCRIPT:
     raise SystemExit("HUD must expose the current restoration task")
