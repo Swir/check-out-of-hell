@@ -3,6 +3,7 @@ import zipfile
 import struct
 
 from generate_assets import generate_assets
+from generate_combat_assets import generate_combat_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
@@ -39,6 +40,7 @@ def make_udmf_wad(map_name: str, path: Path) -> None:
 
 
 generate_assets(GAME)
+generate_combat_assets(GAME)
 
 built_maps = []
 for map_name in MAPS:
