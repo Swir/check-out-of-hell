@@ -5,6 +5,7 @@ ROOT = Path(__file__).resolve().parents[1]
 ZSCRIPT = (ROOT / "game" / "ZSCRIPT").read_text(encoding="utf-8")
 DECORATE = (ROOT / "game" / "DECORATE").read_text(encoding="utf-8")
 MAPINFO = (ROOT / "game" / "MAPINFO").read_text(encoding="utf-8")
+MAP01 = (ROOT / "game" / "MAP01.udmf").read_text(encoding="utf-8")
 
 thresholds = [int(value) for value in re.findall(r"seconds >= (\d+)", ZSCRIPT)]
 if thresholds != [270, 180, 90]:
@@ -22,5 +23,19 @@ if "next = \"MAP02\"" not in MAPINFO or "next = \"MAP01\"" not in MAPINFO:
 
 if "bossCleared && fuses >= 3" not in ZSCRIPT:
     raise SystemExit("Level exit must require both the supervisor and three breakers")
+
+if "class CheckoutManagerSpawner : Actor" not in ZSCRIPT:
+    raise SystemExit("Closing Time needs a staged supervisor spawner")
+if 'CountInv("CheckoutFuse") < 3' not in ZSCRIPT:
+    raise SystemExit("Night Manager must remain locked until all breakers are restored")
+if 'Actor.Spawn("NightManager", Pos)' not in ZSCRIPT:
+    raise SystemExit("Staged supervisor spawner does not create Night Manager")
+if 'bossText = "SUPERVISOR LOCKED"' not in ZSCRIPT:
+    raise SystemExit("HUD must explain the supervisor power gate")
+if 'taskText = "TASK: RESTORE ALL BREAKERS"' not in ZSCRIPT:
+    raise SystemExit("HUD must expose the current restoration task")
+
+if MAP01.count("type = 17101") != 1 or "type = 17003" in MAP01:
+    raise SystemExit("MAP01 must stage Night Manager instead of pre-placing the boss")
 
 print("Gameplay contract test: PASS")
