@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.7-dev — first original retail atmosphere pass  
-> **Project progress:** `████░░░░░░ 38%`
+> **Status:** Prototype 0.8-dev — signature combat art pass  
+> **Project progress:** `████░░░░░░ 40%`
 
 ## Premise
 
@@ -44,13 +44,15 @@ security barrier powers down and opens an optional employee room with an **Emplo
 the Month Stash**. No mandatory breaker is hidden in that room, so the reward is a real
 side route rather than a disguised progression lock.
 
-The first original art/audio layer is now part of the actual build. `Closing Time` uses
-project-owned supermarket wall, shelf, Staff Only, floor and ceiling surfaces instead of
-Doom placeholder materials. Breaker fuses, the Staff Only shutter and the employee stash
-have original generated sprites, while breaker pickup, shutter opening, Overtime escalation,
-Night Manager arrival and clock-out use original synthesized project sound cues. These assets
-are generated deterministically from repository code with Python's standard library and are
-verified inside the final PK3 by CI.
+The original art/audio layer now reaches the signature first fight. `Closing Time` uses
+project-owned supermarket wall, shelf, Staff Only, floor and ceiling surfaces. Breaker
+fuses, the Staff Only shutter and the employee stash have original generated sprites.
+The **Emergency Mop** now uses four original first-person attack frames with its own swing
+cue instead of the compatible-IWAD fist view, and the **Night Manager** now has a complete
+original prototype sprite sequence for idle/chase/attack/pain/death plus an original glowing
+**Manager Memo** projectile and dedicated attack/down cues. Generated sprite PNGs carry
+ZDoom `grAb` offsets so weapon/world placement is deterministic. All of this is produced
+from repository code using Python's standard library and verified inside the final PK3 by CI.
 
 `MAP02 — Warehouse 13.5` remains the heavier arena-style prototype while its dedicated
 objective flow is developed.
@@ -115,8 +117,10 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - shift/objective/Overtime HUD overlay,
 - first original supermarket wall/shelf/staff/floor/ceiling material pack,
 - original breaker, shutter and stash prototype sprites,
+- original **Emergency Mop** first-person sprite/animation set with combat swing cue,
+- original **Night Manager** prototype animation set, Manager Memo projectile and boss combat cues,
 - original breaker/shutter/boss/clock-out/Overtime interaction audio cues,
-- deterministic stdlib-only asset generation and dedicated CI asset contract,
+- deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contract,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
 - automated build + gameplay + layout + Staff Only + boss/escape + original-asset + packaging contract tests,
@@ -148,10 +152,10 @@ python tools/test_portable_package.py
 
 ## Prototype weapons
 
-- Slot 1: Emergency Mop
-- Shotgun pickup: Receipt Ripper
-- Chaingun pickup: Price-Gun SMG
-- Rocket Launcher pickup: Turbo Can Launcher
+- Slot 1: Emergency Mop — original prototype view sprites + original swing cue
+- Shotgun pickup: Receipt Ripper — placeholder runtime view sprites remain
+- Chaingun pickup: Price-Gun SMG — placeholder runtime view sprites remain
+- Rocket Launcher pickup: Turbo Can Launcher — placeholder runtime view sprites remain
 
 See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
@@ -164,7 +168,7 @@ See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 
 ## Asset policy
 
-No proprietary Doom, Star Wars or other commercial game assets belong in this repository. The first original runtime art/audio pack is generated from our own source code during the build. Remaining combat/weapon placeholder visuals may still be supplied at runtime by a compatible IWAD, but those assets are not redistributed and must be replaced before standalone release.
+No proprietary Doom, Star Wars or other commercial game assets belong in this repository. The original runtime art/audio pack is generated from our own source code during the build. The Emergency Mop and Night Manager no longer depend on compatible-IWAD view/actor sprites, but several remaining weapons/enemies still use runtime placeholders and must be replaced before standalone release.
 
 See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md).
 
