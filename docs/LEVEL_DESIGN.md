@@ -11,7 +11,9 @@ Current prototype includes:
 - three Overtime reinforcement anchors spread across the floor,
 - Security Price Scanner crossfire near the rear route,
 - Night Manager spawned only after all three breakers are restored,
-- contextual HUD task text that moves from power restoration to supervisor clearance,
+- two dedicated rear supervisor-response anchors that escalate through Self-Checkout, Cart, Scanner and Pallet Jack waves,
+- contextual HUD task text that moves from power restoration to supervisor clearance and then a return to front checkout,
+- a physical front checkout/timecard completion zone instead of automatic post-boss exit,
 - short visible feedback after each breaker is restored,
 - an optional rear-left Staff Only room with a physical security barrier,
 - Staff Only access unlocking at `2/3` breakers instead of waiting for full power,
@@ -22,14 +24,19 @@ The Staff Only room is deliberately a reward loop rather than a key hunt. Partia
 player a useful side benefit before the main objective is complete, teaching that restoring store
 systems can change the environment without making every side route mandatory.
 
+The supervisor encounter is now a pressure sequence rather than one isolated monster spawn. Full
+power activates two management-response anchors on opposite sides of the rear arena. After the
+Night Manager is defeated, surviving threats remain relevant because the player must fight back to
+the front checkout and clock out before the map advances.
+
 Next polish:
 - entrance shutters visibly slam shut behind the player,
 - replace temporary Staff Only barrier visuals with original shutter/sign art,
 - stronger authored checkout-lane cover and sightlines,
 - authored lighting changes for each breaker state,
-- PA announcements react to breaker restoration and supervisor arrival,
+- PA announcements react to breaker restoration, supervisor arrival, reinforcement waves and clock-out,
 - original signs, props, lighting and retail textures,
-- deliberate Night Manager arena presentation,
+- stronger authored Night Manager arena geometry around the two response anchors,
 - original Night Manager presentation instead of runtime placeholder visuals.
 
 ## MAP02 — Warehouse 13.5
