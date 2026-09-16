@@ -6,6 +6,7 @@ class CheckoutShiftDirector : EventHandler
     bool exitPending;
     int exitTic;
     int lastFuseCount;
+    int lastOvertimeStage;
     int powerPulseUntil;
     String powerPulseText;
 
@@ -51,6 +52,7 @@ class CheckoutShiftDirector : EventHandler
         exitPending = false;
         exitTic = 0;
         lastFuseCount = 0;
+        lastOvertimeStage = 0;
         powerPulseUntil = 0;
         powerPulseText = "";
     }
@@ -107,6 +109,30 @@ class CheckoutShiftDirector : EventHandler
             Actor.Spawn("TeleportFog", p.Pos);
         }
 
+        int overtimeStage = GetOvertimeStage();
+        if (overtimeStage > lastOvertimeStage)
+        {
+            lastOvertimeStage = overtimeStage;
+            p.A_StartSound("coh/overtime", CHAN_AUTO);
+
+            if (powerPulseUntil <= Level.maptime)
+            {
+                powerPulseUntil = Level.maptime + 35 * 3;
+                if (overtimeStage == 1)
+                {
+                    powerPulseText = "PA: STORE CONDITIONS ARE NO LONGER NORMAL";
+                }
+                else if (overtimeStage == 2)
+                {
+                    powerPulseText = "PA: OVERTIME AUTHORIZED - KEEP WORKING";
+                }
+                else
+                {
+                    powerPulseText = "PA: HELL RUSH - MANAGEMENT ACCEPTS NO REFUNDS";
+                }
+            }
+        }
+
         if (!exitPending && bossCleared && fuses >= 3 &&
             p.Pos.X >= -140 && p.Pos.X <= 140 && p.Pos.Y <= -350)
         {
@@ -114,6 +140,7 @@ class CheckoutShiftDirector : EventHandler
             exitTic = Level.maptime + 35;
             powerPulseUntil = Level.maptime + 35;
             powerPulseText = "TIMECARD ACCEPTED - SHIFT COMPLETE";
+            p.A_StartSound("coh/clockout", CHAN_ITEM);
         }
 
         if (exitPending && Level.maptime >= exitTic)
@@ -298,6 +325,7 @@ class CheckoutManagerSpawner : Actor
         Actor manager = Actor.Spawn("NightManager", Pos);
         if (manager)
         {
+            manager.A_StartSound("coh/bossalarm", CHAN_BODY);
             spawned = true;
         }
     }
@@ -402,7 +430,7 @@ class CheckoutStaffShutter : Actor
     States
     {
     Spawn:
-        COLU A -1 Bright
+        COSH A -1 Bright
         Stop
     }
 
@@ -428,6 +456,7 @@ class CheckoutStaffShutter : Actor
         }
 
         opened = true;
+        p.A_StartSound("coh/shutter", CHAN_AUTO);
         Actor.Spawn("TeleportFog", Pos);
         Destroy();
     }
