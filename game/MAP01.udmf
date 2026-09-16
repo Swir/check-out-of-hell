@@ -34,6 +34,14 @@ thing
     single = true; coop = true; dm = true;
 }
 
+// Overtime pressure begins after 30 seconds and escalates in three stages.
+thing
+{
+    x = 0.0; y = 0.0; angle = 0; type = 17100;
+    skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true;
+    single = true; coop = true;
+}
+
 thing
 {
     x = -180.0; y = 80.0; angle = 270; type = 17001;
