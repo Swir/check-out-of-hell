@@ -1,0 +1,35 @@
+name: Build prototype
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build PK3
+        run: python tools/build.py
+
+      - name: Smoke test
+        run: python tools/smoke_test.py
+
+      - name: Upload prototype artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkout-of-hell-prototype
+          path: dist/checkout-of-hell-prototype.pk3
+          if-no-files-found: error
