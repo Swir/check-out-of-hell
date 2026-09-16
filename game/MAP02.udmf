@@ -31,6 +31,14 @@ thing
     single = true; coop = true; dm = true;
 }
 
+// Warehouse Overtime starts earlier: machinery pressure escalates every 20 seconds.
+thing
+{
+    x = 0.0; y = 0.0; angle = 0; type = 17101;
+    skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true;
+    single = true; coop = true;
+}
+
 thing { x = -300.0; y = -90.0; angle = 0; type = 2001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  300.0; y = -90.0; angle = 180; type = 2002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = 0.0; y = -70.0; angle = 0; type = 17010; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
