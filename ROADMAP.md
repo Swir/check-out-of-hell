@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `██░░░░░░░░ 24%`
+**Overall progress:** `██░░░░░░░░ 25%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -19,7 +19,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Automatic portable Python fallback for source builds
 - [x] Third-party runtime/license documentation
 
-## Phase 1 — Playable Prototype — 60%
+## Phase 1 — Playable Prototype — 65%
 - [x] Emergency Mop
 - [x] Receipt Ripper
 - [x] Price-Gun SMG
@@ -35,12 +35,12 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Three-breaker + supervisor-clear objective loop
 - [x] Overtime escalation prototype with timed reinforcements
 - [x] Prototype shift/objective HUD
+- [x] Runtime parser/startup test on Windows with current pinned GZDoom
 - [ ] Original weapon sprites
 - [ ] Original enemy sprites/models
 - [ ] Original sound set
 - [ ] Proper final custom HUD
 - [ ] First fully decorated/polished level
-- [ ] Runtime test on Windows with current pinned GZDoom
 
 ## Phase 2 — Vertical Slice — 15%
 - [x] Level concepts documented

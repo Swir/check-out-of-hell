@@ -13,12 +13,15 @@
 - Gameplay contract test covering Overtime thresholds, objective requirements and prototype map progression.
 - Smoke-test coverage for ZScript packaging, objective pickups and Overtime spawners.
 - Gameplay loop documentation.
+- Windows CI runtime smoke test that downloads the pinned official GZDoom/Freedoom runtime and asks GZDoom to parse the built PK3 through `-norun`.
+- Archived GZDoom runtime smoke log for CI diagnosis.
 
 ### Changed
 - MAP01 and MAP02 now contain actual completion objectives instead of functioning only as endless combat sandboxes.
 - PK3 build now packages the `ZSCRIPT` lump.
 - GitHub Actions now runs the gameplay contract test before producing the artifact.
-- README/ROADMAP progress raised to 24% based on the implemented objective and Overtime systems.
+- Runtime CI now validates the prototype with the actual pinned GZDoom executable instead of only resolving download metadata.
+- README/ROADMAP progress raised to 25% after the objective/Overtime systems and pinned-engine parser validation were verified.
 
 ## 0.2.0-dev — 2026-09-16
 
