@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.9.0-dev — 2026-09-17
+
+### Added
+- Project-owned Receipt Ripper world pickup plus five-frame first-person animation set.
+- Dedicated original Receipt Ripper fire and paper-cycle cues.
+- Ten-frame original Angry Self-Checkout animation set covering idle/chase/attack/pain/death/raise presentation.
+- Original `CheckoutReceiptProjectile` with generated receipt-flight/impact animation.
+- Original Angry Self-Checkout idle, attack, pain and defeat cues.
+- `tools/generate_combat_assets.py`, a deterministic standard-library-only extension for signature combat assets.
+- Expanded original-asset regression contract covering Receipt Ripper and Angry Self-Checkout PNG offsets, PK3 packaging, sound mappings and actor-state wiring.
+
+### Changed
+- Receipt Ripper active view/pickup states no longer use compatible-IWAD shotgun sprites.
+- Angry Self-Checkout visible actor states and primary ranged attack no longer use compatible-IWAD shotgun-guy sprites/attack presentation.
+- Build tooling now generates the atmosphere asset pack and signature combat extension before PK3 packaging.
+- README/ROADMAP progress raised to 42% for the second verified signature combat-art slice.
+
 ## 0.8.0-dev — 2026-09-16
 
 ### Added
