@@ -8,6 +8,8 @@ DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
 
 MAPS = ["MAP01", "MAP02"]
+ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO"]
+ASSET_DIRS = ["textures", "flats", "sprites", "sounds"]
 
 
 def make_udmf_wad(map_name: str, path: Path) -> None:
@@ -42,8 +44,16 @@ for map_name in MAPS:
 
 pk3 = DIST / "checkout-of-hell-prototype.pk3"
 with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
-    for lump in ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT"]:
+    for lump in ROOT_LUMPS:
         archive.write(GAME / lump, lump)
+
+    for asset_dir in ASSET_DIRS:
+        directory = GAME / asset_dir
+        if not directory.exists():
+            continue
+        for asset in sorted(p for p in directory.rglob("*") if p.is_file()):
+            archive.write(asset, asset.relative_to(GAME).as_posix())
+
     for map_wad in built_maps:
         archive.write(map_wad, f"maps/{map_wad.name}")
 
