@@ -2,6 +2,8 @@ from pathlib import Path
 import zipfile
 import struct
 
+from generate_assets import generate_assets
+
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
 DIST = ROOT / "dist"
@@ -35,6 +37,8 @@ def make_udmf_wad(map_name: str, path: Path) -> None:
     header = struct.pack("<4sII", b"PWAD", len(lumps), dir_offset)
     path.write_bytes(header + blob + directory)
 
+
+generate_assets(GAME)
 
 built_maps = []
 for map_name in MAPS:
