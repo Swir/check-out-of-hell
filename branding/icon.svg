@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#111111"/>
+  <path d="M82 120h54l34 196h214l42-136H163" fill="none" stroke="#ffcc33" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="208" cy="368" r="30" fill="#ffffff"/>
+  <circle cx="354" cy="368" r="30" fill="#ffffff"/>
+  <path d="M224 158l32 52 32-52 32 52 32-52" fill="none" stroke="#ff4b3e" stroke-width="22" stroke-linecap="round"/>
+  <path d="M228 257h112" stroke="#ffffff" stroke-width="20" stroke-linecap="round"/>
+  <path d="M250 257l-18 38M318 257l18 38" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <text x="256" y="455" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="54" fill="#ffffff">COH</text>
+</svg>
