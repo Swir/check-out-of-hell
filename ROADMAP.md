@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `███░░░░░░░ 32%`
+**Overall progress:** `████░░░░░░ 35%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -19,7 +19,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Automatic portable Python fallback for source builds
 - [x] Third-party runtime/license documentation
 
-## Phase 1 — Playable Prototype — 75%
+## Phase 1 — Playable Prototype — 80%
 - [x] Emergency Mop
 - [x] Receipt Ripper
 - [x] Price-Gun SMG
@@ -38,17 +38,20 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Runtime parser/startup test on Windows with current pinned GZDoom
 - [x] Power-gated optional Staff Only side route and reward
 - [x] Per-breaker power restoration feedback
+- [x] Staged Night Manager arena reinforcement sequence
+- [x] Physical return-to-checkout clock-out objective after supervisor clearance
 - [ ] Original weapon sprites
 - [ ] Original enemy sprites/models
 - [ ] Original sound set
 - [ ] Proper final custom HUD
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 25%
+## Phase 2 — Vertical Slice — 30%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
 - [x] First optional powered secret/reward route implemented and regression-tested
+- [x] Closing Time boss encounter pacing + post-boss escape/clock-out route implemented
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods
