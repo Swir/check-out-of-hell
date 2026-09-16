@@ -112,8 +112,20 @@ class CheckoutShiftDirector : EventHandler
 
         String clockText = String.Format("SHIFT %02d:%02d", minutes, seconds);
         String fuseText = String.Format("BREAKERS %d/3", fuses);
-        String bossText = bossCleared ? "SUPERVISOR CLEARED" : "SUPERVISOR ACTIVE";
         String stageText = GetOvertimeLabel(stage);
+        String bossText = "SUPERVISOR ACTIVE";
+        String taskText = "TASK: CLEAR THE SUPERVISOR";
+
+        if (bossCleared)
+        {
+            bossText = "SUPERVISOR CLEARED";
+            taskText = "TASK: CLOCK OUT";
+        }
+        else if (fuses < 3)
+        {
+            bossText = "SUPERVISOR LOCKED";
+            taskText = "TASK: RESTORE ALL BREAKERS";
+        }
 
         int stageColor = Font.CR_GREEN;
         if (stage == 1)
@@ -136,6 +148,8 @@ class CheckoutShiftDirector : EventHandler
         Screen.DrawText(smallfont, Font.CR_GOLD, 12, 34, fuseText,
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
         Screen.DrawText(smallfont, bossCleared ? Font.CR_GREEN : Font.CR_RED, 12, 44, bossText,
+            DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        Screen.DrawText(smallfont, Font.CR_WHITE, 12, 56, taskText,
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
 
         if (exitPending)
@@ -194,6 +208,53 @@ class CheckoutOvertimeSpawner : Actor
         {
             Actor.Spawn("PalletJack", Pos);
             nextSpawn = Level.maptime + 35 * 25;
+        }
+    }
+}
+
+class CheckoutManagerSpawner : Actor
+{
+    bool spawned;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (spawned || !players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p || p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        Actor manager = Actor.Spawn("NightManager", Pos);
+        if (manager)
+        {
+            spawned = true;
         }
     }
 }
