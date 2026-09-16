@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "gzdoom": {
+    "repo": "ZDoom/gzdoom",
+    "tag": "g4.14.2",
+    "asset_regex": "^gzdoom-.*-windows\\.zip$"
+  },
+  "freedoom": {
+    "repo": "freedoom/freedoom",
+    "tag": "v0.13.0",
+    "asset_regex": "^freedoom-[0-9].*\\.zip$",
+    "checksum_regex": "^freedoom-.*-CHECKSUM$"
+  },
+  "python": {
+    "version": "3.12.10",
+    "url": "https://www.python.org/ftp/python/3.12.10/python-3.12.10-embed-amd64.zip"
+  }
+}

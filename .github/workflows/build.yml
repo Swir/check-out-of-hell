@@ -27,9 +27,28 @@ jobs:
       - name: Smoke test
         run: python tools/smoke_test.py
 
+      - name: Bootstrap contract test
+        run: python tools/test_bootstrap_contract.py
+
       - name: Upload prototype artifact
         uses: actions/upload-artifact@v4
         with:
           name: checkout-of-hell-prototype
           path: dist/checkout-of-hell-prototype.pk3
           if-no-files-found: error
+
+  runtime-resolution:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve pinned official runtime assets
+        shell: powershell
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: .\tools\bootstrap_runtime.ps1 -DryRun
+
+      - name: Validate portable Python source
+        shell: powershell
+        run: .\tools\bootstrap_python.ps1 -DryRun

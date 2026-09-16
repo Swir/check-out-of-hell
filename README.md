@@ -16,6 +16,30 @@ CHECKOUT OF HELL is an original comedy-horror FPS inspired by the speed and
 readability of classic shooters while building its own setting, characters,
 weapons, jokes, levels and final art.
 
+## One-click Windows start
+
+**Players should not have to search the internet for game dependencies.**
+
+From a source checkout, double-click:
+
+```text
+PLAY.bat
+```
+
+The launcher automatically:
+
+1. resolves the runtime versions pinned in `runtime-lock.json`,
+2. downloads GZDoom from the official `ZDoom/gzdoom` GitHub Release,
+3. downloads Freedoom from the official `freedoom/freedoom` GitHub Release,
+4. verifies the Freedoom SHA-256 against its official checksum when available,
+5. downloads an official portable Python build from `python.org` only when a source build needs Python and none is installed,
+6. builds and smoke-tests the PK3 when necessary,
+7. starts the game.
+
+Downloaded runtime files are cached locally, so later starts normally do not need to download them again. Network failures stop with a clear error instead of redirecting the user to unofficial mirrors.
+
+See [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) for runtime sources and license notes.
+
 ## What already works
 
 - buildable `.pk3` prototype,
@@ -31,41 +55,25 @@ weapons, jokes, levels and final art.
 - **Security Price Scanner** turret,
 - **Possessed Pallet Jack**,
 - **The Regional Manager** prototype boss,
+- one-click Windows dependency bootstrap,
+- pinned reproducible runtime lock,
 - Windows development launchers,
 - automated build + smoke tests,
 - verified GitHub Actions artifact build,
 - original project icon concept,
 - documented asset policy, weapon plan and level direction.
 
-The prototype deliberately does **not** redistribute Doom game data.
+The prototype deliberately does **not** redistribute proprietary Doom game data.
 
 ## Development runtime
 
-Target:
-- GZDoom 4.14.2+ as the initial stable target,
-- future compatibility testing with the UZDoom line.
+The current pinned runtime is GZDoom `g4.14.2` plus Freedoom `v0.13.0`. Contributors do not need to download these manually; `PLAY.bat` handles them. Runtime pins live in `runtime-lock.json` and should only change after compatibility validation.
 
-For a legally redistributable development IWAD, use **Freedoom Phase 2**.
-Put these files in `external/`:
-
-```text
-external/
-  gzdoom.exe
-  freedoom2.wad
-```
-
-Then run:
-
-```text
-build-and-run.bat
-```
-
-or:
+Manual developer commands remain available:
 
 ```powershell
 python tools/build.py
 python tools/smoke_test.py
-external\gzdoom.exe -iwad external\freedoom2.wad -file dist\checkout-of-hell-prototype.pk3 +map MAP01
 ```
 
 ## Prototype weapons
@@ -86,10 +94,7 @@ See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 
 ## Asset policy
 
-No proprietary Doom, Star Wars or other commercial game assets belong in this
-repository. Prototype visuals may temporarily reference sprite names supplied
-by a compatible IWAD at runtime; those assets are not distributed here.
-Final art, audio, UI, characters and map decoration are planned to be original.
+No proprietary Doom, Star Wars or other commercial game assets belong in this repository. Prototype visuals may temporarily reference sprite names supplied by a compatible IWAD at runtime; those assets are not distributed here. Final art, audio, UI, characters and map decoration are planned to be original.
 
 See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md).
 
