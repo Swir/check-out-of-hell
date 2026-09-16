@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.10.0-dev — 2026-09-17
+
+### Added
+- Project-owned Price-Gun SMG world pickup plus five-frame first-person automatic firing animation.
+- Barcode-label impact puff presentation and dedicated Price-Gun trigger/label-feed cues.
+- Project-owned Turbo Can Launcher world pickup plus five-frame first-person firing animation.
+- Original Turbo Can projectile/impact animation and dedicated launch/explosion cues.
+- Original Security Price Scanner turret animation set, custom scanning beam projectile and idle/attack/pain/down cues.
+- Expanded deterministic combat asset generation for the new weapon and turret presentation.
+- Expanded original-asset regression contract covering the new PNG offsets, WAVs, PK3 packaging, sound mappings, actor-state wiring and removal of compatible-IWAD weapon/turret sprite references.
+
+### Changed
+- Price-Gun SMG active pickup/view states no longer use compatible-IWAD chaingun sprites.
+- Turbo Can Launcher and Turbo Can projectile no longer use compatible-IWAD rocket-launcher/rocket visuals.
+- Security Price Scanner now uses project-owned visible states and a custom scan-beam attack instead of compatible-IWAD chaingun-guy presentation.
+- README/ROADMAP progress raised to 45% for the expanded original retail combat slice.
+
 ## 0.9.0-dev — 2026-09-17
 
 ### Added
