@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.2-dev — two-map combat foundation  
-> **Project progress:** `██░░░░░░░░ 20%`
+> **Status:** Prototype 0.2-dev — two-map combat foundation + Overtime pressure  
+> **Project progress:** `██░░░░░░░░ 22%`
 
 ## Premise
 
@@ -55,15 +55,29 @@ See [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) for runtime sources and license
 - **Security Price Scanner** turret,
 - **Possessed Pallet Jack**,
 - **The Regional Manager** prototype boss,
+- map-specific **Overtime** escalation that adds pressure when the player stays too long,
 - one-click Windows dependency bootstrap,
 - pinned reproducible runtime lock,
 - Windows development launchers,
-- automated build + smoke tests,
-- verified GitHub Actions artifact build,
+- automated structural build/smoke tests,
+- verified Windows download/bootstrap resolution with the real pinned runtime,
+- real GZDoom `g4.14.2` startup/parser validation in headless Linux CI using Mesa software rendering,
+- verified GitHub Actions prototype artifact build,
 - original project icon concept,
-- documented asset policy, weapon plan and level direction.
+- documented asset policy, weapon plan, level direction and Overtime rules.
 
 The prototype deliberately does **not** redistribute proprietary Doom game data.
+
+## Overtime
+
+Overtime is the first signature gameplay system rather than a cosmetic feature. Each prototype department owns its own escalation timing:
+
+- `MAP01 — Closing Time`: pressure begins after 30 seconds and escalates through carts, a scanner/pallet-jack wave and the Night Manager before recurring pressure waves.
+- `MAP02 — Warehouse 13.5`: machinery pressure begins after 20 seconds and escalates faster, with carts, pallet jacks and scanner turrets before recurring waves.
+
+The purpose is to make objectives feel urgent without using invisible damage or simply inflating enemy health. Future passes will add alarm/lighting/HUD feedback and connect the pressure system to real shift objectives.
+
+See [`docs/OVERTIME.md`](docs/OVERTIME.md).
 
 ## Development runtime
 
@@ -75,6 +89,14 @@ Manual developer commands remain available:
 python tools/build.py
 python tools/smoke_test.py
 ```
+
+CI now separates concerns deliberately:
+
+- Ubuntu structural tests build and inspect the PK3/maps/actor contracts.
+- Windows CI resolves, downloads and verifies the same official runtime payload used by `PLAY.bat`.
+- Headless Ubuntu CI installs the pinned official GZDoom build and runs the PK3 through the real engine parser/startup path under Xvfb + Mesa software rendering.
+
+GitHub's hosted Windows runner does not expose a usable OpenGL/Vulkan graphics device for GZDoom, so **interactive Windows rendering is not claimed as CI-verified**. A real Windows playtest remains a separate release gate.
 
 ## Prototype weapons
 
