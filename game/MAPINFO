@@ -1,0 +1,26 @@
+gameinfo
+{
+    PlayerClasses = "DoomPlayer"
+}
+
+episode MAP01
+{
+    name = "The Worst Shift"
+}
+
+map MAP01 "Closing Time"
+{
+    levelnum = 1
+    next = "MAP02"
+    sky1 = "SKY1"
+    music = "$MUSIC_RUNNIN"
+}
+
+map MAP02 "Warehouse 13.5"
+{
+    levelnum = 2
+    next = "MAP01"
+    sky1 = "SKY1"
+    music = "$MUSIC_STALKS"
+    nointermission
+}
