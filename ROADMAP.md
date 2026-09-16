@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `████░░░░░░ 38%`
+**Overall progress:** `████░░░░░░ 40%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -19,7 +19,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Automatic portable Python fallback for source builds
 - [x] Third-party runtime/license documentation
 
-## Phase 1 — Playable Prototype — 84%
+## Phase 1 — Playable Prototype — 88%
 - [x] Emergency Mop
 - [x] Receipt Ripper
 - [x] Price-Gun SMG
@@ -44,19 +44,22 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Original objective pickup + Staff Only shutter sprites
 - [x] Original shift interaction/PA sound cues wired into gameplay
 - [x] Deterministic stdlib-only original asset generator + CI contract
-- [ ] Original weapon sprites
-- [ ] Original enemy sprites/models
+- [x] Emergency Mop original first-person sprite set + swing cue
+- [x] Night Manager original sprite set + original memo projectile + combat cues
+- [ ] Remaining original weapon sprites
+- [ ] Remaining original enemy sprites/models
 - [ ] Full original combat/weapon sound set
 - [ ] Proper final custom HUD
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 35%
+## Phase 2 — Vertical Slice — 38%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
 - [x] First optional powered secret/reward route implemented and regression-tested
 - [x] Closing Time boss encounter pacing + post-boss escape/clock-out route implemented
 - [x] Closing Time first original visual/audio atmosphere pass implemented and contract-tested
+- [x] Signature Emergency Mop + Night Manager combat presentation implemented and engine-validated
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods

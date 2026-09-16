@@ -7,23 +7,44 @@ ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
 PK3 = ROOT / "dist" / "checkout-of-hell-prototype.pk3"
 
-required_pngs = [
+surface_pngs = [
     "textures/CHKWALL.png",
     "textures/CHKSHELF.png",
     "textures/CHKSTAF.png",
     "flats/CHKFLR.png",
     "flats/CHKCEIL.png",
+]
+world_sprite_pngs = [
     "sprites/COSHA0.png",
     "sprites/COFUA0.png",
     "sprites/COSTA0.png",
 ]
+weapon_sprite_pngs = [f"sprites/CMOP{frame}0.png" for frame in "ABCD"]
+manager_sprite_pngs = [f"sprites/MNGR{frame}0.png" for frame in "ABCDEFGHIJK"]
+memo_sprite_pngs = [f"sprites/MEMO{frame}0.png" for frame in "ABCD"]
+required_pngs = surface_pngs + world_sprite_pngs + weapon_sprite_pngs + manager_sprite_pngs + memo_sprite_pngs
+
 required_wavs = [
     "sounds/fuse.wav",
     "sounds/shutter.wav",
     "sounds/bossalarm.wav",
     "sounds/clockout.wav",
     "sounds/overtime.wav",
+    "sounds/mopswing.wav",
+    "sounds/managerattack.wav",
+    "sounds/managerdown.wav",
 ]
+
+
+def png_chunks(data: bytes):
+    cursor = 8
+    while cursor + 12 <= len(data):
+        length = struct.unpack(">I", data[cursor : cursor + 4])[0]
+        kind = data[cursor + 4 : cursor + 8]
+        payload = data[cursor + 8 : cursor + 8 + length]
+        yield kind, payload
+        cursor += 12 + length
+
 
 if not PK3.exists():
     raise SystemExit("PK3 missing. Run: python tools/build.py")
@@ -36,6 +57,12 @@ for rel in required_pngs:
     width, height = struct.unpack(">II", data[16:24])
     if width < 32 or height < 32:
         raise SystemExit(f"Generated PNG is unexpectedly small: {rel} -> {width}x{height}")
+
+for rel in world_sprite_pngs + weapon_sprite_pngs + manager_sprite_pngs + memo_sprite_pngs:
+    data = (GAME / rel).read_bytes()
+    offsets = [payload for kind, payload in png_chunks(data) if kind == b"grAb"]
+    if len(offsets) != 1 or len(offsets[0]) != 8:
+        raise SystemExit(f"Sprite PNG is missing one valid ZDoom grAb offset chunk: {rel}")
 
 for rel in required_wavs:
     path = GAME / rel
@@ -58,9 +85,20 @@ for texture in ("CHKFLR", "CHKCEIL", "CHKWALL", "CHKSHELF", "CHKSTAF"):
         raise SystemExit(f"Closing Time does not reference original surface: {texture}")
 
 actors = (GAME / "DECORATE").read_text(encoding="utf-8")
-for sprite in ("COFU A", "COST A"):
+for sprite in ("COFU A", "COST A", "CMOP A", "CMOP B", "CMOP C", "CMOP D", "MNGR A", "MNGR F", "MNGR K", "MEMO A", "MEMO D"):
     if sprite not in actors:
-        raise SystemExit(f"Original objective sprite state missing: {sprite}")
+        raise SystemExit(f"Original sprite state missing: {sprite}")
+
+mop_block = actors.split("actor EmergencyMop", 1)[1].split("actor ReceiptRipper", 1)[0]
+if "PUNG" in mop_block:
+    raise SystemExit("Emergency Mop still references the placeholder IWAD fist sprite")
+if 'A_PlaySound("coh/mopswing"' not in mop_block:
+    raise SystemExit("Emergency Mop original swing cue is not wired into its attack")
+
+manager_block = actors.split("actor NightManager", 1)[1].split("actor ScannerTurret", 1)[0]
+for marker in ("MNGR A 10 A_Look", 'A_CustomMissile("ManagerMemoProjectile"', 'A_PlaySound("coh/managerattack"', 'A_PlaySound("coh/managerdown"'):
+    if marker not in manager_block:
+        raise SystemExit(f"Night Manager signature presentation is incomplete: {marker}")
 
 zscript = (GAME / "ZSCRIPT").read_text(encoding="utf-8")
 if "COSH A -1" not in zscript:
@@ -70,9 +108,18 @@ for cue in ("coh/overtime", "coh/clockout", "coh/bossalarm", "coh/shutter"):
         raise SystemExit(f"Runtime cue is not wired into gameplay: {cue}")
 
 sndinfo = (GAME / "SNDINFO").read_text(encoding="utf-8")
-for cue in ("coh/fuse", "coh/shutter", "coh/bossalarm", "coh/clockout", "coh/overtime"):
+for cue in (
+    "coh/fuse",
+    "coh/shutter",
+    "coh/bossalarm",
+    "coh/clockout",
+    "coh/overtime",
+    "coh/mopswing",
+    "coh/managerattack",
+    "coh/managerdown",
+):
     if cue not in sndinfo:
         raise SystemExit(f"SNDINFO cue missing: {cue}")
 
 print("Original asset contract: PASS")
-print("Closing Time now packages deterministic original surfaces, objective sprites and interaction audio.")
+print("Closing Time packages original retail surfaces plus signature Emergency Mop/Night Manager combat presentation.")

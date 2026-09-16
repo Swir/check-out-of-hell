@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.8.0-dev — 2026-09-16
+
+### Added
+- Four project-owned first-person sprite frames for the Emergency Mop, generated deterministically during the build.
+- Original Emergency Mop swing cue wired directly into the melee attack state.
+- Eleven-frame original Night Manager prototype sprite sequence covering idle/chase/attack/pain/death/raise states.
+- Original `ManagerMemoProjectile` with a generated glowing paperwork projectile/explosion animation.
+- Dedicated original Night Manager attack and defeat cues.
+- ZDoom-compatible `grAb` sprite offsets emitted directly by the stdlib-only PNG generator.
+- Extended original-asset contract covering the new combat sprites, PNG offsets, audio mappings, PK3 contents and actor-state wiring.
+
+### Changed
+- Emergency Mop no longer uses the compatible-IWAD fist view sprites.
+- Night Manager no longer uses the compatible-IWAD Baron actor sprites or projectile visual for its primary attack presentation.
+- Asset policy now distinguishes the first fully project-owned signature combat presentation from the remaining placeholder weapons/enemies.
+- README/ROADMAP progress raised to 40% after the signature combat-art milestone was implemented and prepared for full CI/runtime validation.
+
 ## 0.7.0-dev — 2026-09-16
 
 ### Added
