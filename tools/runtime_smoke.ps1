@@ -24,18 +24,18 @@ foreach ($oldLog in @($LogPath, $StdoutPath, $StderrPath)) {
     }
 }
 
-# GZDoom implements -norun specifically for startup/batch validation. It loads
-# the IWAD/mod resources and parses game definitions, then exits before entering
-# the interactive game loop. This exercises the real pinned GZDoom executable
-# without pretending that a hosted CI runner is an interactive playtest machine.
+# GZDoom's -errorlog option enables its own batchrun path. Combined with
+# -norun, the engine loads the IWAD and our PK3, parses definitions and performs
+# startup initialization, but deliberately avoids entering the graphical game
+# loop. Upstream returns the special process code 1337 for a successful norun
+# batch exit, so CI treats 1337 as success rather than masking it as an error.
 $arguments = @(
     "-iwad", $Freedoom,
     "-file", $Pk3,
     "-noautoload",
     "-nosound",
     "-nomusic",
-    "-stdout",
-    "+logfile", $LogPath,
+    "-errorlog", $LogPath,
     "-norun"
 )
 
@@ -48,7 +48,7 @@ function Show-Diagnostics {
     }
 }
 
-Write-Host "Starting pinned GZDoom startup/parser validation..."
+Write-Host "Starting pinned GZDoom batch startup/parser validation..."
 $process = Start-Process `
     -FilePath $GZDoom `
     -ArgumentList $arguments `
@@ -59,12 +59,12 @@ $process = Start-Process `
 if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
     try { $process.Kill() } catch { }
     Show-Diagnostics
-    throw "GZDoom did not finish -norun validation within $TimeoutSeconds seconds."
+    throw "GZDoom did not finish batch -norun validation within $TimeoutSeconds seconds."
 }
 
 Show-Diagnostics
-if ($process.ExitCode -ne 0) {
+if ($process.ExitCode -ne 0 -and $process.ExitCode -ne 1337) {
     throw "GZDoom startup/parser validation failed with exit code $($process.ExitCode)."
 }
 
-Write-Host "GZDoom startup/parser validation: PASS"
+Write-Host "GZDoom startup/parser validation: PASS (exit $($process.ExitCode))"
