@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.6-dev — staged supervisor fight + physical clock-out  
-> **Project progress:** `████░░░░░░ 35%`
+> **Status:** Prototype 0.7-dev — first original retail atmosphere pass  
+> **Project progress:** `████░░░░░░ 38%`
 
 ## Premise
 
@@ -33,18 +33,24 @@ right and rear routes, and the **Night Manager does not enter the floor until al
 breakers are restored**. The HUD explicitly moves from `RESTORE ALL BREAKERS` to
 `CLEAR THE SUPERVISOR`, then to `RETURN TO FRONT CHECKOUT` after the boss falls.
 
-Full power now starts a deliberate supervisor encounter instead of just spawning one boss.
+Full power starts a deliberate supervisor encounter instead of just spawning one boss.
 Two rear-arena management-response anchors feed staged reinforcements into the fight:
 **Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack**.
-After the Night Manager is defeated, the level no longer exits by itself. The player must
-fight back through the store to the front checkout/timecard zone, where the shift is finally
-accepted and the map advances.
+After the Night Manager is defeated, the player must fight back through the store to the
+front checkout/timecard zone, where the shift is finally accepted and the map advances.
 
 Partial power also changes the level. At `2/3` breakers, a rear-left **Staff Only**
 security barrier powers down and opens an optional employee room with an **Employee of
 the Month Stash**. No mandatory breaker is hidden in that room, so the reward is a real
-side route rather than a disguised progression lock. Each breaker also triggers a short
-visible power-restoration banner; full power explicitly announces supervisor access.
+side route rather than a disguised progression lock.
+
+The first original art/audio layer is now part of the actual build. `Closing Time` uses
+project-owned supermarket wall, shelf, Staff Only, floor and ceiling surfaces instead of
+Doom placeholder materials. Breaker fuses, the Staff Only shutter and the employee stash
+have original generated sprites, while breaker pickup, shutter opening, Overtime escalation,
+Night Manager arrival and clock-out use original synthesized project sound cues. These assets
+are generated deterministically from repository code with Python's standard library and are
+verified inside the final PK3 by CI.
 
 `MAP02 — Warehouse 13.5` remains the heavier arena-style prototype while its dedicated
 objective flow is developed.
@@ -100,36 +106,22 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - buildable `.pk3` prototype,
 - structured UDMF `MAP01 — Closing Time` objective prototype,
 - generated UDMF `MAP02 — Warehouse 13.5` arena prototype,
-- **Emergency Mop**,
-- **Receipt Ripper**,
-- **Price-Gun SMG**,
-- **Turbo Can Launcher** with explosive can projectile,
-- **Angry Self-Checkout**,
-- **Cart of Doom**,
-- **Night Manager**,
-- **Security Price Scanner** turret,
-- **Possessed Pallet Jack**,
-- **The Regional Manager** prototype boss,
+- **Emergency Mop**, **Receipt Ripper**, **Price-Gun SMG**, **Turbo Can Launcher**,
+- **Angry Self-Checkout**, **Cart of Doom**, **Night Manager**, **Security Price Scanner**, **Possessed Pallet Jack** and **The Regional Manager** prototype,
 - three-breaker + supervisor-clear objective loop,
-- power-gated Night Manager arrival in MAP01,
-- staged Night Manager reinforcement waves from two arena anchors,
-- post-boss return-to-front-checkout objective,
-- optional Staff Only side room unlocked by partial power,
-- Employee of the Month reward stash,
-- visible per-breaker power-restoration feedback,
+- staged Night Manager reinforcement waves and physical return-to-checkout objective,
+- optional Staff Only side room and Employee of the Month reward stash,
 - Overtime escalation director with timed reinforcement spawners,
-- shift/objective/Overtime HUD overlay with contextual task text,
-- clock-out completion only after returning to the front timecard zone,
-- one-click Windows dependency bootstrap,
-- pinned reproducible runtime lock,
-- Windows development launchers,
+- shift/objective/Overtime HUD overlay,
+- first original supermarket wall/shelf/staff/floor/ceiling material pack,
+- original breaker, shutter and stash prototype sprites,
+- original breaker/shutter/boss/clock-out/Overtime interaction audio cues,
+- deterministic stdlib-only asset generation and dedicated CI asset contract,
+- one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
-- player-facing portable launcher with no Python/build dependency,
-- automated build + smoke + gameplay + MAP01 layout + Staff Only route + boss/escape + packaging contract tests,
+- automated build + gameplay + layout + Staff Only + boss/escape + original-asset + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
-- verified GitHub Actions PK3 and portable Windows artifacts,
-- original project icon concept,
-- documented asset, weapon, level and packaging direction.
+- original project icon concept and documented asset/weapon/level/packaging direction.
 
 The prototype deliberately does **not** redistribute proprietary Doom game data.
 
@@ -148,6 +140,7 @@ python tools/test_gameplay_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_boss_escape_contract.py
+python tools/test_original_assets.py
 python tools/package_portable.py
 python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
@@ -164,14 +157,14 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ## Maps
 
-- `MAP01` — **Closing Time** — structured objective prototype with powered side route, staged supervisor fight and checkout escape
+- `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, powered side route, staged supervisor fight and checkout escape
 - `MAP02` — **Warehouse 13.5** — combat/pressure prototype
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 
 ## Asset policy
 
-No proprietary Doom, Star Wars or other commercial game assets belong in this repository. Prototype visuals may temporarily reference sprite names supplied by a compatible IWAD at runtime; those assets are not distributed here. Final art, audio, UI, characters and map decoration are planned to be original.
+No proprietary Doom, Star Wars or other commercial game assets belong in this repository. The first original runtime art/audio pack is generated from our own source code during the build. Remaining combat/weapon placeholder visuals may still be supplied at runtime by a compatible IWAD, but those assets are not redistributed and must be replaced before standalone release.
 
 See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md).
 
