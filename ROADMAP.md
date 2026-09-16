@@ -1,8 +1,8 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `██░░░░░░░░ 20%`
+**Overall progress:** `██░░░░░░░░ 22%`
 
-The percentage reflects implemented/testable milestones, not ideas.
+The percentage reflects implemented/testable milestones, not ideas. CI/tooling work only increases progress when it verifies a real game/runtime deliverable.
 
 ## Phase 0 — Foundation — 100%
 - [x] Project identity and concept
@@ -18,8 +18,9 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] One-click automatic GZDoom/Freedoom bootstrap from official sources
 - [x] Automatic portable Python fallback for source builds
 - [x] Third-party runtime/license documentation
+- [x] Real pinned GZDoom startup/parser validation in headless CI
 
-## Phase 1 — Playable Prototype — 50%
+## Phase 1 — Playable Prototype — 55%
 - [x] Emergency Mop
 - [x] Receipt Ripper
 - [x] Price-Gun SMG
@@ -32,12 +33,15 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Regional Manager prototype boss
 - [x] MAP01 combat sandbox
 - [x] MAP02 combat sandbox
+- [x] Map-specific staged Overtime pressure directors
+- [ ] First real shift objective loop
+- [ ] Visible/audible Overtime warning feedback
 - [ ] Original weapon sprites
 - [ ] Original enemy sprites/models
 - [ ] Original sound set
 - [ ] Proper custom HUD
 - [ ] First fully decorated/polished level
-- [ ] Runtime test on Windows with current pinned GZDoom
+- [ ] Interactive Windows runtime/playtest with current pinned GZDoom
 
 ## Phase 2 — Vertical Slice — 5%
 - [x] Level concepts documented
