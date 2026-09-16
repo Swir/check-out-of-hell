@@ -4,7 +4,7 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.4-dev — structured Closing Time + portable Windows artifact  
+> **Status:** Prototype 0.5-dev — powered side routes + portable Windows artifact  
 > **Project progress:** `███░░░░░░░ 30%`
 
 ## Premise
@@ -23,14 +23,21 @@ The prototype has a real shift objective instead of pure arena combat:
 1. enter the department,
 2. find and collect **three Breaker Fuses**,
 3. survive hostile store equipment and escalating Overtime pressure,
-4. defeat the department supervisor,
-5. clock out automatically when both objective conditions are complete.
+4. exploit optional powered side routes when partial power comes back,
+5. defeat the department supervisor,
+6. clock out automatically when both objective conditions are complete.
 
-`MAP01 — Closing Time` now stages that loop across a larger supermarket floor. Internal
+`MAP01 — Closing Time` stages that loop across a larger supermarket floor. Internal
 retail barriers split traversal into lanes, the three breakers pull the player into left,
 right and rear routes, and the **Night Manager does not enter the floor until all three
 breakers are restored**. The HUD explicitly moves from `RESTORE ALL BREAKERS` to
 `CLEAR THE SUPERVISOR` and finally `CLOCK OUT`.
+
+Partial power now changes the level. At `2/3` breakers, a rear-left **Staff Only**
+security barrier powers down and opens an optional employee room with an **Employee of
+the Month Stash**. No mandatory breaker is hidden in that room, so the reward is a real
+side route rather than a disguised progression lock. Each breaker also triggers a short
+visible power-restoration banner; full power explicitly announces supervisor access.
 
 `MAP02 — Warehouse 13.5` remains the heavier arena-style prototype while its dedicated
 objective flow is developed.
@@ -69,7 +76,7 @@ See [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) for runtime sources and license
 
 ## Portable Windows development artifact
 
-CI now builds and verifies a player-facing portable ZIP that already contains the prebuilt
+CI builds and verifies a player-facing portable ZIP that already contains the prebuilt
 PK3 and therefore requires **no Python or source build toolchain on the player's PC**.
 The verified artifact is named `checkout-of-hell-windows-portable-dev` in GitHub Actions.
 
@@ -98,6 +105,9 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - **The Regional Manager** prototype boss,
 - three-breaker + supervisor-clear objective loop,
 - power-gated Night Manager arrival in MAP01,
+- optional Staff Only side room unlocked by partial power,
+- Employee of the Month reward stash,
+- visible per-breaker power-restoration feedback,
 - Overtime escalation director with timed reinforcement spawners,
 - shift/objective/Overtime HUD overlay with contextual task text,
 - automatic map completion once the shift objective is satisfied,
@@ -106,7 +116,7 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - Windows development launchers,
 - verified portable Windows artifact builder with SHA-256 sidecar,
 - player-facing portable launcher with no Python/build dependency,
-- automated build + smoke + gameplay + MAP01 layout + packaging contract tests,
+- automated build + smoke + gameplay + MAP01 layout + Staff Only route + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - verified GitHub Actions PK3 and portable Windows artifacts,
 - original project icon concept,
@@ -127,6 +137,7 @@ python tools/build.py
 python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_closing_time_layout.py
+python tools/test_staff_room_contract.py
 python tools/package_portable.py
 python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
@@ -143,7 +154,7 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ## Maps
 
-- `MAP01` — **Closing Time** — structured objective prototype
+- `MAP01` — **Closing Time** — structured objective prototype with optional powered side route
 - `MAP02` — **Warehouse 13.5** — combat/pressure prototype
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
