@@ -1,6 +1,7 @@
 from pathlib import Path
-import zipfile
 import struct
+import wave
+import zipfile
 
 from generate_assets import generate_assets
 from generate_combat_assets import generate_combat_assets
@@ -39,8 +40,24 @@ def make_udmf_wad(map_name: str, path: Path) -> None:
     path.write_bytes(header + blob + directory)
 
 
+def pad_short_wavs(sound_dir: Path, min_frames: int = 4000) -> None:
+    """Pad intentionally staccato generated cues with silence for stable decoder tails."""
+    for path in sorted(sound_dir.glob("*.wav")):
+        with wave.open(str(path), "rb") as source:
+            params = source.getparams()
+            frames = source.readframes(params.nframes)
+        if params.nframes >= min_frames:
+            continue
+        missing = min_frames - params.nframes
+        silence = b"\0" * missing * params.nchannels * params.sampwidth
+        with wave.open(str(path), "wb") as target:
+            target.setparams(params)
+            target.writeframes(frames + silence)
+
+
 generate_assets(GAME)
 generate_combat_assets(GAME)
+pad_short_wavs(GAME / "sounds")
 
 built_maps = []
 for map_name in MAPS:
