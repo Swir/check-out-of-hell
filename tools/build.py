@@ -2,12 +2,16 @@ from pathlib import Path
 import zipfile
 import struct
 
+from generate_assets import generate_assets
+
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
 
 MAPS = ["MAP01", "MAP02"]
+ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO"]
+ASSET_DIRS = ["textures", "flats", "sprites", "sounds"]
 
 
 def make_udmf_wad(map_name: str, path: Path) -> None:
@@ -34,6 +38,8 @@ def make_udmf_wad(map_name: str, path: Path) -> None:
     path.write_bytes(header + blob + directory)
 
 
+generate_assets(GAME)
+
 built_maps = []
 for map_name in MAPS:
     map_wad = DIST / f"{map_name}.wad"
@@ -42,8 +48,16 @@ for map_name in MAPS:
 
 pk3 = DIST / "checkout-of-hell-prototype.pk3"
 with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
-    for lump in ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT"]:
+    for lump in ROOT_LUMPS:
         archive.write(GAME / lump, lump)
+
+    for asset_dir in ASSET_DIRS:
+        directory = GAME / asset_dir
+        if not directory.exists():
+            continue
+        for asset in sorted(p for p in directory.rglob("*") if p.is_file()):
+            archive.write(asset, asset.relative_to(GAME).as_posix())
+
     for map_wad in built_maps:
         archive.write(map_wad, f"maps/{map_wad.name}")
 

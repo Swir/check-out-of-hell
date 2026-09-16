@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.7.0-dev — 2026-09-16
+
+### Added
+- First original Closing Time retail atmosphere pack: supermarket wall, shelf, Staff Only, floor and ceiling materials.
+- Original prototype sprites for Breaker Fuse, Staff Only shutter and Employee of the Month Stash.
+- Original synthesized interaction cues for breaker restoration, shutter opening, Overtime escalation, Night Manager arrival and clock-out.
+- `tools/generate_assets.py`, a deterministic Python-standard-library-only generator for the original prototype art/audio pack.
+- `game/SNDINFO` registry for project-owned interaction cues.
+- `tools/test_original_assets.py` validating generated PNG/WAV integrity, PK3 packaging, map usage, sprite states and gameplay sound wiring.
+- GitHub Actions execution of the original visual/audio asset contract.
+
+### Changed
+- `MAP01 — Closing Time` now uses project-owned supermarket surfaces instead of Doom placeholder floor/wall materials.
+- Breaker, Staff Only barrier and staff-room reward visuals now use project-owned generated sprites.
+- Overtime stage changes now fire PA-style audio cues; full-power boss arrival and physical clock-out have their own sound feedback.
+- PK3 build now generates and packages original textures, flats, sprites and sounds before map packaging.
+- Generated runtime assets are ignored in source control because their canonical source is the deterministic generator.
+- README/ROADMAP progress raised to 38% after the first original visual/audio atmosphere pass and dedicated regression contract were implemented.
+
 ## 0.6.0-dev — 2026-09-16
 
 ### Added

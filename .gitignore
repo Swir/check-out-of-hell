@@ -2,6 +2,10 @@ external/*
 !external/README.md
 dist/*
 !dist/.gitkeep
+game/textures/
+game/flats/
+game/sprites/
+game/sounds/
 *.bak
 *.tmp
 __pycache__/
