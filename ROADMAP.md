@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `████░░░░░░ 42%`
+**Overall progress:** `█████░░░░░ 45%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -19,7 +19,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Automatic portable Python fallback for source builds
 - [x] Third-party runtime/license documentation
 
-## Phase 1 — Playable Prototype — 92%
+## Phase 1 — Playable Prototype — 96%
 - [x] Emergency Mop
 - [x] Receipt Ripper
 - [x] Price-Gun SMG
@@ -48,13 +48,13 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Night Manager original sprite set + original memo projectile + combat cues
 - [x] Receipt Ripper original pickup/view sprite set + fire/cycle cues
 - [x] Angry Self-Checkout original sprite set + hostile receipt projectile + combat cues
-- [ ] Price-Gun SMG + Turbo Can Launcher original sprite/audio pass
+- [x] Price-Gun SMG + Turbo Can Launcher original sprite/audio pass
 - [ ] Remaining original enemy sprites/models
 - [ ] Full original combat/weapon sound set
 - [ ] Proper final custom HUD
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 42%
+## Phase 2 — Vertical Slice — 46%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -63,6 +63,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Closing Time first original visual/audio atmosphere pass implemented and contract-tested
 - [x] Signature Emergency Mop + Night Manager combat presentation implemented and engine-validated
 - [x] Receipt Ripper + Angry Self-Checkout signature combat presentation implemented and contract-tested
+- [x] Price-Gun SMG + Turbo Can Launcher weapon presentation and Security Price Scanner combat presentation implemented and contract-tested
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods
