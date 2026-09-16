@@ -17,13 +17,14 @@
 - `tools/test_portable_package.py` contract test for artifact contents, no-manual-dependency-search behavior and checksum integrity.
 - CI upload of the portable Windows development ZIP and checksum.
 - Windows packaging documentation.
+- Verified main-branch GitHub Actions artifact `checkout-of-hell-windows-portable-dev` from the merged packaging commit.
 
 ### Changed
 - MAP01 no longer pre-places Night Manager before the power objective is complete.
 - MAP01 enemy positions now support left/right/rear traversal instead of a single flat arena engagement.
 - Gameplay and level-design documentation now describe the staged Closing Time progression contract.
-- README/ROADMAP project progress raised to 28% after both PR CI and post-merge `main` CI passed the build, smoke, gameplay, Closing Time layout, bootstrap and pinned-GZDoom parser gates.
 - Portable artifacts intentionally omit runtime EXE/WAD payloads and rely on the pinned official-source bootstrap on first launch.
+- README/ROADMAP project progress raised to 30% after the portable artifact builder, checksum contract, artifact upload and post-merge pinned-GZDoom validation all passed on `main`.
 
 ## 0.3.0-dev — 2026-09-16
 
