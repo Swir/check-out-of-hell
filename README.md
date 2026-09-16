@@ -5,7 +5,7 @@
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
 > **Status:** Prototype 0.3-dev — first objective loop + Overtime director  
-> **Project progress:** `██░░░░░░░░ 24%`
+> **Project progress:** `██░░░░░░░░ 25%`
 
 ## Premise
 
@@ -84,6 +84,7 @@ See [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) for runtime sources and license
 - pinned reproducible runtime lock,
 - Windows development launchers,
 - automated build + smoke + gameplay contract tests,
+- pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - verified GitHub Actions artifact build,
 - original project icon concept,
 - documented asset policy, weapon plan and level direction.
@@ -94,12 +95,15 @@ The prototype deliberately does **not** redistribute proprietary Doom game data.
 
 The current pinned runtime is GZDoom `g4.14.2` plus Freedoom `v0.13.0`. Contributors do not need to download these manually; `PLAY.bat` handles them. Runtime pins live in `runtime-lock.json` and should only change after compatibility validation.
 
+CI also downloads the pinned official runtime and asks GZDoom itself to load and parse the current PK3 through its non-interactive `-norun` startup path. This catches engine-level script or package errors that static Python contract tests cannot detect.
+
 Manual developer commands remain available:
 
 ```powershell
 python tools/build.py
 python tools/smoke_test.py
 python tools/test_gameplay_contract.py
+.\tools\gzdoom_runtime_smoke.ps1
 ```
 
 ## Prototype weapons
