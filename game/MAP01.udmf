@@ -101,6 +101,8 @@ thing { x =  620.0; y =  340.0; angle = 0; type = 17111; skill1 = true; skill2 =
 thing { x =    0.0; y =  440.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 thing { x = 0.0; y = 350.0; angle = 270; type = 17101; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -280.0; y = 320.0; angle = 0; type = 17103; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  280.0; y = 320.0; angle = 180; type = 17103; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 thing { x = -330.0; y =  430.0; angle = 315; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  700.0; y =  440.0; angle = 225; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
