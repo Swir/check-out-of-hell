@@ -5,7 +5,7 @@
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
 > **Status:** Prototype 0.5-dev — powered side routes + portable Windows artifact  
-> **Project progress:** `███░░░░░░░ 30%`
+> **Project progress:** `███░░░░░░░ 32%`
 
 ## Premise
 
