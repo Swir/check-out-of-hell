@@ -1,6 +1,12 @@
 gameinfo
 {
     PlayerClasses = "DoomPlayer"
+    AddEventHandlers = "CheckoutShiftDirector"
+}
+
+DoomEdNums
+{
+    17100 = "CheckoutOvertimeSpawner"
 }
 
 episode MAP01

@@ -27,6 +27,9 @@ jobs:
       - name: Smoke test
         run: python tools/smoke_test.py
 
+      - name: Gameplay contract test
+        run: python tools/test_gameplay_contract.py
+
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 

@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.2-dev — two-map combat foundation  
-> **Project progress:** `██░░░░░░░░ 20%`
+> **Status:** Prototype 0.3-dev — first objective loop + Overtime director  
+> **Project progress:** `██░░░░░░░░ 24%`
 
 ## Premise
 
@@ -15,6 +15,27 @@ Shopping carts are hunting staff. The night manager has definitely had enough.
 CHECKOUT OF HELL is an original comedy-horror FPS inspired by the speed and
 readability of classic shooters while building its own setting, characters,
 weapons, jokes, levels and final art.
+
+## Current playable loop
+
+The prototype now has its first real shift objective instead of pure arena combat:
+
+1. enter the department,
+2. find and collect **three Breaker Fuses**,
+3. survive the supervisor and hostile store equipment,
+4. defeat the department supervisor,
+5. clock out automatically when both conditions are complete.
+
+Waiting around is increasingly dangerous. The **Overtime** director escalates through
+`SHIFT ACTIVE` → `STORE UNSTABLE` → `OVERTIME` → `HELL RUSH`. Dedicated map
+spawners add increasingly aggressive reinforcements as the shift drags on, while the
+HUD shows the shift timer, current Overtime state, breaker progress and supervisor state.
+
+The two current prototype maps use the same loop with different enemy sets. The final
+campaign will replace these simple arenas with fully structured supermarket departments,
+objectives, secrets and environmental interactions.
+
+See [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
 
 ## One-click Windows start
 
@@ -55,10 +76,14 @@ See [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) for runtime sources and license
 - **Security Price Scanner** turret,
 - **Possessed Pallet Jack**,
 - **The Regional Manager** prototype boss,
+- three-breaker + supervisor-clear objective loop,
+- Overtime escalation director with timed reinforcement spawners,
+- shift/objective/Overtime HUD overlay,
+- automatic map completion once the shift objective is satisfied,
 - one-click Windows dependency bootstrap,
 - pinned reproducible runtime lock,
 - Windows development launchers,
-- automated build + smoke tests,
+- automated build + smoke + gameplay contract tests,
 - verified GitHub Actions artifact build,
 - original project icon concept,
 - documented asset policy, weapon plan and level direction.
@@ -74,6 +99,7 @@ Manual developer commands remain available:
 ```powershell
 python tools/build.py
 python tools/smoke_test.py
+python tools/test_gameplay_contract.py
 ```
 
 ## Prototype weapons

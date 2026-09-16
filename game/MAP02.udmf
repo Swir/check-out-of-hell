@@ -43,3 +43,10 @@ thing { x = 0.0; y = 330.0; angle = 270; type = 17006; skill1 = true; skill2 = t
 
 thing { x = -100.0; y = -210.0; angle = 0; type = 2011; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  100.0; y = -210.0; angle = 0; type = 2011; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -500.0; y = -220.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  500.0; y = -220.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =    0.0; y =  180.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -560.0; y = 320.0; angle = 315; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  560.0; y = 320.0; angle = 225; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

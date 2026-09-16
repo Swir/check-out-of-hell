@@ -1,0 +1,199 @@
+version "4.10.0"
+
+class CheckoutShiftDirector : EventHandler
+{
+    bool bossCleared;
+    bool exitPending;
+    int exitTic;
+
+    static int GetOvertimeStage()
+    {
+        int seconds = Level.maptime / 35;
+
+        if (seconds >= 270)
+        {
+            return 3;
+        }
+        if (seconds >= 180)
+        {
+            return 2;
+        }
+        if (seconds >= 90)
+        {
+            return 1;
+        }
+        return 0;
+    }
+
+    static String GetOvertimeLabel(int stage)
+    {
+        if (stage == 1)
+        {
+            return "STORE UNSTABLE";
+        }
+        if (stage == 2)
+        {
+            return "OVERTIME";
+        }
+        if (stage >= 3)
+        {
+            return "HELL RUSH";
+        }
+        return "SHIFT ACTIVE";
+    }
+
+    override void WorldLoaded(WorldEvent e)
+    {
+        bossCleared = false;
+        exitPending = false;
+        exitTic = 0;
+    }
+
+    override void WorldThingDied(WorldEvent e)
+    {
+        if (!e.Thing)
+        {
+            return;
+        }
+
+        Name cls = e.Thing.GetClassName();
+        if (cls == 'NightManager' || cls == 'RegionalManager')
+        {
+            bossCleared = true;
+        }
+    }
+
+    override void WorldTick()
+    {
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        int fuses = p.CountInv("CheckoutFuse");
+
+        if (!exitPending && bossCleared && fuses >= 3)
+        {
+            exitPending = true;
+            exitTic = Level.maptime + 70;
+        }
+
+        if (exitPending && Level.maptime >= exitTic)
+        {
+            exitPending = false;
+            ExitLevel(0, false);
+        }
+    }
+
+    override void RenderOverlay(RenderEvent e)
+    {
+        if (consoleplayer < 0 || !players[consoleplayer].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[consoleplayer].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        int elapsedSeconds = Level.maptime / 35;
+        int minutes = elapsedSeconds / 60;
+        int seconds = elapsedSeconds % 60;
+        int stage = GetOvertimeStage();
+        int fuses = p.CountInv("CheckoutFuse");
+
+        String clockText = String.Format("SHIFT %02d:%02d", minutes, seconds);
+        String fuseText = String.Format("BREAKERS %d/3", fuses);
+        String bossText = bossCleared ? "SUPERVISOR CLEARED" : "SUPERVISOR ACTIVE";
+        String stageText = GetOvertimeLabel(stage);
+
+        int stageColor = Font.CR_GREEN;
+        if (stage == 1)
+        {
+            stageColor = Font.CR_YELLOW;
+        }
+        else if (stage == 2)
+        {
+            stageColor = Font.CR_ORANGE;
+        }
+        else if (stage >= 3)
+        {
+            stageColor = Font.CR_RED;
+        }
+
+        Screen.DrawText(smallfont, Font.CR_WHITE, 12, 12, clockText,
+            DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        Screen.DrawText(smallfont, stageColor, 12, 22, stageText,
+            DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        Screen.DrawText(smallfont, Font.CR_GOLD, 12, 34, fuseText,
+            DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        Screen.DrawText(smallfont, bossCleared ? Font.CR_GREEN : Font.CR_RED, 12, 44, bossText,
+            DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+
+        if (exitPending)
+        {
+            Screen.DrawText(smallfont, Font.CR_GOLD, 240, 220, "SHIFT CLEAR - CLOCKING OUT...",
+                DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        }
+    }
+}
+
+class CheckoutOvertimeSpawner : Actor
+{
+    int nextSpawn;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        nextSpawn = 35 * 95;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        int stage = CheckoutShiftDirector.GetOvertimeStage();
+        if (stage <= 0 || Level.maptime < nextSpawn)
+        {
+            return;
+        }
+
+        if (stage == 1)
+        {
+            Actor.Spawn("AngrySelfCheckout", Pos);
+            nextSpawn = Level.maptime + 35 * 55;
+        }
+        else if (stage == 2)
+        {
+            Actor.Spawn("CartOfDoom", Pos);
+            nextSpawn = Level.maptime + 35 * 38;
+        }
+        else
+        {
+            Actor.Spawn("PalletJack", Pos);
+            nextSpawn = Level.maptime + 35 * 25;
+        }
+    }
+}

@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0-dev — 2026-09-16
+
+### Added
+- First real shift objective loop: collect three Breaker Fuses and defeat the department supervisor.
+- Automatic level exit two seconds after both objective conditions are satisfied.
+- ZScript `CheckoutShiftDirector` event handler.
+- Four-stage Overtime pressure system: Shift Active, Store Unstable, Overtime and Hell Rush.
+- Map-placed Overtime reinforcement spawners that escalate from Angry Self-Checkout to Cart of Doom and Possessed Pallet Jack.
+- HUD overlay showing shift timer, Overtime state, breaker progress and supervisor state.
+- Breaker Fuse pickup actor placed three times in each prototype map.
+- Gameplay contract test covering Overtime thresholds, objective requirements and prototype map progression.
+- Smoke-test coverage for ZScript packaging, objective pickups and Overtime spawners.
+- Gameplay loop documentation.
+
+### Changed
+- MAP01 and MAP02 now contain actual completion objectives instead of functioning only as endless combat sandboxes.
+- PK3 build now packages the `ZSCRIPT` lump.
+- GitHub Actions now runs the gameplay contract test before producing the artifact.
+- README/ROADMAP progress raised to 24% based on the implemented objective and Overtime systems.
+
 ## 0.2.0-dev — 2026-09-16
 
 ### Added

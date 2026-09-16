@@ -196,3 +196,17 @@ actor RegionalManager : Cyberdemon 17006
 actor PrototypeCanLauncherPickup : TurboCanLauncher 17010
 {
 }
+
+actor CheckoutFuse : Inventory 17111
+{
+    Tag "Breaker Fuse"
+    Inventory.PickupMessage "Breaker fuse restored. One less excuse for Maintenance."
+    Inventory.MaxAmount 3
+
+    States
+    {
+    Spawn:
+        BON2 A -1 Bright
+        Stop
+    }
+}
