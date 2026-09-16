@@ -40,7 +40,16 @@ $arguments = @(
 
 $output = & $GZDoomExe @arguments 2>&1
 $exitCode = $LASTEXITCODE
-$output | Tee-Object -FilePath $RuntimeLog | ForEach-Object { Write-Host $_ }
+$outputLines = @($output | ForEach-Object { "$_" })
+
+if ($outputLines.Count -gt 0) {
+    $outputLines | Set-Content -LiteralPath $RuntimeLog -Encoding UTF8
+    $outputLines | ForEach-Object { Write-Host $_ }
+}
+else {
+    "GZDoom -norun completed with no stdout. Exit code: $exitCode" |
+        Set-Content -LiteralPath $RuntimeLog -Encoding UTF8
+}
 
 if ($exitCode -ne 0) {
     throw "GZDoom runtime smoke test failed with exit code $exitCode. See $RuntimeLog"
