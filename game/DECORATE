@@ -41,23 +41,24 @@ actor ReceiptRipper : Shotgun replaces Shotgun
 
     States
     {
+    Spawn:
+        RRPK A -1
+        Stop
     Ready:
-        SHTG A 1 A_WeaponReady
+        RRPV A 1 A_WeaponReady
         Loop
     Deselect:
-        SHTG A 1 A_Lower
+        RRPV A 1 A_Lower
         Loop
     Select:
-        SHTG A 1 A_Raise
+        RRPV A 1 A_Raise
         Loop
     Fire:
-        SHTG A 3
-        SHTG A 0 A_PlaySound("weapons/shotgf", CHAN_WEAPON)
-        SHTG B 5 Bright A_FireBullets(7.0, 5.0, 9, 5, "BulletPuff")
-        SHTG C 4
-        SHTG D 5
-        SHTG CB 4
-        SHTG A 3 A_ReFire
+        RRPV B 2 Bright A_PlaySound("coh/ripperfire", CHAN_WEAPON)
+        RRPV C 4 Bright A_FireBullets(7.0, 5.0, 9, 5, "BulletPuff")
+        RRPV D 4 A_PlaySound("coh/rippercycle", CHAN_WEAPON)
+        RRPV E 4
+        RRPV A 3 A_ReFire
         Goto Ready
     }
 }
@@ -165,12 +166,71 @@ actor ManagerMemoProjectile
     }
 }
 
+actor CheckoutReceiptProjectile
+{
+    Radius 6
+    Height 6
+    Speed 19
+    Damage 6
+    Projectile
+    +RANDOMIZE
+
+    States
+    {
+    Spawn:
+        RCPT A 2 Bright
+        RCPT B 2 Bright
+        Loop
+    Death:
+        RCPT C 3 Bright A_Explode(10, 24)
+        RCPT D 4 Bright
+        Stop
+    }
+}
+
 actor AngrySelfCheckout : ShotgunGuy 17001
 {
     Tag "Angry Self-Checkout"
     Health 55
     Speed 11
     PainChance 180
+    SeeSound "coh/checkoutidle"
+    PainSound "coh/checkouthit"
+    DeathSound "coh/checkoutdown"
+    ActiveSound "coh/checkoutidle"
+
+    States
+    {
+    Spawn:
+        SCKO A 10 A_Look
+        Loop
+    See:
+        SCKO A 4 A_Chase
+        SCKO B 4 A_Chase
+        SCKO C 4 A_Chase
+        SCKO D 4 A_Chase
+        Loop
+    Missile:
+        SCKO E 5 A_FaceTarget
+        SCKO F 4 Bright A_PlaySound("coh/checkoutattack", CHAN_WEAPON)
+        SCKO F 0 Bright A_CustomMissile("CheckoutReceiptProjectile", 28, 0, 0)
+        SCKO E 5
+        Goto See
+    Pain:
+        SCKO G 3
+        SCKO G 3 A_Pain
+        Goto See
+    Death:
+        SCKO H 5
+        SCKO I 5 A_NoBlocking
+        SCKO J -1
+        Stop
+    Raise:
+        SCKO J 5
+        SCKO I 5
+        SCKO H 5
+        Goto See
+    }
 }
 
 actor CartOfDoom : LostSoul 17002
