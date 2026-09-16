@@ -33,6 +33,9 @@ jobs:
       - name: Closing Time layout contract test
         run: python tools/test_closing_time_layout.py
 
+      - name: Staff Only route contract test
+        run: python tools/test_staff_room_contract.py
+
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 
