@@ -36,11 +36,26 @@ jobs:
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 
+      - name: Build portable Windows package
+        run: python tools/package_portable.py
+
+      - name: Portable package contract test
+        run: python tools/test_portable_package.py
+
       - name: Upload prototype artifact
         uses: actions/upload-artifact@v4
         with:
           name: checkout-of-hell-prototype
           path: dist/checkout-of-hell-prototype.pk3
+          if-no-files-found: error
+
+      - name: Upload portable Windows development artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkout-of-hell-windows-portable-dev
+          path: |
+            dist/CHECKOUT-OF-HELL-Windows-Portable-dev.zip
+            dist/CHECKOUT-OF-HELL-Windows-Portable-dev.zip.sha256
           if-no-files-found: error
 
   runtime-resolution:

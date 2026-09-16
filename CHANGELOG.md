@@ -11,12 +11,19 @@
 - Third Overtime reinforcement anchor in MAP01 to distribute escalation across the expanded floor.
 - `tools/test_closing_time_layout.py` contract test covering floor scale, route separation, supervisor staging and Overtime coverage.
 - CI execution of the Closing Time layout contract.
+- Reproducible `tools/package_portable.py` Windows development artifact builder.
+- Dedicated player-facing portable `PLAY.bat` that launches a prebuilt PK3 and requires no Python/build toolchain.
+- Portable ZIP SHA-256 sidecar generation.
+- `tools/test_portable_package.py` contract test for artifact contents, no-manual-dependency-search behavior and checksum integrity.
+- CI upload of the portable Windows development ZIP and checksum.
+- Windows packaging documentation.
 
 ### Changed
 - MAP01 no longer pre-places Night Manager before the power objective is complete.
 - MAP01 enemy positions now support left/right/rear traversal instead of a single flat arena engagement.
 - Gameplay and level-design documentation now describe the staged Closing Time progression contract.
 - README/ROADMAP project progress raised to 28% after both PR CI and post-merge `main` CI passed the build, smoke, gameplay, Closing Time layout, bootstrap and pinned-GZDoom parser gates.
+- Portable artifacts intentionally omit runtime EXE/WAD payloads and rely on the pinned official-source bootstrap on first launch.
 
 ## 0.3.0-dev — 2026-09-16
 
