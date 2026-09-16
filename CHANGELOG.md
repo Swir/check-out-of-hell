@@ -17,6 +17,7 @@
 - The left-side mandatory breaker and Overtime anchor were moved outside the Staff Only room so the side route cannot become a hidden required path.
 - MAP01 rear-left geometry now creates an actual employee-room pocket instead of another open arena corner.
 - Gameplay and level-design documentation now define optional powered side routes as part of the department loop.
+- README/ROADMAP project progress raised to 32% after the Staff Only route, breaker feedback, dedicated contract test, portable artifact build and post-merge pinned-GZDoom validation all passed on `main`.
 
 ## 0.4.0-dev — 2026-09-16
 
