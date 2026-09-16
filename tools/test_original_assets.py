@@ -26,6 +26,14 @@ manager_sprite_pngs = [f"sprites/MNGR{frame}0.png" for frame in "ABCDEFGHIJK"]
 memo_sprite_pngs = [f"sprites/MEMO{frame}0.png" for frame in "ABCD"]
 checkout_sprite_pngs = [f"sprites/SCKO{frame}0.png" for frame in "ABCDEFGHIJ"]
 receipt_projectile_pngs = [f"sprites/RCPT{frame}0.png" for frame in "ABCD"]
+price_view_pngs = [f"sprites/PGUN{frame}0.png" for frame in "ABCDE"]
+price_pickup_pngs = ["sprites/PGPKA0.png"]
+price_label_pngs = [f"sprites/PLBL{frame}0.png" for frame in "ABC"]
+turbo_view_pngs = [f"sprites/TCNV{frame}0.png" for frame in "ABCDE"]
+turbo_pickup_pngs = ["sprites/TCNPA0.png"]
+turbo_can_pngs = [f"sprites/TCAN{frame}0.png" for frame in "ABCDE"]
+scanner_sprite_pngs = [f"sprites/SCNR{frame}0.png" for frame in "ABCDEFGHI"]
+scanner_beam_pngs = [f"sprites/SBEA{frame}0.png" for frame in "ABCD"]
 required_pngs = (
     surface_pngs
     + world_sprite_pngs
@@ -36,6 +44,14 @@ required_pngs = (
     + memo_sprite_pngs
     + checkout_sprite_pngs
     + receipt_projectile_pngs
+    + price_view_pngs
+    + price_pickup_pngs
+    + price_label_pngs
+    + turbo_view_pngs
+    + turbo_pickup_pngs
+    + turbo_can_pngs
+    + scanner_sprite_pngs
+    + scanner_beam_pngs
 )
 
 required_wavs = [
@@ -53,6 +69,14 @@ required_wavs = [
     "sounds/checkoutattack.wav",
     "sounds/checkouthit.wav",
     "sounds/checkoutdown.wav",
+    "sounds/pricefire.wav",
+    "sounds/pricelabel.wav",
+    "sounds/canlaunch.wav",
+    "sounds/canexplode.wav",
+    "sounds/scanneridle.wav",
+    "sounds/scannerattack.wav",
+    "sounds/scannerhit.wav",
+    "sounds/scannerdown.wav",
 ]
 
 
@@ -87,6 +111,14 @@ sprite_pngs = (
     + memo_sprite_pngs
     + checkout_sprite_pngs
     + receipt_projectile_pngs
+    + price_view_pngs
+    + price_pickup_pngs
+    + price_label_pngs
+    + turbo_view_pngs
+    + turbo_pickup_pngs
+    + turbo_can_pngs
+    + scanner_sprite_pngs
+    + scanner_beam_pngs
 )
 for rel in sprite_pngs:
     data = (GAME / rel).read_bytes()
@@ -136,6 +168,23 @@ for sprite in (
     "SCKO J",
     "RCPT A",
     "RCPT D",
+    "PGPK A",
+    "PGUN A",
+    "PGUN C",
+    "PGUN E",
+    "PLBL A",
+    "PLBL C",
+    "TCNP A",
+    "TCNV A",
+    "TCNV C",
+    "TCNV E",
+    "TCAN A",
+    "TCAN E",
+    "SCNR A",
+    "SCNR F",
+    "SCNR I",
+    "SBEA A",
+    "SBEA D",
 ):
     if sprite not in actors:
         raise SystemExit(f"Original sprite state missing: {sprite}")
@@ -146,7 +195,7 @@ if "PUNG" in mop_block:
 if 'A_PlaySound("coh/mopswing"' not in mop_block:
     raise SystemExit("Emergency Mop original swing cue is not wired into its attack")
 
-ripper_block = actors.split("actor ReceiptRipper", 1)[1].split("actor PriceGunSMG", 1)[0]
+ripper_block = actors.split("actor ReceiptRipper", 1)[1].split("actor PriceLabelPuff", 1)[0]
 for marker in (
     "RRPK A -1",
     "RRPV A 1 A_WeaponReady",
@@ -158,6 +207,38 @@ for marker in (
         raise SystemExit(f"Receipt Ripper signature presentation is incomplete: {marker}")
 if "SHTG" in ripper_block:
     raise SystemExit("Receipt Ripper still references placeholder IWAD shotgun sprites")
+
+price_block = actors.split("actor PriceGunSMG", 1)[1].split("actor TurboCanProjectile", 1)[0]
+for marker in (
+    "PGPK A -1",
+    "PGUN A 1 A_WeaponReady",
+    'A_PlaySound("coh/pricefire"',
+    'A_PlaySound("coh/pricelabel"',
+    'A_FireBullets(4.0, 3.0, 1, 7, "PriceLabelPuff"',
+):
+    if marker not in price_block:
+        raise SystemExit(f"Price-Gun SMG signature presentation is incomplete: {marker}")
+if "CHGG" in price_block:
+    raise SystemExit("Price-Gun SMG still references placeholder IWAD chaingun sprites")
+
+turbo_block = actors.split("actor TurboCanLauncher", 1)[1].split("actor ManagerMemoProjectile", 1)[0]
+for marker in (
+    "TCNP A -1",
+    "TCNV A 1 A_WeaponReady",
+    'A_PlaySound("coh/canlaunch"',
+    'A_FireCustomMissile("TurboCanProjectile"',
+):
+    if marker not in turbo_block:
+        raise SystemExit(f"Turbo Can Launcher signature presentation is incomplete: {marker}")
+if "MISG" in turbo_block:
+    raise SystemExit("Turbo Can Launcher still references placeholder IWAD rocket-launcher sprites")
+
+projectile_block = actors.split("actor TurboCanProjectile", 1)[1].split("actor TurboCanLauncher", 1)[0]
+for marker in ("TCAN A 1 Bright", "TCAN E 4 Bright", 'A_PlaySound("coh/canexplode"'):
+    if marker not in projectile_block:
+        raise SystemExit(f"Turbo Can projectile presentation is incomplete: {marker}")
+if "MISL" in projectile_block:
+    raise SystemExit("Turbo Can projectile still references placeholder IWAD rocket sprites")
 
 checkout_block = actors.split("actor AngrySelfCheckout", 1)[1].split("actor CartOfDoom", 1)[0]
 for marker in (
@@ -173,9 +254,27 @@ if "SPOS" in checkout_block:
     raise SystemExit("Angry Self-Checkout still references placeholder shotgun-guy sprites")
 
 manager_block = actors.split("actor NightManager", 1)[1].split("actor ScannerTurret", 1)[0]
-for marker in ("MNGR A 10 A_Look", 'A_CustomMissile("ManagerMemoProjectile"', 'A_PlaySound("coh/managerattack"', 'A_PlaySound("coh/managerdown"'):
+for marker in (
+    "MNGR A 10 A_Look",
+    'A_CustomMissile("ManagerMemoProjectile"',
+    'A_PlaySound("coh/managerattack"',
+    'A_PlaySound("coh/managerdown"',
+):
     if marker not in manager_block:
         raise SystemExit(f"Night Manager signature presentation is incomplete: {marker}")
+
+scanner_block = actors.split("actor ScannerTurret", 1)[1].split("actor PalletJack", 1)[0]
+for marker in (
+    "SCNR A 10 A_Look",
+    'A_PlaySound("coh/scannerattack"',
+    'A_CustomMissile("ScannerBeamProjectile"',
+    'PainSound "coh/scannerhit"',
+    'DeathSound "coh/scannerdown"',
+):
+    if marker not in scanner_block:
+        raise SystemExit(f"Security Price Scanner signature presentation is incomplete: {marker}")
+if "CPOS" in scanner_block:
+    raise SystemExit("Security Price Scanner still references placeholder chaingun-guy sprites")
 
 zscript = (GAME / "ZSCRIPT").read_text(encoding="utf-8")
 if "COSH A -1" not in zscript:
@@ -200,9 +299,17 @@ for cue in (
     "coh/checkoutattack",
     "coh/checkouthit",
     "coh/checkoutdown",
+    "coh/pricefire",
+    "coh/pricelabel",
+    "coh/canlaunch",
+    "coh/canexplode",
+    "coh/scanneridle",
+    "coh/scannerattack",
+    "coh/scannerhit",
+    "coh/scannerdown",
 ):
     if cue not in sndinfo:
         raise SystemExit(f"SNDINFO cue missing: {cue}")
 
 print("Original asset contract: PASS")
-print("Closing Time packages original retail surfaces plus Emergency Mop, Receipt Ripper, Angry Self-Checkout and Night Manager combat presentation.")
+print("Closing Time packages original retail surfaces plus Emergency Mop, Receipt Ripper, Price-Gun SMG, Turbo Can Launcher, Angry Self-Checkout, Security Price Scanner and Night Manager combat presentation.")

@@ -25,18 +25,20 @@ sprites, interaction/PA cues and an expanding set of project-owned combat presen
 Current project-owned signature combat presentation includes:
 - Emergency Mop first-person animation + swing cue,
 - Receipt Ripper pickup + five-frame first-person animation + fire/cycle cues,
+- Price-Gun SMG pickup + five-frame automatic weapon animation + barcode-label impact puffs and cues,
+- Turbo Can Launcher pickup + five-frame launcher animation + original can projectile/explosion and cues,
 - Angry Self-Checkout animation set + hostile receipt projectile + combat cues,
+- Security Price Scanner turret animation + original scan-beam projectile + combat cues,
 - Night Manager animation set + Manager Memo projectile + boss cues.
 
 Generated sprite PNGs include ZDoom-compatible `grAb` offsets so their placement is
 explicit and reproducible. The original atmosphere generator and the combat-asset extension
 use only Python's standard library and therefore do not add a new runtime or build dependency.
 
-Combat actors and weapon view sprites that have not yet received original art may still
-reference compatible IWAD-provided placeholders at runtime. Those placeholder assets are
-never copied into this repository or release package. Current remaining examples include
-the Price-Gun SMG, Turbo Can Launcher, Cart of Doom, Security Price Scanner, Possessed
-Pallet Jack and Regional Manager prototype.
+Combat actors that have not yet received original art may still reference compatible
+IWAD-provided placeholders at runtime. Those placeholder assets are never copied into this
+repository or release package. Current remaining visible placeholder examples are Cart of
+Doom, Possessed Pallet Jack and Regional Manager prototype.
 
 ## Final strategy
 

@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.9-dev — signature retail combat pass  
-> **Project progress:** `████░░░░░░ 42%`
+> **Status:** Prototype 0.10-dev — expanding original retail combat pass  
+> **Project progress:** `█████░░░░░ 45%`
 
 ## Premise
 
@@ -54,7 +54,7 @@ The **Emergency Mop** uses four original first-person attack frames with its own
 The **Night Manager** uses an original animation set and the glowing **Manager Memo**
 projectile with dedicated attack/down cues.
 
-Prototype `0.9-dev` adds a second complete signature slice:
+Prototype `0.9-dev` added the second complete signature slice:
 
 - **Receipt Ripper** — original world pickup, five-frame first-person firing/cycling
   animation and dedicated fire/cycle sounds. Its view states no longer reference the
@@ -62,6 +62,15 @@ Prototype `0.9-dev` adds a second complete signature slice:
 - **Angry Self-Checkout** — original ten-frame kiosk animation set, original hostile
   receipt projectile, original idle/attack/pain/down sounds and custom attack behavior.
   Its visible states no longer reference the compatible-IWAD shotgun-guy sprite.
+
+Prototype `0.10-dev` expands that owned presentation across the mid/heavy combat loop:
+
+- **Price-Gun SMG** — original world pickup and five-frame automatic weapon view,
+  barcode-label impact puffs and dedicated trigger/label-feed cues.
+- **Turbo Can Launcher** — original world pickup, five-frame launcher view, original
+  soda-can projectile/explosion frames and dedicated launch/explosion cues.
+- **Security Price Scanner** — original stationary turret animation, original scanning
+  beam projectile and dedicated idle/attack/pain/down cues.
 
 All current project-owned prototype combat art/audio is generated deterministically from
 repository code using Python's standard library. Sprite PNGs carry ZDoom `grAb` offsets,
@@ -132,7 +141,10 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - original breaker, shutter and stash prototype sprites,
 - original **Emergency Mop** first-person sprite/animation set with combat swing cue,
 - original **Receipt Ripper** pickup/view sprite set with fire/cycle cues,
+- original **Price-Gun SMG** pickup/view sprite set with barcode-label impact feedback and weapon cues,
+- original **Turbo Can Launcher** pickup/view sprite set plus original can projectile/explosion and weapon cues,
 - original **Angry Self-Checkout** animation set, receipt projectile and combat cues,
+- original **Security Price Scanner** animation set, scanning projectile and combat cues,
 - original **Night Manager** animation set, Manager Memo projectile and boss combat cues,
 - deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contract,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
@@ -168,8 +180,8 @@ python tools/test_portable_package.py
 
 - Slot 1: Emergency Mop — original prototype view sprites + original swing cue
 - Shotgun pickup: Receipt Ripper — original pickup/view sprites + original fire/cycle cues
-- Chaingun pickup: Price-Gun SMG — placeholder runtime view sprites remain
-- Rocket Launcher pickup: Turbo Can Launcher — placeholder runtime view sprites remain
+- Chaingun pickup: Price-Gun SMG — original pickup/view sprites + barcode-label impact feedback
+- Rocket Launcher pickup: Turbo Can Launcher — original pickup/view sprites + original soda-can projectile/explosion
 
 See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
@@ -184,9 +196,10 @@ See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 
 No proprietary Doom, Star Wars or other commercial game assets belong in this repository.
 The current runtime art/audio pack is generated from our own source code during the build.
-Emergency Mop, Receipt Ripper, Angry Self-Checkout and Night Manager now have project-owned
-visible combat presentation, while several remaining weapons/enemies still use runtime
-placeholders and must be replaced before standalone release.
+Emergency Mop, Receipt Ripper, Price-Gun SMG, Turbo Can Launcher, Angry Self-Checkout,
+Security Price Scanner and Night Manager now have project-owned visible combat presentation.
+Cart of Doom, Possessed Pallet Jack and Regional Manager still use compatible-runtime
+placeholder visuals and must be replaced before standalone release.
 
 See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md).
 

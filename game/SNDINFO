@@ -13,3 +13,11 @@ coh/checkoutidle    sounds/checkoutidle
 coh/checkoutattack  sounds/checkoutattack
 coh/checkouthit     sounds/checkouthit
 coh/checkoutdown    sounds/checkoutdown
+coh/pricefire       sounds/pricefire
+coh/pricelabel      sounds/pricelabel
+coh/canlaunch       sounds/canlaunch
+coh/canexplode      sounds/canexplode
+coh/scanneridle     sounds/scanneridle
+coh/scannerattack   sounds/scannerattack
+coh/scannerhit      sounds/scannerhit
+coh/scannerdown     sounds/scannerdown
