@@ -70,21 +70,21 @@ def run_phase(
         str(iwad),
         "-file",
         str(PK3),
-        "+i_pauseinbackground",
+        "+set",
+        "i_pauseinbackground",
         "0",
-        # This is an isolated CI-only process. Cheats make state seeding deterministic
-        # and keep the persistence test independent from combat timing/AI randomness.
-        "+sv_cheats",
+        # +set is handled during startup configuration, before queued console commands.
+        # This isolated CI process needs cheats only to seed deterministic inventory.
+        "+set",
+        "sv_cheats",
         "1",
     ]
 
-    # +map is a post-initialization console command, so placing it immediately before
-    # +exec guarantees MAP01 and its player exist before the delayed cfg commands run.
-    # This differs from +warp, which is a coordinate-warp console command.
+    # GZDoom queues ordinary +commands in reverse command-line insertion order.
+    # Put +exec first and +map last so MAP01 starts before the cfg is executed.
+    argv.extend(["+exec", str(COMMAND_PATH)])
     if autostart_map01:
         argv.extend(["+map", "MAP01"])
-
-    argv.extend(["+exec", str(COMMAND_PATH)])
 
     print(f"Running GZDoom {phase} phase...")
     try:
@@ -155,7 +155,7 @@ def main() -> int:
     )
 
     # Keep each command on its own cfg line. `wait` suspends execution of the
-    # remaining cfg lines, giving MAP01 a real player before inventory is seeded.
+    # remaining cfg lines after MAP01 has started and a player has spawned.
     # MAP layout/pickup placement has separate contracts; this checks serialization.
     save_commands = "\n".join(
         (
