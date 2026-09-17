@@ -4,8 +4,8 @@
 
 A fast, readable comedy-horror retro FPS about surviving the worst supermarket night shift imaginable.
 
-> **Status:** Prototype 0.19-dev — authored night-shift difficulty modes  
-> **Project progress:** `███████░░░ 68%`
+> **Status:** Prototype 0.20-dev — save-safe shift state and department-local objectives  
+> **Project progress:** `███████░░░ 70%`
 
 ## Premise
 
@@ -26,7 +26,7 @@ Every department is built around a real workplace objective rather than pure are
 
 `MAP01 — Closing Time` currently implements the most complete version of that loop. Three Breaker Fuses pull the player through left, right and rear routes. At `2/3` power, a Staff Only side room opens. At `3/3`, a Full-Power Emergency Cache becomes available and the Night Manager enters the floor. Two management-response anchors then feed a readable sequence of Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack at `15 / 34 / 54 / 76` seconds after full power. Once the supervisor is dead, fresh reinforcements stop and the player must physically return to the front checkout to clock out.
 
-`MAP02 — Warehouse 13.5` also requires all three breakers before The Regional Manager arrives, preserving the same restore-power-before-management rule.
+`MAP02 — Warehouse 13.5` also requires all three breakers before The Regional Manager arrives. Breaker and supervisor-clearance tokens are now explicitly department-local: a normal map transition clears them before the next department objective begins, while loading a save preserves the serialized shift state instead of reinitializing it.
 
 ## Overtime
 
@@ -43,7 +43,7 @@ Closing Time uses authored reinforcement and hazard anchors instead of random sp
 
 ## Difficulty modes
 
-Prototype `0.19-dev` adds three authored shift difficulties while keeping breaker gates, boss-wave timing and Overtime timing identical across all modes:
+Prototype `0.20-dev` includes three authored shift difficulties while keeping breaker gates, boss-wave timing and Overtime timing identical across all modes:
 
 | Mode | Role | Tuning |
 | --- | --- | --- |
@@ -52,6 +52,12 @@ Prototype `0.19-dev` adds three authored shift difficulties while keeping breake
 | **Corporate Hell** | high-pressure replay | -15% ammo, +25% incoming damage, -15% healing, enemies at 115% health |
 
 `Graveyard Shift` is the default. `Corporate Hell` requires an explicit confirmation before clocking in. Difficulty deliberately changes combat forgiveness and resource pressure instead of hiding faster scripted traps or opaque respawn rules behind the selection.
+
+## Save/load state safety
+
+The shift director now distinguishes a real fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear only the department-local Breaker Fuse and supervisor-clearance tokens before objective logic starts; save restores leave serialized director state intact. Supervisor kills also write the clearance token immediately, and the director can recover its cleared state from that token when loading older development saves.
+
+A dedicated CI contract verifies those invariants in source and in the packaged PK3. Full interactive Windows save → quit → load playtesting is still required before the roadmap's end-to-end save/load validation item can be marked complete.
 
 ## Signature arsenal
 
@@ -126,6 +132,7 @@ This is intentionally a **development artifact**, not a public demo release.
 - buildable PK3 prototype,
 - structured `Closing Time` and power-gated `Warehouse 13.5`,
 - three-breaker objective loop and physical clock-out finish,
+- department-local objective reset without destroying save-restored shift state,
 - Overtime reinforcement director plus telegraphed environmental hazards,
 - tuned Night Manager management-response sequence,
 - powered Staff Only optional route and exploration rewards,
@@ -138,6 +145,7 @@ This is intentionally a **development artifact**, not a public demo release.
 - one-click official-source dependency bootstrap,
 - verified portable Windows artifact builder with SHA-256 sidecar,
 - pinned GZDoom runtime parser/startup validation on Windows CI,
+- save/load state regression contract packaged into CI,
 - custom CHECKOUT OF HELL branding/icon concept.
 
 ## Development runtime
@@ -153,6 +161,7 @@ python tools/build.py
 python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_difficulty_modes_contract.py
+python tools/test_save_load_state_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_closing_time_presentation_contract.py
@@ -171,12 +180,12 @@ python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
 ```
 
-The automated Linux job runs all static/build/package contracts, including the dedicated difficulty-mode contract. The Windows job resolves the official pinned runtime and validates the packaged prototype with GZDoom itself.
+The automated Linux job runs all static/build/package contracts, including the dedicated difficulty and save/load-state contracts. The Windows job resolves the official pinned runtime and validates the packaged prototype with GZDoom itself.
 
 ## Maps
 
 - `MAP01` — **Closing Time** — structured objective slice with original retail surfaces, department signage, optional powered exploration, staged Overtime floor hazards, tuned supervisor response and physical clock-out escape.
-- `MAP02` — **Warehouse 13.5** — power-restoration arena with original retail surfaces and a gated two-phase Regional Manager boss.
+- `MAP02` — **Warehouse 13.5** — power-restoration arena with original retail surfaces and a gated two-phase Regional Manager boss; department-local objective tokens are reset before its breaker loop begins.
 - Planned departments include **Frozen Foods**, **Electronics**, **Customer Service** and **Management Floor**, but they will only be expanded when there is real playable content.
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md) and [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
