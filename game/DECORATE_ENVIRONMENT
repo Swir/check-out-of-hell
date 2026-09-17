@@ -96,6 +96,8 @@ actor EmployeeBreakSnack : Stimpack 17126
     }
 }
 
+// Slow, readable failing-light cycle. Avoid short 2-tic strobe bursts while retaining the
+// abandoned-store atmosphere and a visible contrast change.
 actor FailingFluorescent 17127
 {
     Radius 4
@@ -105,12 +107,10 @@ actor FailingFluorescent 17127
     States
     {
     Spawn:
-        FLIT A 58 Bright
-        FLIT B 2
-        FLIT C 4 Bright
-        FLIT D 2
-        FLIT C 3 Bright
-        FLIT B 2
+        FLIT A 70 Bright
+        FLIT B 12
+        FLIT C 18 Bright
+        FLIT D 12
         Loop
     }
 }
