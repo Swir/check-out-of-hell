@@ -15,28 +15,38 @@ required_script_markers = (
     'gzdoom_.*_amd64\\.deb',
     'api.github.com/repos/$FD_REPO/releases/tags/$FD_TAG',
     'Freedoom SHA-256 verified.',
-    'xvfb-run -a',
+    'Xvfb "$DISPLAY" -screen 0 800x600x24',
+    'xdotool search --pid "$ENGINE_PID"',
     'LIBGL_ALWAYS_SOFTWARE=1',
     'GALLIUM_DRIVER=llvmpipe',
-    '+map MAP01 +exec "$SAVE_CFG"',
-    'give CheckoutFuse 2',
-    'save $SAVE_STEM',
-    '-loadgame "$SAVE_STEM" +exec "$LOAD_CFG"',
+    '+logfile "$log"',
+    'launch_engine "$SAVE_LOG" +map MAP01',
+    'send_console_command "$SAVE_WINDOW" "give CheckoutFuse 2"',
+    'send_console_command "$SAVE_WINDOW" "printinv"',
+    'send_console_command "$SAVE_WINDOW" "save $SAVE_STEM',
+    'stop_engine',
+    'launch_engine "$LOAD_LOG" -loadgame "$SAVE_STEM"',
     'COH_RUNTIME_SAVE_WRITTEN',
     'COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE',
     'CheckoutFuse[[:space:]]+#[0-9]+[[:space:]]+\\(2/3\\)',
     'stat -c %s "$SAVE_FILE"',
-    'timeout 50s',
+    'RESULT="PASS - CheckoutFuse 2/3 survived real save -> process exit -> load"',
     'gzdoom-save-load-smoke.log',
 )
 for marker in required_script_markers:
     if marker not in script:
         raise SystemExit(f"Linux runtime save/load smoke script is missing required marker: {marker}")
 
-if script.index("give CheckoutFuse 2") > script.index("save $SAVE_STEM"):
+if script.index('send_console_command "$SAVE_WINDOW" "give CheckoutFuse 2"') > script.index(
+    'send_console_command "$SAVE_WINDOW" "save $SAVE_STEM'
+):
     raise SystemExit("Runtime objective state must be authored before the real save command")
-if script.index('-loadgame "$SAVE_STEM"') > script.index("CheckoutFuse 2/3 did not survive"):
+if script.index('launch_engine "$LOAD_LOG" -loadgame "$SAVE_STEM"') > script.index(
+    "CheckoutFuse 2/3 did not survive"
+):
     raise SystemExit("Loaded inventory must be verified after the real load phase")
+if script.count("stop_engine") < 3:
+    raise SystemExit("Runtime harness must cross a real process boundary between save and load")
 
 windows_markers = (
     'bootstrap_runtime.ps1',
