@@ -40,6 +40,9 @@ jobs:
       - name: Save/load state contract test
         run: python tools/test_save_load_state_contract.py
 
+      - name: SWIR README PRO v2 contract test
+        run: python tools/test_readme_standard_contract.py
+
       - name: Closing Time layout contract test
         run: python tools/test_closing_time_layout.py
 
@@ -131,10 +134,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: .\tools\gzdoom_runtime_smoke.ps1
 
-      - name: Upload GZDoom smoke log
+      - name: Upload Windows GZDoom parser log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gzdoom-runtime-smoke-log
+          name: gzdoom-windows-parser-log
           path: dist/gzdoom-runtime-smoke.log
           if-no-files-found: warn
