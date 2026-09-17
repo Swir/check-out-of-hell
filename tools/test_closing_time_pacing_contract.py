@@ -39,13 +39,13 @@ for marker in (
     "class CheckoutFullPowerCacheSpawner : Actor",
     'p.CountInv("CheckoutFuse") < 3',
     'Actor.Spawn("CheckoutPowerCache", Pos)',
-    '17106 = "CheckoutFullPowerCacheSpawner"',
 ):
-    haystack = zscript if "Checkout" in marker and "17106" not in marker else mapinfo
-    if marker not in haystack:
-        raise SystemExit(f"Full-power cache contract missing: {marker}")
+    if marker not in zscript:
+        raise SystemExit(f"Full-power cache ZScript contract missing: {marker}")
+if '17128 = "CheckoutFullPowerCacheSpawner"' not in mapinfo:
+    raise SystemExit("Full-power cache DoomEdNum 17128 is not registered")
 
-if environment.count("type = 17106") != 1:
+if environment.count("type = 17128") != 1:
     raise SystemExit("Closing Time must contain exactly one full-power cache spawner")
 if "x = 0.0; y = 250.0" not in environment:
     raise SystemExit("Full-power cache moved away from the deliberate pre-boss approach position")
@@ -72,7 +72,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
             raise SystemExit(f"Packaged DECORATE missing pacing actor: {marker}")
 
 wad_text = MAP_WAD.read_bytes()
-if b"type = 17106" not in wad_text:
+if b"type = 17128" not in wad_text:
     raise SystemExit("Built MAP01 does not contain the full-power cache spawner")
 
 print("Closing Time pacing contract: PASS")
