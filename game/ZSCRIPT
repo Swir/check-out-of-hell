@@ -434,8 +434,8 @@ class CheckoutOvertimeSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -497,8 +497,8 @@ class CheckoutManagerSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -547,8 +547,8 @@ class CheckoutBossWaveSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -631,8 +631,8 @@ class CheckoutStaffShutter : Actor
     States
     {
     Spawn:
-        COSH A -1 Bright
-        Stop
+        COSH A -1 Bright;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -677,8 +677,8 @@ class CheckoutFullPowerCacheSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -726,8 +726,8 @@ class CheckoutRegionalManagerSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
