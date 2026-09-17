@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.22.0-dev — 2026-09-17
+
+### Added
+- Project-specific dark/electric-cyan `assets/readme/hero.svg` with CHECKOUT OF HELL branding, haunted-cart motif and `06:00` clock-out target.
+- `tools/test_readme_standard_contract.py`, enforcing the canonical SWIR README PRO v2 marker, required project sections, 8–20 accurate search phrases, truthful README/ROADMAP progress synchronization and hero identity.
+- GitHub Actions execution of the SWIR README PRO v2 documentation contract.
+
+### Changed
+- README was rebuilt around the current `Swir/Swir/SWIR-README-STANDARD.md` v2 family: centered hero, truthful prototype badges/status, highlights, one-click setup, requirements, architecture, legal/distribution clarity, limitations, roadmap/release links and restrained by Swir footer.
+- Save/load documentation now explicitly distinguishes the existing static/package regression coverage and pinned Windows parser validation from the still-open real save → process exit → load runtime gate.
+- Project progress remains **72%** and Vertical Slice remains **88%**; documentation/branding improvements do not inflate gameplay completion.
+
+### Validation
+- A Linux/Xvfb process-level save/load experiment was rejected rather than merged after repeated headless GZDoom timeouts. The demo-readiness runtime gate remains open for a target-Windows implementation.
+
 ## 0.21.0-dev — 2026-09-17
 
 ### Added
