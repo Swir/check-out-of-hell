@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.12.0-dev — 2026-09-17
+
+### Added
+- Project-owned fifteen-frame Regional Manager animation covering pursuit, ranged tells, pain, collapse and raise presentation.
+- Original `CorporateRedTapeProjectile` and `ExecutiveStampProjectile` boss attacks with generated projectile/impact frames.
+- Dedicated Regional Manager idle, attack, phase-change, stamp, hit and defeat cues.
+- Health-gated second Regional Manager attack phase below 50% health with a wider red-tape barrage and heavy executive-stamp finisher.
+- `CheckoutRegionalManagerSpawner` and DoomEdNum `17104`, allowing Warehouse 13.5 to keep the boss off the floor until all three breakers are restored.
+- `tools/generate_regional_manager_assets.py`, a deterministic standard-library-only boss asset generator.
+- `tools/test_regional_manager_contract.py`, validating PNG offsets, WAVs, PK3 packaging, actor wiring, two-phase behavior, MAP02 power gating and project-owned retail surfaces.
+- GitHub Actions execution of the Regional Manager boss contract.
+
+### Changed
+- `MAP02 — Warehouse 13.5` now uses the project-owned retail floor, ceiling and wall materials instead of compatible-IWAD placeholder surfaces.
+- Warehouse 13.5 no longer pre-places the Regional Manager; restoring all three breakers now triggers the boss arrival.
+- Regional Manager visible combat states no longer rely on compatible-IWAD Cyberdemon sprites or its stock primary attack presentation.
+- Build tooling now generates the Regional Manager presentation before PK3 packaging.
+- README/ROADMAP progress raised to 51% for the boss-identity and Warehouse objective-gate milestone.
+
 ## 0.11.0-dev — 2026-09-17
 
 ### Added
