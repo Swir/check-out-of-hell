@@ -34,7 +34,9 @@ def map_source(map_name: str) -> bytes:
 
 def make_udmf_wad(map_name: str, path: Path) -> None:
     textmap = map_source(map_name)
-    lumps = [("TEXTMAP", textmap), ("ENDMAP", b"")]
+    # A nested map WAD still needs the conventional map marker before TEXTMAP.
+    # Without it GZDoom can parse the package itself but cannot resolve `map MAP01`.
+    lumps = [(map_name, b""), ("TEXTMAP", textmap), ("ENDMAP", b"")]
     data_offset = 12
     blob = bytearray()
     directory = bytearray()
