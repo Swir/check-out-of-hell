@@ -46,6 +46,9 @@ jobs:
       - name: Closing Time environment polish contract test
         run: python tools/test_environment_polish_contract.py
 
+      - name: Closing Time encounter pacing contract test
+        run: python tools/test_closing_time_pacing_contract.py
+
       - name: Final HUD contract test
         run: python tools/test_hud_contract.py
 
