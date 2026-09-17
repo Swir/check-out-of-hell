@@ -39,6 +39,18 @@ function Assert-RuntimeLog {
     }
 }
 
+function ConvertTo-ProcessArgument {
+    param([Parameter(Mandatory = $true)][string]$Value)
+
+    if ($Value -notmatch '[\s"]') {
+        return $Value
+    }
+
+    # Start-Process joins ArgumentList entries into a command line on Windows.
+    # Quote paths/descriptions containing whitespace and escape embedded quotes.
+    return '"' + ($Value -replace '(\\*)"', '$1$1\"' -replace '(\\+)$', '$1$1') + '"'
+}
+
 function Invoke-RoundtripPhase {
     param(
         [Parameter(Mandatory = $true)][string]$Commands,
@@ -62,22 +74,44 @@ function Invoke-RoundtripPhase {
         "+exec", $CommandPath
     )
 
-    Write-Host "Running GZDoom $Phase phase..."
-    $output = & $GZDoomExe @arguments 2>&1
-    $exitCode = $LASTEXITCODE
-    $lines = @($output | ForEach-Object { "$_" })
+    # GZDoom is a Windows GUI-subsystem executable. A direct PowerShell invocation
+    # can return as soon as the process is launched, so explicitly wait for it.
+    $stdoutPath = "$LogPath.stdout"
+    $stderrPath = "$LogPath.stderr"
+    foreach ($temporary in @($stdoutPath, $stderrPath, $LogPath)) {
+        if (Test-Path -LiteralPath $temporary) {
+            Remove-Item -LiteralPath $temporary -Force
+        }
+    }
 
-    if ($lines.Count -gt 0) {
-        $lines | Set-Content -LiteralPath $LogPath -Encoding UTF8
-        $lines | ForEach-Object { Write-Host $_ }
+    $argumentLine = (($arguments | ForEach-Object { ConvertTo-ProcessArgument "$_" }) -join " ")
+    Write-Host "Running GZDoom $Phase phase..."
+    $process = Start-Process -FilePath $GZDoomExe `
+        -ArgumentList $argumentLine `
+        -RedirectStandardOutput $stdoutPath `
+        -RedirectStandardError $stderrPath `
+        -PassThru `
+        -Wait
+
+    $combined = @()
+    if (Test-Path -LiteralPath $stdoutPath) {
+        $combined += @(Get-Content -LiteralPath $stdoutPath)
+    }
+    if (Test-Path -LiteralPath $stderrPath) {
+        $combined += @(Get-Content -LiteralPath $stderrPath)
+    }
+
+    if ($combined.Count -gt 0) {
+        $combined | Set-Content -LiteralPath $LogPath -Encoding UTF8
+        $combined | ForEach-Object { Write-Host $_ }
     }
     else {
-        "GZDoom $Phase phase completed with no stdout. Exit code: $exitCode" |
+        "GZDoom $Phase phase completed with no stdout/stderr. Exit code: $($process.ExitCode)" |
             Set-Content -LiteralPath $LogPath -Encoding UTF8
     }
 
-    if ($exitCode -ne 0) {
-        throw "GZDoom $Phase phase failed with exit code $exitCode. See $LogPath"
+    if ($process.ExitCode -ne 0) {
+        throw "GZDoom $Phase phase failed with exit code $($process.ExitCode). See $LogPath"
     }
 
     $text = Get-Content -LiteralPath $LogPath -Raw
