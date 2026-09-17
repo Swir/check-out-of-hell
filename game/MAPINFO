@@ -10,6 +10,7 @@ DoomEdNums
     17101 = "CheckoutManagerSpawner"
     17102 = "CheckoutStaffShutter"
     17103 = "CheckoutBossWaveSpawner"
+    17104 = "CheckoutRegionalManagerSpawner"
 }
 
 episode MAP01
