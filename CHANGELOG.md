@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.17.0-dev — 2026-09-17
+
+### Added
+- Deterministic Python-standard-library-only combat-audio polish generator covering the high-repeat cues for all four signature weapons, Night Manager, Angry Self-Checkout, Security Price Scanner, Cart of Doom, Possessed Pallet Jack and The Regional Manager.
+- Small runtime variation families for 31 logical combat cues, with controlled pitch, transient and noise differences while preserving established actor timing and sound identities.
+- `tools/test_combat_audio_polish.py`, validating family sizes, SNDINFO random-group wiring, mono 16-bit/22.05 kHz PCM format, minimum duration, audible signal, conservative peak headroom and PK3 packaging.
+- GitHub Actions execution of the combat-audio polish contract.
+
+### Changed
+- Existing gameplay actors keep the same logical `coh/...` sound names; SNDINFO now selects a generated variation at runtime instead of replaying one identical high-frequency cue.
+- Combat sound generation remains deterministic and legally project-owned, adds no runtime/build dependency and does not alter weapon fire rates, enemy tells or damage timing.
+- README/ROADMAP progress raised to 64% for the implemented/testable audio-polish milestone; a final Closing Time playtest/polish pass remains the main demo-readiness blocker.
+
 ## 0.16.0-dev — 2026-09-17
 
 ### Added
