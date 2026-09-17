@@ -47,6 +47,8 @@ ERROR_PATTERNS = (
     "Savegame is from a different",
     "Could not open savegame",
     "Cannot find savegame",
+    "No map MAP01",
+    "Not in a saveable game",
     "DIED WITH FATAL ERROR",
 )
 
@@ -180,8 +182,13 @@ def main() -> int:
         ),
         encoding="ascii",
     )
+
+    # Command-line +map is consumed before add-on MAPINFO is fully available on a
+    # cold engine start. Let GZDoom finish startup first, then enter MAP01 from the
+    # queued console script. This makes the smoke test prove an actual saveable game
+    # rather than merely proving that the renderer opened a window.
     SAVE_CFG.write_text(
-        'wait 175; give CheckoutFuse 2; give CorporateMemo 2; wait 10; '
+        'wait 2; map MAP01; wait 175; give CheckoutFuse 2; give CorporateMemo 2; wait 10; '
         'printinv; save coh-ci-roundtrip-linux "CHECKOUT OF HELL CI ROUNDTRIP"; '
         'wait 70; echo COH_LINUX_RUNTIME_SAVE_WRITTEN\n',
         encoding="ascii",
@@ -210,7 +217,7 @@ def main() -> int:
         print("Runtime pass 1/2: write a real GZDoom save with objective state...")
         save_text = run_phase(
             "GZDoom Linux save pass",
-            [*common, "+map", "MAP01", "+exec", str(SAVE_CFG)],
+            [*common, "+exec", str(SAVE_CFG)],
             SAVE_ENGINE,
             SAVE_STDOUT,
             SAVE_STDERR,
