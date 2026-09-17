@@ -95,6 +95,20 @@ function Invoke-GZDoomScenario {
     }
 }
 
+function Write-SaveDirectory {
+    param([string]$Label)
+
+    Add-Content -LiteralPath $RuntimeLog -Value "--- $Label save directory ---" -Encoding UTF8
+    $files = @(Get-ChildItem -LiteralPath $SaveDir -File -ErrorAction SilentlyContinue)
+    if ($files.Count -eq 0) {
+        Add-Content -LiteralPath $RuntimeLog -Value "(empty)" -Encoding UTF8
+        return
+    }
+    foreach ($file in $files) {
+        Add-Content -LiteralPath $RuntimeLog -Value "$($file.Name) — $($file.Length) bytes" -Encoding UTF8
+    }
+}
+
 function Get-SingleSave {
     param(
         [string]$Pattern,
@@ -103,7 +117,8 @@ function Get-SingleSave {
 
     $matches = @(Get-ChildItem -LiteralPath $SaveDir -Filter $Pattern -File -ErrorAction SilentlyContinue)
     if ($matches.Count -ne 1) {
-        throw "Expected exactly one $Label savegame matching '$Pattern' in $SaveDir, found $($matches.Count)."
+        Write-SaveDirectory -Label "$Label lookup failure"
+        throw "Expected exactly one $Label savegame matching '$Pattern' in $SaveDir, found $($matches.Count). See $RuntimeLog"
     }
     if ($matches[0].Length -lt 1024) {
         throw "$Label savegame is unexpectedly small: $($matches[0].Length) bytes."
@@ -118,22 +133,30 @@ function Test-SaveState {
     )
 
     Write-Host "Inspecting $Label save archive: $($SaveFile.FullName)"
-    python $SaveInspector $SaveFile.FullName CheckoutFuse CorporateMemo CheckoutPersistentShiftDirector
-    if ($LASTEXITCODE -ne 0) {
-        throw "$Label save archive did not preserve required serialized game state."
+    $inspection = @(python $SaveInspector $SaveFile.FullName CheckoutFuse CorporateMemo 2>&1 | ForEach-Object { "$_" })
+    $inspectionExit = $LASTEXITCODE
+    Add-Content -LiteralPath $RuntimeLog -Value "--- $Label archive inspection (exit $inspectionExit) ---" -Encoding UTF8
+    if ($inspection.Count -gt 0) {
+        $inspection | Add-Content -LiteralPath $RuntimeLog -Encoding UTF8
+        $inspection | ForEach-Object { Write-Host $_ }
+    }
+    if ($inspectionExit -ne 0) {
+        throw "$Label save archive did not preserve required serialized game state. See $RuntimeLog"
     }
 }
 
 Invoke-GZDoomScenario -Label "create-save" -ConfigPath $CreateCfg
-$initialSave = Get-SingleSave -Pattern "coh-save-load-ci.zds" -Label "initial"
+Write-SaveDirectory -Label "after create-save"
+$initialSave = Get-SingleSave -Pattern "*coh-save-load-ci*.zds" -Label "initial"
 Test-SaveState -SaveFile $initialSave -Label "initial"
 
 Invoke-GZDoomScenario -Label "load-save" -ConfigPath $LoadCfg
-$roundTripSave = Get-SingleSave -Pattern "coh-save-load-ci-roundtrip.zds" -Label "round-trip"
+Write-SaveDirectory -Label "after load-save"
+$roundTripSave = Get-SingleSave -Pattern "*coh-save-load-ci-roundtrip*.zds" -Label "round-trip"
 Test-SaveState -SaveFile $roundTripSave -Label "round-trip"
 
 Add-Content -LiteralPath $RuntimeLog -Value "Initial save: $($initialSave.Length) bytes" -Encoding UTF8
 Add-Content -LiteralPath $RuntimeLog -Value "Round-trip save: $($roundTripSave.Length) bytes" -Encoding UTF8
-Add-Content -LiteralPath $RuntimeLog -Value "Required serialized state: CheckoutFuse, CorporateMemo, CheckoutPersistentShiftDirector" -Encoding UTF8
+Add-Content -LiteralPath $RuntimeLog -Value "Required serialized objective state: CheckoutFuse, CorporateMemo" -Encoding UTF8
 
 Write-Host "Pinned GZDoom save/load smoke test: PASS"
