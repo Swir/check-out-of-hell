@@ -47,13 +47,17 @@ run_scenario() {
 
   echo "Running pinned GZDoom $label scenario..."
   set +e
+  # Use GZDoom's startup -exec path instead of the post-start +exec console
+  # command. -exec is parsed during engine initialization and leaves delayed
+  # `wait` commands queued for the live game loop, which makes this reliable
+  # on hosted Xvfb runners as well as normal desktop launches.
   timeout --signal=KILL 25s xvfb-run -a -s "-screen 0 640x480x24" \
     env LIBGL_ALWAYS_SOFTWARE=1 \
     gzdoom \
       -stdout -nosound -window -width 320 -height 200 \
       +vid_preferbackend 0 +vid_rendermode 0 +vid_activeinbackground true \
-      -savedir "$SAVES" -iwad "$FREEDOOM" -file "$PK3" \
-      "$@" +exec "$cfg" >"$scenario_log" 2>&1
+      -savedir "$SAVES" -iwad "$FREEDOOM" -file "$PK3" -exec "$cfg" \
+      "$@" >"$scenario_log" 2>&1
   local status=$?
   set -e
 
