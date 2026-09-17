@@ -18,8 +18,9 @@ required_runner_markers = (
     '"-noautoload"',
     'argv.extend(["+warp", "1"])',
     "autostart_map01=True",
-    "give CheckoutFuse 2",
-    "give CorporateMemo 1",
+    "warp -690 -310 0",
+    "warp -640 140 0",
+    "warp 620 340 0",
     "save coh_ci_roundtrip",
     "load coh_ci_roundtrip",
     "printinv",
@@ -39,6 +40,12 @@ for failure_marker in (
     "DIED WITH FATAL ERROR",
 ):
     assert failure_marker in runner, f"save/load runner does not guard against: {failure_marker}"
+
+# The runtime state should be collected through authored pickups, not injected with
+# inventory cheat commands that bypass the objective pickup path we want to preserve.
+assert "give CheckoutFuse" not in runner
+assert "give CorporateMemo" not in runner
+assert "Seed the persisted state through authored MAP01 pickups" in runner
 
 # GZDoom treats -errorlog as a batch/parser mode switch and exits before the live
 # game loop. Keep it in the -norun parser smoke, never in the real save/load process.
