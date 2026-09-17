@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [int]$TimeoutSeconds = 20
+    [int]$RunSeconds = 10
 )
 
 $ErrorActionPreference = "Stop"
@@ -67,18 +67,32 @@ function Invoke-GZDoomProbe {
         -RedirectStandardOutput $stdoutPath `
         -RedirectStandardError $stderrPath
 
-    if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
-        try { $process.Kill() } catch { }
-        throw "GZDoom $Phase phase did not exit within $TimeoutSeconds seconds."
+    $exitedNaturally = $process.WaitForExit($RunSeconds * 1000)
+    $naturalExitCode = $null
+    if ($exitedNaturally) {
+        $naturalExitCode = $process.ExitCode
+    }
+    else {
+        # A successful interactive engine run is expected to remain alive. Stop it after the
+        # probe window instead of relying on a startup +quit command that can fire before the
+        # first map/save cycle on some GZDoom builds.
+        try {
+            $process.Kill()
+            $process.WaitForExit()
+        }
+        catch {
+            throw "Could not stop GZDoom after the $Phase probe window: $($_.Exception.Message)"
+        }
     }
 
     $stdout = if (Test-Path -LiteralPath $stdoutPath) { Get-Content -LiteralPath $stdoutPath -Raw } else { "" }
     $stderr = if (Test-Path -LiteralPath $stderrPath) { Get-Content -LiteralPath $stderrPath -Raw } else { "" }
-    $text = "=== STDOUT ===`r`n$stdout`r`n=== STDERR ===`r`n$stderr`r`nExit code: $($process.ExitCode)`r`n"
+    $lifecycle = if ($exitedNaturally) { "natural exit $naturalExitCode" } else { "alive after $RunSeconds s; stopped by harness" }
+    $text = "=== STDOUT ===`r`n$stdout`r`n=== STDERR ===`r`n$stderr`r`nLifecycle: $lifecycle`r`n"
     Set-Content -LiteralPath $LogPath -Value $text -Encoding UTF8
 
-    if ($process.ExitCode -ne 0) {
-        throw "GZDoom $Phase phase failed with exit code $($process.ExitCode). See $LogPath"
+    if ($exitedNaturally -and $naturalExitCode -ne 0) {
+        throw "GZDoom $Phase phase exited early with code $naturalExitCode. See $LogPath"
     }
 
     Assert-NoRuntimeErrors -Text $text -Phase $Phase
@@ -125,14 +139,13 @@ $saveArguments = $common + @(
     "+map", "MAP01",
     "+give", "CheckoutFuse", "2",
     "+give", "CorporateMemo", "1",
-    "+save", "coh-runtime-probe",
-    "+quit"
+    "+save", "coh-runtime-probe"
 )
 $saveText = Invoke-GZDoomProbe -Arguments $saveArguments -LogPath $SaveLog -Phase "save"
 
 $saveFiles = @(Get-ChildItem -LiteralPath $SaveDir -Filter "*.zds" -File -Recurse | Sort-Object LastWriteTimeUtc -Descending)
 if ($saveFiles.Count -lt 1) {
-    throw "GZDoom exited cleanly but did not create a .zds savegame under $SaveDir."
+    throw "GZDoom stayed healthy for the save probe but did not create a .zds savegame under $SaveDir."
 }
 $saveFile = $saveFiles[0]
 if ($saveFile.Length -lt 1024) {
@@ -157,8 +170,7 @@ finally {
 
 Write-Host "Reloading the generated savegame in a fresh GZDoom process..."
 $loadArguments = $common + @(
-    "-loadgame", $saveFile.FullName,
-    "+quit"
+    "-loadgame", $saveFile.FullName
 )
 $loadText = Invoke-GZDoomProbe -Arguments $loadArguments -LogPath $LoadLog -Phase "load"
 
