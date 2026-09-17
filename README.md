@@ -23,13 +23,17 @@
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
 | Version | `0.24-dev` |
-| Implemented/testable progress | **76%** |
+| Implemented/testable progress | **76.4%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
 | Player packaging focus | One-click Windows bootstrap + CI portable development artifact |
 | Pinned runtime | GZDoom `g4.14.2` + Freedoom `v0.13.0` |
 
-Progress is based only on implemented and testable work. See [`ROADMAP.md`](ROADMAP.md) for the authoritative milestone breakdown.
+<img width="100%" src="assets/readme/progress-card.svg" alt="CHECKOUT OF HELL project progress — 76.4% implemented/testable; demo release readiness tracked separately" />
+
+**Progress fallback:** **76.4%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 20.0%**, tracked separately.
+
+Progress is based only on implemented and testable work. See [`ROADMAP.md`](ROADMAP.md) for the authoritative weighted milestone breakdown and separate release-readiness gate.
 
 ## ⚡ Overview
 
@@ -187,6 +191,7 @@ python tools/test_gameplay_contract.py
 python tools/test_save_load_state_contract.py
 python tools/test_gzdoom_save_load_smoke_contract.py
 python tools/test_readme_standard_contract.py
+python tools/generate_progress_svgs.py --check
 python tools/test_closing_time_pacing_contract.py
 python tools/test_closing_time_secrets_contract.py
 python tools/test_hud_contract.py
