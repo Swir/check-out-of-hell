@@ -4,8 +4,8 @@
 
 A fast, readable comedy-horror retro FPS about surviving the worst supermarket night shift imaginable.
 
-> **Status:** Prototype 0.19-dev — authored night-shift difficulty modes  
-> **Project progress:** `███████░░░ 68%`
+> **Status:** Prototype 0.20-dev — pinned-engine save/load roundtrip validation  
+> **Project progress:** `███████░░░ 70%`
 
 ## Premise
 
@@ -138,13 +138,14 @@ This is intentionally a **development artifact**, not a public demo release.
 - one-click official-source dependency bootstrap,
 - verified portable Windows artifact builder with SHA-256 sidecar,
 - pinned GZDoom runtime parser/startup validation on Windows CI,
+- pinned GZDoom real save/create/load roundtrip validation with isolated save/config paths and bounded execution,
 - custom CHECKOUT OF HELL branding/icon concept.
 
 ## Development runtime
 
 The current pinned runtime is GZDoom `g4.14.2` plus Freedoom `v0.13.0`. Runtime pins live in `runtime-lock.json` and should only change after compatibility validation.
 
-CI downloads the pinned official runtime and asks GZDoom itself to load and parse the current PK3 through its non-interactive `-norun` startup path. This catches engine-level MAPINFO/ZScript/package errors that static Python checks cannot detect.
+CI downloads the pinned official runtime and asks GZDoom itself to load and parse the current PK3 through its non-interactive `-norun` startup path. A second Windows runtime gate launches Closing Time on the default Graveyard Shift difficulty, creates a real `.zds` save after injecting objective/optional inventory state, verifies the save container, then starts GZDoom again with `-loadgame` and requires a clean completion sentinel. This catches engine-level save/load regressions that static Python checks cannot detect.
 
 Manual developer commands:
 
@@ -153,6 +154,7 @@ python tools/build.py
 python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_difficulty_modes_contract.py
+python tools/test_save_load_runtime_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_closing_time_presentation_contract.py
@@ -169,9 +171,10 @@ python tools/test_bootstrap_contract.py
 python tools/package_portable.py
 python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
+.\tools\gzdoom_save_load_roundtrip.ps1
 ```
 
-The automated Linux job runs all static/build/package contracts, including the dedicated difficulty-mode contract. The Windows job resolves the official pinned runtime and validates the packaged prototype with GZDoom itself.
+The automated Linux job runs all static/build/package contracts, including the dedicated save/load-harness contract. The Windows job resolves the official pinned runtime, parses the packaged prototype with GZDoom itself, and performs the real save/load roundtrip.
 
 ## Maps
 
