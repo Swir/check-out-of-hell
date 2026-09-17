@@ -186,11 +186,12 @@ def main() -> int:
 
     # Enter MAP01 only after startup. Give the director a few tics to perform its
     # fresh-world cleanup, then freeze combat risk with god mode before authoring the
-    # 2/3 objective state. Long waits are intentionally avoided: this test validates
-    # serialization, not whether an unattended CI player can survive the opening room.
+    # 2/3 objective state. GZDoom's console `give` command accepts one item name, not
+    # an amount argument, so each stackable objective token is given twice explicitly.
     SAVE_CFG.write_text(
-        'wait 2; map MAP01; wait 10; god; give CheckoutFuse 2; give CorporateMemo 2; wait 5; '
-        'printinv; save coh-ci-roundtrip-linux "CHECKOUT OF HELL CI ROUNDTRIP"; '
+        'wait 2; map MAP01; wait 10; god; give CheckoutFuse; give CheckoutFuse; '
+        'give CorporateMemo; give CorporateMemo; wait 5; printinv; '
+        'save coh-ci-roundtrip-linux "CHECKOUT OF HELL CI ROUNDTRIP"; '
         'wait 20; echo COH_LINUX_RUNTIME_SAVE_WRITTEN\n',
         encoding="ascii",
     )
