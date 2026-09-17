@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.20.0-dev — 2026-09-17
+
+### Added
+- `tools/gzdoom_save_load_roundtrip.ps1`, a bounded Windows runtime harness that launches the pinned official GZDoom, starts MAP01 on Graveyard Shift, creates a real `.zds` save after injecting project-specific objective/optional inventory state, verifies the save container, then reloads it in a second engine process.
+- `tools/test_save_load_runtime_contract.py`, protecting the harness, official-runtime dependency path, isolated save directory, real `-loadgame` usage, timeout guard and CI wiring.
+- GitHub Actions execution of the real save/load roundtrip with runtime logs uploaded on every run.
+
+### Changed
+- Runtime validation now covers both parser/startup compatibility and an actual save/create/load cycle against the pinned GZDoom build.
+- README/ROADMAP progress raised to 70% and Vertical Slice progress to 85% for the implemented/testable save/load milestone; full end-to-end playtesting and final Closing Time polish remain demo-readiness blockers.
+
 ## 0.19.0-dev — 2026-09-17
 
 ### Added
