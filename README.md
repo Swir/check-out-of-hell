@@ -22,16 +22,16 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.25-dev` |
-| Implemented/testable progress | **78.4%** |
+| Version | `0.26-dev` |
+| Implemented/testable progress | **80.4%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
 | Player packaging focus | One-click Windows bootstrap + CI portable development artifact |
 | Pinned runtime | GZDoom `g4.14.2` + Freedoom `v0.13.0` |
 
-<img width="100%" src="assets/readme/progress-card.svg" alt="CHECKOUT OF HELL project progress — 78.4% implemented/testable; demo release readiness tracked separately" />
+<img width="100%" src="assets/readme/progress-card.svg" alt="CHECKOUT OF HELL project progress — 80.4% implemented/testable; demo release readiness tracked separately" />
 
-**Progress fallback:** **78.4%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 30.0%**, tracked separately.
+**Progress fallback:** **80.4%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 40.0%**, tracked separately.
 
 Progress is based only on implemented and testable work. See [`ROADMAP.md`](ROADMAP.md) for the authoritative weighted milestone breakdown and separate release-readiness gate.
 
@@ -56,6 +56,7 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | 🔎 Optional discoveries | Staff Only rewards, Corporate Compliance Memos and useful workplace-comedy resource stashes reward exploration. |
 | ☠️ Authored difficulty | Closing Crew, Graveyard Shift and Corporate Hell tune resources and damage without hiding faster scripted hazards. |
 | ♿ Readability options | Optional focus HUD and large textual warnings reinforce objectives, pressure and critical-health states without changing combat rules. |
+| 🎮 Controller setup | A dedicated menu exposes core remaps, engine device/stick setup and restrained signature-weapon haptics without overwriting player bindings. |
 | 🔊 Original presentation | Project-owned generated art, combat audio and department music; no ripped commercial game assets. |
 | 📦 One-click runtime setup | Missing redistributable runtime files are resolved from official upstream sources instead of making players hunt for them. |
 
@@ -188,9 +189,17 @@ Open **Options → CHECKOUT OF HELL Accessibility** to enable player-local comfo
 
 Both options are disabled by default and do not alter combat timing, difficulty or objective logic. Overtime remains communicated through words/patterns as well as color, while failing fluorescent props now use a slower light-change cadence instead of rapid two-tic flash cuts. See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md).
 
+## 🎮 Controller support
+
+Open **Options → CHECKOUT OF HELL Controller** for the project-level controller setup. It exposes primary/alternate fire, use, jump, crouch, run, weapon cycling and automap as normal GZDoom actions, plus direct links to the engine's device/stick setup and complete control-binding menu. The project does **not** overwrite an existing user's bindings.
+
+On a fresh compatible GZDoom setup, the engine baseline uses left stick for movement, right stick for looking, right trigger/R2 for primary fire, left trigger/L2 for alternate fire, A/Cross for use, Y/Triangle for jump, shoulder buttons for weapon cycling and L3 for crouch toggle. Exact button labels depend on the connected device/SDL mapping and user configuration.
+
+Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher firing cues use restrained built-in GZDoom rumble profiles. Enemy attacks, alarms and ambient Overtime cues deliberately do not rumble, avoiding constant vibration during long fights. This support pass is engine/parser/contract validated; a real-controller target-Windows playtest is still required before public-demo sign-off. See [`docs/CONTROLLER.md`](docs/CONTROLLER.md).
+
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, accessibility settings, generated art/audio/music, the Closing Time secret pass, portable packaging and bootstrap behavior, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, accessibility and controller settings, generated art/audio/music, the Closing Time secret pass, portable packaging and bootstrap behavior, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
 
 Useful developer commands:
 
@@ -206,6 +215,7 @@ python tools/test_closing_time_pacing_contract.py
 python tools/test_closing_time_secrets_contract.py
 python tools/test_hud_contract.py
 python tools/test_accessibility_contract.py
+python tools/test_controller_support_contract.py
 python tools/test_overtime_hazard_contract.py
 python tools/test_original_assets.py
 python tools/test_combat_audio_polish.py
@@ -250,13 +260,13 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md) and [`docs/THIRD_PARTY.md`](d
 
 - `Closing Time` has a complete first secrets/joke-interaction pass but is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` is playable but not yet fully polished.
-- The cross-process save/load serialization gate is now green on the exact pinned engine, but a final target-Windows interactive save/load confirmation is still required before demo sign-off.
-- Controller and performance passes for the public demo are not complete.
+- The cross-process save/load serialization gate is green on the exact pinned engine, but a final target-Windows interactive save/load confirmation is still required before demo sign-off.
+- The controller setup/haptics contract is implemented, but physical target-Windows controller confirmation is still part of demo sign-off; the performance pass also remains open.
 - Later departments remain planned until they have real playable content.
 
 ## 🔎 Search Keywords
 
-`retro FPS` • `comedy horror FPS` • `supermarket horror game` • `workplace horror game` • `retail horror game` • `boomer shooter` • `GZDoom game` • `GZDoom ZScript` • `UDMF FPS` • `PK3 game` • `Windows retro shooter` • `Overtime mechanic` • `original GZDoom project` • `one-click Windows game bootstrap` • `Freedoom runtime` • `night shift horror`
+`retro FPS` • `comedy horror FPS` • `supermarket horror game` • `workplace horror game` • `retail horror game` • `boomer shooter` • `GZDoom game` • `GZDoom ZScript` • `UDMF FPS` • `PK3 game` • `Windows retro shooter` • `controller retro FPS` • `Overtime mechanic` • `original GZDoom project` • `one-click Windows game bootstrap` • `Freedoom runtime` • `night shift horror`
 
 <div align="center">
 
