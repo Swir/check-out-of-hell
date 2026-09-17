@@ -114,3 +114,30 @@ actor FailingFluorescent 17127
         Loop
     }
 }
+
+// Invisible state token used by the pacing director. It is never placed directly in a map.
+actor SupervisorClearanceToken : Inventory
+{
+    Inventory.MaxAmount 1
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+}
+
+// Guaranteed pre-boss recovery point. The project-owned BOXE sprite keeps the cache visually
+// consistent with the environment layer while Backpack supplies every signature ammo family.
+actor CheckoutPowerCache : Backpack
+{
+    Tag "Full-Power Emergency Cache"
+    Inventory.PickupMessage "Full-power emergency cache unlocked. Management calls this adequate staffing."
+    Inventory.PickupSound "coh/breaksnack"
+    States
+    {
+    Spawn:
+        BOXE A -1 Bright
+        Stop
+    }
+}
