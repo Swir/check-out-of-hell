@@ -14,8 +14,8 @@ required_runner_markers = (
     'save coh_ci_roundtrip',
     'load coh_ci_roundtrip',
     'printinv',
-    "CheckoutFuse #[0-9]+ \\(2/3\\)",
-    "CorporateMemo #[0-9]+ \\(1/3\\)",
+    r"CheckoutFuse #[0-9]+ \(2/3\)",
+    r"CorporateMemo #[0-9]+ \(1/3\)",
     'GZDoom save/load roundtrip: PASS',
 )
 for marker in required_runner_markers:
