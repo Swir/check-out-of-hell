@@ -12,6 +12,7 @@ DoomEdNums
     17103 = "CheckoutBossWaveSpawner"
     17104 = "CheckoutRegionalManagerSpawner"
     17105 = "CorporateMemo"
+    17106 = "CheckoutFullPowerCacheSpawner"
 }
 
 episode MAP01
