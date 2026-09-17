@@ -48,12 +48,15 @@ mkdir -p "$SAVEDIR"
 
 # GZDoom's wait command delays only the remainder of the same command string.
 # Keep each phase on one semicolon-delimited line so map startup and save I/O
-# happen on later tics instead of racing initial command dispatch.
+# happen on later tics instead of racing initial command dispatch. Use -exec,
+# which GZDoom processes as a startup configuration file, rather than relying
+# on a late +exec console command while the title loop is already active.
 printf '%s\n' 'echo COH_SAVE_ROUNDTRIP_CREATE_BEGIN; map MAP01; wait 70; give CheckoutFuse; give CheckoutFuse; give CorporateMemo; wait 2; save coh-ci-roundtrip; wait 20; echo COH_SAVE_ROUNDTRIP_CREATE_DONE; quit' > "$CREATE_CFG"
 printf '%s\n' 'echo COH_SAVE_ROUNDTRIP_LOAD_BEGIN; wait 70; echo COH_SAVE_ROUNDTRIP_LOAD_DONE; quit' > "$LOAD_CFG"
 
 COMMON_ARGS=(
     -stdout
+    -nostartup
     -nosound
     -nojoy
     -noautoload
@@ -71,7 +74,8 @@ run_gzdoom() {
     shift 2
     echo "Running pinned GZDoom $phase phase under Xvfb..."
     set +e
-    timeout --signal=KILL "${TIMEOUT_SECONDS}s" \
+    NO_AT_BRIDGE=1 SDL_AUDIODRIVER=dummy \
+        timeout --signal=KILL "${TIMEOUT_SECONDS}s" \
         xvfb-run -a --server-args="-screen 0 1280x720x24 -nolisten tcp" \
         gzdoom "${COMMON_ARGS[@]}" "$@" >"$logfile" 2>&1
     local status=$?
@@ -109,7 +113,7 @@ run_gzdoom() {
     done
 }
 
-run_gzdoom "save-create" "$CREATE_LOG" -skill 2 +exec "$CREATE_CFG"
+run_gzdoom "save-create" "$CREATE_LOG" -skill 2 -exec "$CREATE_CFG"
 grep -Fq "COH_SAVE_ROUNDTRIP_CREATE_DONE" "$CREATE_LOG" || {
     echo "ERROR: Save-create command sequence did not reach its completion sentinel." >&2
     exit 1
@@ -136,7 +140,7 @@ if path.read_bytes()[:2] != b"PK":
 print(f"Verified ZIP-based save container: {path} ({path.stat().st_size} bytes)")
 PY
 
-run_gzdoom "save-load" "$LOAD_LOG" -loadgame "$SAVE_FILE" +exec "$LOAD_CFG"
+run_gzdoom "save-load" "$LOAD_LOG" -loadgame "$SAVE_FILE" -exec "$LOAD_CFG"
 grep -Fq "COH_SAVE_ROUNDTRIP_LOAD_DONE" "$LOAD_LOG" || {
     echo "ERROR: Save-load command sequence did not reach its completion sentinel." >&2
     exit 1
