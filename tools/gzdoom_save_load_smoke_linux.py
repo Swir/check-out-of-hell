@@ -244,7 +244,7 @@ def main() -> int:
         print("Runtime pass 2/2: launch a new process and restore the save...")
         load_text = run_phase(
             "GZDoom Linux load pass",
-            [*common, "-loadgame", str(save_file.resolve()), "+exec", str(LOAD_CFG)],
+            [*common, "-loadgame", save_file.name, "+exec", str(LOAD_CFG)],
             LOAD_ENGINE,
             LOAD_STDOUT,
             LOAD_STDERR,
