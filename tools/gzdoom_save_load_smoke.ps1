@@ -105,7 +105,7 @@ function Write-SaveDirectory {
         return
     }
     foreach ($file in $files) {
-        Add-Content -LiteralPath $RuntimeLog -Value "$($file.Name) — $($file.Length) bytes" -Encoding UTF8
+        Add-Content -LiteralPath $RuntimeLog -Value "$($file.Name) - $($file.Length) bytes" -Encoding UTF8
     }
 }
 
