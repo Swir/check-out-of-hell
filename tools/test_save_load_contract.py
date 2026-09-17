@@ -20,6 +20,7 @@ def main() -> None:
     build = (TOOLS / "build.py").read_text(encoding="utf-8")
     workflow = WORKFLOW.read_text(encoding="utf-8")
     runtime_script = (TOOLS / "gzdoom_save_load_smoke_linux.sh").read_text(encoding="utf-8")
+    windows_runtime_script = (TOOLS / "gzdoom_save_load_smoke.ps1").read_text(encoding="utf-8")
     linux_bootstrap = (TOOLS / "bootstrap_runtime_linux.py").read_text(encoding="utf-8")
     inspector = (TOOLS / "inspect_gzdoom_save.py").read_text(encoding="utf-8")
     runtime_lock = json.loads((ROOT / "runtime-lock.json").read_text(encoding="utf-8"))
@@ -44,7 +45,16 @@ def main() -> None:
     require(runtime_script, "save coh-save-load-ci-roundtrip", "gzdoom_save_load_smoke_linux.sh")
     require(runtime_script, "LIBGL_ALWAYS_SOFTWARE=1", "gzdoom_save_load_smoke_linux.sh")
     require(runtime_script, "xvfb-run", "gzdoom_save_load_smoke_linux.sh")
+    require(runtime_script, 'run_scenario create-save "$CREATE_CFG" +warp MAP01', "gzdoom_save_load_smoke_linux.sh")
+    require(runtime_script, '-exec "$cfg"', "gzdoom_save_load_smoke_linux.sh")
     require(runtime_script, "inspect_gzdoom_save.py", "gzdoom_save_load_smoke_linux.sh")
+    if 'run_scenario create-save "$CREATE_CFG" +map MAP01' in runtime_script:
+        raise AssertionError("Linux save/load smoke regressed to +map; GZDoom needs startup +warp to autostart in hosted CI")
+
+    require(windows_runtime_script, '@("+warp", "MAP01")', "gzdoom_save_load_smoke.ps1")
+    require(windows_runtime_script, '"-exec", $ConfigPath', "gzdoom_save_load_smoke.ps1")
+    if '@("+map", "MAP01")' in windows_runtime_script:
+        raise AssertionError("Windows save/load smoke regressed to startup +map instead of +warp")
 
     require(linux_bootstrap, 'runtime-lock.json', "bootstrap_runtime_linux.py")
     require(linux_bootstrap, 'browser_download_url', "bootstrap_runtime_linux.py")
