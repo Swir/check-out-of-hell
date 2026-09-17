@@ -27,4 +27,4 @@ thing { x = -700.0; y =  470.0; angle = 0; type = 17126; skill1 = true; skill2 =
 
 // Full power guarantees one readable recovery cache on the approach to the supervisor arena.
 // The spawner stays invisible until 3/3 breakers, so players cannot consume it before the fight.
-thing { x = 0.0; y = 250.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 0.0; y = 250.0; angle = 0; type = 17128; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
