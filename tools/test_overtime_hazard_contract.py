@@ -98,10 +98,11 @@ for marker in (
     "from generate_overtime_assets import generate_overtime_assets",
     "generate_overtime_assets(GAME)",
     'GAME / "DECORATE_OVERTIME"',
-    'GAME / f"{map_name}_OVERTIME.udmf"',
+    'MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]',
+    'extension = GAME / f"{map_name}_{suffix}.udmf"',
 ):
     if marker not in build:
-        raise SystemExit(f"Overtime subsystem is not wired into the build: {marker}")
+        raise SystemExit(f"Overtime subsystem is not wired into the layered build: {marker}")
 
 with zipfile.ZipFile(PK3, "r") as archive:
     names = set(archive.namelist())

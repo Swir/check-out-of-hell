@@ -9,6 +9,7 @@ from generate_vehicle_enemy_assets import generate_vehicle_enemy_assets
 from generate_regional_manager_assets import generate_regional_manager_assets
 from generate_presentation_assets import generate_presentation_assets
 from generate_overtime_assets import generate_overtime_assets
+from generate_environment_assets import generate_environment_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
@@ -18,13 +19,15 @@ DIST.mkdir(exist_ok=True)
 MAPS = ["MAP01", "MAP02"]
 ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds"]
+MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]
 
 
 def map_source(map_name: str) -> bytes:
     chunks = [(GAME / f"{map_name}.udmf").read_text(encoding="utf-8").rstrip()]
-    extension = GAME / f"{map_name}_OVERTIME.udmf"
-    if extension.exists():
-        chunks.append(extension.read_text(encoding="utf-8").rstrip())
+    for suffix in MAP_LAYER_SUFFIXES:
+        extension = GAME / f"{map_name}_{suffix}.udmf"
+        if extension.exists():
+            chunks.append(extension.read_text(encoding="utf-8").rstrip())
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
 
 
@@ -72,6 +75,7 @@ def decorate_payload() -> bytes:
     chunks = [
         (GAME / "DECORATE").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_OVERTIME").read_text(encoding="utf-8").rstrip(),
+        (GAME / "DECORATE_ENVIRONMENT").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
 
@@ -82,6 +86,7 @@ generate_vehicle_enemy_assets(GAME)
 generate_regional_manager_assets(GAME)
 generate_presentation_assets(GAME)
 generate_overtime_assets(GAME)
+generate_environment_assets(GAME)
 pad_short_wavs(GAME / "sounds")
 
 built_maps = []

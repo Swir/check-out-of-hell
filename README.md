@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.15-dev — final night-shift HUD pass  
-> **Project progress:** `██████░░░░ 58%`
+> **Status:** Prototype 0.16-dev — Closing Time environment polish pass  
+> **Project progress:** `██████░░░░ 61%`
 
 ## Premise
 
@@ -66,6 +66,15 @@ shows worker health plus label, receipt and can reserves for the signature range
 health and every Overtime stage have text labels in addition to color, so important state is not
 communicated by color alone. A dedicated CI contract protects this hierarchy and PK3 packaging.
 
+Prototype `0.16-dev` gives **Closing Time a stronger retail identity without compromising combat
+readability**. A separate environment layer adds project-owned Customer Service, Frozen Foods,
+Electronics/Returns and Lane 06 signage, low-profile wet-floor cones and restock boxes placed away
+from core combat/clock-out lanes, and six flickering fluorescent fixtures overhead. Two optional
+**Emergency Break Snacks** reward side-route exploration with health and an absurd HR pickup message.
+The prop/sign/light sprites and snack cue are generated deterministically with the Python standard
+library, carry ZDoom sprite offsets, and have a dedicated CI contract that verifies generation,
+placement, build composition and PK3 packaging.
+
 ## Original combat presentation
 
 The first combat encounters are progressively moving away from compatible-IWAD placeholders.
@@ -122,7 +131,8 @@ also layers synchronized workplace alarms and electrical floor hazards on top of
 pressure, while preserving clear telegraphs and keeping the clock-out lane free of trap anchors.
 The final-layout HUD keeps the active objective and route hint separate from the Overtime card,
 tracks breaker and optional memo progress, exposes the next escalation deadline and shows combat
-resources without covering the center of the playfield.
+resources without covering the center of the playfield. Department signage, controlled clutter
+and ceiling flicker make the same routes easier to read and more recognizably supermarket-like.
 
 See [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
 
@@ -180,6 +190,10 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - Closing Time Overtime warning alarms plus telegraphed electrical floor hazards that accelerate during Hell Rush,
 - final-layout night-shift HUD with objective/route hierarchy, 06:00 target, text+pattern Overtime pressure, worker health and signature-weapon reserves,
 - first original supermarket wall/shelf/staff/floor/ceiling material pack,
+- original Customer Service, Frozen Foods, Electronics/Returns and Lane 06 store signage,
+- original low-profile wet-floor cone and restock-box props positioned away from critical combat routes,
+- six original animated failing-fluorescent fixtures in Closing Time,
+- two optional Emergency Break Snack exploration rewards with original pickup cue,
 - original breaker, shutter, stash and Corporate Memo prototype sprites,
 - original Overtime warning/floor-arc sprite set with dedicated alarm/electrical cues,
 - original **Emergency Mop** first-person sprite/animation set with combat swing cue,
@@ -195,7 +209,7 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contracts,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
-- automated build + gameplay + layout + Staff Only + Closing Time presentation + final HUD + Overtime hazard + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
+- automated build + gameplay + layout + Staff Only + Closing Time presentation + environment polish + final HUD + Overtime hazard + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - original project icon concept and documented asset/weapon/level/packaging direction.
 
@@ -216,6 +230,7 @@ python tools/test_gameplay_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_closing_time_presentation_contract.py
+python tools/test_environment_polish_contract.py
 python tools/test_hud_contract.py
 python tools/test_overtime_hazard_contract.py
 python tools/test_boss_escape_contract.py
@@ -238,7 +253,7 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ## Maps
 
-- `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, powered side route, optional memo scavenger route, staged Overtime floor hazards, supervisor fight and checkout escape
+- `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, department signage, safe off-lane retail clutter, flickering ceiling fixtures, powered side route, optional memo/snack exploration rewards, staged Overtime floor hazards, supervisor fight and checkout escape
 - `MAP02` — **Warehouse 13.5** — power-restoration arena with original retail surfaces and a gated two-phase Regional Manager boss
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
