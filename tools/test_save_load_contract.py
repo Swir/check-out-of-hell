@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,8 +19,10 @@ def main() -> None:
     mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
     build = (TOOLS / "build.py").read_text(encoding="utf-8")
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    runtime_script = (TOOLS / "gzdoom_save_load_smoke.ps1").read_text(encoding="utf-8")
+    runtime_script = (TOOLS / "gzdoom_save_load_smoke_linux.sh").read_text(encoding="utf-8")
+    linux_bootstrap = (TOOLS / "bootstrap_runtime_linux.py").read_text(encoding="utf-8")
     inspector = (TOOLS / "inspect_gzdoom_save.py").read_text(encoding="utf-8")
+    runtime_lock = json.loads((ROOT / "runtime-lock.json").read_text(encoding="utf-8"))
 
     require(extension, "class CheckoutPersistentShiftDirector : CheckoutShiftDirector", "ZSCRIPT_SAVELOAD")
     require(extension, "override void WorldLoaded(WorldEvent e)", "ZSCRIPT_SAVELOAD")
@@ -34,25 +37,31 @@ def main() -> None:
     require(build, 'GAME / "ZSCRIPT_SAVELOAD"', "tools/build.py")
     require(build, 'archive.writestr("ZSCRIPT", zscript_payload())', "tools/build.py")
 
-    require(runtime_script, 'give CheckoutFuse 2', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'give CorporateMemo 1', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'save coh-save-load-ci', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, '@("-loadgame", "coh-save-load-ci")', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'save coh-save-load-ci-roundtrip', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'Start-Process -FilePath $GZDoomExe', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, '+vid_activeinbackground", "true', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'WaitForExit(20000)', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'inspect_gzdoom_save.py', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'CheckoutFuse', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'CorporateMemo', "gzdoom_save_load_smoke.ps1")
+    require(runtime_script, "give CheckoutFuse 2", "gzdoom_save_load_smoke_linux.sh")
+    require(runtime_script, "give CorporateMemo 1", "gzdoom_save_load_smoke_linux.sh")
+    require(runtime_script, "save coh-save-load-ci", "gzdoom_save_load_smoke_linux.sh")
+    require(runtime_script, "-loadgame coh-save-load-ci", "gzdoom_save_load_smoke_linux.sh")
+    require(runtime_script, "save coh-save-load-ci-roundtrip", "gzdoom_save_load_smoke_linux.sh")
+    require(runtime_script, "LIBGL_ALWAYS_SOFTWARE=1", "gzdoom_save_load_smoke_linux.sh")
+    require(runtime_script, "xvfb-run", "gzdoom_save_load_smoke_linux.sh")
+    require(runtime_script, "inspect_gzdoom_save.py", "gzdoom_save_load_smoke_linux.sh")
+
+    require(linux_bootstrap, 'runtime-lock.json', "bootstrap_runtime_linux.py")
+    require(linux_bootstrap, 'browser_download_url', "bootstrap_runtime_linux.py")
+    require(linux_bootstrap, 'Freedoom SHA-256 verified.', "bootstrap_runtime_linux.py")
+    require(linux_bootstrap, 'linux_asset_regex', "bootstrap_runtime_linux.py")
+    if "linux_asset_regex" not in runtime_lock["gzdoom"]:
+        raise AssertionError("runtime-lock.json does not pin an official Linux GZDoom asset")
 
     require(inspector, "zipfile.is_zipfile", "inspect_gzdoom_save.py")
     require(inspector, 'endswith(".json")', "inspect_gzdoom_save.py")
     require(inspector, "json.loads(text)", "inspect_gzdoom_save.py")
 
     require(workflow, "Save/load persistence contract test", "build.yml")
+    require(workflow, "save-load-runtime:", "build.yml")
+    require(workflow, "Resolve pinned official Linux runtime assets", "build.yml")
     require(workflow, "Save/load current prototype with pinned GZDoom", "build.yml")
-    require(workflow, ".\\tools\\gzdoom_save_load_smoke.ps1", "build.yml")
+    require(workflow, "bash tools/gzdoom_save_load_smoke_linux.sh", "build.yml")
 
     if not PK3.exists():
         raise AssertionError("Built PK3 is missing; run tools/build.py before this contract")
