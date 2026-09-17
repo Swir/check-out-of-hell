@@ -16,6 +16,8 @@ lock = json.loads((ROOT / "runtime-lock.json").read_text(encoding="utf-8"))
 required_runner_markers = (
     '"-savedir"',
     '"-noautoload"',
+    'argv.extend(["+warp", "1"])',
+    "autostart_map01=True",
     "give CheckoutFuse 2",
     "give CorporateMemo 1",
     "save coh_ci_roundtrip",
@@ -42,6 +44,11 @@ for failure_marker in (
 # game loop. Keep it in the -norun parser smoke, never in the real save/load process.
 assert '"-errorlog"' not in runner, "real save/load runner must not enable GZDoom batch mode"
 assert "Do not pass -errorlog here" in runner
+
+# Startup must use GZDoom's +warp autostart path. An early exec-file `map` command
+# runs before normal autostart selection and can leave the regression on the title console.
+assert "map MAP01; wait" not in runner, "runtime test must not launch MAP01 from early exec"
+assert "+warp is GZDoom's startup-safe autostart path" in runner
 
 # WorldLoaded also runs when restoring a save. Serialized director fields must survive
 # that callback instead of being reset as if a fresh map had started.
