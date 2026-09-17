@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.13-dev — Closing Time readability + memo scavenger pass  
-> **Project progress:** `█████░░░░░ 53%`
+> **Status:** Prototype 0.14-dev — Overtime environmental hazard pass  
+> **Project progress:** `██████░░░░ 55%`
 
 ## Premise
 
@@ -44,11 +44,19 @@ security barrier powers down and opens an optional employee room with an **Emplo
 the Month Stash**. No mandatory breaker is hidden in that room, so the reward is a real
 side route rather than a disguised progression lock.
 
-Prototype `0.13-dev` adds a lightweight exploration/comedy layer to that route. Closing Time
-now hides **three optional Corporate Compliance Memos** across a front detour, an east-side
+Prototype `0.13-dev` added a lightweight exploration/comedy layer to that route. Closing Time
+hides **three optional Corporate Compliance Memos** across a front detour, an east-side
 combat detour and the powered Staff Only room. Each pickup advances a different absurd policy
 message, while the HUD tracks `OPTIONAL MEMOS 0/3` without making the collectibles mandatory.
 The memo sprite and pickup cue are project-owned and generated deterministically during builds.
+
+Prototype `0.14-dev` makes **Overtime change the floor itself**, not just enemy pressure.
+Four dedicated hazard anchors are positioned away from the spawn/clock-out lane. At `90s`,
+they begin readable warning-alarm flashes; at `180s`, those locations start discharging
+telegraphed electrical floor arcs; at `270s / HELL RUSH`, the trap cadence accelerates to one
+pulse every 20 seconds per anchor. The arcs have a visible warning phase before dealing a small
+area burst, so Overtime is dangerous without becoming random or unreadable. The warning and arc
+sprites/audio are entirely project-owned and generated deterministically from repository code.
 
 ## Original combat presentation
 
@@ -101,9 +109,12 @@ and CI verifies generated files, PK3 packaging, sound mappings and actor wiring.
 
 Waiting around is increasingly dangerous. The **Overtime** director escalates through
 `SHIFT ACTIVE` → `STORE UNSTABLE` → `OVERTIME` → `HELL RUSH`. Dedicated map
-spawners add increasingly aggressive reinforcements as the shift drags on. The HUD now shows
-an explicit countdown to the next escalation, a three-cell power display, optional memo progress,
-supervisor state, current objective and a Staff Only route cue once partial power unlocks it.
+spawners add increasingly aggressive reinforcements as the shift drags on. Closing Time now
+also layers synchronized workplace alarms and electrical floor hazards on top of the enemy
+pressure, while preserving clear telegraphs and keeping the clock-out lane free of trap anchors.
+The HUD shows an explicit countdown to the next escalation, a three-cell power display,
+optional memo progress, supervisor state, current objective and a Staff Only route cue once
+partial power unlocks it.
 
 See [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
 
@@ -158,9 +169,11 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - optional Staff Only side room and Employee of the Month reward stash,
 - three optional Corporate Compliance Memo pickups with staged workplace-comedy messages,
 - Overtime escalation director with timed reinforcement spawners,
+- Closing Time Overtime warning alarms plus telegraphed electrical floor hazards that accelerate during Hell Rush,
 - shift/objective/Overtime HUD overlay with next-escalation countdown, power cells and optional-collectible tracking,
 - first original supermarket wall/shelf/staff/floor/ceiling material pack,
 - original breaker, shutter, stash and Corporate Memo prototype sprites,
+- original Overtime warning/floor-arc sprite set with dedicated alarm/electrical cues,
 - original **Emergency Mop** first-person sprite/animation set with combat swing cue,
 - original **Receipt Ripper** pickup/view sprite set with fire/cycle cues,
 - original **Price-Gun SMG** pickup/view sprite set with barcode-label impact feedback and weapon cues,
@@ -174,7 +187,7 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contracts,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
-- automated build + gameplay + layout + Staff Only + Closing Time presentation + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
+- automated build + gameplay + layout + Staff Only + Closing Time presentation + Overtime hazard + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - original project icon concept and documented asset/weapon/level/packaging direction.
 
@@ -195,6 +208,7 @@ python tools/test_gameplay_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_closing_time_presentation_contract.py
+python tools/test_overtime_hazard_contract.py
 python tools/test_boss_escape_contract.py
 python tools/test_original_assets.py
 python tools/test_vehicle_enemy_assets.py
@@ -215,7 +229,7 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ## Maps
 
-- `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, powered side route, optional memo scavenger route, staged supervisor fight and checkout escape
+- `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, powered side route, optional memo scavenger route, staged Overtime floor hazards, supervisor fight and checkout escape
 - `MAP02` — **Warehouse 13.5** — power-restoration arena with original retail surfaces and a gated two-phase Regional Manager boss
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
