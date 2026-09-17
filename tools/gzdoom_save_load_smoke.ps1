@@ -8,6 +8,7 @@ $FreedoomWad = Join-Path $ProjectRoot "external\freedoom2.wad"
 $Pk3 = Join-Path $ProjectRoot "dist\checkout-of-hell-prototype.pk3"
 $WorkDir = Join-Path $ProjectRoot "dist\save-load-runtime"
 $SaveDir = Join-Path $WorkDir "saves"
+$EngineConfig = Join-Path $WorkDir "gzdoom-ci.ini"
 $SaveConfig = Join-Path $WorkDir "save-roundtrip.cfg"
 $LoadConfig = Join-Path $WorkDir "load-roundtrip.cfg"
 $SaveStdout = Join-Path $WorkDir "save.stdout.log"
@@ -16,7 +17,7 @@ $LoadStdout = Join-Path $WorkDir "load.stdout.log"
 $LoadStderr = Join-Path $WorkDir "load.stderr.log"
 $CombinedLog = Join-Path $ProjectRoot "dist\gzdoom-save-load-smoke.log"
 $SaveStem = "coh-ci-roundtrip"
-$TimeoutSeconds = 90
+$TimeoutSeconds = 45
 
 function Invoke-GZDoomRoundTripProcess {
     param(
@@ -113,6 +114,17 @@ if (Test-Path -LiteralPath $WorkDir) {
 }
 New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
 
+# GitHub's hosted Windows runner has no usable Vulkan adapter. Set the renderer
+# preference in the config that GZDoom reads before video initialization so the
+# runtime pass cannot stop at the Vulkan fallback dialog.
+@(
+    "[GlobalSettings]",
+    "vid_preferbackend=0",
+    "vid_fullscreen=false",
+    "i_pauseinbackground=false",
+    "i_soundinbackground=false"
+) | Set-Content -LiteralPath $EngineConfig -Encoding ASCII
+
 # Commands after wait remain in one command string so GZDoom's delayed-command
 # queue advances only after MAP01 is live. We deliberately save two Breaker Fuses:
 # a fresh-world reset would erase them, while a genuine save restore must preserve them.
@@ -124,10 +136,10 @@ Set-Content -LiteralPath $LoadConfig -Value $loadCommands -Encoding ASCII
 $commonArguments = @(
     "-stdout",
     "-nosound",
+    "-config", $EngineConfig,
     "-iwad", $FreedoomWad,
     "-file", $Pk3,
-    "-savedir", $SaveDir,
-    "+i_pauseinbackground", "0"
+    "-savedir", $SaveDir
 )
 
 Write-Host "Runtime pass 1/2: start MAP01, mutate state and write a savegame..."
