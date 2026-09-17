@@ -40,6 +40,9 @@ jobs:
       - name: Staff Only route contract test
         run: python tools/test_staff_room_contract.py
 
+      - name: Closing Time presentation contract test
+        run: python tools/test_closing_time_presentation_contract.py
+
       - name: Boss + escape contract test
         run: python tools/test_boss_escape_contract.py
 
