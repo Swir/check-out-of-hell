@@ -78,11 +78,10 @@ def run_phase(
         "1",
     ]
 
-    # +warp is GZDoom's startup-safe autostart path. A plain `map MAP01` inside
-    # an early exec file runs before autostart selection and can leave the engine
-    # on the title console, where gameplay/save commands have no player target.
+    # -warp is the engine startup parameter. Using +warp invokes the live console
+    # coordinate-warp command instead, which rejects a single map-number argument.
     if autostart_map01:
-        argv.extend(["+warp", "1"])
+        argv.extend(["-warp", "1"])
 
     argv.extend(["+exec", str(COMMAND_PATH)])
 
@@ -154,13 +153,22 @@ def main() -> int:
         encoding="ascii",
     )
 
-    # Seed a meaningful mid-objective state through GZDoom's own inventory system.
-    # MAP layout/pickup placement already has dedicated contracts; this regression is
-    # deliberately isolated from navigation and combat so it tests serialization only.
-    save_commands = (
-        "wait 105; god; notarget; give CheckoutFuse 2; "
-        "give CorporateMemo 1; wait 8; printinv; "
-        'save coh_ci_roundtrip "COH CI roundtrip"; wait 20; quit'
+    # Keep each command on its own cfg line. `wait` suspends execution of the
+    # remaining cfg lines, giving MAP01 a real player before inventory is seeded.
+    # MAP layout/pickup placement has separate contracts; this checks serialization.
+    save_commands = "\n".join(
+        (
+            "wait 105",
+            "god",
+            "notarget",
+            "give CheckoutFuse 2",
+            "give CorporateMemo 1",
+            "wait 8",
+            "printinv",
+            'save coh_ci_roundtrip "COH CI roundtrip"',
+            "wait 20",
+            "quit",
+        )
     )
     save_text = run_phase(
         executable,
@@ -177,7 +185,15 @@ def main() -> int:
     if save_files[0].stat().st_size < 4096:
         raise RuntimeError(f"Roundtrip save looks unexpectedly small: {save_files[0].stat().st_size} bytes.")
 
-    load_commands = "load coh_ci_roundtrip; wait 105; printinv; wait 8; quit"
+    load_commands = "\n".join(
+        (
+            "load coh_ci_roundtrip",
+            "wait 105",
+            "printinv",
+            "wait 8",
+            "quit",
+        )
+    )
     load_text = run_phase(executable, iwad, load_commands, "load")
     require_inventory(load_text, "Loaded")
 
