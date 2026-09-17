@@ -117,6 +117,13 @@ class CheckoutShiftDirector : EventHandler
 
     override void WorldLoaded(WorldEvent e)
     {
+        // EventHandler fields are serialized with the save. Do not wipe the restored
+        // objective, boss-clear or Overtime presentation state on a savegame load.
+        if (e.IsSaveGame)
+        {
+            return;
+        }
+
         bossCleared = false;
         exitPending = false;
         exitTic = 0;
@@ -396,8 +403,8 @@ class CheckoutOvertimeSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -459,8 +466,8 @@ class CheckoutManagerSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -509,8 +516,8 @@ class CheckoutBossWaveSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -593,8 +600,8 @@ class CheckoutStaffShutter : Actor
     States
     {
     Spawn:
-        COSH A -1 Bright
-        Stop
+        COSH A -1 Bright;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -639,8 +646,8 @@ class CheckoutFullPowerCacheSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
@@ -688,8 +695,8 @@ class CheckoutRegionalManagerSpawner : Actor
     States
     {
     Spawn:
-        TNT1 A -1
-        Stop
+        TNT1 A -1;
+        Stop;
     }
 
     override void PostBeginPlay()
