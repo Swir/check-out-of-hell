@@ -40,8 +40,9 @@ if (Test-Path -LiteralPath $RuntimeLog) {
 }
 
 # +map is converted by GZDoom into an autostart map before the main loop. The
-# startup exec therefore only needs to defer state mutation/save commands until
-# the level has ticked. The load pass uses GZDoom's native -loadgame path.
+# startup -exec file queues its delayed commands during engine initialization,
+# so the state mutation/save sequence runs after the level has ticked. The load
+# pass uses GZDoom's native -loadgame path.
 'wait 70; god; give CheckoutFuse 2; give CorporateMemo 1; wait 4; save coh-save-load-ci "CHECKOUT OF HELL CI SAVE"; wait 35; quit' |
     Set-Content -LiteralPath $CreateCfg -Encoding ASCII
 'wait 70; save coh-save-load-ci-roundtrip "CHECKOUT OF HELL CI ROUNDTRIP"; wait 35; quit' |
@@ -74,10 +75,9 @@ function Invoke-GZDoomScenario {
         "+vid_activeinbackground", "true",
         "-savedir", $SaveDir,
         "-iwad", $FreedoomWad,
-        "-file", $Pk3
-    ) + $ExtraArguments + @(
-        "+exec", $ConfigPath
-    )
+        "-file", $Pk3,
+        "-exec", $ConfigPath
+    ) + $ExtraArguments
 
     # Hosted Windows runners do not expose a usable Vulkan device. Force the
     # OpenGL video backend with the software scene renderer, keep background
