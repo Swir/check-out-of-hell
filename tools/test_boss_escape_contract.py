@@ -47,8 +47,10 @@ for threshold in (12, 26, 42, 58):
     if f"elapsed >= {threshold}" not in ZSCRIPT:
         raise SystemExit(f"Boss-wave sequence is missing the {threshold}s stage")
 
-if 'taskText = "TASK: RETURN TO FRONT CHECKOUT"' not in ZSCRIPT:
+if 'return "OBJECTIVE  RETURN TO FRONT CHECKOUT";' not in ZSCRIPT:
     raise SystemExit("HUD must send the player back to the front checkout after the boss")
+if 'return "ROUTE: CLOCK OUT AT THE FRONT LANES";' not in ZSCRIPT:
+    raise SystemExit("HUD route hint must point back to the front clock-out lane")
 if "p.Pos.X >= -140" not in ZSCRIPT or "p.Pos.X <= 140" not in ZSCRIPT:
     raise SystemExit("Clock-out zone must stay centered on the front checkout")
 if "p.Pos.Y <= -350" not in ZSCRIPT:
