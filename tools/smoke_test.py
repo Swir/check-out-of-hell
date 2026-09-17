@@ -8,6 +8,7 @@ PK3 = ROOT / "dist" / "checkout-of-hell-prototype.pk3"
 DECORATE = ROOT / "game" / "DECORATE"
 MAPINFO = ROOT / "game" / "MAPINFO"
 ZSCRIPT = ROOT / "game" / "ZSCRIPT"
+ZSCRIPT_SAVELOAD = ROOT / "game" / "ZSCRIPT_SAVELOAD"
 
 if not PK3.exists():
     raise SystemExit("PK3 missing. Run: python tools/build.py")
@@ -57,14 +58,15 @@ for map_name in ("MAP01", "MAP02"):
     if f"map {map_name} " not in mapinfo:
         raise SystemExit(f"MAPINFO entry missing: {map_name}")
 
-if 'AddEventHandlers = "CheckoutShiftDirector"' not in mapinfo:
-    raise SystemExit("CheckoutShiftDirector is not registered in MAPINFO")
+if 'AddEventHandlers = "CheckoutPersistentShiftDirector"' not in mapinfo:
+    raise SystemExit("Save-safe CheckoutPersistentShiftDirector is not registered in MAPINFO")
 if '17100 = "CheckoutOvertimeSpawner"' not in mapinfo:
     raise SystemExit("Overtime spawner DoomEdNum is missing")
 if '17101 = "CheckoutManagerSpawner"' not in mapinfo:
     raise SystemExit("Gated supervisor spawner DoomEdNum is missing")
 
 zscript = ZSCRIPT.read_text(encoding="utf-8")
+zscript_saveload = ZSCRIPT_SAVELOAD.read_text(encoding="utf-8")
 for required in (
     "class CheckoutShiftDirector : EventHandler",
     "class CheckoutOvertimeSpawner : Actor",
@@ -74,6 +76,14 @@ for required in (
 ):
     if required not in zscript:
         raise SystemExit(f"ZScript gameplay contract missing: {required}")
+
+for required in (
+    "class CheckoutPersistentShiftDirector : CheckoutShiftDirector",
+    "if (e.IsSaveGame)",
+    "Super.WorldLoaded(e);",
+):
+    if required not in zscript_saveload:
+        raise SystemExit(f"ZScript save/load contract missing: {required}")
 
 for map_name in ("MAP01", "MAP02"):
     source_map = (ROOT / "game" / f"{map_name}.udmf").read_text(encoding="utf-8")
@@ -89,4 +99,4 @@ if "type = 17003" in map01:
     raise SystemExit("MAP01 must not pre-place Night Manager before power restoration")
 
 print("Smoke test: PASS")
-print("PK3 structure, staged MAP01 objective loop, Overtime contract and generated maps look valid.")
+print("PK3 structure, staged MAP01 objective loop, Overtime contract, save-safe handler and generated maps look valid.")
