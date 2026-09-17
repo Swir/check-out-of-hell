@@ -6,7 +6,6 @@ actor OvertimeWarningFlash
     Radius 2
     Height 2
     +NOBLOCKMAP
-    +NOSECTOR
     +NOGRAVITY
     +NOCLIP
 
