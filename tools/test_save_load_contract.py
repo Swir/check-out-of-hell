@@ -19,7 +19,7 @@ def main() -> None:
     mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
     build = (TOOLS / "build.py").read_text(encoding="utf-8")
     workflow = WORKFLOW.read_text(encoding="utf-8")
-    runtime_script = (TOOLS / "gzdoom_save_load_smoke_linux.sh").read_text(encoding="utf-8")
+    linux_runtime_script = (TOOLS / "gzdoom_save_load_smoke_linux.sh").read_text(encoding="utf-8")
     windows_runtime_script = (TOOLS / "gzdoom_save_load_smoke.ps1").read_text(encoding="utf-8")
     linux_bootstrap = (TOOLS / "bootstrap_runtime_linux.py").read_text(encoding="utf-8")
     inspector = (TOOLS / "inspect_gzdoom_save.py").read_text(encoding="utf-8")
@@ -38,21 +38,28 @@ def main() -> None:
     require(build, 'GAME / "ZSCRIPT_SAVELOAD"', "tools/build.py")
     require(build, 'archive.writestr("ZSCRIPT", zscript_payload())', "tools/build.py")
 
-    require(runtime_script, "give CheckoutFuse 2", "gzdoom_save_load_smoke_linux.sh")
-    require(runtime_script, "give CorporateMemo 1", "gzdoom_save_load_smoke_linux.sh")
-    require(runtime_script, "save coh-save-load-ci", "gzdoom_save_load_smoke_linux.sh")
-    require(runtime_script, "-loadgame coh-save-load-ci", "gzdoom_save_load_smoke_linux.sh")
-    require(runtime_script, "save coh-save-load-ci-roundtrip", "gzdoom_save_load_smoke_linux.sh")
-    require(runtime_script, "LIBGL_ALWAYS_SOFTWARE=1", "gzdoom_save_load_smoke_linux.sh")
-    require(runtime_script, "xvfb-run", "gzdoom_save_load_smoke_linux.sh")
-    require(runtime_script, 'run_scenario create-save "$CREATE_CFG" +warp MAP01', "gzdoom_save_load_smoke_linux.sh")
-    require(runtime_script, '-exec "$cfg"', "gzdoom_save_load_smoke_linux.sh")
-    require(runtime_script, "inspect_gzdoom_save.py", "gzdoom_save_load_smoke_linux.sh")
-    if 'run_scenario create-save "$CREATE_CFG" +map MAP01' in runtime_script:
-        raise AssertionError("Linux save/load smoke regressed to +map; GZDoom needs startup +warp to autostart in hosted CI")
+    # Keep the Linux harness useful for local diagnosis even though hosted CI
+    # performs the authoritative live round trip on the normal Windows target.
+    require(linux_runtime_script, "give CheckoutFuse 2", "gzdoom_save_load_smoke_linux.sh")
+    require(linux_runtime_script, "give CorporateMemo 1", "gzdoom_save_load_smoke_linux.sh")
+    require(linux_runtime_script, "save coh-save-load-ci", "gzdoom_save_load_smoke_linux.sh")
+    require(linux_runtime_script, "-loadgame coh-save-load-ci", "gzdoom_save_load_smoke_linux.sh")
+    require(linux_runtime_script, "save coh-save-load-ci-roundtrip", "gzdoom_save_load_smoke_linux.sh")
+    require(linux_runtime_script, "LIBGL_ALWAYS_SOFTWARE=1", "gzdoom_save_load_smoke_linux.sh")
+    require(linux_runtime_script, "xvfb-run", "gzdoom_save_load_smoke_linux.sh")
+    require(linux_runtime_script, 'run_scenario create-save "$CREATE_CFG" +warp MAP01', "gzdoom_save_load_smoke_linux.sh")
+    require(linux_runtime_script, '-exec "$cfg"', "gzdoom_save_load_smoke_linux.sh")
+    if 'run_scenario create-save "$CREATE_CFG" +map MAP01' in linux_runtime_script:
+        raise AssertionError("Linux save/load smoke regressed to +map; GZDoom needs startup +warp to autostart")
 
+    require(windows_runtime_script, "give CheckoutFuse 2", "gzdoom_save_load_smoke.ps1")
+    require(windows_runtime_script, "give CorporateMemo 1", "gzdoom_save_load_smoke.ps1")
+    require(windows_runtime_script, "save coh-save-load-ci", "gzdoom_save_load_smoke.ps1")
+    require(windows_runtime_script, '"-loadgame", "coh-save-load-ci"', "gzdoom_save_load_smoke.ps1")
+    require(windows_runtime_script, "save coh-save-load-ci-roundtrip", "gzdoom_save_load_smoke.ps1")
     require(windows_runtime_script, '@("+warp", "MAP01")', "gzdoom_save_load_smoke.ps1")
     require(windows_runtime_script, '"-exec", $ConfigPath', "gzdoom_save_load_smoke.ps1")
+    require(windows_runtime_script, "inspect_gzdoom_save.py", "gzdoom_save_load_smoke.ps1")
     if '@("+map", "MAP01")' in windows_runtime_script:
         raise AssertionError("Windows save/load smoke regressed to startup +map instead of +warp")
 
@@ -69,9 +76,11 @@ def main() -> None:
 
     require(workflow, "Save/load persistence contract test", "build.yml")
     require(workflow, "save-load-runtime:", "build.yml")
-    require(workflow, "Resolve pinned official Linux runtime assets", "build.yml")
+    require(workflow, "runs-on: windows-latest", "build.yml")
     require(workflow, "Save/load current prototype with pinned GZDoom", "build.yml")
-    require(workflow, "bash tools/gzdoom_save_load_smoke_linux.sh", "build.yml")
+    require(workflow, ".\\tools\\gzdoom_save_load_smoke.ps1", "build.yml")
+    if "bash tools/gzdoom_save_load_smoke_linux.sh" in workflow:
+        raise AssertionError("Hosted CI should validate the shipping Windows runtime, not depend on an Xvfb gameplay loop")
 
     if not PK3.exists():
         raise AssertionError("Built PK3 is missing; run tools/build.py before this contract")
