@@ -16,7 +16,9 @@ lock = json.loads((ROOT / "runtime-lock.json").read_text(encoding="utf-8"))
 required_runner_markers = (
     '"-savedir"',
     '"-noautoload"',
-    '"+sv_cheats"',
+    '"+set"',
+    '"sv_cheats"',
+    'argv.extend(["+exec", str(COMMAND_PATH)])',
     'argv.extend(["+map", "MAP01"])',
     "autostart_map01=True",
     '"give CheckoutFuse 2"',
@@ -49,11 +51,12 @@ assert "checks serialization" in runner
 assert 'save_commands = "\\n".join(' in runner
 assert 'load_commands = "\\n".join(' in runner
 
-# +map is intentionally queued before +exec so the map/player exists when cfg commands
-# execute. +warp is the live coordinate-warp command and is not a map-number launcher.
+# GZDoom processes ordinary +commands in reverse insertion order. +exec must be
+# appended before +map so the map exists before the command file executes.
+assert runner.index('argv.extend(["+exec", str(COMMAND_PATH)])') < runner.index('argv.extend(["+map", "MAP01"])')
 assert 'argv.extend(["+warp", "1"])' not in runner
 assert 'argv.extend(["-warp", "1"])' not in runner
-assert "+map is a post-initialization console command" in runner
+assert "reverse command-line insertion order" in runner
 
 # GZDoom treats -errorlog as a batch/parser mode switch and exits before the live
 # game loop. Keep it in the -norun parser smoke, never in the real save/load process.
