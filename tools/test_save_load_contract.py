@@ -5,7 +5,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 runner = (ROOT / "tools" / "gzdoom_save_load_roundtrip.py").read_text(encoding="utf-8")
 linux_bootstrap = (ROOT / "tools" / "bootstrap_runtime_linux.py").read_text(encoding="utf-8")
-windows_wrapper = (ROOT / "tools" / "gzdoom_save_load_roundtrip.ps1").read_text(encoding="utf-8")
 parser_smoke = (ROOT / "tools" / "gzdoom_runtime_smoke.ps1").read_text(encoding="utf-8")
 zscript = (ROOT / "game" / "ZSCRIPT").read_text(encoding="utf-8")
 workflow = (ROOT / ".github" / "workflows" / "build.yml").read_text(encoding="utf-8")
@@ -18,17 +17,21 @@ required_runner_markers = (
     '"-noautoload"',
     '"+set"',
     '"sv_cheats"',
-    'argv.extend(["+exec", str(COMMAND_PATH)])',
-    'argv.extend(["+map", "MAP01"])',
-    "autostart_map01=True",
-    '"give CheckoutFuse 2"',
-    '"give CorporateMemo 1"',
+    'parser.add_argument("--xdotool"',
+    '"search", "--pid", str(process.pid)',
+    '"windowfocus", "--sync", window_id',
+    '"key", "--window", window_id, "--clearmodifiers", "grave"',
+    '"type", "--window", window_id',
+    "map MAP01; wait 105",
+    "give CheckoutFuse 2",
+    "give CorporateMemo 1",
     "save coh_ci_roundtrip",
     "load coh_ci_roundtrip",
     "printinv",
     "CheckoutFuse #[0-9]+",
     "CorporateMemo #[0-9]+",
     "PHASE_TIMEOUT_SECONDS = 45",
+    "WINDOW_TIMEOUT_SECONDS = 15",
     "GZDoom save/load roundtrip: PASS",
 )
 for marker in required_runner_markers:
@@ -43,20 +46,13 @@ for failure_marker in (
 ):
     assert failure_marker in runner, f"save/load runner does not guard against: {failure_marker}"
 
-# The persistence regression must be deterministic and isolated from combat/navigation.
-# Pickup placement and route logic are already guarded by dedicated MAP01 contracts.
+# The live test must inject commands only after the real engine window exists. This
+# prevents early +exec/config execution from falsely exercising title-screen state.
+assert "+exec" not in runner, "live save/load runner must not inject startup +exec commands"
+assert "startup-order ambiguity of +exec" in runner
+assert "after a real GZDoom window exists" in runner
 for old_warp in ("warp -690 -310 0", "warp -640 140 0", "warp 620 340 0"):
     assert old_warp not in runner
-assert "checks serialization" in runner
-assert 'save_commands = "\\n".join(' in runner
-assert 'load_commands = "\\n".join(' in runner
-
-# GZDoom processes ordinary +commands in reverse insertion order. +exec must be
-# appended before +map so the map exists before the command file executes.
-assert runner.index('argv.extend(["+exec", str(COMMAND_PATH)])') < runner.index('argv.extend(["+map", "MAP01"])')
-assert 'argv.extend(["+warp", "1"])' not in runner
-assert 'argv.extend(["-warp", "1"])' not in runner
-assert "reverse command-line insertion order" in runner
 
 # GZDoom treats -errorlog as a batch/parser mode switch and exits before the live
 # game loop. Keep it in the -norun parser smoke, never in the real save/load process.
@@ -93,11 +89,11 @@ for bootstrap_marker in (
 ):
     assert bootstrap_marker in linux_bootstrap, f"Linux bootstrap missing resilience marker: {bootstrap_marker}"
 
-assert "gzdoom_save_load_roundtrip.py" in windows_wrapper
-assert "bootstrap_runtime.ps1" in windows_wrapper
 assert "save-load-runtime:" in workflow
 assert "Resolve pinned official Linux runtime assets" in workflow
 assert "python tools/bootstrap_runtime_linux.py" in workflow
+assert "xvfb xdotool" in workflow
+assert "--xdotool \"$(command -v xdotool)\"" in workflow
 assert "xvfb-run -a python tools/gzdoom_save_load_roundtrip.py" in workflow
 assert 'LIBGL_ALWAYS_SOFTWARE: "1"' in workflow
 assert "timeout-minutes: 8" in workflow
