@@ -159,6 +159,13 @@ class CheckoutShiftDirector : EventHandler
         int fuses = p.CountInv("CheckoutFuse");
         int memos = p.CountInv("CorporateMemo");
 
+        // Once management is down, mark the shift as cleared. Reinforcement spawners use
+        // this invisible token to stop adding fresh threats during the readable clock-out run.
+        if (bossCleared && p.CountInv("SupervisorClearanceToken") == 0)
+        {
+            p.A_GiveInventory("SupervisorClearanceToken", 1);
+        }
+
         if (fuses > lastFuseCount)
         {
             lastFuseCount = fuses;
@@ -403,6 +410,17 @@ class CheckoutOvertimeSpawner : Actor
     {
         Super.Tick();
 
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p || p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            return;
+        }
+
         int stage = CheckoutShiftDirector.GetOvertimeStage();
         if (stage <= 0 || Level.maptime < nextSpawn)
         {
@@ -512,7 +530,7 @@ class CheckoutBossWaveSpawner : Actor
         }
 
         PlayerPawn p = PlayerPawn(players[0].mo);
-        if (!p || p.CountInv("CheckoutFuse") < 3)
+        if (!p || p.CountInv("CheckoutFuse") < 3 || p.CountInv("SupervisorClearanceToken") > 0)
         {
             return;
         }
@@ -527,7 +545,7 @@ class CheckoutBossWaveSpawner : Actor
 
         int elapsed = (Level.maptime - startTic) / 35;
 
-        if (nextWave == 1 && elapsed >= 12)
+        if (nextWave == 1 && elapsed >= 15)
         {
             Actor.Spawn("TeleportFog", Pos);
             Actor.Spawn("AngrySelfCheckout", Pos);
@@ -535,7 +553,7 @@ class CheckoutBossWaveSpawner : Actor
             return;
         }
 
-        if (nextWave == 2 && elapsed >= 26)
+        if (nextWave == 2 && elapsed >= 34)
         {
             Actor.Spawn("TeleportFog", Pos);
             Actor.Spawn("CartOfDoom", Pos);
@@ -543,7 +561,7 @@ class CheckoutBossWaveSpawner : Actor
             return;
         }
 
-        if (nextWave == 3 && elapsed >= 42)
+        if (nextWave == 3 && elapsed >= 54)
         {
             Actor.Spawn("TeleportFog", Pos);
             Actor.Spawn("ScannerTurret", Pos);
@@ -551,7 +569,7 @@ class CheckoutBossWaveSpawner : Actor
             return;
         }
 
-        if (nextWave == 4 && elapsed >= 58)
+        if (nextWave == 4 && elapsed >= 76)
         {
             Actor.Spawn("TeleportFog", Pos);
             Actor.Spawn("PalletJack", Pos);
@@ -604,6 +622,55 @@ class CheckoutStaffShutter : Actor
         p.A_StartSound("coh/shutter", CHAN_AUTO);
         Actor.Spawn("TeleportFog", Pos);
         Destroy();
+    }
+}
+
+class CheckoutFullPowerCacheSpawner : Actor
+{
+    bool spawned;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (spawned || !players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p || p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        Actor.Spawn("TeleportFog", Pos);
+        Actor cache = Actor.Spawn("CheckoutPowerCache", Pos);
+        if (cache)
+        {
+            cache.A_StartSound("coh/breaksnack", CHAN_ITEM);
+            spawned = true;
+        }
     }
 }
 
