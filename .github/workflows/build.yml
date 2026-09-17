@@ -140,13 +140,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: .\tools\gzdoom_runtime_smoke.ps1
 
-      - name: Save/load current prototype with pinned GZDoom
-        shell: powershell
-        timeout-minutes: 2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: .\tools\gzdoom_save_load_smoke.ps1
-
       - name: Upload Windows GZDoom parser log
         if: always()
         uses: actions/upload-artifact@v4
@@ -154,6 +147,23 @@ jobs:
           name: gzdoom-windows-parser-log
           path: dist/gzdoom-runtime-smoke.log
           if-no-files-found: warn
+
+  runtime-save-load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Save/load current prototype with pinned GZDoom
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash tools/gzdoom_save_load_smoke_linux.sh
 
       - name: Upload GZDoom save/load smoke log
         if: always()
