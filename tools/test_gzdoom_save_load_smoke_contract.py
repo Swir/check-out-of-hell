@@ -23,8 +23,8 @@ required_windows_markers = (
     '"-savedir", $SaveDir',
     'Start-Process -FilePath $GZDoomExe',
     'Stop-Process -Id $Process.Id -Force',
-    'give CheckoutFuse 2',
-    'give CorporateMemo 2',
+    'give CheckoutFuse; give CheckoutFuse',
+    'give CorporateMemo; give CorporateMemo',
     'save $SaveStem',
     '"-loadgame", $saveFile.FullName',
     'COH_RUNTIME_SAVE_WRITTEN',
@@ -33,6 +33,8 @@ required_windows_markers = (
 for marker in required_windows_markers:
     if marker not in windows_script:
         raise SystemExit(f"Native Windows save/load harness is missing required marker: {marker}")
+if "give CheckoutFuse 2" in windows_script or "give CorporateMemo 2" in windows_script:
+    raise SystemExit("Windows harness must use the documented one-item GZDoom give syntax")
 if "quit\"" in windows_script or "; quit" in windows_script:
     raise SystemExit("Windows harness must not depend on an unfocused GZDoom GUI processing quit")
 
@@ -53,8 +55,8 @@ required_linux_markers = (
     '"LIBGL_ALWAYS_SOFTWARE"',
     '"MESA_LOADER_DRIVER_OVERRIDE"',
     '"llvmpipe"',
-    "give CheckoutFuse 2",
-    "give CorporateMemo 2",
+    "give CheckoutFuse; give CheckoutFuse",
+    "give CorporateMemo; give CorporateMemo",
     "coh-ci-roundtrip-linux",
     '"-loadgame"',
     "COH_LINUX_RUNTIME_SAVE_WRITTEN",
@@ -66,15 +68,14 @@ required_linux_markers = (
 for marker in required_linux_markers:
     if marker not in linux_script:
         raise SystemExit(f"Linux runtime save/load smoke is missing required marker: {marker}")
+if "give CheckoutFuse 2" in linux_script or "give CorporateMemo 2" in linux_script:
+    raise SystemExit("Linux harness must use the documented one-item GZDoom give syntax")
 if "; quit" in linux_script:
     raise SystemExit("Linux harness must own the process boundary instead of depending on GUI quit")
 
 if lock.get("gzdoom", {}).get("linux_asset_regex") != r"^gzdoom_.*_amd64\.deb$":
     raise SystemExit("runtime-lock.json must pin the official amd64 GZDoom Linux package pattern")
 
-# These malformed state blocks survived the old static/parser checks but fail when
-# GZDoom actually initializes gameplay. Keep a cheap regression guard next to the
-# live round-trip so the exact parser regression cannot silently return.
 malformed_state_fragments = (
     "TNT1 A -1\n        Stop",
     "COSH A -1 Bright\n        Stop",
