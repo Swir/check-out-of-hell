@@ -68,7 +68,7 @@ PY
 
 assert_clean_log() {
   local log="$1" phase="$2"
-  local pattern='Script error|Execution could not continue|Unknown class|Unknown identifier|Invalid parameter|Parse error|VM execution aborted|Could not load savegame|Savegame is from a different version|Savegame uses a different set of files|Fatal error|Segmentation fault'
+  local pattern='Script error|Execution could not continue|Unknown class|Unknown identifier|Invalid parameter|Parse error|VM execution aborted|Could not load savegame|Savegame is from a different version|Savegame uses a different set of files|Fatal error|Segmentation fault|Save failed'
   if grep -Eiq "$pattern" "$log"; then
     echo "GZDoom reported an error during $phase. See $log" >&2
     cat "$log" >&2
@@ -80,7 +80,7 @@ run_probe() {
   local phase="$1" log="$2"
   shift 2
   set +e
-  LIBGL_ALWAYS_SOFTWARE=1 timeout --signal=TERM --kill-after=2s 10s \
+  LIBGL_ALWAYS_SOFTWARE=1 timeout --signal=TERM --kill-after=2s 12s \
     xvfb-run -a "$GZDOOM" "$@" >"$log" 2>&1
   local code=$?
   set -e
@@ -149,30 +149,39 @@ fi
 rm -rf "$PROBE"
 mkdir -p "$SAVES"
 
+# Use save_dir itself, not a guessed command-line directory switch. +set is processed after
+# the config has loaded and before ordinary +commands, matching GZDoom's documented startup
+# command ordering. The save command is deliberately delayed with `wait` because `map` queues
+# a deferred game start; saving in the same startup tick would run before GS_LEVEL exists.
 common=(
   -stdout
   -nosound
   -nomusic
   -noautoload
   -config "$CONFIG"
-  -savedir "$SAVES"
   -iwad "$FREEDOOM_WAD"
   -file "$PK3"
-  +vid_fullscreen 0
-  +vid_preferbackend 0
-  +vid_rendermode 0
+  +set save_dir "$SAVES"
+  +set vid_fullscreen 0
+  +set vid_preferbackend 0
+  +set vid_rendermode 0
 )
 
 echo "Creating an actual MAP01 savegame with pinned GZDoom $GZ_TAG..."
 run_probe save "$SAVE_LOG" "${common[@]}" \
   +map MAP01 \
+  +wait 70 \
   +give CheckoutFuse 2 \
   +give CorporateMemo 1 \
-  +save coh-runtime-probe
+  +wait 2 \
+  +save coh-runtime-probe "Checkout of Hell CI runtime probe" \
+  +wait 35
 
 SAVE_FILE="$(find "$SAVES" -type f -name '*.zds' -printf '%T@ %p\n' | sort -nr | head -n 1 | cut -d' ' -f2- || true)"
 if [[ -z "$SAVE_FILE" || ! -f "$SAVE_FILE" ]]; then
-  echo "GZDoom ran without script errors but did not create a .zds savegame under $SAVES." >&2
+  echo "GZDoom ran without script errors but did not create a .zds savegame under save_dir=$SAVES." >&2
+  echo "Files created by the probe:" >&2
+  find "$PROBE" -maxdepth 4 -type f -printf '  %p (%s bytes)\n' >&2 || true
   cat "$SAVE_LOG" >&2
   exit 1
 fi
@@ -194,7 +203,9 @@ print(f"Validated GZDoom save archive: {path}")
 PY
 
 echo "Reloading that savegame in a fresh pinned GZDoom process..."
-run_probe load "$LOAD_LOG" "${common[@]}" -loadgame "$SAVE_FILE"
+run_probe load "$LOAD_LOG" "${common[@]}" \
+  -loadgame "$SAVE_FILE" \
+  +wait 70
 
 {
   echo "CHECKOUT OF HELL - pinned GZDoom save/load runtime smoke"
