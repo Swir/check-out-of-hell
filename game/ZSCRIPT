@@ -250,7 +250,7 @@ class CheckoutShiftDirector : EventHandler
         if (exitPending && Level.maptime >= exitTic)
         {
             exitPending = false;
-            ExitLevel(0, false);
+            Level.ExecuteSpecial(243, p, null, false, 0);
         }
     }
 
@@ -270,25 +270,89 @@ class CheckoutShiftDirector : EventHandler
         int elapsedSeconds = Level.maptime / 35;
         int minutes = elapsedSeconds / 60;
         int seconds = elapsedSeconds % 60;
-        int stage = GetOvertimeStage();
+        int stage = 0;
+        if (elapsedSeconds >= 270)
+        {
+            stage = 3;
+        }
+        else if (elapsedSeconds >= 180)
+        {
+            stage = 2;
+        }
+        else if (elapsedSeconds >= 90)
+        {
+            stage = 1;
+        }
+
         int fuses = p.CountInv("CheckoutFuse");
         int memos = p.CountInv("CorporateMemo");
         int labels = p.CountInv("Clip");
         int receipts = p.CountInv("Shell");
         int cans = p.CountInv("RocketAmmo");
 
+        String stageLabel = "SHIFT ACTIVE";
+        String pressureText = "PRESSURE [----]";
+        if (stage == 1)
+        {
+            stageLabel = "STORE UNSTABLE";
+            pressureText = "PRESSURE [#---]";
+        }
+        else if (stage == 2)
+        {
+            stageLabel = "OVERTIME";
+            pressureText = "PRESSURE [###-]";
+        }
+        else if (stage >= 3)
+        {
+            stageLabel = "HELL RUSH";
+            pressureText = "PRESSURE [####]";
+        }
+
+        String taskText = "OBJECTIVE  RETURN TO FRONT CHECKOUT";
+        String hintText = "ROUTE: CLOCK OUT AT THE FRONT LANES";
+        if (exitPending)
+        {
+            taskText = "OBJECTIVE  TIMECARD ACCEPTED";
+        }
+        else if (fuses < 3)
+        {
+            taskText = String.Format("OBJECTIVE  RESTORE BREAKERS  %d/3", fuses);
+            if (fuses < 2)
+            {
+                hintText = "ROUTE: SEARCH THE SALES FLOOR FOR POWER";
+            }
+            else
+            {
+                hintText = "ROUTE: STAFF ONLY ACCESS IS NOW POWERED";
+            }
+        }
+        else if (!bossCleared)
+        {
+            taskText = "OBJECTIVE  CLEAR THE SUPERVISOR";
+            hintText = "ROUTE: MANAGEMENT RESPONSE ACTIVE";
+        }
+
         String clockText = String.Format("SHIFT %02d:%02d  //  CLOCK-OUT TARGET 06:00", minutes, seconds);
-        String stageText = String.Format("OVERTIME  %s", GetOvertimeLabel(stage));
-        String pressureText = GetPressureMeter(stage);
+        String stageText = String.Format("OVERTIME  %s", stageLabel);
         String powerText = String.Format("POWER  %d/3", fuses);
         String memoText = String.Format("MEMOS  %d/3", memos);
-        String taskText = GetObjectiveText(fuses, bossCleared, exitPending);
-        String hintText = GetObjectiveHint(fuses, bossCleared);
         String overtimeText = "MAXIMUM OVERTIME";
         String healthText = String.Format("WORKER HP  %03d", p.health);
         String ammoText = String.Format("RESERVES  LABELS %03d  RECEIPTS %02d  CANS %02d", labels, receipts, cans);
 
-        int nextOvertimeSecond = GetNextOvertimeSecond(stage);
+        int nextOvertimeSecond = -1;
+        if (stage == 0)
+        {
+            nextOvertimeSecond = 90;
+        }
+        else if (stage == 1)
+        {
+            nextOvertimeSecond = 180;
+        }
+        else if (stage == 2)
+        {
+            nextOvertimeSecond = 270;
+        }
         if (nextOvertimeSecond >= 0)
         {
             int remaining = nextOvertimeSecond - elapsedSeconds;
@@ -357,7 +421,7 @@ class CheckoutShiftDirector : EventHandler
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
         }
 
-        if (powerPulseUntil > Level.maptime && powerPulseText.Len() > 0)
+        if (powerPulseUntil > Level.maptime && powerPulseText != "")
         {
             Screen.DrawText(smallfont, Font.CR_GOLD, 112, 196, powerPulseText,
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
