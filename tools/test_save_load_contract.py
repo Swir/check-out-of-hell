@@ -17,10 +17,10 @@ required_runner_markers = (
     '"-savedir"',
     '"-noautoload"',
     '"+sv_cheats"',
-    'argv.extend(["+warp", "1"])',
+    'argv.extend(["-warp", "1"])',
     "autostart_map01=True",
-    "god; notarget; give CheckoutFuse 2",
-    "give CorporateMemo 1",
+    '"give CheckoutFuse 2"',
+    '"give CorporateMemo 1"',
     "save coh_ci_roundtrip",
     "load coh_ci_roundtrip",
     "printinv",
@@ -43,21 +43,21 @@ for failure_marker in (
 
 # The persistence regression must be deterministic and isolated from combat/navigation.
 # Pickup placement and route logic are already guarded by dedicated MAP01 contracts.
-assert "warp -690 -310 0" not in runner
-assert "warp -640 140 0" not in runner
-assert "warp 620 340 0" not in runner
-assert "Seed a meaningful mid-objective state through GZDoom's own inventory system" in runner
-assert "serialization only" in runner
+for old_warp in ("warp -690 -310 0", "warp -640 140 0", "warp 620 340 0"):
+    assert old_warp not in runner
+assert "checks serialization" in runner
+assert 'save_commands = "\\n".join(' in runner
+assert 'load_commands = "\\n".join(' in runner
+
+# -warp is the Doom/GZDoom startup parameter. +warp is a live console coordinate
+# command and must never be used by this harness (it accepts x/y, not a map number).
+assert 'argv.extend(["+warp", "1"])' not in runner
+assert "+warp invokes the live console" in runner
 
 # GZDoom treats -errorlog as a batch/parser mode switch and exits before the live
 # game loop. Keep it in the -norun parser smoke, never in the real save/load process.
 assert '"-errorlog"' not in runner, "real save/load runner must not enable GZDoom batch mode"
 assert "Do not pass -errorlog here" in runner
-
-# Startup must use GZDoom's +warp autostart path. An early exec-file `map` command
-# runs before normal autostart selection and can leave the regression on the title console.
-assert "map MAP01; wait" not in runner, "runtime test must not launch MAP01 from early exec"
-assert "+warp is GZDoom's startup-safe autostart path" in runner
 
 # WorldLoaded also runs when restoring a save. Serialized director fields must survive
 # that callback instead of being reset as if a fresh map had started.
