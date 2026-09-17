@@ -76,7 +76,7 @@ def run_phase(
 
     # +warp is GZDoom's startup-safe autostart path. A plain `map MAP01` inside
     # an early exec file runs before autostart selection and can leave the engine
-    # on the title console, where give/save commands have no player target.
+    # on the title console, where gameplay/save commands have no player target.
     if autostart_map01:
         argv.extend(["+warp", "1"])
 
@@ -150,10 +150,14 @@ def main() -> int:
         encoding="ascii",
     )
 
+    # Seed the persisted state through authored MAP01 pickups instead of `give`.
+    # This makes the regression exercise the same inventory path as a real player:
+    # memo at (-690,-310), then two breaker fuses at (-640,140) and (620,340).
     save_commands = (
-        'wait 105; sv_cheats 1; give CheckoutFuse 2; '
-        'give CorporateMemo 1; wait 8; printinv; '
-        'save coh_ci_roundtrip "COH CI roundtrip"; wait 70; quit'
+        "wait 105; warp -690 -310 0; wait 12; "
+        "warp -640 140 0; wait 12; "
+        "warp 620 340 0; wait 12; printinv; "
+        'save coh_ci_roundtrip "COH CI roundtrip"; wait 20; quit'
     )
     save_text = run_phase(
         executable,
