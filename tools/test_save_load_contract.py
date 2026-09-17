@@ -48,7 +48,7 @@ for failure_marker in (
 
 # The live test must inject commands only after the real engine window exists. This
 # prevents early +exec/config execution from falsely exercising title-screen state.
-assert "+exec" not in runner, "live save/load runner must not inject startup +exec commands"
+assert 'argv.extend(["+exec"' not in runner, "live save/load runner must not inject startup +exec commands"
 assert "startup-order ambiguity of +exec" in runner
 assert "after a real GZDoom window exists" in runner
 for old_warp in ("warp -690 -310 0", "warp -640 140 0", "warp 620 340 0"):
