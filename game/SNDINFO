@@ -1,5 +1,6 @@
 // CHECKOUT OF HELL - project-owned interaction/combat cues
 // High-repeat combat cues use deterministic generated variant families to reduce audio fatigue.
+// Signature weapon haptics use GZDoom's built-in rumble profiles; no enemy/ambient cue is mapped.
 
 coh/fuse            sounds/fuse
 coh/shutter         sounds/shutter
@@ -15,6 +16,7 @@ coh/mopswing_v1 sounds/mopswing_v1
 coh/mopswing_v2 sounds/mopswing_v2
 coh/mopswing_v3 sounds/mopswing_v3
 $random coh/mopswing { coh/mopswing_v1 coh/mopswing_v2 coh/mopswing_v3 }
+$rumble coh/mopswing MEDIUM
 
 coh/managerattack_v1 sounds/managerattack_v1
 coh/managerattack_v2 sounds/managerattack_v2
@@ -28,6 +30,7 @@ coh/ripperfire_v1 sounds/ripperfire_v1
 coh/ripperfire_v2 sounds/ripperfire_v2
 coh/ripperfire_v3 sounds/ripperfire_v3
 $random coh/ripperfire { coh/ripperfire_v1 coh/ripperfire_v2 coh/ripperfire_v3 }
+$rumble coh/ripperfire LIGHT
 coh/rippercycle_v1 sounds/rippercycle_v1
 coh/rippercycle_v2 sounds/rippercycle_v2
 coh/rippercycle_v3 sounds/rippercycle_v3
@@ -53,6 +56,7 @@ coh/pricefire_v2 sounds/pricefire_v2
 coh/pricefire_v3 sounds/pricefire_v3
 coh/pricefire_v4 sounds/pricefire_v4
 $random coh/pricefire { coh/pricefire_v1 coh/pricefire_v2 coh/pricefire_v3 coh/pricefire_v4 }
+$rumble coh/pricefire SUBTLE
 coh/pricelabel_v1 sounds/pricelabel_v1
 coh/pricelabel_v2 sounds/pricelabel_v2
 coh/pricelabel_v3 sounds/pricelabel_v3
@@ -62,6 +66,7 @@ coh/canlaunch_v1 sounds/canlaunch_v1
 coh/canlaunch_v2 sounds/canlaunch_v2
 coh/canlaunch_v3 sounds/canlaunch_v3
 $random coh/canlaunch { coh/canlaunch_v1 coh/canlaunch_v2 coh/canlaunch_v3 }
+$rumble coh/canlaunch HEAVY
 coh/canexplode_v1 sounds/canexplode_v1
 coh/canexplode_v2 sounds/canexplode_v2
 coh/canexplode_v3 sounds/canexplode_v3
