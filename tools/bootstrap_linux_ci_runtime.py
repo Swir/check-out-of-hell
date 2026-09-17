@@ -69,9 +69,11 @@ def verify_freedoom_checksum(archive: Path, checksum: Path) -> None:
     expected = None
     archive_name = archive.name
     for line in checksum.read_text(encoding="utf-8", errors="replace").splitlines():
-        fields = line.strip().replace("*", " ").split()
-        if len(fields) >= 2 and Path(fields[-1]).name == archive_name and re.fullmatch(r"[0-9a-fA-F]{64}", fields[0]):
-            expected = fields[0].lower()
+        if archive_name not in line:
+            continue
+        match = re.search(r"\b([0-9a-fA-F]{64})\b", line)
+        if match:
+            expected = match.group(1).lower()
             break
     if not expected:
         raise RuntimeError(f"Official checksum file does not contain SHA-256 for {archive_name}")
