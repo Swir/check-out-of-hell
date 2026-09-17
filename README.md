@@ -22,7 +22,7 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.21-dev` |
+| Version | `0.22-dev` |
 | Implemented/testable progress | **72%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
@@ -129,7 +129,7 @@ The tracks are deterministic Standard MIDI files produced by `tools/generate_mus
 
 The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear only department-local Breaker Fuse and supervisor-clearance tokens; save restores keep serialized shift state intact.
 
-Static/package regression coverage is already active. A real pinned-GZDoom **save → process exit → load** round-trip is being validated in CI before this milestone is considered demo-ready. The roadmap item remains open until the runtime gate is green.
+Static/package regression coverage is active and the pinned Windows runtime already parses the current PK3 in CI. A real **save → process exit → load** round-trip remains intentionally open and is not claimed as complete until it passes against the target Windows runtime path.
 
 ## 🚀 Quick Start — Windows
 
@@ -172,7 +172,7 @@ Runtime pins live in `runtime-lock.json` and change only after compatibility val
 
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, generated art/audio/music, portable packaging and bootstrap behavior, then asks pinned GZDoom to parse the package. The in-progress save/load gate additionally launches the real pinned engine twice under an isolated CI runtime to prove objective state survives process exit and restore.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, generated art/audio/music, portable packaging and bootstrap behavior, then asks pinned GZDoom on Windows to parse the current package. Save/load source invariants are protected by a dedicated regression contract; a process-level target-Windows round-trip remains the next runtime gate.
 
 Useful developer commands:
 
@@ -181,7 +181,7 @@ python tools/build.py
 python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_save_load_state_contract.py
-python tools/test_runtime_save_load_smoke_contract.py
+python tools/test_readme_standard_contract.py
 python tools/test_closing_time_pacing_contract.py
 python tools/test_hud_contract.py
 python tools/test_overtime_hazard_contract.py
@@ -203,7 +203,7 @@ python tools/test_portable_package.py
 | **PK3** | Game package format |
 | **Python 3** | Deterministic original asset/music generation, builds and regression contracts |
 | **PowerShell / Batch** | Windows bootstrap, pinned runtime validation and one-click launch flow |
-| **GitHub Actions** | Build/package contracts plus pinned-engine runtime gates |
+| **GitHub Actions** | Build/package contracts plus pinned-engine parser validation |
 
 ## ⚖️ Asset & distribution policy
 
@@ -225,7 +225,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md) and [`docs/THIRD_PARTY.md`](d
 
 - `Closing Time` is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` is playable but not yet fully polished.
-- The real pinned-engine save/load round-trip remains a demo-readiness gate until CI proves it green.
+- The real target-Windows save → process exit → load round-trip remains a demo-readiness gate.
 - Controller, accessibility-option and performance passes for the public demo are not complete.
 - Later departments remain planned until they have real playable content.
 
