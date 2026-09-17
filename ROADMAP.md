@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `██████░░░░ 66%`
+**Overall progress:** `███████░░░ 68%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -60,9 +60,10 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Closing Time department signage, safe retail clutter, flickering ceiling fixtures and optional Emergency Break Snack rewards
 - [x] Full original combat/weapon sound set polish with deterministic runtime cue variation
 - [x] Closing Time supervisor pacing pass with a full-power recovery cache, widened reinforcement cadence and post-clear reinforcement cutoff
+- [x] Three authored difficulty modes with regression coverage and pinned-engine parser validation
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 78%
+## Phase 2 — Vertical Slice — 82%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -86,7 +87,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [ ] Level 03: Frozen Foods
 - [x] Boss: The Regional Manager — original behavior/art
 - [ ] Secrets and joke interactions — full level pass
-- [ ] Difficulty modes
+- [x] Difficulty modes
 - [ ] Original soundtrack
 - [ ] Save/load validation
 
