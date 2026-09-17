@@ -37,6 +37,9 @@ jobs:
       - name: Difficulty modes contract test
         run: python tools/test_difficulty_modes_contract.py
 
+      - name: Save/load state contract test
+        run: python tools/test_save_load_state_contract.py
+
       - name: Closing Time layout contract test
         run: python tools/test_closing_time_layout.py
 

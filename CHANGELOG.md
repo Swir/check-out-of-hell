@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.20.0-dev — 2026-09-17
+
+### Added
+- `tools/test_save_load_state_contract.py`, covering savegame guarding, packaged ZScript wiring, immediate supervisor-clear persistence and fresh-department objective reset behavior.
+- GitHub Actions execution of the save/load state contract.
+
+### Fixed
+- `CheckoutShiftDirector.WorldLoaded` no longer resets serialized shift state when GZDoom is restoring a savegame.
+- Breaker Fuses and `SupervisorClearanceToken` are now cleared only on genuinely fresh department loads, preventing MAP01 completion state from making the MAP02 Regional Manager objective auto-complete or spawn early.
+- Supervisor clearance is written to player inventory on the same tic as a Night Manager/Regional Manager death and can be used to recover cleared state from older development saves.
+
+### Changed
+- README/ROADMAP progress raised to 70% and Vertical Slice progress to 85% for the implemented/testable save-state hardening milestone. Full interactive Windows save → quit → load validation remains intentionally open before demo readiness.
+
 ## 0.19.0-dev — 2026-09-17
 
 ### Added

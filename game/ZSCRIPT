@@ -4,6 +4,7 @@ class CheckoutShiftDirector : EventHandler
 {
     bool bossCleared;
     bool exitPending;
+    bool freshWorldInitPending;
     int exitTic;
     int lastFuseCount;
     int lastMemoCount;
@@ -117,8 +118,16 @@ class CheckoutShiftDirector : EventHandler
 
     override void WorldLoaded(WorldEvent e)
     {
+        // Event-handler fields are serialized by GZDoom. Do not overwrite them when a save
+        // is restored: doing so can resurrect management pressure or lose the clock-out state.
+        if (e.IsSaveGame)
+        {
+            return;
+        }
+
         bossCleared = false;
         exitPending = false;
+        freshWorldInitPending = true;
         exitTic = 0;
         lastFuseCount = 0;
         lastMemoCount = 0;
@@ -138,6 +147,18 @@ class CheckoutShiftDirector : EventHandler
         if (cls == 'NightManager' || cls == 'RegionalManager')
         {
             bossCleared = true;
+
+            // Persist the clear in player inventory on the same tic as the boss death. This
+            // gives savegames a second authoritative marker and immediately stops spawners.
+            if (players[0].mo)
+            {
+                PlayerPawn p = PlayerPawn(players[0].mo);
+                if (p && p.CountInv("SupervisorClearanceToken") == 0)
+                {
+                    p.A_GiveInventory("SupervisorClearanceToken", 1);
+                }
+            }
+
             powerPulseUntil = Level.maptime + 35 * 6;
             powerPulseText = "SUPERVISOR DOWN - FINISH THE SHIFT";
         }
@@ -156,8 +177,25 @@ class CheckoutShiftDirector : EventHandler
             return;
         }
 
+        // Breakers and supervisor clearance are department-local objectives. Doom inventory
+        // normally survives a next-map transition, so strip only these objective tokens on a
+        // genuinely fresh world. Save restores bypass this path via WorldEvent.IsSaveGame.
+        if (freshWorldInitPending)
+        {
+            p.A_TakeInventory("CheckoutFuse", 3);
+            p.A_TakeInventory("SupervisorClearanceToken", 1);
+            freshWorldInitPending = false;
+        }
+
         int fuses = p.CountInv("CheckoutFuse");
         int memos = p.CountInv("CorporateMemo");
+
+        // A serialized clearance token is also a recovery marker for older/dev saves where
+        // handler state may have changed between builds.
+        if (!bossCleared && p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            bossCleared = true;
+        }
 
         // Once management is down, mark the shift as cleared. Reinforcement spawners use
         // this invisible token to stop adding fresh threats during the readable clock-out run.
