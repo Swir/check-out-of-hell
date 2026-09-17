@@ -137,7 +137,7 @@ jobs:
           if-no-files-found: warn
 
   save-load-runtime:
-    runs-on: ubuntu-24.04
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -147,19 +147,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Resolve pinned official Linux runtime assets
+      - name: Save/load current prototype with pinned GZDoom
+        shell: powershell
+        timeout-minutes: 5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python tools/bootstrap_runtime_linux.py
-
-      - name: Install pinned GZDoom and virtual display dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb libgl1-mesa-dri ./external/gzdoom-linux.deb
-
-      - name: Save/load current prototype with pinned GZDoom
-        timeout-minutes: 5
-        run: bash tools/gzdoom_save_load_smoke_linux.sh
+        run: .\tools\gzdoom_save_load_smoke.ps1
 
       - name: Upload GZDoom save/load validation log
         if: always()
