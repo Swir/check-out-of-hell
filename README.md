@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.11-dev — original vehicle-enemy combat pass  
-> **Project progress:** `█████░░░░░ 48%`
+> **Status:** Prototype 0.12-dev — Regional Manager boss pass  
+> **Project progress:** `█████░░░░░ 51%`
 
 ## Premise
 
@@ -72,7 +72,7 @@ Prototype `0.10-dev` expanded that owned presentation across the mid/heavy comba
 - **Security Price Scanner** — original stationary turret animation, original scanning
   beam projectile and dedicated idle/attack/pain/down cues.
 
-Prototype `0.11-dev` replaces two more high-visibility enemy placeholders:
+Prototype `0.11-dev` replaced two more high-visibility enemy placeholders:
 
 - **Cart of Doom** — project-owned eleven-frame shopping-cart animation covering pursuit,
   a readable charge tell, pain, collapse and raise states, plus dedicated idle/charge/hit/down cues.
@@ -80,12 +80,18 @@ Prototype `0.11-dev` replaces two more high-visibility enemy placeholders:
   covering pursuit, fork-lunge melee tells, pain, collapse and raise states, plus dedicated
   idle/attack/hit/down cues.
 
+Prototype `0.12-dev` gives the campaign boss its own identity:
+
+- **The Regional Manager** — project-owned fifteen-frame executive-horror animation set,
+  custom **Corporate Red Tape** and **Executive Stamp** projectiles, dedicated boss cues,
+  and a health-gated second attack phase below 50% health.
+- `MAP02 — Warehouse 13.5` now uses project-owned retail surfaces and does not pre-place
+  the Regional Manager. Restoring all three breakers powers the boss in through a dedicated
+  spawner, so the arena follows the same restore-power-before-management rule as Closing Time.
+
 All current project-owned prototype combat art/audio is generated deterministically from
 repository code using Python's standard library. Sprite PNGs carry ZDoom `grAb` offsets,
 and CI verifies generated files, PK3 packaging, sound mappings and actor wiring.
-
-`MAP02 — Warehouse 13.5` remains the heavier arena-style prototype while its dedicated
-objective flow is developed.
 
 Waiting around is increasingly dangerous. The **Overtime** director escalates through
 `SHIFT ACTIVE` → `STORE UNSTABLE` → `OVERTIME` → `HELL RUSH`. Dedicated map
@@ -137,11 +143,12 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
 - buildable `.pk3` prototype,
 - structured UDMF `MAP01 — Closing Time` objective prototype,
-- generated UDMF `MAP02 — Warehouse 13.5` arena prototype,
+- generated UDMF `MAP02 — Warehouse 13.5` power-gated boss arena prototype,
 - **Emergency Mop**, **Receipt Ripper**, **Price-Gun SMG**, **Turbo Can Launcher**,
-- **Angry Self-Checkout**, **Cart of Doom**, **Night Manager**, **Security Price Scanner**, **Possessed Pallet Jack** and **The Regional Manager** prototype,
+- **Angry Self-Checkout**, **Cart of Doom**, **Night Manager**, **Security Price Scanner**, **Possessed Pallet Jack** and **The Regional Manager**,
 - three-breaker + supervisor-clear objective loop,
 - staged Night Manager reinforcement waves and physical return-to-checkout objective,
+- power-gated Regional Manager arrival in MAP02 after three restored breakers,
 - optional Staff Only side room and Employee of the Month reward stash,
 - Overtime escalation director with timed reinforcement spawners,
 - shift/objective/Overtime HUD overlay,
@@ -156,10 +163,11 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - original **Cart of Doom** charge/pain/death animation set and combat cues,
 - original **Possessed Pallet Jack** fork-lunge/pain/death animation set and combat cues,
 - original **Night Manager** animation set, Manager Memo projectile and boss combat cues,
+- original **Regional Manager** animation set, two custom projectile families and two-phase attack behavior,
 - deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contracts,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
-- automated build + gameplay + layout + Staff Only + boss/escape + original-asset + vehicle-enemy + packaging contract tests,
+- automated build + gameplay + layout + Staff Only + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - original project icon concept and documented asset/weapon/level/packaging direction.
 
@@ -182,6 +190,7 @@ python tools/test_staff_room_contract.py
 python tools/test_boss_escape_contract.py
 python tools/test_original_assets.py
 python tools/test_vehicle_enemy_assets.py
+python tools/test_regional_manager_contract.py
 python tools/package_portable.py
 python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
@@ -199,7 +208,7 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 ## Maps
 
 - `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, powered side route, staged supervisor fight and checkout escape
-- `MAP02` — **Warehouse 13.5** — combat/pressure prototype
+- `MAP02` — **Warehouse 13.5** — power-restoration arena with original retail surfaces and a gated two-phase Regional Manager boss
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 
@@ -207,10 +216,9 @@ See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 
 No proprietary Doom, Star Wars or other commercial game assets belong in this repository.
 The current runtime art/audio pack is generated from our own source code during the build.
-Emergency Mop, Receipt Ripper, Price-Gun SMG, Turbo Can Launcher, Angry Self-Checkout,
-Security Price Scanner, Cart of Doom, Possessed Pallet Jack and Night Manager now have
-project-owned visible combat presentation. Regional Manager still uses compatible-runtime
-placeholder visuals and must be replaced before standalone release.
+All current core weapons and signature enemies/bosses now have project-owned visible combat
+presentation; compatible runtime data is still used as the legal engine/base-game layer only,
+not copied into this repository or release package.
 
 See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md).
 
