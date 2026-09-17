@@ -22,8 +22,8 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.22-dev` |
-| Implemented/testable progress | **72%** |
+| Version | `0.23-dev` |
+| Implemented/testable progress | **74%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
 | Player packaging focus | One-click Windows bootstrap + CI portable development artifact |
@@ -49,7 +49,7 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | 🧰 Retail arsenal | Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher use original presentation and audio. |
 | 👹 Store hazards | Angry Self-Checkout, Cart of Doom, Security Price Scanner and Possessed Pallet Jack fill distinct combat roles. |
 | 👔 Corporate bosses | Night Manager and the two-phase Regional Manager turn management into literal boss fights. |
-| 🔎 Optional discoveries | Staff Only rewards, Corporate Compliance Memos, secrets and workplace-comedy interactions reward exploration. |
+| 🔎 Optional discoveries | Staff Only rewards, Corporate Compliance Memos and useful workplace-comedy resource stashes reward exploration. |
 | ☠️ Authored difficulty | Closing Crew, Graveyard Shift and Corporate Hell tune resources and damage without hiding faster scripted hazards. |
 | 🔊 Original presentation | Project-owned generated art, combat audio and department music; no ripped commercial game assets. |
 | 📦 One-click runtime setup | Missing redistributable runtime files are resolved from official upstream sources instead of making players hunt for them. |
@@ -106,7 +106,9 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ### MAP01 — Closing Time
 
-The current vertical-slice level includes original supermarket surfaces and signage, Customer Service / Frozen Foods / Electronics identity, safe retail clutter, failing fluorescent fixtures, optional Emergency Break Snacks, three Corporate Compliance Memos, a final-layout night-shift HUD, a full-power recovery cache, staged Overtime floor hazards, a tuned Night Manager response and a physical return-to-checkout finish.
+The current vertical-slice level includes original supermarket surfaces and signage, Customer Service / Frozen Foods / Electronics identity, safe retail clutter, failing fluorescent fixtures, optional Emergency Break Snacks, three Corporate Compliance Memos, three off-route resource stashes with workplace-comedy pickup interactions, a final-layout night-shift HUD, a full-power recovery cache, staged Overtime floor hazards, a tuned Night Manager response and a physical return-to-checkout finish.
+
+The secret pass keeps progression readable: the Unclaimed Receipt Roll, Damaged-Goods Label Crate and Unauthorized Employee Relief Kit sit in dead-end retail corners away from the central combat/clock-out lane. They reward exploration with receipts, labels or health but never gate a breaker, boss or exit objective.
 
 ### MAP02 — Warehouse 13.5
 
@@ -172,7 +174,7 @@ Runtime pins live in `runtime-lock.json` and change only after compatibility val
 
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, generated art/audio/music, portable packaging and bootstrap behavior, then asks pinned GZDoom on Windows to parse the current package. Save/load source invariants are protected by a dedicated regression contract; a process-level target-Windows round-trip remains the next runtime gate.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, generated art/audio/music, the Closing Time secret pass, portable packaging and bootstrap behavior, then asks pinned GZDoom on Windows to parse the current package. Save/load source invariants are protected by a dedicated regression contract; a process-level target-Windows round-trip remains the next runtime gate.
 
 Useful developer commands:
 
@@ -183,6 +185,7 @@ python tools/test_gameplay_contract.py
 python tools/test_save_load_state_contract.py
 python tools/test_readme_standard_contract.py
 python tools/test_closing_time_pacing_contract.py
+python tools/test_closing_time_secrets_contract.py
 python tools/test_hud_contract.py
 python tools/test_overtime_hazard_contract.py
 python tools/test_original_assets.py
@@ -223,7 +226,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md) and [`docs/THIRD_PARTY.md`](d
 
 ## ⚠️ Current limitations
 
-- `Closing Time` is not yet signed off as the first fully polished level.
+- `Closing Time` has a complete first secrets/joke-interaction pass but is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` is playable but not yet fully polished.
 - The real target-Windows save → process exit → load round-trip remains a demo-readiness gate.
 - Controller, accessibility-option and performance passes for the public demo are not complete.
