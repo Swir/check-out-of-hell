@@ -12,7 +12,7 @@ required_script_markers = (
     '"-iwad", $FreedoomWad',
     '"-file", $Pk3',
     '"-savedir", $SaveDir',
-    '"vid_preferbackend=0"',
+    '"vid_preferbackend=1"',
     '"i_pauseinbackground=false"',
     'Start-Process -FilePath $GZDoomExe',
     'Stop-Process -Id $Process.Id -Force',
