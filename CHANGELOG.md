@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.26.0-dev — 2026-09-18
+
+### Added
+- Dedicated **CHECKOUT OF HELL Controller** menu in both full and simple GZDoom options, exposing remappable core gameplay actions plus direct links to engine device/stick and full-binding screens.
+- Restrained GZDoom haptic mappings for the Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher using built-in rumble profiles only on player weapon cues.
+- `docs/CONTROLLER.md` with the engine-default gamepad baseline, setup path, haptic policy and explicit target-Windows hardware sign-off requirement.
+- `tools/test_controller_support_contract.py` with source and packaged-PK3 coverage, wired into GitHub Actions.
+
+### Changed
+- Controller support relies on standard GZDoom actions and never overwrites existing player bindings or hard-codes a private physical-button layout.
+- Enemy, ambient, alarm and Overtime sounds remain unmapped to rumble to avoid continuous vibration during pressure-heavy encounters.
+- Demo Release readiness raised from **30.0%** to **40.0%** only after the implemented/testable controller pass; weighted project progress is now **80.35%**, displayed as **80.4%**. A real-controller target-Windows playtest, Closing Time polish/sign-off and the performance pass remain open before any public demo.
+
 ## 0.25.0-dev — 2026-09-17
 
 ### Added
@@ -19,7 +32,7 @@
 ### Added
 - Real two-process pinned-GZDoom save → process exit → load validation in CI under Xvfb/Mesa software rendering.
 - Official-source Linux runtime resolver for the exact locked GZDoom release plus official Freedoom release, including Freedoom SHA-256 verification against the upstream checksum asset.
-- `tools/gzdoom_save_load_smoke_linux.py`, which authors `CheckoutFuse 2/3` and `CorporateMemo 2/3` in live MAP01, writes a real `.zds`, launches a second GZDoom process and verifies both counters survive restore.
+- `tools/gzdoom_save_load_smoke_linux.py`, which authors `CheckoutFuse 2/3` and `CorporateMemo 2/3` state in live MAP01, writes a real `.zds`, launches a second GZDoom process and verifies both counters survive restore.
 - `tools/test_gzdoom_save_load_smoke_contract.py`, protecting runtime-lock use, process-boundary behavior, save-file sanity checks and CI wiring.
 - SWIR Progress SVG PRO assets: `assets/readme/progress-card.svg`, `assets/readme/progress-mini.svg` and reusable `assets/readme/progress-template.svg`.
 - `tools/generate_progress_svgs.py`, a deterministic generator/check that reads the authoritative ROADMAP phase progress and weights, verifies README/ROADMAP agreement, validates bounded SVG geometry/XML and self-tests zero/partial/complete/N/A cases.
