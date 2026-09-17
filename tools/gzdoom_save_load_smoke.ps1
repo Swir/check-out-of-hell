@@ -53,7 +53,9 @@ function Assert-NoRuntimeErrors {
         "Cannot load savegame",
         "Savegame is from a different",
         "Could not open savegame",
-        "Cannot find savegame"
+        "Cannot find savegame",
+        "No map MAP01",
+        "Not in a saveable game"
     )
 
     foreach ($pattern in $errorPatterns) {
@@ -201,8 +203,10 @@ New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
 
 # A fresh MAP01 load strips these objective tokens. Saving unmistakable 2/3 state
 # therefore catches the exact regression where save restoration is misidentified as
-# a new department load. The harness owns process termination after each sentinel.
-$saveCommands = "wait 175; give CheckoutFuse 2; give CorporateMemo 2; wait 10; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 70; echo COH_RUNTIME_SAVE_WRITTEN"
+# a new department load. Do not use command-line +map here: on a cold GZDoom start
+# it can be evaluated before the add-on MAPINFO has registered MAP01. Queue the map
+# command after startup, then let the harness own process termination after sentinel.
+$saveCommands = "wait 2; map MAP01; wait 175; give CheckoutFuse 2; give CorporateMemo 2; wait 10; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 70; echo COH_RUNTIME_SAVE_WRITTEN"
 $loadCommands = "wait 175; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE"
 Set-Content -LiteralPath $SaveConfig -Value $saveCommands -Encoding ASCII
 Set-Content -LiteralPath $LoadConfig -Value $loadCommands -Encoding ASCII
@@ -221,7 +225,6 @@ $loadText = ""
 try {
     Write-Host "Runtime pass 1/2: start MAP01, author objective state and write a real savegame..."
     $saveArguments = $commonArguments + @(
-        "+map", "MAP01",
         "+exec", $SaveConfig
     )
     $saveText = Invoke-RuntimePhase `
