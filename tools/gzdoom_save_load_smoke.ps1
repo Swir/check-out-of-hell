@@ -39,12 +39,20 @@ if (Test-Path -LiteralPath $RuntimeLog) {
     Remove-Item -LiteralPath $RuntimeLog -Force
 }
 
-# The first process creates a real in-level save with authored objective inventory.
-# The second process can only create the round-trip save after the first save has loaded.
-'map MAP01; wait 70; god; give CheckoutFuse 2; give CorporateMemo 1; wait 4; save coh-save-load-ci "CHECKOUT OF HELL CI SAVE"; wait 35; quit' |
-    Set-Content -LiteralPath $CreateCfg -Encoding ASCII
-'load coh-save-load-ci; wait 70; save coh-save-load-ci-roundtrip "CHECKOUT OF HELL CI ROUNDTRIP"; wait 35; quit' |
-    Set-Content -LiteralPath $LoadCfg -Encoding ASCII
+# Startup exec files are evaluated before the requested map is fully live. A delayed
+# alias keeps the state mutation/save commands in GZDoom's command buffer until the
+# map has ticked, rather than letting a trailing quit run during startup.
+@'
+alias coh_ci_create "wait 70; god; give CheckoutFuse 2; give CorporateMemo 1; wait 4; save coh-save-load-ci \"CHECKOUT OF HELL CI SAVE\"; wait 35; quit"
+map MAP01
+coh_ci_create
+'@ | Set-Content -LiteralPath $CreateCfg -Encoding ASCII
+
+@'
+alias coh_ci_roundtrip "wait 70; save coh-save-load-ci-roundtrip \"CHECKOUT OF HELL CI ROUNDTRIP\"; wait 35; quit"
+load coh-save-load-ci
+coh_ci_roundtrip
+'@ | Set-Content -LiteralPath $LoadCfg -Encoding ASCII
 
 function Invoke-GZDoomScenario {
     param(
