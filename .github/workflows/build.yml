@@ -73,6 +73,9 @@ jobs:
       - name: Accessibility contract test
         run: python tools/test_accessibility_contract.py
 
+      - name: Controller support contract test
+        run: python tools/test_controller_support_contract.py
+
       - name: Overtime environmental hazard contract test
         run: python tools/test_overtime_hazard_contract.py
 
