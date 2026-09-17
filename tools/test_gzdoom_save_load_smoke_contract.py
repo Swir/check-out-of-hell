@@ -1,62 +1,67 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "tools" / "gzdoom_save_load_smoke.ps1"
+SCRIPT = ROOT / "tools" / "gzdoom_save_load_smoke_linux.sh"
+WINDOWS_HELPER = ROOT / "tools" / "gzdoom_save_load_smoke.ps1"
 WORKFLOW = ROOT / ".github" / "workflows" / "build.yml"
 
 script = SCRIPT.read_text(encoding="utf-8")
+windows_helper = WINDOWS_HELPER.read_text(encoding="utf-8")
 workflow = WORKFLOW.read_text(encoding="utf-8")
 
 required_script_markers = (
-    '"bootstrap_runtime.ps1"',
-    '"-noautoload"',
-    '"-iwad", $FreedoomWad',
-    '"-file", $Pk3',
-    '"-savedir", $SaveDir',
-    '"+map", "MAP01"',
-    '"+give", "CheckoutFuse", "2"',
-    '"+printinv"',
-    '"+save", $SaveStem',
-    '"+quit"',
-    '"-loadgame", $SaveFile',
+    'runtime-lock.json',
+    'api.github.com/repos/$GZ_REPO/releases/tags/$GZ_TAG',
+    'gzdoom_.*_amd64\\.deb',
+    'api.github.com/repos/$FD_REPO/releases/tags/$FD_TAG',
+    'Freedoom SHA-256 verified.',
+    'xvfb-run -a',
+    'LIBGL_ALWAYS_SOFTWARE=1',
+    'GALLIUM_DRIVER=llvmpipe',
+    '+map MAP01 +exec "$SAVE_CFG"',
+    'give CheckoutFuse 2',
+    'save $SAVE_STEM',
+    '-loadgame "$SAVE_STEM" +exec "$LOAD_CFG"',
     'COH_RUNTIME_SAVE_WRITTEN',
     'COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE',
-    'CheckoutFuse\\s+#\\d+\\s+\\(2/3\\)',
-    'Test-Path -LiteralPath $SaveFile',
-    'Length -lt 4096',
-    'WaitForExit($TimeoutSeconds * 1000)',
-    'Write-CombinedLog',
+    'CheckoutFuse[[:space:]]+#[0-9]+[[:space:]]+\\(2/3\\)',
+    'stat -c %s "$SAVE_FILE"',
+    'timeout 50s',
+    'gzdoom-save-load-smoke.log',
 )
-
 for marker in required_script_markers:
     if marker not in script:
-        raise SystemExit(f"Runtime save/load smoke script is missing required marker: {marker}")
+        raise SystemExit(f"Linux runtime save/load smoke script is missing required marker: {marker}")
 
-if script.index('"+give", "CheckoutFuse", "2"') > script.index('"+save", $SaveStem'):
+if script.index("give CheckoutFuse 2") > script.index("save $SAVE_STEM"):
     raise SystemExit("Runtime objective state must be authored before the real save command")
+if script.index('-loadgame "$SAVE_STEM"') > script.index("CheckoutFuse 2/3 did not survive"):
+    raise SystemExit("Loaded inventory must be verified after the real load phase")
 
-if script.index('"-loadgame", $SaveFile') > script.index('CheckoutFuse 2/3 did not survive'):
-    raise SystemExit("The loaded inventory must be verified after the real load phase")
-
-for forbidden in (
-    'wait 175',
-    'wait 70',
-    'save-roundtrip.cfg',
-    'load-roundtrip.cfg',
-):
-    if forbidden in script:
-        raise SystemExit(f"Runtime smoke still contains the old delayed-command deadlock path: {forbidden}")
+windows_markers = (
+    'bootstrap_runtime.ps1',
+    'wait 175; give CheckoutFuse 2',
+    'save $SaveStem',
+    '-loadgame", $SaveStem',
+    'Hosted Windows CI has no renderer suitable for an interactive GZDoom',
+)
+for marker in windows_markers:
+    if marker not in windows_helper:
+        raise SystemExit(f"Windows desktop round-trip helper is missing required marker: {marker}")
 
 workflow_markers = (
     "GZDoom save/load smoke contract test",
     "python tools/test_gzdoom_save_load_smoke_contract.py",
-    "Save/load current prototype with pinned GZDoom",
-    ".\\tools\\gzdoom_save_load_smoke.ps1",
+    "runtime-save-load",
+    "bash tools/gzdoom_save_load_smoke_linux.sh",
     "gzdoom-save-load-smoke-log",
     "dist/gzdoom-save-load-smoke.log",
 )
 for marker in workflow_markers:
     if marker not in workflow:
         raise SystemExit(f"GitHub Actions is missing runtime save/load coverage: {marker}")
+
+if '.\\tools\\gzdoom_save_load_smoke.ps1' in workflow:
+    raise SystemExit("Hosted Windows CI must not run the live GZDoom loop without a usable graphics adapter")
 
 print("GZDoom save/load runtime smoke contract: PASS")
