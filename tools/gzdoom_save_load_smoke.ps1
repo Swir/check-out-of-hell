@@ -55,7 +55,8 @@ function Assert-NoRuntimeErrors {
         "Could not open savegame",
         "Cannot find savegame",
         "No map MAP01",
-        "Not in a saveable game"
+        "Not in a saveable game",
+        "Player is dead in a single-player game"
     )
 
     foreach ($pattern in $errorPatterns) {
@@ -201,13 +202,11 @@ New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
     "i_soundinbackground=false"
 ) | Set-Content -LiteralPath $EngineConfig -Encoding ASCII
 
-# A fresh MAP01 load strips these objective tokens. Saving unmistakable 2/3 state
-# therefore catches the exact regression where save restoration is misidentified as
-# a new department load. Do not use command-line +map here: on a cold GZDoom start
-# it can be evaluated before the add-on MAPINFO has registered MAP01. Queue the map
-# command after startup, then let the harness own process termination after sentinel.
-$saveCommands = "wait 2; map MAP01; wait 175; give CheckoutFuse 2; give CorporateMemo 2; wait 10; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 70; echo COH_RUNTIME_SAVE_WRITTEN"
-$loadCommands = "wait 175; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE"
+# A fresh MAP01 load strips objective tokens during its first ticks. Enter the map,
+# let that cleanup finish, then enable god mode and author unmistakable 2/3 state.
+# This validates serialization without letting an unattended player die before save.
+$saveCommands = "wait 2; map MAP01; wait 10; god; give CheckoutFuse 2; give CorporateMemo 2; wait 5; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 20; echo COH_RUNTIME_SAVE_WRITTEN"
+$loadCommands = "wait 10; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE"
 Set-Content -LiteralPath $SaveConfig -Value $saveCommands -Encoding ASCII
 Set-Content -LiteralPath $LoadConfig -Value $loadCommands -Encoding ASCII
 
@@ -250,8 +249,6 @@ try {
         throw "GZDoom savegame is unexpectedly small ($($saveFile.Length) bytes)."
     }
 
-    # Confirm the archive is no longer being written before starting a separate
-    # engine process. This is deliberately outside GZDoom's lifetime.
     $sizeBefore = $saveFile.Length
     Start-Sleep -Milliseconds 500
     $saveFile.Refresh()
