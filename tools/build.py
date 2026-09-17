@@ -19,13 +19,15 @@ DIST.mkdir(exist_ok=True)
 MAPS = ["MAP01", "MAP02"]
 ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds"]
+MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]
 
 
 def map_source(map_name: str) -> bytes:
     chunks = [(GAME / f"{map_name}.udmf").read_text(encoding="utf-8").rstrip()]
-    extension = GAME / f"{map_name}_OVERTIME.udmf"
-    if extension.exists():
-        chunks.append(extension.read_text(encoding="utf-8").rstrip())
+    for suffix in MAP_LAYER_SUFFIXES:
+        extension = GAME / f"{map_name}_{suffix}.udmf"
+        if extension.exists():
+            chunks.append(extension.read_text(encoding="utf-8").rstrip())
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
 
 
