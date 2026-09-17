@@ -6,6 +6,7 @@ game/textures/
 game/flats/
 game/sprites/
 game/sounds/
+game/music/
 *.bak
 *.tmp
 __pycache__/
