@@ -38,6 +38,11 @@ for failure_marker in (
 ):
     assert failure_marker in runner, f"save/load runner does not guard against: {failure_marker}"
 
+# GZDoom treats -errorlog as a batch/parser mode switch and exits before the live
+# game loop. Keep it in the -norun parser smoke, never in the real save/load process.
+assert '"-errorlog"' not in runner, "real save/load runner must not enable GZDoom batch mode"
+assert "Do not pass -errorlog here" in runner
+
 # WorldLoaded also runs when restoring a save. Serialized director fields must survive
 # that callback instead of being reset as if a fresh map had started.
 assert "if (e.IsSaveGame)" in zscript, "shift director does not protect restored savegame state"
