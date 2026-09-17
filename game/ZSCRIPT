@@ -6,6 +6,7 @@ class CheckoutShiftDirector : EventHandler
     bool exitPending;
     int exitTic;
     int lastFuseCount;
+    int lastMemoCount;
     int lastOvertimeStage;
     int powerPulseUntil;
     String powerPulseText;
@@ -27,6 +28,23 @@ class CheckoutShiftDirector : EventHandler
             return 1;
         }
         return 0;
+    }
+
+    static int GetNextOvertimeSecond(int stage)
+    {
+        if (stage == 0)
+        {
+            return 90;
+        }
+        if (stage == 1)
+        {
+            return 180;
+        }
+        if (stage == 2)
+        {
+            return 270;
+        }
+        return -1;
     }
 
     static String GetOvertimeLabel(int stage)
@@ -52,6 +70,7 @@ class CheckoutShiftDirector : EventHandler
         exitPending = false;
         exitTic = 0;
         lastFuseCount = 0;
+        lastMemoCount = 0;
         lastOvertimeStage = 0;
         powerPulseUntil = 0;
         powerPulseText = "";
@@ -87,6 +106,7 @@ class CheckoutShiftDirector : EventHandler
         }
 
         int fuses = p.CountInv("CheckoutFuse");
+        int memos = p.CountInv("CorporateMemo");
 
         if (fuses > lastFuseCount)
         {
@@ -107,6 +127,25 @@ class CheckoutShiftDirector : EventHandler
             }
 
             Actor.Spawn("TeleportFog", p.Pos);
+        }
+
+        if (memos > lastMemoCount)
+        {
+            lastMemoCount = memos;
+            powerPulseUntil = Level.maptime + 35 * 5;
+
+            if (memos == 1)
+            {
+                powerPulseText = "MEMO 1/3: BREAKS MAY OCCUR AFTER CLOCK-OUT";
+            }
+            else if (memos == 2)
+            {
+                powerPulseText = "MEMO 2/3: PALLET JACKS ARE NOT EMOTIONAL SUPPORT VEHICLES";
+            }
+            else
+            {
+                powerPulseText = "MEMO 3/3: REGIONAL MANAGEMENT DENIES THE EXISTENCE OF HELL";
+            }
         }
 
         int overtimeStage = GetOvertimeStage();
@@ -168,12 +207,39 @@ class CheckoutShiftDirector : EventHandler
         int seconds = elapsedSeconds % 60;
         int stage = GetOvertimeStage();
         int fuses = p.CountInv("CheckoutFuse");
+        int memos = p.CountInv("CorporateMemo");
 
-        String clockText = String.Format("SHIFT %02d:%02d", minutes, seconds);
-        String fuseText = String.Format("BREAKERS %d/3", fuses);
+        String clockText = String.Format("SHIFT TIMER %02d:%02d", minutes, seconds);
         String stageText = GetOvertimeLabel(stage);
+        String powerText = "POWER [ ][ ][ ]";
+        String memoText = String.Format("OPTIONAL MEMOS %d/3", memos);
         String bossText = "SUPERVISOR ACTIVE";
         String taskText = "TASK: CLEAR THE SUPERVISOR";
+        String overtimeText = "MAXIMUM OVERTIME";
+
+        if (fuses == 1)
+        {
+            powerText = "POWER [X][ ][ ]";
+        }
+        else if (fuses == 2)
+        {
+            powerText = "POWER [X][X][ ]";
+        }
+        else if (fuses >= 3)
+        {
+            powerText = "POWER [X][X][X]";
+        }
+
+        int nextOvertimeSecond = GetNextOvertimeSecond(stage);
+        if (nextOvertimeSecond >= 0)
+        {
+            int remaining = nextOvertimeSecond - elapsedSeconds;
+            if (remaining < 0)
+            {
+                remaining = 0;
+            }
+            overtimeText = String.Format("NEXT ESCALATION %02d:%02d", remaining / 60, remaining % 60);
+        }
 
         if (fuses < 3)
         {
@@ -205,20 +271,32 @@ class CheckoutShiftDirector : EventHandler
             stageColor = Font.CR_RED;
         }
 
-        Screen.DrawText(smallfont, Font.CR_WHITE, 12, 12, clockText,
+        Screen.DrawText(smallfont, Font.CR_GOLD, 12, 10, "CHECKOUT OF HELL // NIGHT SHIFT",
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
-        Screen.DrawText(smallfont, stageColor, 12, 22, stageText,
+        Screen.DrawText(smallfont, Font.CR_WHITE, 12, 22, clockText,
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
-        Screen.DrawText(smallfont, Font.CR_GOLD, 12, 34, fuseText,
+        Screen.DrawText(smallfont, stageColor, 12, 32, stageText,
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
-        Screen.DrawText(smallfont, bossCleared ? Font.CR_GREEN : Font.CR_RED, 12, 44, bossText,
+        Screen.DrawText(smallfont, stageColor, 12, 42, overtimeText,
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
-        Screen.DrawText(smallfont, Font.CR_WHITE, 12, 56, taskText,
+        Screen.DrawText(smallfont, Font.CR_GOLD, 12, 54, powerText,
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        Screen.DrawText(smallfont, memos >= 3 ? Font.CR_GREEN : Font.CR_GRAY, 12, 64, memoText,
+            DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        Screen.DrawText(smallfont, bossCleared ? Font.CR_GREEN : Font.CR_RED, 12, 74, bossText,
+            DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        Screen.DrawText(smallfont, Font.CR_WHITE, 12, 86, taskText,
+            DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+
+        if (fuses >= 2 && fuses < 3)
+        {
+            Screen.DrawText(smallfont, Font.CR_GREEN, 12, 98, "BONUS: STAFF ONLY ROUTE POWERED",
+                DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        }
 
         if (powerPulseUntil > Level.maptime && powerPulseText.Len() > 0)
         {
-            Screen.DrawText(smallfont, Font.CR_GOLD, 150, 196, powerPulseText,
+            Screen.DrawText(smallfont, Font.CR_GOLD, 118, 196, powerPulseText,
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
         }
 
@@ -227,6 +305,24 @@ class CheckoutShiftDirector : EventHandler
             Screen.DrawText(smallfont, Font.CR_GOLD, 220, 220, "TIMECARD ACCEPTED - CLOCKING OUT...",
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
         }
+    }
+}
+
+class CorporateMemo : Inventory
+{
+    Default
+    {
+        Tag "Corporate Compliance Memo";
+        Inventory.PickupMessage "Corporate memo collected. This will absolutely not help your performance review.";
+        Inventory.PickupSound "coh/memo";
+        Inventory.MaxAmount 3;
+    }
+
+    States
+    {
+    Spawn:
+        CMEM A -1 Bright;
+        Stop;
     }
 }
 
