@@ -4,6 +4,8 @@ coh/shutter         sounds/shutter
 coh/bossalarm       sounds/bossalarm
 coh/clockout        sounds/clockout
 coh/overtime        sounds/overtime
+coh/overtimealarm   sounds/overtime_alarm
+coh/overtimearc     sounds/overtime_arc
 coh/memo            sounds/memo
 coh/mopswing        sounds/mopswing
 coh/managerattack   sounds/managerattack
