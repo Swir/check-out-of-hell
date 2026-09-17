@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.24.0-dev — 2026-09-17
+
+### Added
+- Real two-process pinned-GZDoom save → process exit → load validation in CI under Xvfb/Mesa software rendering.
+- Official-source Linux runtime resolver for the exact locked GZDoom release plus official Freedoom release, including Freedoom SHA-256 verification against the upstream checksum asset.
+- `tools/gzdoom_save_load_smoke_linux.py`, which authors `CheckoutFuse 2/3` and `CorporateMemo 2/3` in live MAP01, writes a real `.zds`, launches a second GZDoom process and verifies both counters survive restore.
+- `tools/test_gzdoom_save_load_smoke_contract.py`, protecting runtime-lock use, process-boundary behavior, save-file sanity checks and CI wiring.
+
+### Fixed
+- Generated embedded UDMF WADs now include canonical `MAPxx -> TEXTMAP -> ENDMAP` markers so GZDoom registers MAP01/MAP02 as real maps at runtime.
+- Runtime-only ZScript issues exposed by the live pinned-engine pass: UI-scope helper declarations, `Level.ExitLevel`, `String.Length()` and terminated state-frame statements.
+- HUD runtime scope no longer calls play-scoped overtime helpers from `RenderOverlay`.
+
+### Changed
+- The Windows save/load helper now has bounded polling, explicit engine logs, hard process cleanup and stronger serialized-state checks for normal target-machine validation.
+- CI retains pinned Windows parser/startup validation and adds the real same-version two-process runtime round-trip on Linux because the hosted Windows runner does not expose a suitable interactive GZDoom graphics context.
+- README/ROADMAP progress raised to **76%** and Vertical Slice progress to **94%** for the now-green end-to-end runtime serialization milestone. A final interactive target-Windows playtest/save-load confirmation remains required before demo sign-off.
+
 ## 0.23.0-dev — 2026-09-17
 
 ### Added
@@ -58,7 +76,7 @@
 ## 0.19.0-dev — 2026-09-17
 
 ### Added
-- Three authored MAPINFO difficulty modes: forgiving `Closing Crew`, default `Graveyard Shift`, and confirmation-gated `Corporate Hell`.
+- Three authored MAPINFO difficulties: forgiving `Closing Crew`, default `Graveyard Shift`, and confirmation-gated `Corporate Hell`.
 - `tools/test_difficulty_modes_contract.py`, validating skill ordering, exact combat/resource multipliers, readability safeguards and packaged PK3 wiring.
 - GitHub Actions execution of the difficulty-mode contract.
 
