@@ -10,6 +10,7 @@ from generate_regional_manager_assets import generate_regional_manager_assets
 from generate_presentation_assets import generate_presentation_assets
 from generate_overtime_assets import generate_overtime_assets
 from generate_environment_assets import generate_environment_assets
+from generate_combat_audio_polish import generate_combat_audio_polish
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
@@ -87,6 +88,7 @@ generate_regional_manager_assets(GAME)
 generate_presentation_assets(GAME)
 generate_overtime_assets(GAME)
 generate_environment_assets(GAME)
+generate_combat_audio_polish(GAME)
 pad_short_wavs(GAME / "sounds")
 
 built_maps = []
