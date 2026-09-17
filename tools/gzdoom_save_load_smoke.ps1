@@ -116,7 +116,7 @@ New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
 # Commands after wait remain in one command string so GZDoom's delayed-command
 # queue advances only after MAP01 is live. We deliberately save two Breaker Fuses:
 # a fresh-world reset would erase them, while a genuine save restore must preserve them.
-$saveCommands = "wait 175; give CheckoutFuse 2; wait 10; printinv; save $SaveStem \"CHECKOUT OF HELL CI ROUNDTRIP\"; wait 70; echo COH_RUNTIME_SAVE_WRITTEN; quit"
+$saveCommands = "wait 175; give CheckoutFuse 2; wait 10; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 70; echo COH_RUNTIME_SAVE_WRITTEN; quit"
 $loadCommands = "wait 175; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE; wait 10; quit"
 Set-Content -LiteralPath $SaveConfig -Value $saveCommands -Encoding ASCII
 Set-Content -LiteralPath $LoadConfig -Value $loadCommands -Encoding ASCII
