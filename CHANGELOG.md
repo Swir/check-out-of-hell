@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.27.0-dev — 2026-09-18
+
+### Added
+- `docs/PERFORMANCE.md` documenting the conservative script-overhead hardening pass, preserved gameplay timing and the remaining target-Windows real-hardware sign-off.
+- `tools/test_performance_contract.py` with source and packaged-PK3 coverage for sparse watcher polling, watcher retirement, unchanged authored encounter cadence and CI wiring.
+
+### Changed
+- Slow-changing objective/reinforcement watcher actors now sample their gates every 7 tics instead of every tic; the Night Manager response watcher samples every 4 tics to keep its authored `15 / 34 / 54 / 76` second sequence tight.
+- One-shot manager/cache/shutter watchers destroy themselves after completing their job, while Overtime/boss-wave watchers retire after supervisor clearance instead of remaining idle thinkers.
+- The existing Overtime reinforcement cadence remains `55 / 38 / 25` seconds by stage; the pass reduces repeated script polling without inventing an FPS uplift or changing combat rules.
+- Demo Release readiness raised from **40.0%** to **50.0%** only after the implemented/testable performance pass; weighted project progress is now **82.35%**, displayed as **82.4%**. Interactive target-Windows save/load, physical-controller, balance/polish and real-hardware performance sanity remain release sign-off gates.
+
+### Validation
+- The performance contract models one instance of each hardened watcher and requires at least an 80% reduction in gate-check frequency versus per-tic polling, while pinned-GZDoom parser/runtime jobs remain the engine-level safety net. No CI FPS target is claimed.
+
 ## 0.26.0-dev — 2026-09-18
 
 ### Added
