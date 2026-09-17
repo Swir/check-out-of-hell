@@ -4,8 +4,8 @@
 
 A fast, readable comedy-horror retro FPS about surviving the worst supermarket night shift imaginable.
 
-> **Status:** Prototype 0.19-dev — authored night-shift difficulty modes  
-> **Project progress:** `███████░░░ 68%`
+> **Status:** Prototype 0.20-dev — pinned-engine save/load validation  
+> **Project progress:** `███████░░░ 70%`
 
 ## Premise
 
@@ -43,7 +43,7 @@ Closing Time uses authored reinforcement and hazard anchors instead of random sp
 
 ## Difficulty modes
 
-Prototype `0.19-dev` adds three authored shift difficulties while keeping breaker gates, boss-wave timing and Overtime timing identical across all modes:
+Prototype `0.19-dev` introduced three authored shift difficulties while keeping breaker gates, boss-wave timing and Overtime timing identical across all modes:
 
 | Mode | Role | Tuning |
 | --- | --- | --- |
@@ -135,6 +135,8 @@ This is intentionally a **development artifact**, not a public demo release.
 - original presentation for the four signature weapons and all current signature enemies/bosses,
 - deterministic stdlib-only visual/audio generation,
 - randomized combat-audio families with PCM/headroom regression coverage,
+- save-safe shift-director restoration instead of resetting objective/Overtime state on savegame load,
+- real pinned-GZDoom MAP01 save → load → re-save regression coverage with serialized objective-state verification,
 - one-click official-source dependency bootstrap,
 - verified portable Windows artifact builder with SHA-256 sidecar,
 - pinned GZDoom runtime parser/startup validation on Windows CI,
@@ -144,7 +146,7 @@ This is intentionally a **development artifact**, not a public demo release.
 
 The current pinned runtime is GZDoom `g4.14.2` plus Freedoom `v0.13.0`. Runtime pins live in `runtime-lock.json` and should only change after compatibility validation.
 
-CI downloads the pinned official runtime and asks GZDoom itself to load and parse the current PK3 through its non-interactive `-norun` startup path. This catches engine-level MAPINFO/ZScript/package errors that static Python checks cannot detect.
+CI downloads the pinned official runtime and asks GZDoom itself to load and parse the current PK3 through its non-interactive `-norun` startup path. Windows CI also performs a real MAP01 save → load → re-save round trip and inspects the resulting GZDoom save archives for the authored breaker/memo state and persistent shift handler. This catches engine-level save/load regressions that static Python checks cannot detect.
 
 Manual developer commands:
 
@@ -153,6 +155,7 @@ python tools/build.py
 python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_difficulty_modes_contract.py
+python tools/test_save_load_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_closing_time_presentation_contract.py
@@ -169,9 +172,10 @@ python tools/test_bootstrap_contract.py
 python tools/package_portable.py
 python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
+.\tools\gzdoom_save_load_smoke.ps1
 ```
 
-The automated Linux job runs all static/build/package contracts, including the dedicated difficulty-mode contract. The Windows job resolves the official pinned runtime and validates the packaged prototype with GZDoom itself.
+The automated Linux job runs all static/build/package contracts, including dedicated difficulty and save/load contracts. The Windows job resolves the official pinned runtime, validates the packaged prototype with GZDoom itself and performs the live save/load round trip.
 
 ## Maps
 
