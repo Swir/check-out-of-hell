@@ -31,8 +31,16 @@ with zipfile.ZipFile(PK3, "r") as archive:
         wad = archive.read(f"maps/{map_name}.wad")
         ident, numlumps, dir_offset = struct.unpack("<4sII", wad[:12])
         assert ident == b"PWAD", (map_name, ident)
-        assert numlumps == 2, (map_name, numlumps)
+        assert numlumps == 3, (map_name, numlumps)
         assert 12 <= dir_offset < len(wad), (map_name, dir_offset)
+
+        directory = wad[dir_offset : dir_offset + numlumps * 16]
+        lump_names = []
+        for offset in range(0, len(directory), 16):
+            _filepos, _size, raw_name = struct.unpack("<II8s", directory[offset : offset + 16])
+            lump_names.append(raw_name.rstrip(b"\0").decode("ascii"))
+        expected = [map_name, "TEXTMAP", "ENDMAP"]
+        assert lump_names == expected, (map_name, lump_names)
 
 source = DECORATE.read_text(encoding="utf-8")
 required_actors = [
@@ -69,7 +77,7 @@ for required in (
     "class CheckoutShiftDirector : EventHandler",
     "class CheckoutOvertimeSpawner : Actor",
     "class CheckoutManagerSpawner : Actor",
-    "ExitLevel(0, false)",
+    "Level.ExecuteSpecial(243, p, null, false, 0)",
     'CountInv("CheckoutFuse")',
 ):
     if required not in zscript:
@@ -89,4 +97,4 @@ if "type = 17003" in map01:
     raise SystemExit("MAP01 must not pre-place Night Manager before power restoration")
 
 print("Smoke test: PASS")
-print("PK3 structure, staged MAP01 objective loop, Overtime contract and generated maps look valid.")
+print("PK3 structure, loadable UDMF map markers, staged MAP01 objective loop, Overtime contract and generated maps look valid.")
