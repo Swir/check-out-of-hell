@@ -120,6 +120,7 @@ function Invoke-GZDoomPhase(
         "-config", $ConfigPath,
         "+vid_fullscreen", "false",
         "+vid_preferbackend", "0",
+        "+i_pauseinbackground", "false",
         "+logfile", $StateLog,
         "+exec", $CommandFile
     )
@@ -128,6 +129,8 @@ function Invoke-GZDoomPhase(
     Write-Host "Running GZDoom $PhaseName phase..."
     # GZDoom is a Windows GUI executable. A direct PowerShell invocation can return
     # before the game process exits, so explicitly wait for the real engine process.
+    # CI has no focused game window, so background pausing must be disabled or delayed
+    # console commands (including save/load assertions and quickexit) never advance.
     $process = Start-Process -FilePath $GZDoomExe `
         -ArgumentList $argumentLine `
         -PassThru `
