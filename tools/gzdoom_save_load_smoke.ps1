@@ -2,6 +2,8 @@
 param()
 
 $ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 $GZDoomExe = Join-Path $ProjectRoot "external\gzdoom\gzdoom.exe"
 $FreedoomWad = Join-Path $ProjectRoot "external\freedoom2.wad"
@@ -11,59 +13,27 @@ $SaveDir = Join-Path $WorkDir "saves"
 $EngineConfig = Join-Path $WorkDir "gzdoom-ci.ini"
 $SaveConfig = Join-Path $WorkDir "save-roundtrip.cfg"
 $LoadConfig = Join-Path $WorkDir "load-roundtrip.cfg"
+$SaveEngineLog = Join-Path $WorkDir "save.engine.log"
+$LoadEngineLog = Join-Path $WorkDir "load.engine.log"
 $SaveStdout = Join-Path $WorkDir "save.stdout.log"
 $SaveStderr = Join-Path $WorkDir "save.stderr.log"
 $LoadStdout = Join-Path $WorkDir "load.stdout.log"
 $LoadStderr = Join-Path $WorkDir "load.stderr.log"
 $CombinedLog = Join-Path $ProjectRoot "dist\gzdoom-save-load-smoke.log"
 $SaveStem = "coh-ci-roundtrip"
-$TimeoutSeconds = 45
+$TimeoutSeconds = 55
 
-function Invoke-GZDoomRoundTripProcess {
-    param(
-        [Parameter(Mandatory = $true)][string[]]$Arguments,
-        [Parameter(Mandatory = $true)][string]$StdoutPath,
-        [Parameter(Mandatory = $true)][string]$StderrPath,
-        [Parameter(Mandatory = $true)][string]$Label
-    )
-
-    foreach ($path in @($StdoutPath, $StderrPath)) {
-        if (Test-Path -LiteralPath $path) {
-            Remove-Item -LiteralPath $path -Force
-        }
+function Read-TextIfPresent {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    if (-not (Test-Path -LiteralPath $Path)) {
+        return ""
     }
-
-    $process = Start-Process -FilePath $GZDoomExe `
-        -ArgumentList $Arguments `
-        -WorkingDirectory $ProjectRoot `
-        -RedirectStandardOutput $StdoutPath `
-        -RedirectStandardError $StderrPath `
-        -PassThru
-
-    if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
-        try { $process.Kill() } catch { }
-        throw "$Label timed out after $TimeoutSeconds seconds."
+    try {
+        return Get-Content -LiteralPath $Path -Raw -ErrorAction Stop
     }
-
-    if ($process.ExitCode -ne 0) {
-        throw "$Label failed with exit code $($process.ExitCode)."
+    catch {
+        return ""
     }
-}
-
-function Read-CombinedProcessLog {
-    param(
-        [Parameter(Mandatory = $true)][string]$StdoutPath,
-        [Parameter(Mandatory = $true)][string]$StderrPath
-    )
-
-    $parts = @()
-    if (Test-Path -LiteralPath $StdoutPath) {
-        $parts += Get-Content -LiteralPath $StdoutPath -Raw
-    }
-    if (Test-Path -LiteralPath $StderrPath) {
-        $parts += Get-Content -LiteralPath $StderrPath -Raw
-    }
-    return ($parts -join "`n")
 }
 
 function Assert-NoRuntimeErrors {
@@ -79,9 +49,11 @@ function Assert-NoRuntimeErrors {
         "Unknown identifier",
         "Invalid parameter",
         "Parse error",
+        "Unknown command",
         "Cannot load savegame",
         "Savegame is from a different",
-        "Could not open savegame"
+        "Could not open savegame",
+        "Cannot find savegame"
     )
 
     foreach ($pattern in $errorPatterns) {
@@ -89,6 +61,105 @@ function Assert-NoRuntimeErrors {
             throw "$Label reported '$pattern'."
         }
     }
+}
+
+function Stop-RuntimeProcess {
+    param([Parameter(Mandatory = $true)]$Process)
+    if ($Process.HasExited) {
+        return
+    }
+
+    # The test is about save serialization across a real process boundary, not the
+    # UI quit menu. Once the phase sentinel is flushed, terminate the process from
+    # the harness so hosted runners cannot hang waiting for an unfocused GUI window.
+    try {
+        Stop-Process -Id $Process.Id -Force -ErrorAction Stop
+    }
+    catch {
+        try { $Process.Kill() } catch { }
+    }
+    try { $Process.WaitForExit(5000) | Out-Null } catch { }
+}
+
+function Invoke-RuntimePhase {
+    param(
+        [Parameter(Mandatory = $true)][string]$Label,
+        [Parameter(Mandatory = $true)][string[]]$Arguments,
+        [Parameter(Mandatory = $true)][string]$EngineLog,
+        [Parameter(Mandatory = $true)][string]$StdoutPath,
+        [Parameter(Mandatory = $true)][string]$StderrPath,
+        [Parameter(Mandatory = $true)][string]$Sentinel
+    )
+
+    foreach ($path in @($EngineLog, $StdoutPath, $StderrPath)) {
+        if (Test-Path -LiteralPath $path) {
+            Remove-Item -LiteralPath $path -Force
+        }
+    }
+
+    $phaseArguments = $Arguments + @("+logfile", $EngineLog)
+    $process = Start-Process -FilePath $GZDoomExe `
+        -ArgumentList $phaseArguments `
+        -WorkingDirectory $ProjectRoot `
+        -RedirectStandardOutput $StdoutPath `
+        -RedirectStandardError $StderrPath `
+        -PassThru
+
+    $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+    $sentinelSeen = $false
+    try {
+        while ([DateTime]::UtcNow -lt $deadline) {
+            $engineText = Read-TextIfPresent -Path $EngineLog
+            $stdoutText = Read-TextIfPresent -Path $StdoutPath
+            $stderrText = Read-TextIfPresent -Path $StderrPath
+            $combinedText = "$engineText`n$stdoutText`n$stderrText"
+            Assert-NoRuntimeErrors -Text $combinedText -Label $Label
+
+            if ($combinedText -match [regex]::Escape($Sentinel)) {
+                $sentinelSeen = $true
+                break
+            }
+
+            if ($process.HasExited) {
+                throw "$Label exited before reaching sentinel '$Sentinel' (exit code $($process.ExitCode))."
+            }
+            Start-Sleep -Milliseconds 250
+        }
+
+        if (-not $sentinelSeen) {
+            throw "$Label timed out after $TimeoutSeconds seconds before sentinel '$Sentinel'."
+        }
+    }
+    finally {
+        Stop-RuntimeProcess -Process $process
+    }
+
+    $engineText = Read-TextIfPresent -Path $EngineLog
+    $stdoutText = Read-TextIfPresent -Path $StdoutPath
+    $stderrText = Read-TextIfPresent -Path $StderrPath
+    $combinedText = "$engineText`n$stdoutText`n$stderrText"
+    Assert-NoRuntimeErrors -Text $combinedText -Label $Label
+    return $combinedText
+}
+
+function Write-CombinedLog {
+    param(
+        [string]$SaveText = "",
+        [string]$LoadText = "",
+        [string]$Result = "INCOMPLETE"
+    )
+
+    @(
+        "CHECKOUT OF HELL - pinned GZDoom save/load runtime smoke",
+        "",
+        "=== SAVE PASS ===",
+        $SaveText,
+        "",
+        "=== LOAD PASS ===",
+        $LoadText,
+        "",
+        $Result
+    ) -join "`n" | Set-Content -LiteralPath $CombinedLog -Encoding UTF8
 }
 
 Write-Host "Building current prototype..."
@@ -114,22 +185,24 @@ if (Test-Path -LiteralPath $WorkDir) {
 }
 New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
 
-# GitHub's hosted Windows runner has no usable Vulkan adapter. Set the renderer
-# preference in the config that GZDoom reads before video initialization so the
-# runtime pass cannot stop at the Vulkan fallback dialog.
+# Hosted Windows runners have no usable Vulkan adapter and the game window never
+# receives normal desktop focus. Force the OpenGL backend, stay windowed and keep
+# game ticks active in the background so delayed console commands can advance.
 @(
     "[GlobalSettings]",
     "vid_preferbackend=0",
     "vid_fullscreen=false",
+    "vid_lowerinbackground=false",
+    "vid_activeinbackground=true",
     "i_pauseinbackground=false",
     "i_soundinbackground=false"
 ) | Set-Content -LiteralPath $EngineConfig -Encoding ASCII
 
-# Commands after wait remain in one command string so GZDoom's delayed-command
-# queue advances only after MAP01 is live. We deliberately save two Breaker Fuses:
-# a fresh-world reset would erase them, while a genuine save restore must preserve them.
-$saveCommands = "wait 175; give CheckoutFuse 2; wait 10; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 70; echo COH_RUNTIME_SAVE_WRITTEN; quit"
-$loadCommands = "wait 175; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE; wait 10; quit"
+# A fresh MAP01 load strips these objective tokens. Saving unmistakable 2/3 state
+# therefore catches the exact regression where save restoration is misidentified as
+# a new department load. The harness owns process termination after each sentinel.
+$saveCommands = "wait 175; give CheckoutFuse 2; give CorporateMemo 2; wait 10; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 70; echo COH_RUNTIME_SAVE_WRITTEN"
+$loadCommands = "wait 175; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE"
 Set-Content -LiteralPath $SaveConfig -Value $saveCommands -Encoding ASCII
 Set-Content -LiteralPath $LoadConfig -Value $loadCommands -Encoding ASCII
 
@@ -142,54 +215,74 @@ $commonArguments = @(
     "-savedir", $SaveDir
 )
 
-Write-Host "Runtime pass 1/2: start MAP01, mutate state and write a savegame..."
-$saveArguments = $commonArguments + @(
-    "+map", "MAP01",
-    "+exec", $SaveConfig
-)
-Invoke-GZDoomRoundTripProcess -Arguments $saveArguments -StdoutPath $SaveStdout -StderrPath $SaveStderr -Label "GZDoom save pass"
-$saveLog = Read-CombinedProcessLog -StdoutPath $SaveStdout -StderrPath $SaveStderr
-Assert-NoRuntimeErrors -Text $saveLog -Label "GZDoom save pass"
+$saveText = ""
+$loadText = ""
+try {
+    Write-Host "Runtime pass 1/2: start MAP01, author objective state and write a real savegame..."
+    $saveArguments = $commonArguments + @(
+        "+map", "MAP01",
+        "+exec", $SaveConfig
+    )
+    $saveText = Invoke-RuntimePhase `
+        -Label "GZDoom save pass" `
+        -Arguments $saveArguments `
+        -EngineLog $SaveEngineLog `
+        -StdoutPath $SaveStdout `
+        -StderrPath $SaveStderr `
+        -Sentinel "COH_RUNTIME_SAVE_WRITTEN"
 
-if ($saveLog -notmatch "COH_RUNTIME_SAVE_WRITTEN") {
-    throw "Save pass did not reach its completion sentinel."
+    if ($saveText -notmatch "CheckoutFuse\s+#\d+\s+\(2/3\)") {
+        throw "Save pass did not expose CheckoutFuse 2/3 before saving."
+    }
+    if ($saveText -notmatch "CorporateMemo\s+#\d+\s+\(2/3\)") {
+        throw "Save pass did not expose CorporateMemo 2/3 before saving."
+    }
+
+    $saveFile = Get-ChildItem -LiteralPath $SaveDir -Filter "$SaveStem*.zds" -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $saveFile) {
+        throw "GZDoom did not create a $SaveStem savegame in $SaveDir."
+    }
+    if ($saveFile.Length -lt 4096) {
+        throw "GZDoom savegame is unexpectedly small ($($saveFile.Length) bytes)."
+    }
+
+    # Confirm the archive is no longer being written before starting a separate
+    # engine process. This is deliberately outside GZDoom's lifetime.
+    $sizeBefore = $saveFile.Length
+    Start-Sleep -Milliseconds 500
+    $saveFile.Refresh()
+    if ($saveFile.Length -ne $sizeBefore) {
+        Start-Sleep -Milliseconds 500
+        $saveFile.Refresh()
+    }
+    if ($saveFile.Length -lt 4096) {
+        throw "GZDoom savegame became invalid after the save process exited."
+    }
+
+    Write-Host "Runtime pass 2/2: launch a new GZDoom process, restore the save and verify objective state..."
+    $loadArguments = $commonArguments + @(
+        "-loadgame", $saveFile.FullName,
+        "+exec", $LoadConfig
+    )
+    $loadText = Invoke-RuntimePhase `
+        -Label "GZDoom load pass" `
+        -Arguments $loadArguments `
+        -EngineLog $LoadEngineLog `
+        -StdoutPath $LoadStdout `
+        -StderrPath $LoadStderr `
+        -Sentinel "COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE"
+
+    if ($loadText -notmatch "CheckoutFuse\s+#\d+\s+\(2/3\)") {
+        throw "CheckoutFuse 2/3 did not survive the real save -> process exit -> load round-trip."
+    }
+    if ($loadText -notmatch "CorporateMemo\s+#\d+\s+\(2/3\)") {
+        throw "CorporateMemo 2/3 did not survive the real save -> process exit -> load round-trip."
+    }
+
+    Write-CombinedLog -SaveText $saveText -LoadText $loadText -Result "PASS: CheckoutFuse 2/3 and CorporateMemo 2/3 survived a real GZDoom save -> process exit -> load round-trip."
+    Write-Host "GZDoom runtime save/load round-trip: PASS"
 }
-if ($saveLog -notmatch "CheckoutFuse\s+#\d+\s+\(2/3\)") {
-    throw "Save pass did not expose the expected CheckoutFuse 2/3 state before saving."
+catch {
+    Write-CombinedLog -SaveText $saveText -LoadText $loadText -Result "FAIL: $($_.Exception.Message)"
+    throw
 }
-
-$saveFile = Get-ChildItem -LiteralPath $SaveDir -Filter "$SaveStem*.zds" -File -ErrorAction SilentlyContinue | Select-Object -First 1
-if (-not $saveFile -or $saveFile.Length -le 0) {
-    throw "GZDoom did not create a non-empty $SaveStem savegame in $SaveDir."
-}
-
-Write-Host "Runtime pass 2/2: quit boundary, reload the savegame and verify serialized objective state..."
-$loadArguments = $commonArguments + @(
-    "-loadgame", $SaveStem,
-    "+exec", $LoadConfig
-)
-Invoke-GZDoomRoundTripProcess -Arguments $loadArguments -StdoutPath $LoadStdout -StderrPath $LoadStderr -Label "GZDoom load pass"
-$loadLog = Read-CombinedProcessLog -StdoutPath $LoadStdout -StderrPath $LoadStderr
-Assert-NoRuntimeErrors -Text $loadLog -Label "GZDoom load pass"
-
-if ($loadLog -notmatch "COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE") {
-    throw "Load pass did not reach its completion sentinel."
-}
-if ($loadLog -notmatch "CheckoutFuse\s+#\d+\s+\(2/3\)") {
-    throw "CheckoutFuse 2/3 did not survive the real save -> quit -> load round-trip."
-}
-
-$combined = @(
-    "CHECKOUT OF HELL - pinned GZDoom save/load runtime smoke",
-    "",
-    "=== SAVE PASS ===",
-    $saveLog,
-    "",
-    "=== LOAD PASS ===",
-    $loadLog,
-    "",
-    "PASS: CheckoutFuse 2/3 survived a real GZDoom save -> process exit -> load round-trip."
-) -join "`n"
-$combined | Set-Content -LiteralPath $CombinedLog -Encoding UTF8
-
-Write-Host "GZDoom runtime save/load round-trip: PASS"
