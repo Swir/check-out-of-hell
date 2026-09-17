@@ -81,8 +81,19 @@ def select_asset(data: dict, pattern: str, description: str) -> dict:
 
 def parse_official_sha256(checksum_text: str, asset_name: str) -> str | None:
     escaped = re.escape(asset_name)
-    match = re.search(rf"(?im)^\s*([0-9a-f]{{64}})\s+[* ]?{escaped}\s*$", checksum_text)
-    return match.group(1).lower() if match else None
+    # Freedoom publishes a clear-signed BSD-style checksum file, while some
+    # upstream releases use the traditional sha256sum format. Accept both.
+    bsd = re.search(
+        rf"(?im)^\s*SHA256\s*\(\s*{escaped}\s*\)\s*=\s*([0-9a-f]{{64}})\s*$",
+        checksum_text,
+    )
+    if bsd:
+        return bsd.group(1).lower()
+    coreutils = re.search(
+        rf"(?im)^\s*([0-9a-f]{{64}})\s+[* ]?{escaped}\s*$",
+        checksum_text,
+    )
+    return coreutils.group(1).lower() if coreutils else None
 
 
 def sha256(path: Path) -> str:
