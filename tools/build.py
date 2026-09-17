@@ -20,8 +20,16 @@ ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds"]
 
 
+def map_source(map_name: str) -> bytes:
+    chunks = [(GAME / f"{map_name}.udmf").read_text(encoding="utf-8").rstrip()]
+    extension = GAME / f"{map_name}_OVERTIME.udmf"
+    if extension.exists():
+        chunks.append(extension.read_text(encoding="utf-8").rstrip())
+    return ("\n\n".join(chunks) + "\n").encode("utf-8")
+
+
 def make_udmf_wad(map_name: str, path: Path) -> None:
-    textmap = (GAME / f"{map_name}.udmf").read_bytes()
+    textmap = map_source(map_name)
     lumps = [("TEXTMAP", textmap), ("ENDMAP", b"")]
     data_offset = 12
     blob = bytearray()
