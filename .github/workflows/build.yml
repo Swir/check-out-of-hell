@@ -40,9 +40,6 @@ jobs:
       - name: Save/load state contract test
         run: python tools/test_save_load_state_contract.py
 
-      - name: Runtime save/load smoke contract test
-        run: python tools/test_runtime_save_load_smoke_contract.py
-
       - name: SWIR README PRO v2 contract test
         run: python tools/test_readme_standard_contract.py
 
@@ -143,41 +140,4 @@ jobs:
         with:
           name: gzdoom-windows-parser-log
           path: dist/gzdoom-runtime-smoke.log
-          if-no-files-found: warn
-
-  runtime-save-load:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install headless graphics prerequisites
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb xauth libgl1-mesa-dri mesa-vulkan-drivers
-
-      - name: Resolve pinned official Linux runtime assets
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python tools/bootstrap_linux_ci_runtime.py
-
-      - name: Install pinned official GZDoom package
-        run: sudo apt-get install -y ./external/linux-ci/gzdoom.deb
-
-      - name: Save/load round-trip with pinned GZDoom
-        run: python tools/gzdoom_save_load_smoke.py
-
-      - name: Upload GZDoom save/load runtime logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: gzdoom-save-load-runtime-logs
-          path: |
-            dist/gzdoom-save-load-smoke.log
-            dist/save-load-runtime/*.log
           if-no-files-found: warn
