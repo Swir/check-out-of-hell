@@ -43,6 +43,9 @@ jobs:
       - name: Runtime save/load smoke contract test
         run: python tools/test_runtime_save_load_smoke_contract.py
 
+      - name: SWIR README PRO v2 contract test
+        run: python tools/test_readme_standard_contract.py
+
       - name: Closing Time layout contract test
         run: python tools/test_closing_time_layout.py
 
