@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `███████░░░ 70%`
+**Overall progress:** `███████░░░ 72%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -64,7 +64,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Department-local breaker/supervisor objective reset without clobbering save-restored shift state
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 85%
+## Phase 2 — Vertical Slice — 88%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -90,7 +90,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Boss: The Regional Manager — original behavior/art
 - [ ] Secrets and joke interactions — full level pass
 - [x] Difficulty modes
-- [ ] Original soundtrack
+- [x] Original soundtrack for every currently playable department, generated deterministically and regression-tested
 - [ ] End-to-end runtime save/load validation
 
 ## Phase 3 — Demo Release — 20%
