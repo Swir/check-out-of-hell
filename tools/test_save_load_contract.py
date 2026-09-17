@@ -16,11 +16,11 @@ lock = json.loads((ROOT / "runtime-lock.json").read_text(encoding="utf-8"))
 required_runner_markers = (
     '"-savedir"',
     '"-noautoload"',
+    '"+sv_cheats"',
     'argv.extend(["+warp", "1"])',
     "autostart_map01=True",
-    "warp -690 -310 0",
-    "warp -640 140 0",
-    "warp 620 340 0",
+    "god; notarget; give CheckoutFuse 2",
+    "give CorporateMemo 1",
     "save coh_ci_roundtrip",
     "load coh_ci_roundtrip",
     "printinv",
@@ -41,11 +41,13 @@ for failure_marker in (
 ):
     assert failure_marker in runner, f"save/load runner does not guard against: {failure_marker}"
 
-# The runtime state should be collected through authored pickups, not injected with
-# inventory cheat commands that bypass the objective pickup path we want to preserve.
-assert "give CheckoutFuse" not in runner
-assert "give CorporateMemo" not in runner
-assert "Seed the persisted state through authored MAP01 pickups" in runner
+# The persistence regression must be deterministic and isolated from combat/navigation.
+# Pickup placement and route logic are already guarded by dedicated MAP01 contracts.
+assert "warp -690 -310 0" not in runner
+assert "warp -640 140 0" not in runner
+assert "warp 620 340 0" not in runner
+assert "Seed a meaningful mid-objective state through GZDoom's own inventory system" in runner
+assert "serialization only" in runner
 
 # GZDoom treats -errorlog as a batch/parser mode switch and exits before the live
 # game loop. Keep it in the -norun parser smoke, never in the real save/load process.
