@@ -69,6 +69,8 @@ function Invoke-GZDoomScenario {
         "-window",
         "-width", "320",
         "-height", "200",
+        "+vid_preferbackend", "0",
+        "+vid_rendermode", "0",
         "+vid_activeinbackground", "true",
         "-savedir", $SaveDir,
         "-iwad", $FreedoomWad,
@@ -77,8 +79,9 @@ function Invoke-GZDoomScenario {
         "+exec", $ConfigPath
     )
 
-    # GZDoom is a Windows GUI executable. Track it explicitly, and force active
-    # background ticking because hosted CI never gives the render window focus.
+    # Hosted Windows runners do not expose a usable Vulkan device. Force the
+    # OpenGL video backend with the software scene renderer, keep background
+    # ticking enabled, and explicitly wait for the GUI process to finish.
     $process = Start-Process -FilePath $GZDoomExe `
         -ArgumentList $arguments `
         -WorkingDirectory $ProjectRoot `
