@@ -13,8 +13,10 @@ $SaveDir = Join-Path $WorkDir "saves"
 $ConfigPath = Join-Path $WorkDir "gzdoom-ci.ini"
 $SaveCommandPath = Join-Path $WorkDir "save-phase.cfg"
 $LoadCommandPath = Join-Path $WorkDir "load-phase.cfg"
-$SaveLog = Join-Path $WorkDir "save-phase.log"
-$LoadLog = Join-Path $WorkDir "load-phase.log"
+$SaveProcessLog = Join-Path $WorkDir "save-process.log"
+$LoadProcessLog = Join-Path $WorkDir "load-process.log"
+$SaveStateLog = Join-Path $WorkDir "save-state.log"
+$LoadStateLog = Join-Path $WorkDir "load-state.log"
 $CombinedLog = Join-Path $ProjectRoot "dist\gzdoom-save-load-smoke.log"
 $SaveStem = "coh-runtime-state"
 $SaveFile = Join-Path $SaveDir "$SaveStem.zds"
@@ -55,9 +57,39 @@ load $SaveStem; wait 70; printinv; wait 10; quickexit
 $saveCommands.Trim() | Set-Content -LiteralPath $SaveCommandPath -Encoding ASCII
 $loadCommands.Trim() | Set-Content -LiteralPath $LoadCommandPath -Encoding ASCII
 
-function Invoke-GZDoomPhase([string]$PhaseName, [string]$CommandFile, [string]$LogPath) {
-    if (Test-Path -LiteralPath $LogPath) {
-        Remove-Item -LiteralPath $LogPath -Force
+function Write-CombinedLog {
+    $sections = @()
+    if (Test-Path -LiteralPath $SaveProcessLog) {
+        $sections += "=== SAVE PROCESS ==="
+        $sections += (Get-Content -LiteralPath $SaveProcessLog -Raw)
+    }
+    if (Test-Path -LiteralPath $SaveStateLog) {
+        $sections += "=== SAVE ENGINE LOG ==="
+        $sections += (Get-Content -LiteralPath $SaveStateLog -Raw)
+    }
+    if (Test-Path -LiteralPath $LoadProcessLog) {
+        $sections += "=== LOAD PROCESS ==="
+        $sections += (Get-Content -LiteralPath $LoadProcessLog -Raw)
+    }
+    if (Test-Path -LiteralPath $LoadStateLog) {
+        $sections += "=== LOAD ENGINE LOG ==="
+        $sections += (Get-Content -LiteralPath $LoadStateLog -Raw)
+    }
+    if ($sections.Count -gt 0) {
+        $sections | Set-Content -LiteralPath $CombinedLog -Encoding UTF8
+    }
+}
+
+function Invoke-GZDoomPhase(
+    [string]$PhaseName,
+    [string]$CommandFile,
+    [string]$ProcessLog,
+    [string]$StateLog
+) {
+    foreach ($log in @($ProcessLog, $StateLog)) {
+        if (Test-Path -LiteralPath $log) {
+            Remove-Item -LiteralPath $log -Force
+        }
     }
 
     $arguments = @(
@@ -70,6 +102,7 @@ function Invoke-GZDoomPhase([string]$PhaseName, [string]$CommandFile, [string]$L
         "-config", $ConfigPath,
         "+vid_fullscreen", "false",
         "+vid_preferbackend", "0",
+        "+logfile", $StateLog,
         "+exec", $CommandFile
     )
 
@@ -79,19 +112,26 @@ function Invoke-GZDoomPhase([string]$PhaseName, [string]$CommandFile, [string]$L
     $outputLines = @($output | ForEach-Object { "$_" })
 
     if ($outputLines.Count -gt 0) {
-        $outputLines | Set-Content -LiteralPath $LogPath -Encoding UTF8
+        $outputLines | Set-Content -LiteralPath $ProcessLog -Encoding UTF8
         $outputLines | ForEach-Object { Write-Host $_ }
     }
     else {
-        "GZDoom $PhaseName phase completed with no stdout. Exit code: $exitCode" |
-            Set-Content -LiteralPath $LogPath -Encoding UTF8
+        "GZDoom $PhaseName phase completed with no redirected stdout. Exit code: $exitCode" |
+            Set-Content -LiteralPath $ProcessLog -Encoding UTF8
     }
+
+    Write-CombinedLog
 
     if ($exitCode -ne 0) {
-        throw "GZDoom $PhaseName phase failed with exit code $exitCode. See $LogPath"
+        throw "GZDoom $PhaseName phase failed with exit code $exitCode. See $CombinedLog"
+    }
+    if (-not (Test-Path -LiteralPath $StateLog)) {
+        throw "GZDoom $PhaseName phase did not create its engine logfile. See $CombinedLog"
     }
 
-    $logText = Get-Content -LiteralPath $LogPath -Raw
+    $processText = Get-Content -LiteralPath $ProcessLog -Raw
+    $stateText = Get-Content -LiteralPath $StateLog -Raw
+    $allText = "$processText`n$stateText"
     $errorPatterns = @(
         "Script error",
         "Execution could not continue",
@@ -103,24 +143,24 @@ function Invoke-GZDoomPhase([string]$PhaseName, [string]$CommandFile, [string]$L
         "Cannot find savegame"
     )
     foreach ($pattern in $errorPatterns) {
-        if ($logText -match [regex]::Escape($pattern)) {
-            throw "GZDoom reported '$pattern' during the $PhaseName phase."
+        if ($allText -match [regex]::Escape($pattern)) {
+            throw "GZDoom reported '$pattern' during the $PhaseName phase. See $CombinedLog"
         }
     }
 
-    return $logText
+    return $stateText
 }
 
 function Assert-InventoryState([string]$LogText, [string]$PhaseName) {
     if ($LogText -notmatch "(?m)^\s*CheckoutFuse\s+#\d+\s+\(2/") {
-        throw "$PhaseName inventory dump did not contain CheckoutFuse amount 2."
+        throw "$PhaseName inventory dump did not contain CheckoutFuse amount 2. See $CombinedLog"
     }
     if ($LogText -notmatch "(?m)^\s*CorporateMemo\s+#\d+\s+\(2/") {
-        throw "$PhaseName inventory dump did not contain CorporateMemo amount 2."
+        throw "$PhaseName inventory dump did not contain CorporateMemo amount 2. See $CombinedLog"
     }
 }
 
-$saveText = Invoke-GZDoomPhase -PhaseName "save" -CommandFile $SaveCommandPath -LogPath $SaveLog
+$saveText = Invoke-GZDoomPhase -PhaseName "save" -CommandFile $SaveCommandPath -ProcessLog $SaveProcessLog -StateLog $SaveStateLog
 Assert-InventoryState -LogText $saveText -PhaseName "Pre-save"
 
 if (-not (Test-Path -LiteralPath $SaveFile)) {
@@ -130,16 +170,9 @@ if ((Get-Item -LiteralPath $SaveFile).Length -lt 4096) {
     throw "GZDoom savegame is unexpectedly small; refusing to treat it as a valid runtime save."
 }
 
-$loadText = Invoke-GZDoomPhase -PhaseName "load" -CommandFile $LoadCommandPath -LogPath $LoadLog
+$loadText = Invoke-GZDoomPhase -PhaseName "load" -CommandFile $LoadCommandPath -ProcessLog $LoadProcessLog -StateLog $LoadStateLog
+Write-CombinedLog
 Assert-InventoryState -LogText $loadText -PhaseName "Post-load"
-
-@(
-    "=== SAVE PHASE ===",
-    (Get-Content -LiteralPath $SaveLog -Raw),
-    "",
-    "=== LOAD PHASE ===",
-    (Get-Content -LiteralPath $LoadLog -Raw)
-) | Set-Content -LiteralPath $CombinedLog -Encoding UTF8
 
 Write-Host "GZDoom runtime save/load smoke test: PASS"
 Write-Host "Verified real save -> process exit -> load with CheckoutFuse=2 and CorporateMemo=2 preserved."
