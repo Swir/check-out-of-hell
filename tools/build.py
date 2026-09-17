@@ -8,6 +8,7 @@ from generate_combat_assets import generate_combat_assets
 from generate_vehicle_enemy_assets import generate_vehicle_enemy_assets
 from generate_regional_manager_assets import generate_regional_manager_assets
 from generate_presentation_assets import generate_presentation_assets
+from generate_overtime_assets import generate_overtime_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
@@ -19,8 +20,16 @@ ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds"]
 
 
+def map_source(map_name: str) -> bytes:
+    chunks = [(GAME / f"{map_name}.udmf").read_text(encoding="utf-8").rstrip()]
+    extension = GAME / f"{map_name}_OVERTIME.udmf"
+    if extension.exists():
+        chunks.append(extension.read_text(encoding="utf-8").rstrip())
+    return ("\n\n".join(chunks) + "\n").encode("utf-8")
+
+
 def make_udmf_wad(map_name: str, path: Path) -> None:
-    textmap = (GAME / f"{map_name}.udmf").read_bytes()
+    textmap = map_source(map_name)
     lumps = [("TEXTMAP", textmap), ("ENDMAP", b"")]
     data_offset = 12
     blob = bytearray()
@@ -58,11 +67,21 @@ def pad_short_wavs(sound_dir: Path, min_frames: int = 4000) -> None:
             target.writeframes(frames + silence)
 
 
+def decorate_payload() -> bytes:
+    """Compose the core actors and optional subsystem actors into one DECORATE lump."""
+    chunks = [
+        (GAME / "DECORATE").read_text(encoding="utf-8").rstrip(),
+        (GAME / "DECORATE_OVERTIME").read_text(encoding="utf-8").rstrip(),
+    ]
+    return ("\n\n".join(chunks) + "\n").encode("utf-8")
+
+
 generate_assets(GAME)
 generate_combat_assets(GAME)
 generate_vehicle_enemy_assets(GAME)
 generate_regional_manager_assets(GAME)
 generate_presentation_assets(GAME)
+generate_overtime_assets(GAME)
 pad_short_wavs(GAME / "sounds")
 
 built_maps = []
@@ -74,7 +93,10 @@ for map_name in MAPS:
 pk3 = DIST / "checkout-of-hell-prototype.pk3"
 with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
     for lump in ROOT_LUMPS:
-        archive.write(GAME / lump, lump)
+        if lump == "DECORATE":
+            archive.writestr("DECORATE", decorate_payload())
+        else:
+            archive.write(GAME / lump, lump)
 
     for asset_dir in ASSET_DIRS:
         directory = GAME / asset_dir

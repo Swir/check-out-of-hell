@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `█████░░░░░ 53%`
+**Overall progress:** `██████░░░░ 55%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -55,11 +55,12 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Regional Manager original boss sprite/behavior/audio pass
 - [x] HUD readability pass with Overtime countdown, power cells and optional-route cue
 - [x] Three-memo optional Corporate Compliance scavenger route in Closing Time
+- [x] Overtime environmental warning/trap layer with stage-matched escalation
 - [ ] Full original combat/weapon sound set polish
 - [ ] Proper final custom HUD
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 56%
+## Phase 2 — Vertical Slice — 60%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -73,6 +74,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Regional Manager original two-phase behavior/art/audio implemented with dedicated CI contract
 - [x] Warehouse 13.5 uses project-owned retail surfaces and power-gates Regional Manager behind all three breakers
 - [x] Closing Time HUD readability + optional Corporate Memo joke route implemented with a dedicated CI contract
+- [x] Closing Time Overtime escalation now adds readable warning alarms and timed electrical floor hazards with a dedicated CI contract
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods
