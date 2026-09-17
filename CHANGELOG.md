@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.20.0-dev — 2026-09-17
+
+### Added
+- `CheckoutPersistentShiftDirector`, a save-safe shift event handler that preserves serialized objective, boss-clear and Overtime state when GZDoom restores a savegame.
+- `tools/test_save_load_contract.py` plus `tools/inspect_gzdoom_save.py` for packaged ZScript wiring and GZDoom save-archive validation.
+- Windows CI now performs a real pinned-GZDoom MAP01 save → load → re-save round trip and verifies authored Breaker Fuse / Corporate Memo state in the resulting save archives.
+
+### Changed
+- `tools/build.py` now composes the core ZScript with the save/load persistence extension into one packaged `ZSCRIPT` lump.
+- MAPINFO registers the persistent shift director instead of directly registering the reset-prone base handler.
+- README/ROADMAP progress raised to 70% and Vertical Slice progress to 86% for implemented save/load persistence and regression coverage; the public demo remains withheld pending end-to-end Windows playtesting and final Closing Time polish.
+
 ## 0.19.0-dev — 2026-09-17
 
 ### Added
