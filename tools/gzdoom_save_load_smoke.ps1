@@ -52,6 +52,11 @@ function Invoke-GZDoomScenario {
     )
 
     Write-Host "Running GZDoom $Label scenario..."
+    $consoleLog = Join-Path $WorkDir "$Label-console.log"
+    if (Test-Path -LiteralPath $consoleLog) {
+        Remove-Item -LiteralPath $consoleLog -Force
+    }
+
     $arguments = @(
         "-stdout",
         "-nosound",
@@ -61,24 +66,38 @@ function Invoke-GZDoomScenario {
         "-savedir", $SaveDir,
         "-iwad", $FreedoomWad,
         "-file", $Pk3,
+        "+logfile", $consoleLog,
         "+exec", $ConfigPath
     )
 
     $output = & $GZDoomExe @arguments 2>&1
     $exitCode = $LASTEXITCODE
     $outputLines = @($output | ForEach-Object { "$_" })
+    $consoleLines = @()
+    if (Test-Path -LiteralPath $consoleLog) {
+        $consoleLines = @(Get-Content -LiteralPath $consoleLog -ErrorAction Stop | ForEach-Object { "$_" })
+    }
 
     Add-Content -LiteralPath $RuntimeLog -Value "=== $Label (exit $exitCode) ===" -Encoding UTF8
     if ($outputLines.Count -gt 0) {
+        Add-Content -LiteralPath $RuntimeLog -Value "--- process output ---" -Encoding UTF8
         $outputLines | Add-Content -LiteralPath $RuntimeLog -Encoding UTF8
         $outputLines | ForEach-Object { Write-Host $_ }
+    }
+    if ($consoleLines.Count -gt 0) {
+        Add-Content -LiteralPath $RuntimeLog -Value "--- GZDoom console log ---" -Encoding UTF8
+        $consoleLines | Add-Content -LiteralPath $RuntimeLog -Encoding UTF8
+        $consoleLines | ForEach-Object { Write-Host $_ }
     }
 
     if ($exitCode -ne 0) {
         throw "GZDoom $Label scenario failed with exit code $exitCode. See $RuntimeLog"
     }
+    if ($consoleLines.Count -eq 0) {
+        throw "GZDoom $Label scenario produced no console logfile. See $RuntimeLog"
+    }
 
-    $text = $outputLines -join "`n"
+    $text = (@($outputLines) + @($consoleLines)) -join "`n"
     foreach ($pattern in @(
         "Script error",
         "Execution could not continue",
