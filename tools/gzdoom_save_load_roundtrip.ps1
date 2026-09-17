@@ -12,6 +12,7 @@ $IniPath = Join-Path $RoundtripRoot "gzdoom-ci.ini"
 $CommandPath = Join-Path $RoundtripRoot "roundtrip.cfg"
 $SaveLog = Join-Path $RoundtripRoot "save-phase.log"
 $LoadLog = Join-Path $RoundtripRoot "load-phase.log"
+$PhaseTimeoutMs = 45000
 
 function Assert-RuntimeLog {
     param(
@@ -51,6 +52,33 @@ function ConvertTo-ProcessArgument {
     return '"' + ($Value -replace '(\\*)"', '$1$1\"' -replace '(\\+)$', '$1$1') + '"'
 }
 
+function Write-CombinedLog {
+    param(
+        [Parameter(Mandatory = $true)][string]$LogPath,
+        [Parameter(Mandatory = $true)][string]$StdoutPath,
+        [Parameter(Mandatory = $true)][string]$StderrPath,
+        [Parameter(Mandatory = $true)][string]$EngineLogPath,
+        [Parameter(Mandatory = $true)][string]$Phase,
+        [Parameter(Mandatory = $true)][int]$ExitCode
+    )
+
+    $combined = @()
+    foreach ($source in @($StdoutPath, $StderrPath, $EngineLogPath)) {
+        if ((Test-Path -LiteralPath $source) -and ((Get-Item -LiteralPath $source).Length -gt 0)) {
+            $combined += "===== $(Split-Path -Leaf $source) ====="
+            $combined += @(Get-Content -LiteralPath $source)
+        }
+    }
+
+    if ($combined.Count -eq 0) {
+        $combined = @("GZDoom $Phase phase completed with no captured output. Exit code: $ExitCode")
+    }
+
+    $combined | Set-Content -LiteralPath $LogPath -Encoding UTF8
+    $combined | ForEach-Object { Write-Host $_ }
+    return (Get-Content -LiteralPath $LogPath -Raw)
+}
+
 function Invoke-RoundtripPhase {
     param(
         [Parameter(Mandatory = $true)][string]$Commands,
@@ -60,12 +88,24 @@ function Invoke-RoundtripPhase {
 
     Set-Content -LiteralPath $CommandPath -Value $Commands -Encoding ASCII
 
+    $stdoutPath = "$LogPath.stdout"
+    $stderrPath = "$LogPath.stderr"
+    $engineLogPath = "$LogPath.engine"
+    foreach ($temporary in @($stdoutPath, $stderrPath, $engineLogPath, $LogPath)) {
+        if (Test-Path -LiteralPath $temporary) {
+            Remove-Item -LiteralPath $temporary -Force
+        }
+    }
+
     $arguments = @(
         "-stdout",
         "-window",
+        "-width", "640",
+        "-height", "480",
         "-nosound",
         "-nomusic",
         "-noautoload",
+        "-errorlog", $engineLogPath,
         "-config", $IniPath,
         "-savedir", $SaveDir,
         "-iwad", $FreedoomWad,
@@ -75,46 +115,30 @@ function Invoke-RoundtripPhase {
     )
 
     # GZDoom is a Windows GUI-subsystem executable. A direct PowerShell invocation
-    # can return as soon as the process is launched, so explicitly wait for it.
-    $stdoutPath = "$LogPath.stdout"
-    $stderrPath = "$LogPath.stderr"
-    foreach ($temporary in @($stdoutPath, $stderrPath, $LogPath)) {
-        if (Test-Path -LiteralPath $temporary) {
-            Remove-Item -LiteralPath $temporary -Force
-        }
-    }
-
+    # can return as soon as the process is launched, so explicitly track the child.
+    # The bounded wait also prevents a renderer/startup regression from wedging CI.
     $argumentLine = (($arguments | ForEach-Object { ConvertTo-ProcessArgument "$_" }) -join " ")
     Write-Host "Running GZDoom $Phase phase..."
     $process = Start-Process -FilePath $GZDoomExe `
         -ArgumentList $argumentLine `
         -RedirectStandardOutput $stdoutPath `
         -RedirectStandardError $stderrPath `
-        -PassThru `
-        -Wait
+        -PassThru
 
-    $combined = @()
-    if (Test-Path -LiteralPath $stdoutPath) {
-        $combined += @(Get-Content -LiteralPath $stdoutPath)
-    }
-    if (Test-Path -LiteralPath $stderrPath) {
-        $combined += @(Get-Content -LiteralPath $stderrPath)
-    }
-
-    if ($combined.Count -gt 0) {
-        $combined | Set-Content -LiteralPath $LogPath -Encoding UTF8
-        $combined | ForEach-Object { Write-Host $_ }
-    }
-    else {
-        "GZDoom $Phase phase completed with no stdout/stderr. Exit code: $($process.ExitCode)" |
-            Set-Content -LiteralPath $LogPath -Encoding UTF8
+    $exited = $process.WaitForExit($PhaseTimeoutMs)
+    if (-not $exited) {
+        Write-Warning "GZDoom $Phase phase exceeded $($PhaseTimeoutMs / 1000)s; terminating it so CI cannot hang."
+        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+        $process.WaitForExit()
+        $text = Write-CombinedLog -LogPath $LogPath -StdoutPath $stdoutPath -StderrPath $stderrPath -EngineLogPath $engineLogPath -Phase $Phase -ExitCode -1
+        throw "GZDoom $Phase phase timed out. See $LogPath"
     }
 
+    $text = Write-CombinedLog -LogPath $LogPath -StdoutPath $stdoutPath -StderrPath $stderrPath -EngineLogPath $engineLogPath -Phase $Phase -ExitCode $process.ExitCode
     if ($process.ExitCode -ne 0) {
         throw "GZDoom $Phase phase failed with exit code $($process.ExitCode). See $LogPath"
     }
 
-    $text = Get-Content -LiteralPath $LogPath -Raw
     Assert-RuntimeLog -Text $text -Phase $Phase
     return $text
 }
@@ -141,6 +165,17 @@ if (Test-Path -LiteralPath $RoundtripRoot) {
     Remove-Item -LiteralPath $RoundtripRoot -Recurse -Force
 }
 New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
+
+# Make the CI runtime deterministic before video initialization. The parser-only
+# smoke test never initializes a renderer, while this roundtrip does, so force the
+# broadly supported OpenGL backend and disable focus-based pausing/fullscreen.
+@"
+[GlobalSettings]
+i_pauseinbackground=false
+vid_fullscreen=false
+vid_preferbackend=0
+queryiwad=false
+"@ | Set-Content -LiteralPath $IniPath -Encoding ASCII
 
 # Put the player into a meaningful mid-objective state before saving. The one-line
 # command chain uses GZDoom's built-in `wait` command so map startup and networked
