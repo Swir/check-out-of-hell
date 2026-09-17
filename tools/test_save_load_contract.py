@@ -1,10 +1,13 @@
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 runner = (ROOT / "tools" / "gzdoom_save_load_roundtrip.py").read_text(encoding="utf-8")
 linux_bootstrap = (ROOT / "tools" / "bootstrap_runtime_linux.py").read_text(encoding="utf-8")
 windows_wrapper = (ROOT / "tools" / "gzdoom_save_load_roundtrip.ps1").read_text(encoding="utf-8")
+parser_smoke = (ROOT / "tools" / "gzdoom_runtime_smoke.ps1").read_text(encoding="utf-8")
+zscript = (ROOT / "game" / "ZSCRIPT").read_text(encoding="utf-8")
 workflow = (ROOT / ".github" / "workflows" / "build.yml").read_text(encoding="utf-8")
 readme = (ROOT / "README.md").read_text(encoding="utf-8")
 roadmap = (ROOT / "ROADMAP.md").read_text(encoding="utf-8")
@@ -34,6 +37,27 @@ for failure_marker in (
     "DIED WITH FATAL ERROR",
 ):
     assert failure_marker in runner, f"save/load runner does not guard against: {failure_marker}"
+
+# WorldLoaded also runs when restoring a save. Serialized director fields must survive
+# that callback instead of being reset as if a fresh map had started.
+assert "if (e.IsSaveGame)" in zscript, "shift director does not protect restored savegame state"
+assert zscript.index("if (e.IsSaveGame)") < zscript.index("bossCleared = false;"), (
+    "savegame guard must run before fresh-level shift state initialization"
+)
+
+# Actor state lines must remain legal ZScript. A live Linux GZDoom run exposed bare
+# Stop/TNT1/COSH statements that the earlier stdout-only Windows smoke could miss.
+assert not re.search(r"(?m)^\s+Stop\s*$", zscript), "bare Stop state statement found in ZSCRIPT"
+for state_line in ("TNT1 A -1;", "COSH A -1 Bright;"):
+    assert state_line in zscript, f"expected terminated ZScript state line missing: {state_line}"
+
+for parser_marker in (
+    '"-errorlog", $EngineErrorLog',
+    "===== GZDoom engine error log =====",
+    '"Script error"',
+    '"DIED WITH FATAL ERROR"',
+):
+    assert parser_marker in parser_smoke, f"Windows parser smoke missing engine-log guard: {parser_marker}"
 
 assert lock["gzdoom"]["linux_asset_regex"] == r"^gzdoom_.*_amd64\.deb$"
 for bootstrap_marker in (
