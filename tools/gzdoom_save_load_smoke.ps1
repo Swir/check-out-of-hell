@@ -126,7 +126,8 @@ $commonArguments = @(
     "-nosound",
     "-iwad", $FreedoomWad,
     "-file", $Pk3,
-    "-savedir", $SaveDir
+    "-savedir", $SaveDir,
+    "+i_pauseinbackground", "0"
 )
 
 Write-Host "Runtime pass 1/2: start MAP01, mutate state and write a savegame..."
