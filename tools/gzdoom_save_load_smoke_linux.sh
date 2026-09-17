@@ -7,13 +7,16 @@ CACHE="$ROOT/.cache/runtime-linux"
 RUNTIME="$ROOT/external/linux-runtime"
 PROBE="$ROOT/dist/runtime-save-load-linux"
 SAVES="$PROBE/saves"
-CONFIG="$PROBE/gzdoom-runtime-probe.ini"
+PROBE_HOME="$PROBE/home"
+XDG_CONFIG="$PROBE/xdg-config"
+XDG_DATA="$PROBE/xdg-data"
+CONFIG_FILE="$PROBE/gzdoom-runtime-probe.ini"
 SAVE_LOG="$PROBE/save-pass.log"
 LOAD_LOG="$PROBE/load-pass.log"
 COMBINED_LOG="$ROOT/dist/gzdoom-save-load-smoke.log"
 PK3="$ROOT/dist/checkout-of-hell-prototype.pk3"
 
-mkdir -p "$CACHE" "$RUNTIME" "$SAVES" "$ROOT/dist"
+mkdir -p "$CACHE" "$RUNTIME" "$ROOT/dist"
 
 api_headers=(-H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" -H "User-Agent: checkout-of-hell-runtime-smoke")
 if [[ -n "${GITHUB_TOKEN:-}" ]]; then
@@ -80,7 +83,11 @@ run_probe() {
   local phase="$1" log="$2"
   shift 2
   set +e
-  LIBGL_ALWAYS_SOFTWARE=1 timeout --signal=TERM --kill-after=2s 12s \
+  HOME="$PROBE_HOME" \
+  XDG_CONFIG_HOME="$XDG_CONFIG" \
+  XDG_DATA_HOME="$XDG_DATA" \
+  LIBGL_ALWAYS_SOFTWARE=1 \
+  timeout --signal=TERM --kill-after=2s 12s \
     xvfb-run -a "$GZDOOM" "$@" >"$log" 2>&1
   local code=$?
   set -e
@@ -147,18 +154,17 @@ fi
 [[ -x "$GZDOOM" ]] || { echo "Installed official GZDoom package did not expose an executable." >&2; exit 1; }
 
 rm -rf "$PROBE"
-mkdir -p "$SAVES"
+mkdir -p "$SAVES" "$PROBE_HOME" "$XDG_CONFIG" "$XDG_DATA"
 
-# Use save_dir itself, not a guessed command-line directory switch. +set is processed after
-# the config has loaded and before ordinary +commands, matching GZDoom's documented startup
-# command ordering. The save command is deliberately delayed with `wait` because `map` queues
-# a deferred game start; saving in the same startup tick would run before GS_LEVEL exists.
+# Confine HOME/XDG directories to the probe tree so every save location chosen by GZDoom
+# remains observable even if a version computes its save folder before the save_dir cvar is
+# applied. `map` is deferred, so wait before issuing inventory changes and the actual save.
 common=(
   -stdout
   -nosound
   -nomusic
   -noautoload
-  -config "$CONFIG"
+  -config "$CONFIG_FILE"
   -iwad "$FREEDOOM_WAD"
   -file "$PK3"
   +set save_dir "$SAVES"
@@ -177,11 +183,11 @@ run_probe save "$SAVE_LOG" "${common[@]}" \
   +save coh-runtime-probe "Checkout of Hell CI runtime probe" \
   +wait 35
 
-SAVE_FILE="$(find "$SAVES" -type f -name '*.zds' -printf '%T@ %p\n' | sort -nr | head -n 1 | cut -d' ' -f2- || true)"
+SAVE_FILE="$(find "$PROBE" -type f -name '*.zds' -printf '%T@ %p\n' | sort -nr | head -n 1 | cut -d' ' -f2- || true)"
 if [[ -z "$SAVE_FILE" || ! -f "$SAVE_FILE" ]]; then
-  echo "GZDoom ran without script errors but did not create a .zds savegame under save_dir=$SAVES." >&2
+  echo "GZDoom ran without script errors but did not create a .zds savegame in the confined runtime profile." >&2
   echo "Files created by the probe:" >&2
-  find "$PROBE" -maxdepth 4 -type f -printf '  %p (%s bytes)\n' >&2 || true
+  find "$PROBE" -maxdepth 7 -type f -printf '  %p (%s bytes)\n' >&2 || true
   cat "$SAVE_LOG" >&2
   exit 1
 fi
