@@ -112,3 +112,9 @@ thing { x = -544.0; y = 250.0; angle = 0; type = 17102; skill1 = true; skill2 = 
 thing { x = -512.0; y = 250.0; angle = 0; type = 17102; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -480.0; y = 250.0; angle = 0; type = 17102; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -620.0; y = 390.0; angle = 0; type = 17112; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Optional corporate-compliance scavenger route: one memo in a front detour,
+// one behind the east-side aisle pressure, and one inside the powered Staff Only room.
+thing { x = -690.0; y = -310.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  690.0; y =  235.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -620.0; y =  455.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
