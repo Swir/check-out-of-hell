@@ -19,6 +19,12 @@ def main() -> None:
     for marker in (
         "xvfb-run",
         "LIBGL_ALWAYS_SOFTWARE",
+        "MESA_LOADER_DRIVER_OVERRIDE",
+        "i_pauseinbackground",
+        "i_soundinbackground",
+        "-nomusic",
+        "TimeoutExpired",
+        "partial GZDoom output",
         "-savedir",
         "give CheckoutFuse 2",
         "printinv",
