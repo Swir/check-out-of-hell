@@ -128,20 +128,51 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: .\tools\gzdoom_runtime_smoke.ps1
 
-      - name: Validate save/load roundtrip with pinned GZDoom
-        shell: powershell
-        timeout-minutes: 4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: .\tools\gzdoom_save_load_roundtrip.ps1
-
-      - name: Upload GZDoom validation logs
+      - name: Upload Windows GZDoom parser log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gzdoom-runtime-validation-logs
+          name: gzdoom-windows-parser-log
+          path: dist/gzdoom-runtime-smoke.log
+          if-no-files-found: warn
+
+  save-load-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Resolve pinned official Linux runtime assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python tools/bootstrap_runtime_linux.py
+
+      - name: Install pinned GZDoom and virtual display support
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ./external/linux-runtime/gzdoom.deb xvfb
+
+      - name: Validate real save/load roundtrip with pinned GZDoom
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: |
+          xvfb-run -a python tools/gzdoom_save_load_roundtrip.py \
+            --gzdoom "$(command -v gzdoom)" \
+            --iwad external/linux-runtime/freedoom2.wad
+
+      - name: Upload GZDoom save/load validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gzdoom-save-load-validation-logs
           path: |
-            dist/gzdoom-runtime-smoke.log
             dist/save-load-roundtrip/*.log
             dist/save-load-roundtrip/saves/**/*.zds
+            external/linux-runtime/runtime-manifest.json
           if-no-files-found: warn
