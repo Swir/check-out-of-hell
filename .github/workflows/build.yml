@@ -58,6 +58,9 @@ jobs:
       - name: Original visual/audio asset contract test
         run: python tools/test_original_assets.py
 
+      - name: Combat audio polish contract test
+        run: python tools/test_combat_audio_polish.py
+
       - name: Vehicle enemy asset contract test
         run: python tools/test_vehicle_enemy_assets.py
 

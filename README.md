@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.16-dev — Closing Time environment polish pass  
-> **Project progress:** `██████░░░░ 61%`
+> **Status:** Prototype 0.17-dev — combat audio polish pass  
+> **Project progress:** `██████░░░░ 64%`
 
 ## Premise
 
@@ -75,6 +75,15 @@ The prop/sign/light sprites and snack cue are generated deterministically with t
 library, carry ZDoom sprite offsets, and have a dedicated CI contract that verifies generation,
 placement, build composition and PK3 packaging.
 
+Prototype `0.17-dev` completes the first **combat/weapon audio polish pass**. Every high-repeat
+signature combat cue now resolves through a small project-owned runtime variation family instead of
+replaying one identical sample forever. Emergency Mop, Receipt Ripper, Price-Gun SMG, Turbo Can
+Launcher, Night Manager, Angry Self-Checkout, Security Price Scanner, Cart of Doom, Possessed Pallet
+Jack and The Regional Manager all keep their established logical sound names and gameplay timing,
+while `SNDINFO` selects between deterministic generated variants with controlled pitch, transient and
+noise differences. The build uses only Python's standard library, and a dedicated contract checks PCM
+format, duration, audible level, conservative peak headroom, randomized-family wiring and PK3 contents.
+
 ## Original combat presentation
 
 The first combat encounters are progressively moving away from compatible-IWAD placeholders.
@@ -122,7 +131,9 @@ Prototype `0.12-dev` gives the campaign boss its own identity:
 
 All current project-owned prototype combat art/audio is generated deterministically from
 repository code using Python's standard library. Sprite PNGs carry ZDoom `grAb` offsets,
-and CI verifies generated files, PK3 packaging, sound mappings and actor wiring.
+and CI verifies generated files, PK3 packaging, sound mappings and actor wiring. High-repeat
+combat audio additionally uses deterministic runtime variation families so weapons and enemy
+responses stay recognizable without sounding mechanically identical on every trigger.
 
 Waiting around is increasingly dangerous. The **Overtime** director escalates through
 `SHIFT ACTIVE` → `STORE UNSTABLE` → `OVERTIME` → `HELL RUSH`. Dedicated map
@@ -196,20 +207,21 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - two optional Emergency Break Snack exploration rewards with original pickup cue,
 - original breaker, shutter, stash and Corporate Memo prototype sprites,
 - original Overtime warning/floor-arc sprite set with dedicated alarm/electrical cues,
-- original **Emergency Mop** first-person sprite/animation set with combat swing cue,
-- original **Receipt Ripper** pickup/view sprite set with fire/cycle cues,
-- original **Price-Gun SMG** pickup/view sprite set with barcode-label impact feedback and weapon cues,
-- original **Turbo Can Launcher** pickup/view sprite set plus original can projectile/explosion and weapon cues,
-- original **Angry Self-Checkout** animation set, receipt projectile and combat cues,
-- original **Security Price Scanner** animation set, scanning projectile and combat cues,
-- original **Cart of Doom** charge/pain/death animation set and combat cues,
-- original **Possessed Pallet Jack** fork-lunge/pain/death animation set and combat cues,
-- original **Night Manager** animation set, Manager Memo projectile and boss combat cues,
-- original **Regional Manager** animation set, two custom projectile families and two-phase attack behavior,
+- original **Emergency Mop** first-person sprite/animation set with combat swing cues,
+- original **Receipt Ripper** pickup/view sprite set with fire/cycle cue families,
+- original **Price-Gun SMG** pickup/view sprite set with barcode-label impact feedback and randomized weapon cues,
+- original **Turbo Can Launcher** pickup/view sprite set plus original can projectile/explosion and randomized weapon cues,
+- original **Angry Self-Checkout** animation set, receipt projectile and combat cue families,
+- original **Security Price Scanner** animation set, scanning projectile and combat cue families,
+- original **Cart of Doom** charge/pain/death animation set and combat cue families,
+- original **Possessed Pallet Jack** fork-lunge/pain/death animation set and combat cue families,
+- original **Night Manager** animation set, Manager Memo projectile and boss combat cue families,
+- original **Regional Manager** animation set, two custom projectile families, two-phase attack behavior and combat cue families,
 - deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contracts,
+- deterministic randomized combat-audio generation with PCM/headroom/family/PK3 regression coverage,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
-- automated build + gameplay + layout + Staff Only + Closing Time presentation + environment polish + final HUD + Overtime hazard + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
+- automated build + gameplay + layout + Staff Only + Closing Time presentation + environment polish + final HUD + Overtime hazard + boss/escape + original-asset + combat-audio + vehicle-enemy + Regional Manager + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - original project icon concept and documented asset/weapon/level/packaging direction.
 
@@ -235,6 +247,7 @@ python tools/test_hud_contract.py
 python tools/test_overtime_hazard_contract.py
 python tools/test_boss_escape_contract.py
 python tools/test_original_assets.py
+python tools/test_combat_audio_polish.py
 python tools/test_vehicle_enemy_assets.py
 python tools/test_regional_manager_contract.py
 python tools/package_portable.py
@@ -244,10 +257,10 @@ python tools/test_portable_package.py
 
 ## Prototype weapons
 
-- Slot 1: Emergency Mop — original prototype view sprites + original swing cue
-- Shotgun pickup: Receipt Ripper — original pickup/view sprites + original fire/cycle cues
-- Chaingun pickup: Price-Gun SMG — original pickup/view sprites + barcode-label impact feedback
-- Rocket Launcher pickup: Turbo Can Launcher — original pickup/view sprites + original soda-can projectile/explosion
+- Slot 1: Emergency Mop — original prototype view sprites + randomized swing cue family
+- Shotgun pickup: Receipt Ripper — original pickup/view sprites + randomized fire/cycle cue families
+- Chaingun pickup: Price-Gun SMG — original pickup/view sprites + barcode-label impact feedback and randomized cues
+- Rocket Launcher pickup: Turbo Can Launcher — original pickup/view sprites + original soda-can projectile/explosion and randomized cues
 
 See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
@@ -263,8 +276,8 @@ See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 No proprietary Doom, Star Wars or other commercial game assets belong in this repository.
 The current runtime art/audio pack is generated from our own source code during the build.
 All current core weapons and signature enemies/bosses now have project-owned visible combat
-presentation; compatible runtime data is still used as the legal engine/base-game layer only,
-not copied into this repository or release package.
+presentation and project-owned combat-audio families; compatible runtime data is still used as
+the legal engine/base-game layer only, not copied into this repository or release package.
 
 See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md).
 
