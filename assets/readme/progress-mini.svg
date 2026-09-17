@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="72" viewBox="0 0 900 72" role="img" aria-labelledby="title desc">
   <title id="title">CHECKOUT OF HELL compact project progress</title>
-  <desc id="desc">CHECKOUT OF HELL project progress 80.4%; 5 weighted phases. Demo Release readiness 40.0%, tracked separately.</desc>
+  <desc id="desc">CHECKOUT OF HELL project progress 82.4%; 5 weighted phases. Demo Release readiness 50.0%, tracked separately.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#02050A"/><stop offset="1" stop-color="#07111C"/></linearGradient>
     <linearGradient id="progressGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0088FF"/><stop offset="1" stop-color="#62E5FF"/></linearGradient>
@@ -9,8 +9,8 @@
   <rect x="1" y="1" width="898" height="70" rx="14" fill="url(#bg)" stroke="#0088FF" stroke-opacity="0.5" stroke-width="2"/>
   <text x="20" y="27" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700">CHECKOUT OF HELL</text>
   <text x="220" y="27" fill="#62E5FF" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700">PROJECT · HARDENING</text>
-  <text x="870" y="27" text-anchor="end" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="800">80.4%</text>
+  <text x="870" y="27" text-anchor="end" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="800">82.4%</text>
   <text x="20" y="52" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="11">5 weighted phases</text>
   <rect id="progress-track" x="170" y="42" width="700" height="12" rx="6" fill="#0A1A29" stroke="#62E5FF" stroke-opacity="0.25"/>
-  <rect id="progress-fill" x="170" y="42" width="562.45" height="12" rx="6" fill="url(#progressGradient)" clip-path="url(#trackClip)"/>
+  <rect id="progress-fill" x="170" y="42" width="576.45" height="12" rx="6" fill="url(#progressGradient)" clip-path="url(#trackClip)"/>
 </svg>
