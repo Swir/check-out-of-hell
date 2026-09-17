@@ -69,6 +69,7 @@ function Invoke-GZDoomScenario {
         "-window",
         "-width", "320",
         "-height", "200",
+        "+vid_activeinbackground", "true",
         "-savedir", $SaveDir,
         "-iwad", $FreedoomWad,
         "-file", $Pk3
@@ -76,9 +77,8 @@ function Invoke-GZDoomScenario {
         "+exec", $ConfigPath
     )
 
-    # GZDoom is a Windows GUI executable. Direct PowerShell invocation may return
-    # before the game process has actually finished, so explicitly track the
-    # process and wait for its delayed save/quit command sequence.
+    # GZDoom is a Windows GUI executable. Track it explicitly, and force active
+    # background ticking because hosted CI never gives the render window focus.
     $process = Start-Process -FilePath $GZDoomExe `
         -ArgumentList $arguments `
         -WorkingDirectory $ProjectRoot `
@@ -86,9 +86,20 @@ function Invoke-GZDoomScenario {
         -RedirectStandardError $stderrPath `
         -PassThru
 
-    if (-not $process.WaitForExit(45000)) {
+    if (-not $process.WaitForExit(20000)) {
         Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
-        throw "GZDoom $Label scenario timed out after 45 seconds. See $RuntimeLog"
+        $diagnostic = @()
+        foreach ($path in @($stdoutPath, $stderrPath)) {
+            if (Test-Path -LiteralPath $path) {
+                $diagnostic += @(Get-Content -LiteralPath $path -ErrorAction SilentlyContinue | ForEach-Object { "$_" })
+            }
+        }
+        Add-Content -LiteralPath $RuntimeLog -Value "=== $Label TIMEOUT ===" -Encoding UTF8
+        if ($diagnostic.Count -gt 0) {
+            $diagnostic | Add-Content -LiteralPath $RuntimeLog -Encoding UTF8
+        }
+        Write-SaveDirectory -Label "$Label timeout"
+        throw "GZDoom $Label scenario timed out after 20 seconds. See $RuntimeLog"
     }
     $exitCode = $process.ExitCode
 
