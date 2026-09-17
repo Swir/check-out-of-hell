@@ -57,10 +57,9 @@ for marker in (
     'MEMO 2/3: PALLET JACKS ARE NOT EMOTIONAL SUPPORT VEHICLES',
     'MEMO 3/3: REGIONAL MANAGEMENT DENIES THE EXISTENCE OF HELL',
     'CHECKOUT OF HELL // NIGHT SHIFT',
-    'POWER [X][X][X]',
-    'NEXT ESCALATION %02d:%02d',
-    'OPTIONAL MEMOS %d/3',
-    'BONUS: STAFF ONLY ROUTE POWERED',
+    'String powerText = String.Format("POWER  %d/3", fuses);',
+    'String memoText = String.Format("MEMOS  %d/3", memos);',
+    'ROUTE: STAFF ONLY ACCESS IS NOW POWERED',
 ):
     if marker not in zscript:
         raise SystemExit(f"Closing Time HUD/memo presentation contract missing: {marker}")
@@ -92,4 +91,4 @@ for marker in (
         raise SystemExit(f"Presentation generator is not wired into the build: {marker}")
 
 print("Closing Time presentation contract: PASS")
-print("HUD readability, Overtime countdown and the three-memo optional joke route are packaged and wired.")
+print("Memo exploration route and final HUD-facing progress hooks are packaged and wired.")

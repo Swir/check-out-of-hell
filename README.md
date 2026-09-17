@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.14-dev — Overtime environmental hazard pass  
-> **Project progress:** `██████░░░░ 55%`
+> **Status:** Prototype 0.15-dev — final night-shift HUD pass  
+> **Project progress:** `██████░░░░ 58%`
 
 ## Premise
 
@@ -30,7 +30,7 @@ The prototype has a real shift objective instead of pure arena combat:
 `MAP01 — Closing Time` stages that loop across a larger supermarket floor. Internal
 retail barriers split traversal into lanes, the three breakers pull the player into left,
 right and rear routes, and the **Night Manager does not enter the floor until all three
-breakers are restored**. The HUD explicitly moves from `RESTORE ALL BREAKERS` to
+breakers are restored**. The HUD explicitly moves from `RESTORE BREAKERS` to
 `CLEAR THE SUPERVISOR`, then to `RETURN TO FRONT CHECKOUT` after the boss falls.
 
 Full power starts a deliberate supervisor encounter instead of just spawning one boss.
@@ -47,7 +47,7 @@ side route rather than a disguised progression lock.
 Prototype `0.13-dev` added a lightweight exploration/comedy layer to that route. Closing Time
 hides **three optional Corporate Compliance Memos** across a front detour, an east-side
 combat detour and the powered Staff Only room. Each pickup advances a different absurd policy
-message, while the HUD tracks `OPTIONAL MEMOS 0/3` without making the collectibles mandatory.
+message, while the HUD tracks memo progress without making the collectibles mandatory.
 The memo sprite and pickup cue are project-owned and generated deterministically during builds.
 
 Prototype `0.14-dev` makes **Overtime change the floor itself**, not just enemy pressure.
@@ -57,6 +57,14 @@ telegraphed electrical floor arcs; at `270s / HELL RUSH`, the trap cadence accel
 pulse every 20 seconds per anchor. The arcs have a visible warning phase before dealing a small
 area burst, so Overtime is dangerous without becoming random or unreadable. The warning and arc
 sprites/audio are entirely project-owned and generated deterministically from repository code.
+
+Prototype `0.15-dev` replaces the tall prototype status stack with a compact **night-shift HUD**.
+The upper-left card now prioritizes the current objective and route hint, with breaker/memo progress
+beneath it. The upper-right card presents the shift timer, explicit `06:00` clock-out target,
+Overtime stage, patterned pressure meter and next-escalation countdown. A low-profile combat strip
+shows worker health plus label, receipt and can reserves for the signature ranged weapons. Critical
+health and every Overtime stage have text labels in addition to color, so important state is not
+communicated by color alone. A dedicated CI contract protects this hierarchy and PK3 packaging.
 
 ## Original combat presentation
 
@@ -112,9 +120,9 @@ Waiting around is increasingly dangerous. The **Overtime** director escalates th
 spawners add increasingly aggressive reinforcements as the shift drags on. Closing Time now
 also layers synchronized workplace alarms and electrical floor hazards on top of the enemy
 pressure, while preserving clear telegraphs and keeping the clock-out lane free of trap anchors.
-The HUD shows an explicit countdown to the next escalation, a three-cell power display,
-optional memo progress, supervisor state, current objective and a Staff Only route cue once
-partial power unlocks it.
+The final-layout HUD keeps the active objective and route hint separate from the Overtime card,
+tracks breaker and optional memo progress, exposes the next escalation deadline and shows combat
+resources without covering the center of the playfield.
 
 See [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
 
@@ -170,7 +178,7 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - three optional Corporate Compliance Memo pickups with staged workplace-comedy messages,
 - Overtime escalation director with timed reinforcement spawners,
 - Closing Time Overtime warning alarms plus telegraphed electrical floor hazards that accelerate during Hell Rush,
-- shift/objective/Overtime HUD overlay with next-escalation countdown, power cells and optional-collectible tracking,
+- final-layout night-shift HUD with objective/route hierarchy, 06:00 target, text+pattern Overtime pressure, worker health and signature-weapon reserves,
 - first original supermarket wall/shelf/staff/floor/ceiling material pack,
 - original breaker, shutter, stash and Corporate Memo prototype sprites,
 - original Overtime warning/floor-arc sprite set with dedicated alarm/electrical cues,
@@ -187,7 +195,7 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contracts,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
-- automated build + gameplay + layout + Staff Only + Closing Time presentation + Overtime hazard + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
+- automated build + gameplay + layout + Staff Only + Closing Time presentation + final HUD + Overtime hazard + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - original project icon concept and documented asset/weapon/level/packaging direction.
 
@@ -208,6 +216,7 @@ python tools/test_gameplay_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_closing_time_presentation_contract.py
+python tools/test_hud_contract.py
 python tools/test_overtime_hazard_contract.py
 python tools/test_boss_escape_contract.py
 python tools/test_original_assets.py

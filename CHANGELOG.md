@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.15.0-dev — 2026-09-17
+
+### Added
+- Final-layout night-shift HUD helpers for objective hierarchy, route guidance and four-stage Overtime pressure presentation.
+- Explicit `06:00` clock-out target, next-escalation countdown, worker-health readout and reserve counters for Price-Gun labels, Receipt Ripper receipts and Turbo Can ammo.
+- Text and patterned pressure cues alongside color so Overtime state and critical-health warnings are not color-only.
+- `tools/test_hud_contract.py`, validating objective states, Overtime labels/pressure meter, critical-health feedback, signature-ammo readouts and packaged ZScript markers.
+- GitHub Actions execution of the final HUD regression contract.
+
+### Changed
+- The old tall prototype status stack is replaced by a compact objective-first layout that keeps the center of the playfield clear.
+- Staff Only guidance now appears as a contextual route hint at partial power instead of a detached bonus line.
+- README/ROADMAP progress raised to 58% for the implemented/testable final HUD milestone; full combat-audio polish and the first fully decorated Closing Time pass remain open.
+
 ## 0.14.0-dev — 2026-09-17
 
 ### Added
