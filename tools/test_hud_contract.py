@@ -11,9 +11,9 @@ if not PK3.exists():
 zscript = (GAME / "ZSCRIPT").read_text(encoding="utf-8")
 
 required = (
-    "static String GetPressureMeter(int stage)",
-    "static String GetObjectiveText(int fuses, bool cleared, bool clockingOut)",
-    "static String GetObjectiveHint(int fuses, bool cleared)",
+    "static ui String GetPressureMeter(int stage)",
+    "static ui String GetObjectiveText(int fuses, bool cleared, bool clockingOut)",
+    "static ui String GetObjectiveHint(int fuses, bool cleared)",
     'OBJECTIVE  RESTORE BREAKERS  %d/3',
     'OBJECTIVE  CLEAR THE SUPERVISOR',
     'OBJECTIVE  RETURN TO FRONT CHECKOUT',
@@ -35,6 +35,24 @@ required = (
 for marker in required:
     if marker not in zscript:
         raise SystemExit(f"Final HUD contract missing: {marker}")
+
+# RenderOverlay is a UI-scope GZDoom event. Helper methods called from it must stay
+# UI-safe so a static source check cannot reintroduce the runtime scope failures that
+# the pinned engine gate caught.
+for helper in (
+    "GetNextOvertimeSecond",
+    "GetOvertimeLabel",
+    "GetPressureMeter",
+    "GetObjectiveText",
+    "GetObjectiveHint",
+):
+    if f"static ui " not in zscript or f" {helper}(" not in zscript:
+        raise SystemExit(f"HUD helper is not explicitly UI-scoped: {helper}")
+
+if "int stage = GetOvertimeStage();" in zscript:
+    raise SystemExit("RenderOverlay must not call the play-scoped overtime helper from UI context")
+if "powerPulseText.Len()" in zscript:
+    raise SystemExit("HUD must use GZDoom String.Length() rather than the invalid Len() call")
 
 # The final layout must communicate Overtime through words/patterns as well as color.
 for label in ("SHIFT ACTIVE", "STORE UNSTABLE", "OVERTIME", "HELL RUSH"):
@@ -60,4 +78,4 @@ with zipfile.ZipFile(PK3, "r") as archive:
             raise SystemExit(f"Built PK3 is missing final HUD marker: {marker}")
 
 print("Final HUD contract: PASS")
-print("Objective hierarchy, Overtime pressure, worker health and signature weapon reserves are packaged and readable without color-only cues.")
+print("Objective hierarchy, Overtime pressure, worker health and signature weapon reserves are packaged and UI-scope safe without color-only cues.")
