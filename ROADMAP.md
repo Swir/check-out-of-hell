@@ -3,6 +3,9 @@
 
 **Overall progress:** `████████░░ 76.4%`
 
+**Measured scope:** Implemented/testable project milestones  
+**Progress status:** HARDENING
+
 <img width="100%" src="assets/readme/progress-mini.svg" alt="CHECKOUT OF HELL project progress — 76.4% implemented/testable; demo release readiness tracked separately" />
 
 **Progress fallback:** **76.4%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 20.0%**, tracked separately.
