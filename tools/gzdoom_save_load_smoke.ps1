@@ -195,10 +195,10 @@ New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
     "i_soundinbackground=false"
 ) | Set-Content -LiteralPath $EngineConfig -Encoding ASCII
 
-# GZDoom's console `give` syntax accepts a single inventory class per command.
-# Repeat the command to create an unmistakable 2/3 objective state after the
-# fresh-world cleanup has run, and use god mode so unattended validation cannot die.
-$saveCommands = "wait 2; map MAP01; wait 10; god; give CheckoutFuse; give CheckoutFuse; give CorporateMemo; give CorporateMemo; wait 5; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 20; echo COH_RUNTIME_SAVE_WRITTEN"
+# Start directly in MAP01 so the authored 2/3 objective state is applied in the
+# live playsim rather than being discarded by a deferred map transition. God mode
+# prevents an unattended target-machine validation run from dying before the save.
+$saveCommands = "wait 10; god; give CheckoutFuse; give CheckoutFuse; give CorporateMemo; give CorporateMemo; wait 10; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 20; echo COH_RUNTIME_SAVE_WRITTEN"
 $loadCommands = "wait 10; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE"
 Set-Content -LiteralPath $SaveConfig -Value $saveCommands -Encoding ASCII
 Set-Content -LiteralPath $LoadConfig -Value $loadCommands -Encoding ASCII
@@ -217,6 +217,7 @@ $loadText = ""
 try {
     Write-Host "Runtime pass 1/2: start MAP01, author objective state and write a real savegame..."
     $saveArguments = $commonArguments + @(
+        "+map", "MAP01",
         "+exec", $SaveConfig
     )
     $saveText = Invoke-RuntimePhase `
@@ -255,7 +256,7 @@ try {
 
     Write-Host "Runtime pass 2/2: launch a new GZDoom process, restore the save and verify objective state..."
     $loadArguments = $commonArguments + @(
-        "-loadgame", $saveFile.FullName,
+        "-loadgame", $saveFile.Name,
         "+exec", $LoadConfig
     )
     $loadText = Invoke-RuntimePhase `
