@@ -461,3 +461,52 @@ class CheckoutStaffShutter : Actor
         Destroy();
     }
 }
+
+class CheckoutRegionalManagerSpawner : Actor
+{
+    bool spawned;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (spawned || !players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p || p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        Actor.Spawn("TeleportFog", Pos);
+        Actor manager = Actor.Spawn("RegionalManager", Pos);
+        if (manager)
+        {
+            manager.A_StartSound("coh/regionalphase", CHAN_BODY);
+            spawned = true;
+        }
+    }
+}
