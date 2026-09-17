@@ -6,6 +6,7 @@ import zipfile
 from generate_assets import generate_assets
 from generate_combat_assets import generate_combat_assets
 from generate_vehicle_enemy_assets import generate_vehicle_enemy_assets
+from generate_regional_manager_assets import generate_regional_manager_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
@@ -59,6 +60,7 @@ def pad_short_wavs(sound_dir: Path, min_frames: int = 4000) -> None:
 generate_assets(GAME)
 generate_combat_assets(GAME)
 generate_vehicle_enemy_assets(GAME)
+generate_regional_manager_assets(GAME)
 pad_short_wavs(GAME / "sounds")
 
 built_maps = []

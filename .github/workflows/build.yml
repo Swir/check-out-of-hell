@@ -49,6 +49,9 @@ jobs:
       - name: Vehicle enemy asset contract test
         run: python tools/test_vehicle_enemy_assets.py
 
+      - name: Regional Manager boss contract test
+        run: python tools/test_regional_manager_contract.py
+
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 

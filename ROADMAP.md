@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `█████░░░░░ 48%`
+**Overall progress:** `█████░░░░░ 51%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -19,7 +19,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Automatic portable Python fallback for source builds
 - [x] Third-party runtime/license documentation
 
-## Phase 1 — Playable Prototype — 98%
+## Phase 1 — Playable Prototype — 99%
 - [x] Emergency Mop
 - [x] Receipt Ripper
 - [x] Price-Gun SMG
@@ -52,12 +52,12 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Security Price Scanner original sprite/projectile/audio pass
 - [x] Cart of Doom original charge/pain/death sprite + audio pass
 - [x] Possessed Pallet Jack original fork-lunge/pain/death sprite + audio pass
-- [ ] Regional Manager original boss sprite/behavior/audio pass
-- [ ] Full original combat/weapon sound set
+- [x] Regional Manager original boss sprite/behavior/audio pass
+- [ ] Full original combat/weapon sound set polish
 - [ ] Proper final custom HUD
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 49%
+## Phase 2 — Vertical Slice — 53%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -68,10 +68,12 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Receipt Ripper + Angry Self-Checkout signature combat presentation implemented and contract-tested
 - [x] Price-Gun SMG + Turbo Can Launcher weapon presentation and Security Price Scanner combat presentation implemented and contract-tested
 - [x] Cart of Doom + Possessed Pallet Jack original combat presentation implemented with dedicated CI contract
+- [x] Regional Manager original two-phase behavior/art/audio implemented with dedicated CI contract
+- [x] Warehouse 13.5 uses project-owned retail surfaces and power-gates Regional Manager behind all three breakers
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods
-- [ ] Boss: The Regional Manager — original behavior/art
+- [x] Boss: The Regional Manager — original behavior/art
 - [ ] Secrets and joke interactions — full level pass
 - [ ] Difficulty modes
 - [ ] Original soundtrack

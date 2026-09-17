@@ -29,3 +29,9 @@ coh/palletidle      sounds/palletidle
 coh/palletattack    sounds/palletattack
 coh/pallethit       sounds/pallethit
 coh/palletdown      sounds/palletdown
+coh/regionalidle    sounds/regionalidle
+coh/regionalattack  sounds/regionalattack
+coh/regionalphase   sounds/regionalphase
+coh/regionalstamp   sounds/regionalstamp
+coh/regionalhit     sounds/regionalhit
+coh/regionaldown    sounds/regionaldown
