@@ -20,6 +20,7 @@ def main() -> None:
         "xvfb-run",
         "LIBGL_ALWAYS_SOFTWARE",
         "MESA_LOADER_DRIVER_OVERRIDE",
+        "vid_activeinbackground",
         "i_pauseinbackground",
         "i_soundinbackground",
         "-nomusic",
