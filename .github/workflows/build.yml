@@ -40,7 +40,7 @@ jobs:
       - name: Save/load state contract test
         run: python tools/test_save_load_state_contract.py
 
-      - name: GZDoom Windows save/load runtime gate contract test
+      - name: GZDoom save/load runtime validation contract test
         run: python tools/test_gzdoom_save_load_smoke_contract.py
 
       - name: SWIR README PRO v2 contract test
@@ -140,13 +140,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: .\tools\gzdoom_runtime_smoke.ps1
 
-      - name: Save, exit and reload current prototype with pinned GZDoom
-        shell: powershell
-        timeout-minutes: 3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: .\tools\gzdoom_save_load_smoke.ps1
-
       - name: Upload Windows GZDoom parser log
         if: always()
         uses: actions/upload-artifact@v4
@@ -155,13 +148,47 @@ jobs:
           path: dist/gzdoom-runtime-smoke.log
           if-no-files-found: warn
 
-      - name: Upload Windows GZDoom save/load log
+  runtime-state-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build current prototype
+        run: python tools/build.py
+
+      - name: Resolve pinned official Linux runtime assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python tools/bootstrap_linux_runtime.py
+
+      - name: Install pinned GZDoom and headless renderer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 mesa-vulkan-drivers
+          sudo apt-get install -y ./external/linux/gzdoom-pinned-amd64.deb
+          command -v gzdoom
+
+      - name: Save, exit and reload current prototype with pinned GZDoom
+        timeout-minutes: 3
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          MESA_LOADER_DRIVER_OVERRIDE: llvmpipe
+        run: xvfb-run -a --server-args="-screen 0 1280x720x24" python tools/gzdoom_save_load_smoke_linux.py
+
+      - name: Upload Linux GZDoom save/load log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gzdoom-save-load-smoke-log
+          name: gzdoom-linux-save-load-smoke-log
           path: |
-            dist/gzdoom-save-load-smoke.log
-            dist/save-load-runtime/*.log
-            dist/save-load-runtime/*.cfg
+            dist/gzdoom-save-load-linux-smoke.log
+            dist/save-load-runtime-linux/*.log
+            dist/save-load-runtime-linux/*.cfg
+            external/linux/runtime-manifest.json
           if-no-files-found: warn
