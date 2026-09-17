@@ -283,8 +283,49 @@ actor CartOfDoom : LostSoul 17002
     Tag "Cart of Doom"
     Health 80
     Speed 14
-    Radius 18
-    Damage 8
+    Radius 20
+    Height 36
+    Damage 12
+    PainChance 135
+    SeeSound "coh/cartidle"
+    ActiveSound "coh/cartidle"
+    PainSound "coh/carthit"
+    DeathSound "coh/cartdown"
+
+    States
+    {
+    Spawn:
+        CART A 10 A_Look
+        Loop
+    See:
+        CART A 3 A_Chase
+        CART B 3 A_Chase
+        CART C 3 A_Chase
+        CART D 3 A_Chase
+        Loop
+    Missile:
+        CART E 4 A_FaceTarget
+        CART F 4 Bright A_PlaySound("coh/cartcharge", CHAN_WEAPON)
+        CART F 0 Bright A_SkullAttack
+        CART E 4
+        Goto See
+    Pain:
+        CART G 3
+        CART G 3 A_Pain
+        Goto See
+    Death:
+        CART H 4
+        CART I 4
+        CART J 5 A_NoBlocking
+        CART K -1
+        Stop
+    Raise:
+        CART K 4
+        CART J 4
+        CART I 4
+        CART H 4
+        Goto See
+    }
 }
 
 actor NightManager : BaronOfHell 17003
@@ -381,7 +422,48 @@ actor PalletJack : Demon 17005
     Health 180
     Speed 18
     Radius 24
+    Height 40
     Damage 14
+    PainChance 105
+    SeeSound "coh/palletidle"
+    ActiveSound "coh/palletidle"
+    PainSound "coh/pallethit"
+    DeathSound "coh/palletdown"
+
+    States
+    {
+    Spawn:
+        PJCK A 10 A_Look
+        Loop
+    See:
+        PJCK A 3 A_Chase
+        PJCK B 3 A_Chase
+        PJCK C 3 A_Chase
+        PJCK D 3 A_Chase
+        Loop
+    Melee:
+        PJCK E 4 A_FaceTarget
+        PJCK F 4 Bright A_PlaySound("coh/palletattack", CHAN_WEAPON)
+        PJCK F 0 A_SargAttack
+        PJCK E 4
+        Goto See
+    Pain:
+        PJCK G 3
+        PJCK G 3 A_Pain
+        Goto See
+    Death:
+        PJCK H 4
+        PJCK I 4
+        PJCK J 5 A_NoBlocking
+        PJCK K -1
+        Stop
+    Raise:
+        PJCK K 4
+        PJCK J 4
+        PJCK I 4
+        PJCK H 4
+        Goto See
+    }
 }
 
 actor RegionalManager : Cyberdemon 17006
