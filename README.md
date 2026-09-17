@@ -138,14 +138,14 @@ This is intentionally a **development artifact**, not a public demo release.
 - one-click official-source dependency bootstrap,
 - verified portable Windows artifact builder with SHA-256 sidecar,
 - pinned GZDoom runtime parser/startup validation on Windows CI,
-- pinned GZDoom real save/create/load roundtrip validation with isolated save/config paths and bounded execution,
+- pinned GZDoom real save/create/load roundtrip validation under a headless Linux display with isolated save/config paths and bounded execution,
 - custom CHECKOUT OF HELL branding/icon concept.
 
 ## Development runtime
 
 The current pinned runtime is GZDoom `g4.14.2` plus Freedoom `v0.13.0`. Runtime pins live in `runtime-lock.json` and should only change after compatibility validation.
 
-CI downloads the pinned official runtime and asks GZDoom itself to load and parse the current PK3 through its non-interactive `-norun` startup path. A second Windows runtime gate launches Closing Time on the default Graveyard Shift difficulty, creates a real `.zds` save after injecting objective/optional inventory state, verifies the save container, then starts GZDoom again with `-loadgame` and requires a clean completion sentinel. This catches engine-level save/load regressions that static Python checks cannot detect.
+CI keeps two complementary engine gates. Windows downloads the pinned official runtime and asks GZDoom itself to load and parse the current PK3 through its non-interactive `-norun` startup path. A separate headless Linux job resolves the matching official GZDoom `.deb` from the same upstream release plus the pinned official Freedoom archive, verifies Freedoom against its official SHA-256 file, launches Closing Time on the default Graveyard Shift difficulty under Xvfb, creates a real `.zds` save after injecting objective/optional inventory state, validates the save container, then starts GZDoom again with `-loadgame` and requires a clean completion sentinel. This catches engine-level persistence regressions without pretending a hosted Windows runner provides a real graphics-capable play session.
 
 Manual developer commands:
 
@@ -174,7 +174,9 @@ python tools/test_portable_package.py
 .\tools\gzdoom_save_load_roundtrip.ps1
 ```
 
-The automated Linux job runs all static/build/package contracts, including the dedicated save/load-harness contract. The Windows job resolves the official pinned runtime, parses the packaged prototype with GZDoom itself, and performs the real save/load roundtrip.
+For the headless CI-equivalent persistence gate on Linux, run `python3 tools/bootstrap_linux_ci_runtime.py` and then `bash tools/gzdoom_save_load_roundtrip.sh` after installing the resolved official GZDoom package plus Xvfb/Mesa runtime libraries.
+
+The normal Linux job runs all static/build/package contracts, including the dedicated save/load-harness contract. The Windows runtime job validates official-source resolution and parses the packaged prototype. The headless Linux runtime job performs the real save/create/load cycle using the same pinned GZDoom release family.
 
 ## Maps
 
