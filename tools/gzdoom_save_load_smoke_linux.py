@@ -184,13 +184,12 @@ def main() -> int:
         encoding="ascii",
     )
 
-    # Enter MAP01 only after startup. Give the director a few tics to perform its
-    # fresh-world cleanup, then freeze combat risk with god mode before authoring the
-    # 2/3 objective state. GZDoom's console `give` command accepts one item name, not
-    # an amount argument, so each stackable objective token is given twice explicitly.
+    # MAP01 now has a canonical embedded UDMF marker, so start directly into the
+    # level with +map. This guarantees that queued give/god cheats are authored in
+    # the live playsim rather than being discarded by a deferred map transition.
     SAVE_CFG.write_text(
-        'wait 2; map MAP01; wait 10; god; give CheckoutFuse; give CheckoutFuse; '
-        'give CorporateMemo; give CorporateMemo; wait 5; printinv; '
+        'wait 10; god; give CheckoutFuse; give CheckoutFuse; give CorporateMemo; '
+        'give CorporateMemo; wait 10; printinv; '
         'save coh-ci-roundtrip-linux "CHECKOUT OF HELL CI ROUNDTRIP"; '
         'wait 20; echo COH_LINUX_RUNTIME_SAVE_WRITTEN\n',
         encoding="ascii",
@@ -219,7 +218,7 @@ def main() -> int:
         print("Runtime pass 1/2: write a real GZDoom save with objective state...")
         save_text = run_phase(
             "GZDoom Linux save pass",
-            [*common, "+exec", str(SAVE_CFG)],
+            [*common, "+map", "MAP01", "+exec", str(SAVE_CFG)],
             SAVE_ENGINE,
             SAVE_STDOUT,
             SAVE_STDERR,
