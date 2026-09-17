@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.10-dev — expanding original retail combat pass  
-> **Project progress:** `█████░░░░░ 45%`
+> **Status:** Prototype 0.11-dev — original vehicle-enemy combat pass  
+> **Project progress:** `█████░░░░░ 48%`
 
 ## Premise
 
@@ -63,7 +63,7 @@ Prototype `0.9-dev` added the second complete signature slice:
   receipt projectile, original idle/attack/pain/down sounds and custom attack behavior.
   Its visible states no longer reference the compatible-IWAD shotgun-guy sprite.
 
-Prototype `0.10-dev` expands that owned presentation across the mid/heavy combat loop:
+Prototype `0.10-dev` expanded that owned presentation across the mid/heavy combat loop:
 
 - **Price-Gun SMG** — original world pickup and five-frame automatic weapon view,
   barcode-label impact puffs and dedicated trigger/label-feed cues.
@@ -71,6 +71,14 @@ Prototype `0.10-dev` expands that owned presentation across the mid/heavy combat
   soda-can projectile/explosion frames and dedicated launch/explosion cues.
 - **Security Price Scanner** — original stationary turret animation, original scanning
   beam projectile and dedicated idle/attack/pain/down cues.
+
+Prototype `0.11-dev` replaces two more high-visibility enemy placeholders:
+
+- **Cart of Doom** — project-owned eleven-frame shopping-cart animation covering pursuit,
+  a readable charge tell, pain, collapse and raise states, plus dedicated idle/charge/hit/down cues.
+- **Possessed Pallet Jack** — project-owned eleven-frame industrial pallet-jack animation
+  covering pursuit, fork-lunge melee tells, pain, collapse and raise states, plus dedicated
+  idle/attack/hit/down cues.
 
 All current project-owned prototype combat art/audio is generated deterministically from
 repository code using Python's standard library. Sprite PNGs carry ZDoom `grAb` offsets,
@@ -145,11 +153,13 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - original **Turbo Can Launcher** pickup/view sprite set plus original can projectile/explosion and weapon cues,
 - original **Angry Self-Checkout** animation set, receipt projectile and combat cues,
 - original **Security Price Scanner** animation set, scanning projectile and combat cues,
+- original **Cart of Doom** charge/pain/death animation set and combat cues,
+- original **Possessed Pallet Jack** fork-lunge/pain/death animation set and combat cues,
 - original **Night Manager** animation set, Manager Memo projectile and boss combat cues,
-- deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contract,
+- deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contracts,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
-- automated build + gameplay + layout + Staff Only + boss/escape + original-asset + packaging contract tests,
+- automated build + gameplay + layout + Staff Only + boss/escape + original-asset + vehicle-enemy + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - original project icon concept and documented asset/weapon/level/packaging direction.
 
@@ -171,6 +181,7 @@ python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_boss_escape_contract.py
 python tools/test_original_assets.py
+python tools/test_vehicle_enemy_assets.py
 python tools/package_portable.py
 python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
@@ -197,8 +208,8 @@ See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
 No proprietary Doom, Star Wars or other commercial game assets belong in this repository.
 The current runtime art/audio pack is generated from our own source code during the build.
 Emergency Mop, Receipt Ripper, Price-Gun SMG, Turbo Can Launcher, Angry Self-Checkout,
-Security Price Scanner and Night Manager now have project-owned visible combat presentation.
-Cart of Doom, Possessed Pallet Jack and Regional Manager still use compatible-runtime
+Security Price Scanner, Cart of Doom, Possessed Pallet Jack and Night Manager now have
+project-owned visible combat presentation. Regional Manager still uses compatible-runtime
 placeholder visuals and must be replaced before standalone release.
 
 See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md).

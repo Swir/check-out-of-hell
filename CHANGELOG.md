@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.11.0-dev — 2026-09-17
+
+### Added
+- Project-owned eleven-frame Cart of Doom animation covering pursuit, charge tell, pain, collapse and raise presentation.
+- Dedicated Cart of Doom idle, charge, hit and defeat cues.
+- Project-owned eleven-frame Possessed Pallet Jack animation covering pursuit, fork-lunge melee tell, pain, collapse and raise presentation.
+- Dedicated Possessed Pallet Jack idle, attack, hit and defeat cues.
+- `tools/generate_vehicle_enemy_assets.py`, a deterministic standard-library-only generator for the two vehicle-style enemies.
+- `tools/test_vehicle_enemy_assets.py`, a dedicated regression contract covering PNG validity, ZDoom `grAb` offsets, WAV format/duration, PK3 packaging, sound mappings, actor-state wiring and removal of compatible-IWAD visible sprite references.
+- GitHub Actions execution of the vehicle-enemy asset contract.
+
+### Changed
+- Cart of Doom active visible states no longer rely on compatible-IWAD Lost Soul sprites and now telegraph its rush with project-owned art/audio.
+- Possessed Pallet Jack active visible states no longer rely on compatible-IWAD Demon sprites and now telegraph its fork-lunge melee attack with project-owned art/audio.
+- Build tooling now generates the vehicle-enemy presentation before PK3 packaging.
+- The remaining high-visibility combat-art placeholder is the Regional Manager prototype boss.
+- README/ROADMAP progress raised to 48% for the verified vehicle-enemy combat slice.
+
 ## 0.10.0-dev — 2026-09-17
 
 ### Added

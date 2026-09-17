@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `█████░░░░░ 45%`
+**Overall progress:** `█████░░░░░ 48%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -19,7 +19,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Automatic portable Python fallback for source builds
 - [x] Third-party runtime/license documentation
 
-## Phase 1 — Playable Prototype — 96%
+## Phase 1 — Playable Prototype — 98%
 - [x] Emergency Mop
 - [x] Receipt Ripper
 - [x] Price-Gun SMG
@@ -49,12 +49,15 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Receipt Ripper original pickup/view sprite set + fire/cycle cues
 - [x] Angry Self-Checkout original sprite set + hostile receipt projectile + combat cues
 - [x] Price-Gun SMG + Turbo Can Launcher original sprite/audio pass
-- [ ] Remaining original enemy sprites/models
+- [x] Security Price Scanner original sprite/projectile/audio pass
+- [x] Cart of Doom original charge/pain/death sprite + audio pass
+- [x] Possessed Pallet Jack original fork-lunge/pain/death sprite + audio pass
+- [ ] Regional Manager original boss sprite/behavior/audio pass
 - [ ] Full original combat/weapon sound set
 - [ ] Proper final custom HUD
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 46%
+## Phase 2 — Vertical Slice — 49%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -64,6 +67,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Signature Emergency Mop + Night Manager combat presentation implemented and engine-validated
 - [x] Receipt Ripper + Angry Self-Checkout signature combat presentation implemented and contract-tested
 - [x] Price-Gun SMG + Turbo Can Launcher weapon presentation and Security Price Scanner combat presentation implemented and contract-tested
+- [x] Cart of Doom + Possessed Pallet Jack original combat presentation implemented with dedicated CI contract
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods

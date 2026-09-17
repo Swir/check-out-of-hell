@@ -46,6 +46,9 @@ jobs:
       - name: Original visual/audio asset contract test
         run: python tools/test_original_assets.py
 
+      - name: Vehicle enemy asset contract test
+        run: python tools/test_vehicle_enemy_assets.py
+
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 

@@ -21,3 +21,11 @@ coh/scanneridle     sounds/scanneridle
 coh/scannerattack   sounds/scannerattack
 coh/scannerhit      sounds/scannerhit
 coh/scannerdown     sounds/scannerdown
+coh/cartidle        sounds/cartidle
+coh/cartcharge      sounds/cartcharge
+coh/carthit         sounds/carthit
+coh/cartdown        sounds/cartdown
+coh/palletidle      sounds/palletidle
+coh/palletattack    sounds/palletattack
+coh/pallethit       sounds/pallethit
+coh/palletdown      sounds/palletdown

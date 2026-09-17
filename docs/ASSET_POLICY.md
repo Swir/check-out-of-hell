@@ -29,16 +29,18 @@ Current project-owned signature combat presentation includes:
 - Turbo Can Launcher pickup + five-frame launcher animation + original can projectile/explosion and cues,
 - Angry Self-Checkout animation set + hostile receipt projectile + combat cues,
 - Security Price Scanner turret animation + original scan-beam projectile + combat cues,
+- Cart of Doom pursuit/charge/pain/death animation set + dedicated combat cues,
+- Possessed Pallet Jack pursuit/fork-lunge/pain/death animation set + dedicated combat cues,
 - Night Manager animation set + Manager Memo projectile + boss cues.
 
 Generated sprite PNGs include ZDoom-compatible `grAb` offsets so their placement is
-explicit and reproducible. The original atmosphere generator and the combat-asset extension
+explicit and reproducible. The original atmosphere generator and combat-asset extensions
 use only Python's standard library and therefore do not add a new runtime or build dependency.
 
 Combat actors that have not yet received original art may still reference compatible
 IWAD-provided placeholders at runtime. Those placeholder assets are never copied into this
-repository or release package. Current remaining visible placeholder examples are Cart of
-Doom, Possessed Pallet Jack and Regional Manager prototype.
+repository or release package. The remaining high-visibility combat placeholder is the
+Regional Manager prototype boss.
 
 ## Final strategy
 
