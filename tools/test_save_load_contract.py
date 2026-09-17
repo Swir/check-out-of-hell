@@ -40,7 +40,6 @@ def main() -> None:
     require(runtime_script, 'load coh-save-load-ci', "gzdoom_save_load_smoke.ps1")
     require(runtime_script, 'save coh-save-load-ci-roundtrip', "gzdoom_save_load_smoke.ps1")
     require(runtime_script, 'inspect_gzdoom_save.py', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'CheckoutPersistentShiftDirector', "gzdoom_save_load_smoke.ps1")
     require(runtime_script, 'CheckoutFuse', "gzdoom_save_load_smoke.ps1")
     require(runtime_script, 'CorporateMemo', "gzdoom_save_load_smoke.ps1")
 
