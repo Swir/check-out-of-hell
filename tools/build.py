@@ -81,6 +81,15 @@ def decorate_payload() -> bytes:
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
 
 
+def zscript_payload() -> bytes:
+    """Compose gameplay ZScript and small compatibility/persistence extensions."""
+    chunks = [
+        (GAME / "ZSCRIPT").read_text(encoding="utf-8").rstrip(),
+        (GAME / "ZSCRIPT_SAVELOAD").read_text(encoding="utf-8").rstrip(),
+    ]
+    return ("\n\n".join(chunks) + "\n").encode("utf-8")
+
+
 generate_assets(GAME)
 generate_combat_assets(GAME)
 generate_vehicle_enemy_assets(GAME)
@@ -102,6 +111,8 @@ with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
     for lump in ROOT_LUMPS:
         if lump == "DECORATE":
             archive.writestr("DECORATE", decorate_payload())
+        elif lump == "ZSCRIPT":
+            archive.writestr("ZSCRIPT", zscript_payload())
         else:
             archive.write(GAME / lump, lump)
 
