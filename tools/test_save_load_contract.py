@@ -19,6 +19,7 @@ def main() -> None:
     build = (TOOLS / "build.py").read_text(encoding="utf-8")
     workflow = WORKFLOW.read_text(encoding="utf-8")
     runtime_script = (TOOLS / "gzdoom_save_load_smoke.ps1").read_text(encoding="utf-8")
+    inspector = (TOOLS / "inspect_gzdoom_save.py").read_text(encoding="utf-8")
 
     require(extension, "class CheckoutPersistentShiftDirector : CheckoutShiftDirector", "ZSCRIPT_SAVELOAD")
     require(extension, "override void WorldLoaded(WorldEvent e)", "ZSCRIPT_SAVELOAD")
@@ -37,9 +38,15 @@ def main() -> None:
     require(runtime_script, 'give CorporateMemo 1', "gzdoom_save_load_smoke.ps1")
     require(runtime_script, 'save coh-save-load-ci', "gzdoom_save_load_smoke.ps1")
     require(runtime_script, 'load coh-save-load-ci', "gzdoom_save_load_smoke.ps1")
-    require(runtime_script, 'printinv', "gzdoom_save_load_smoke.ps1")
+    require(runtime_script, 'save coh-save-load-ci-roundtrip', "gzdoom_save_load_smoke.ps1")
+    require(runtime_script, 'inspect_gzdoom_save.py', "gzdoom_save_load_smoke.ps1")
+    require(runtime_script, 'CheckoutPersistentShiftDirector', "gzdoom_save_load_smoke.ps1")
     require(runtime_script, 'CheckoutFuse', "gzdoom_save_load_smoke.ps1")
     require(runtime_script, 'CorporateMemo', "gzdoom_save_load_smoke.ps1")
+
+    require(inspector, "zipfile.is_zipfile", "inspect_gzdoom_save.py")
+    require(inspector, 'endswith(".json")', "inspect_gzdoom_save.py")
+    require(inspector, "json.loads(text)", "inspect_gzdoom_save.py")
 
     require(workflow, "Save/load persistence contract test", "build.yml")
     require(workflow, "Save/load current prototype with pinned GZDoom", "build.yml")
