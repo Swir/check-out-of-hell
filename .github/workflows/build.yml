@@ -156,7 +156,7 @@ jobs:
       - name: Install pinned GZDoom and virtual display support
         run: |
           sudo apt-get update
-          sudo apt-get install -y ./external/linux-runtime/gzdoom.deb xvfb
+          sudo apt-get install -y ./external/linux-runtime/gzdoom.deb xvfb xdotool
 
       - name: Validate real save/load roundtrip with pinned GZDoom
         env:
@@ -164,7 +164,8 @@ jobs:
         run: |
           xvfb-run -a python tools/gzdoom_save_load_roundtrip.py \
             --gzdoom "$(command -v gzdoom)" \
-            --iwad external/linux-runtime/freedoom2.wad
+            --iwad external/linux-runtime/freedoom2.wad \
+            --xdotool "$(command -v xdotool)"
 
       - name: Upload GZDoom save/load validation logs
         if: always()
