@@ -80,6 +80,16 @@ function Write-CombinedLog {
     }
 }
 
+function ConvertTo-ProcessArgument([string]$Value) {
+    if ($Value.Contains('"')) {
+        throw "Runtime smoke argument contains an unsupported quote: $Value"
+    }
+    if ($Value -match "\s") {
+        return '"' + $Value + '"'
+    }
+    return $Value
+}
+
 function Invoke-GZDoomPhase(
     [string]$PhaseName,
     [string]$CommandFile,
@@ -87,6 +97,14 @@ function Invoke-GZDoomPhase(
     [string]$StateLog
 ) {
     foreach ($log in @($ProcessLog, $StateLog)) {
+        if (Test-Path -LiteralPath $log) {
+            Remove-Item -LiteralPath $log -Force
+        }
+    }
+
+    $stdoutLog = "$ProcessLog.stdout"
+    $stderrLog = "$ProcessLog.stderr"
+    foreach ($log in @($stdoutLog, $stderrLog)) {
         if (Test-Path -LiteralPath $log) {
             Remove-Item -LiteralPath $log -Force
         }
@@ -105,18 +123,32 @@ function Invoke-GZDoomPhase(
         "+logfile", $StateLog,
         "+exec", $CommandFile
     )
+    $argumentLine = ($arguments | ForEach-Object { ConvertTo-ProcessArgument "$_" }) -join " "
 
     Write-Host "Running GZDoom $PhaseName phase..."
-    $output = & $GZDoomExe @arguments 2>&1
-    $exitCode = $LASTEXITCODE
-    $outputLines = @($output | ForEach-Object { "$_" })
+    # GZDoom is a Windows GUI executable. A direct PowerShell invocation can return
+    # before the game process exits, so explicitly wait for the real engine process.
+    $process = Start-Process -FilePath $GZDoomExe `
+        -ArgumentList $argumentLine `
+        -PassThru `
+        -Wait `
+        -RedirectStandardOutput $stdoutLog `
+        -RedirectStandardError $stderrLog
+    $exitCode = $process.ExitCode
 
+    $outputLines = @()
+    if (Test-Path -LiteralPath $stdoutLog) {
+        $outputLines += Get-Content -LiteralPath $stdoutLog
+    }
+    if (Test-Path -LiteralPath $stderrLog) {
+        $outputLines += Get-Content -LiteralPath $stderrLog
+    }
     if ($outputLines.Count -gt 0) {
         $outputLines | Set-Content -LiteralPath $ProcessLog -Encoding UTF8
         $outputLines | ForEach-Object { Write-Host $_ }
     }
     else {
-        "GZDoom $PhaseName phase completed with no redirected stdout. Exit code: $exitCode" |
+        "GZDoom $PhaseName phase completed with no redirected stdout/stderr. Exit code: $exitCode" |
             Set-Content -LiteralPath $ProcessLog -Encoding UTF8
     }
 
