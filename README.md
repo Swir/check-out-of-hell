@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.12-dev — Regional Manager boss pass  
-> **Project progress:** `█████░░░░░ 51%`
+> **Status:** Prototype 0.13-dev — Closing Time readability + memo scavenger pass  
+> **Project progress:** `█████░░░░░ 53%`
 
 ## Premise
 
@@ -43,6 +43,12 @@ Partial power also changes the level. At `2/3` breakers, a rear-left **Staff Onl
 security barrier powers down and opens an optional employee room with an **Employee of
 the Month Stash**. No mandatory breaker is hidden in that room, so the reward is a real
 side route rather than a disguised progression lock.
+
+Prototype `0.13-dev` adds a lightweight exploration/comedy layer to that route. Closing Time
+now hides **three optional Corporate Compliance Memos** across a front detour, an east-side
+combat detour and the powered Staff Only room. Each pickup advances a different absurd policy
+message, while the HUD tracks `OPTIONAL MEMOS 0/3` without making the collectibles mandatory.
+The memo sprite and pickup cue are project-owned and generated deterministically during builds.
 
 ## Original combat presentation
 
@@ -95,9 +101,9 @@ and CI verifies generated files, PK3 packaging, sound mappings and actor wiring.
 
 Waiting around is increasingly dangerous. The **Overtime** director escalates through
 `SHIFT ACTIVE` → `STORE UNSTABLE` → `OVERTIME` → `HELL RUSH`. Dedicated map
-spawners add increasingly aggressive reinforcements as the shift drags on, while the
-HUD shows the shift timer, current Overtime state, breaker progress, supervisor state
-and the current task.
+spawners add increasingly aggressive reinforcements as the shift drags on. The HUD now shows
+an explicit countdown to the next escalation, a three-cell power display, optional memo progress,
+supervisor state, current objective and a Staff Only route cue once partial power unlocks it.
 
 See [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
 
@@ -150,10 +156,11 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - staged Night Manager reinforcement waves and physical return-to-checkout objective,
 - power-gated Regional Manager arrival in MAP02 after three restored breakers,
 - optional Staff Only side room and Employee of the Month reward stash,
+- three optional Corporate Compliance Memo pickups with staged workplace-comedy messages,
 - Overtime escalation director with timed reinforcement spawners,
-- shift/objective/Overtime HUD overlay,
+- shift/objective/Overtime HUD overlay with next-escalation countdown, power cells and optional-collectible tracking,
 - first original supermarket wall/shelf/staff/floor/ceiling material pack,
-- original breaker, shutter and stash prototype sprites,
+- original breaker, shutter, stash and Corporate Memo prototype sprites,
 - original **Emergency Mop** first-person sprite/animation set with combat swing cue,
 - original **Receipt Ripper** pickup/view sprite set with fire/cycle cues,
 - original **Price-Gun SMG** pickup/view sprite set with barcode-label impact feedback and weapon cues,
@@ -167,7 +174,7 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - deterministic stdlib-only asset generation with ZDoom sprite offsets and dedicated CI asset contracts,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
-- automated build + gameplay + layout + Staff Only + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
+- automated build + gameplay + layout + Staff Only + Closing Time presentation + boss/escape + original-asset + vehicle-enemy + Regional Manager + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - original project icon concept and documented asset/weapon/level/packaging direction.
 
@@ -187,6 +194,7 @@ python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
+python tools/test_closing_time_presentation_contract.py
 python tools/test_boss_escape_contract.py
 python tools/test_original_assets.py
 python tools/test_vehicle_enemy_assets.py
@@ -207,7 +215,7 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ## Maps
 
-- `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, powered side route, staged supervisor fight and checkout escape
+- `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, powered side route, optional memo scavenger route, staged supervisor fight and checkout escape
 - `MAP02` — **Warehouse 13.5** — power-restoration arena with original retail surfaces and a gated two-phase Regional Manager boss
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).

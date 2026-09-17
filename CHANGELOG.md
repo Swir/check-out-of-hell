@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.13.0-dev — 2026-09-17
+
+### Added
+- Three optional `CorporateMemo` pickups in `MAP01 — Closing Time`, distributed across a front detour, east-side combat detour and the powered Staff Only room.
+- Staged workplace-comedy policy messages for collecting memo 1/3, 2/3 and 3/3 without making the scavenger route mandatory for progression.
+- Project-owned Corporate Compliance Memo pickup sprite and cue generated deterministically with Python's standard library.
+- HUD next-Overtime countdown, three-cell power display, optional memo counter and partial-power Staff Only route hint.
+- `tools/generate_presentation_assets.py` for deterministic presentation-side assets.
+- `tools/test_closing_time_presentation_contract.py`, validating memo PNG offsets, audio, PK3 packaging, map placement, HUD markers, Overtime deadlines, build wiring and SNDINFO registration.
+- GitHub Actions execution of the Closing Time presentation contract.
+
+### Changed
+- Closing Time now rewards exploration with an optional joke collectible route that crosses normal traversal, enemy pressure and the powered side room.
+- The prototype HUD exposes when the next Overtime stage will trigger instead of only showing the current state after escalation happens.
+- README/ROADMAP progress raised to 53% for the implemented and testable presentation/readability slice; the final custom HUD and fully polished level remain intentionally incomplete.
+
 ## 0.12.0-dev — 2026-09-17
 
 ### Added
