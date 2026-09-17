@@ -36,7 +36,14 @@ FUSE_RE = re.compile(r"CheckoutFuse #[0-9]+ \(2/3\)")
 MEMO_RE = re.compile(r"CorporateMemo #[0-9]+ \(1/3\)")
 
 
-def run_phase(executable: Path, iwad: Path, commands: str, phase: str) -> str:
+def run_phase(
+    executable: Path,
+    iwad: Path,
+    commands: str,
+    phase: str,
+    *,
+    autostart_map01: bool = False,
+) -> str:
     COMMAND_PATH.write_text(commands + "\n", encoding="ascii")
     phase_log = ROUNDTRIP / f"{phase}-phase.log"
     phase_log.unlink(missing_ok=True)
@@ -65,9 +72,15 @@ def run_phase(executable: Path, iwad: Path, commands: str, phase: str) -> str:
         str(PK3),
         "+i_pauseinbackground",
         "0",
-        "+exec",
-        str(COMMAND_PATH),
     ]
+
+    # +warp is GZDoom's startup-safe autostart path. A plain `map MAP01` inside
+    # an early exec file runs before autostart selection and can leave the engine
+    # on the title console, where give/save commands have no player target.
+    if autostart_map01:
+        argv.extend(["+warp", "1"])
+
+    argv.extend(["+exec", str(COMMAND_PATH)])
 
     print(f"Running GZDoom {phase} phase...")
     try:
@@ -138,11 +151,17 @@ def main() -> int:
     )
 
     save_commands = (
-        'map MAP01; wait 105; sv_cheats 1; give CheckoutFuse 2; '
+        'wait 105; sv_cheats 1; give CheckoutFuse 2; '
         'give CorporateMemo 1; wait 8; printinv; '
         'save coh_ci_roundtrip "COH CI roundtrip"; wait 70; quit'
     )
-    save_text = run_phase(executable, iwad, save_commands, "save")
+    save_text = run_phase(
+        executable,
+        iwad,
+        save_commands,
+        "save",
+        autostart_map01=True,
+    )
     require_inventory(save_text, "Pre-save")
 
     save_files = list(SAVE_DIR.rglob("coh_ci_roundtrip.zds"))
