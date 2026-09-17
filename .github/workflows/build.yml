@@ -37,6 +37,9 @@ jobs:
       - name: Difficulty modes contract test
         run: python tools/test_difficulty_modes_contract.py
 
+      - name: Save/load persistence contract test
+        run: python tools/test_save_load_contract.py
+
       - name: Closing Time layout contract test
         run: python tools/test_closing_time_layout.py
 
@@ -125,10 +128,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: .\tools\gzdoom_runtime_smoke.ps1
 
-      - name: Upload GZDoom smoke log
+      - name: Save/load current prototype with pinned GZDoom
+        shell: powershell
+        timeout-minutes: 5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: .\tools\gzdoom_save_load_smoke.ps1
+
+      - name: Upload GZDoom validation logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gzdoom-runtime-smoke-log
-          path: dist/gzdoom-runtime-smoke.log
+          name: gzdoom-runtime-validation-logs
+          path: |
+            dist/gzdoom-runtime-smoke.log
+            dist/gzdoom-save-load-smoke.log
           if-no-files-found: warn
