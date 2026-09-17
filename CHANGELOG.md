@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.16.0-dev — 2026-09-17
+
+### Added
+- Project-owned Customer Service, Frozen Foods, Electronics/Returns and Lane 06 signage for `MAP01 — Closing Time`.
+- Low-profile wet-floor cone and restock-box props placed away from the main combat and clock-out lanes.
+- Six animated failing-fluorescent fixtures to reinforce the empty-store horror atmosphere without adding collision clutter.
+- Two optional `Emergency Break Snack` health pickups with a workplace-comedy HR message and original pickup cue.
+- `game/DECORATE_ENVIRONMENT` and `game/MAP01_ENVIRONMENT.udmf`, keeping presentation actors and placements isolated from core objective geometry.
+- `tools/generate_environment_assets.py`, a deterministic Python-standard-library-only generator for all new sign, prop, light and snack presentation assets.
+- `tools/test_environment_polish_contract.py`, validating generated PNG offsets, WAV format, map placement, build composition and PK3 packaging.
+- GitHub Actions execution of the Closing Time environment polish contract.
+
+### Changed
+- The build now composes both `OVERTIME` and `ENVIRONMENT` UDMF layers into MAP01 and packages the environment DECORATE fragment automatically.
+- Closing Time routes now have stronger department identity and environmental storytelling while deliberately preserving fast, readable movement and the front clock-out lane.
+- README/ROADMAP progress raised to 61% for the implemented/testable environment-dressing milestone; full combat/weapon sound polish and final Closing Time playtest/polish remain open.
+
 ## 0.15.0-dev — 2026-09-17
 
 ### Added
