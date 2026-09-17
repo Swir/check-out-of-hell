@@ -4,8 +4,8 @@
 
 A fast, funny retro-FPS set during the worst night shift imaginable.
 
-> **Status:** Prototype 0.17-dev — combat audio polish pass  
-> **Project progress:** `██████░░░░ 64%`
+> **Status:** Prototype 0.18-dev — Closing Time encounter pacing pass  
+> **Project progress:** `██████░░░░ 66%`
 
 ## Premise
 
@@ -36,8 +36,10 @@ breakers are restored**. The HUD explicitly moves from `RESTORE BREAKERS` to
 Full power starts a deliberate supervisor encounter instead of just spawning one boss.
 Two rear-arena management-response anchors feed staged reinforcements into the fight:
 **Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack**.
-After the Night Manager is defeated, the player must fight back through the store to the
-front checkout/timecard zone, where the shift is finally accepted and the map advances.
+After the Night Manager is defeated, the player must fight back through whatever threats are
+already alive and return to the front checkout/timecard zone, where the shift is finally
+accepted and the map advances. Fresh Overtime and unfinished management-response spawns stop
+after supervisor clearance so the escape remains tense without endlessly repopulating the route.
 
 Partial power also changes the level. At `2/3` breakers, a rear-left **Staff Only**
 security barrier powers down and opens an optional employee room with an **Employee of
@@ -83,6 +85,15 @@ Jack and The Regional Manager all keep their established logical sound names and
 while `SNDINFO` selects between deterministic generated variants with controlled pitch, transient and
 noise differences. The build uses only Python's standard library, and a dedicated contract checks PCM
 format, duration, audible level, conservative peak headroom, randomized-family wiring and PK3 contents.
+
+Prototype `0.18-dev` performs the first **Closing Time encounter pacing pass**. Reaching `3/3`
+breakers now unlocks one guaranteed **Full-Power Emergency Cache** on the approach to the supervisor
+arena, using the existing project-owned restock-box presentation and the legal Backpack inventory
+behavior. The staged management-response cadence is widened to `15s / 34s / 54s / 76s`, giving the
+Night Manager and each reinforcement more readable combat space. Supervisor clearance grants an
+invisible shift-state token that stops new ambient Overtime reinforcements and any unfinished boss
+waves while preserving enemies already present on the floor. A dedicated CI contract protects the
+cache gate, tuned cadence, post-boss cutoff, map placement and packaged PK3 wiring.
 
 ## Original combat presentation
 
@@ -140,10 +151,13 @@ Waiting around is increasingly dangerous. The **Overtime** director escalates th
 spawners add increasingly aggressive reinforcements as the shift drags on. Closing Time now
 also layers synchronized workplace alarms and electrical floor hazards on top of the enemy
 pressure, while preserving clear telegraphs and keeping the clock-out lane free of trap anchors.
-The final-layout HUD keeps the active objective and route hint separate from the Overtime card,
-tracks breaker and optional memo progress, exposes the next escalation deadline and shows combat
-resources without covering the center of the playfield. Department signage, controlled clutter
-and ceiling flicker make the same routes easier to read and more recognizably supermarket-like.
+Once the supervisor is defeated, the director stops creating fresh reinforcements so the final
+clock-out leg is a readable escape through the consequences already on the floor rather than an
+endless spawn treadmill. The final-layout HUD keeps the active objective and route hint separate
+from the Overtime card, tracks breaker and optional memo progress, exposes the next escalation
+deadline and shows combat resources without covering the center of the playfield. Department
+signage, controlled clutter and ceiling flicker make the same routes easier to read and more
+recognizably supermarket-like.
 
 See [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
 
@@ -193,7 +207,8 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - **Emergency Mop**, **Receipt Ripper**, **Price-Gun SMG**, **Turbo Can Launcher**,
 - **Angry Self-Checkout**, **Cart of Doom**, **Night Manager**, **Security Price Scanner**, **Possessed Pallet Jack** and **The Regional Manager**,
 - three-breaker + supervisor-clear objective loop,
-- staged Night Manager reinforcement waves and physical return-to-checkout objective,
+- tuned staged Night Manager reinforcement waves, guaranteed full-power pre-boss recovery cache and physical return-to-checkout objective,
+- post-supervisor cutoff for fresh Overtime and unfinished management-response reinforcements while existing threats remain active,
 - power-gated Regional Manager arrival in MAP02 after three restored breakers,
 - optional Staff Only side room and Employee of the Month reward stash,
 - three optional Corporate Compliance Memo pickups with staged workplace-comedy messages,
@@ -221,7 +236,7 @@ See [`docs/PACKAGING.md`](docs/PACKAGING.md).
 - deterministic randomized combat-audio generation with PCM/headroom/family/PK3 regression coverage,
 - one-click Windows dependency bootstrap and pinned reproducible runtime lock,
 - verified portable Windows artifact builder with SHA-256 sidecar,
-- automated build + gameplay + layout + Staff Only + Closing Time presentation + environment polish + final HUD + Overtime hazard + boss/escape + original-asset + combat-audio + vehicle-enemy + Regional Manager + packaging contract tests,
+- automated build + gameplay + layout + Staff Only + Closing Time presentation + environment polish + encounter pacing + final HUD + Overtime hazard + boss/escape + original-asset + combat-audio + vehicle-enemy + Regional Manager + packaging contract tests,
 - pinned GZDoom `-norun` startup/parser validation on Windows CI,
 - original project icon concept and documented asset/weapon/level/packaging direction.
 
@@ -243,6 +258,7 @@ python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_closing_time_presentation_contract.py
 python tools/test_environment_polish_contract.py
+python tools/test_closing_time_pacing_contract.py
 python tools/test_hud_contract.py
 python tools/test_overtime_hazard_contract.py
 python tools/test_boss_escape_contract.py
@@ -266,7 +282,7 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ## Maps
 
-- `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, department signage, safe off-lane retail clutter, flickering ceiling fixtures, powered side route, optional memo/snack exploration rewards, staged Overtime floor hazards, supervisor fight and checkout escape
+- `MAP01` — **Closing Time** — structured objective prototype with original retail surfaces, department signage, safe off-lane retail clutter, flickering ceiling fixtures, powered side route, optional memo/snack exploration rewards, staged Overtime floor hazards, full-power pre-boss recovery cache, tuned supervisor pressure and a readable checkout escape
 - `MAP02` — **Warehouse 13.5** — power-restoration arena with original retail surfaces and a gated two-phase Regional Manager boss
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md).
