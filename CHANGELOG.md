@@ -7,6 +7,9 @@
 - Official-source Linux runtime resolver for the exact locked GZDoom release plus official Freedoom release, including Freedoom SHA-256 verification against the upstream checksum asset.
 - `tools/gzdoom_save_load_smoke_linux.py`, which authors `CheckoutFuse 2/3` and `CorporateMemo 2/3` in live MAP01, writes a real `.zds`, launches a second GZDoom process and verifies both counters survive restore.
 - `tools/test_gzdoom_save_load_smoke_contract.py`, protecting runtime-lock use, process-boundary behavior, save-file sanity checks and CI wiring.
+- SWIR Progress SVG PRO assets: `assets/readme/progress-card.svg`, `assets/readme/progress-mini.svg` and reusable `assets/readme/progress-template.svg`.
+- `tools/generate_progress_svgs.py`, a deterministic generator/check that reads the authoritative ROADMAP phase progress and weights, verifies README/ROADMAP agreement, validates bounded SVG geometry/XML and self-tests zero/partial/complete/N/A cases.
+- GitHub Actions freshness enforcement for the generated progress assets.
 
 ### Fixed
 - Generated embedded UDMF WADs now include canonical `MAPxx -> TEXTMAP -> ENDMAP` markers so GZDoom registers MAP01/MAP02 as real maps at runtime.
@@ -17,6 +20,8 @@
 - The Windows save/load helper now has bounded polling, explicit engine logs, hard process cleanup and stronger serialized-state checks for normal target-machine validation.
 - CI retains pinned Windows parser/startup validation and adds the real same-version two-process runtime round-trip on Linux because the hosted Windows runner does not expose a suitable interactive GZDoom graphics context.
 - README/ROADMAP progress raised to **76%** and Vertical Slice progress to **94%** for the now-green end-to-end runtime serialization milestone. A final interactive target-Windows playtest/save-load confirmation remains required before demo sign-off.
+- ROADMAP now documents the project-level weighted roll-up explicitly: Foundation 10%, Playable Prototype 25%, Vertical Slice 40%, Demo Release 20% and Full Game 5%. The unchanged milestone state computes to **76.35%**, displayed as **76.4%**; Demo Release readiness remains a separate **20.0%** gate.
+- README now embeds the generated SWIR progress card near project status while ROADMAP embeds the compact companion. This documentation rollout does not increase gameplay completion and does not create a release/version bump.
 
 ## 0.23.0-dev — 2026-09-17
 
