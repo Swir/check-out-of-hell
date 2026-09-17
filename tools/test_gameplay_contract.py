@@ -23,7 +23,7 @@ if "next = \"MAP02\"" not in MAPINFO or "next = \"MAP01\"" not in MAPINFO:
 
 if "bossCleared && fuses >= 3" not in ZSCRIPT:
     raise SystemExit("Clock-out must require both the supervisor and three breakers")
-if 'taskText = "TASK: RETURN TO FRONT CHECKOUT"' not in ZSCRIPT:
+if 'return "OBJECTIVE  RETURN TO FRONT CHECKOUT";' not in ZSCRIPT:
     raise SystemExit("Completed combat must send the player back to the front checkout")
 if "TIMECARD ACCEPTED - SHIFT COMPLETE" not in ZSCRIPT:
     raise SystemExit("Clock-out zone must acknowledge successful shift completion")
@@ -34,10 +34,12 @@ if 'CountInv("CheckoutFuse") < 3' not in ZSCRIPT:
     raise SystemExit("Night Manager must remain locked until all breakers are restored")
 if 'Actor.Spawn("NightManager", Pos)' not in ZSCRIPT:
     raise SystemExit("Staged supervisor spawner does not create Night Manager")
-if '"SUPERVISOR LOCKED"' not in ZSCRIPT:
-    raise SystemExit("HUD must explain the supervisor power gate")
-if 'taskText = "TASK: RESTORE ALL BREAKERS"' not in ZSCRIPT:
-    raise SystemExit("HUD must expose the current restoration task")
+if 'return String.Format("OBJECTIVE  RESTORE BREAKERS  %d/3", fuses);' not in ZSCRIPT:
+    raise SystemExit("HUD must expose the current restoration task and breaker count")
+if 'return "OBJECTIVE  CLEAR THE SUPERVISOR";' not in ZSCRIPT:
+    raise SystemExit("HUD must expose the supervisor-clear objective after full power")
+if 'return "ROUTE: MANAGEMENT RESPONSE ACTIVE";' not in ZSCRIPT:
+    raise SystemExit("HUD must explain the management-response state")
 
 if MAP01.count("type = 17101") != 1 or "type = 17003" in MAP01:
     raise SystemExit("MAP01 must stage Night Manager instead of pre-placing the boss")
