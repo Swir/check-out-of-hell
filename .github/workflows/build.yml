@@ -128,19 +128,43 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: .\tools\gzdoom_runtime_smoke.ps1
 
-      - name: Save/load current prototype with pinned GZDoom
-        shell: powershell
-        timeout-minutes: 5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: .\tools\gzdoom_save_load_smoke.ps1
-
-      - name: Upload GZDoom validation logs
+      - name: Upload GZDoom parser log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gzdoom-runtime-validation-logs
-          path: |
-            dist/gzdoom-runtime-smoke.log
-            dist/gzdoom-save-load-smoke.log
+          name: gzdoom-windows-parser-log
+          path: dist/gzdoom-runtime-smoke.log
+          if-no-files-found: warn
+
+  save-load-runtime:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Resolve pinned official Linux runtime assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python tools/bootstrap_runtime_linux.py
+
+      - name: Install pinned GZDoom and virtual display dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgl1-mesa-dri ./external/gzdoom-linux.deb
+
+      - name: Save/load current prototype with pinned GZDoom
+        timeout-minutes: 5
+        run: bash tools/gzdoom_save_load_smoke_linux.sh
+
+      - name: Upload GZDoom save/load validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gzdoom-save-load-validation-log
+          path: dist/gzdoom-save-load-smoke.log
           if-no-files-found: warn
