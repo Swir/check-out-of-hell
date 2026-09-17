@@ -1,8 +1,32 @@
 # ROADMAP — CHECKOUT OF HELL
+<!-- SWIR-PROGRESS-SVG-PRO:v1 -->
 
-**Overall progress:** `████████░░ 76%`
+**Overall progress:** `████████░░ 76.4%`
+
+**Measured scope:** Implemented/testable project milestones  
+**Progress status:** HARDENING
+
+<img width="100%" src="assets/readme/progress-mini.svg" alt="CHECKOUT OF HELL project progress — 76.4% implemented/testable; demo release readiness tracked separately" />
+
+**Progress fallback:** **76.4%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 20.0%**, tracked separately.
 
 The percentage reflects implemented/testable milestones, not ideas.
+
+### Progress model
+
+Project completion is a weighted roll-up of the verified phase percentages in the phase headings below. The generator reads those headings and these phase weights directly from this file; there is no second progress ledger. Demo Release readiness stays a separate phase/gate and is never substituted for overall project completion.
+
+<!-- SWIR-PROGRESS-WEIGHTS:BEGIN -->
+| Phase | Project weight |
+| --- | ---: |
+| Foundation | 10% |
+| Playable Prototype | 25% |
+| Vertical Slice | 40% |
+| Demo Release | 20% |
+| Full Game | 5% |
+<!-- SWIR-PROGRESS-WEIGHTS:END -->
+
+Current weighted calculation: `(100 × 10%) + (99 × 25%) + (94 × 40%) + (20 × 20%) + (0 × 5%) = 76.35%`, displayed as **76.4%**. Geometry uses the unrounded `76.35%` fraction.
 
 ## Phase 0 — Foundation — 100%
 - [x] Project identity and concept

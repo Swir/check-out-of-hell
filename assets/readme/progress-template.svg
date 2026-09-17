@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="180" viewBox="0 0 1200 180" role="img" aria-labelledby="title desc">
+  <title id="title">SWIR Progress SVG PRO template</title>
+  <desc id="desc">TEMPLATE / NOT PROJECT DATA. Replace labels only through a project generator; N/A means no verified progress source.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#02050A"/><stop offset="1" stop-color="#07111C"/></linearGradient>
+    <linearGradient id="progressGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0088FF"/><stop offset="1" stop-color="#62E5FF"/></linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#62E5FF" stroke-opacity="0.055" stroke-width="1"/></pattern>
+  </defs>
+  <rect x="1" y="1" width="1198" height="178" rx="20" fill="url(#bg)" stroke="#0088FF" stroke-opacity="0.55" stroke-width="2"/>
+  <rect x="1" y="1" width="1198" height="178" rx="20" fill="url(#grid)"/>
+  <text x="50" y="48" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="25" font-weight="700">PROJECT NAME</text>
+  <text x="50" y="78" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="15">MEASURED SCOPE</text>
+  <text x="50" y="107" fill="#62E5FF" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="700">TEMPLATE / NOT PROJECT DATA</text>
+  <text x="300" y="107" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="14">COUNTER LABEL</text>
+  <text x="1150" y="88" text-anchor="end" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="42" font-weight="800">N/A</text>
+  <rect id="progress-track" x="50" y="126" width="1100" height="18" rx="9" fill="#0A1A29" stroke="#62E5FF" stroke-opacity="0.25"/>
+  <text x="50" y="164" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="12">TEMPLATE ONLY · no live project percentage · no progress fill</text>
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="180" viewBox="0 0 1200 180" role="img" aria-labelledby="title desc">
+  <title id="title">CHECKOUT OF HELL project progress</title>
+  <desc id="desc">CHECKOUT OF HELL Implemented/testable project milestones: 76.4% across 5 weighted roadmap phases. Demo Release readiness is 20.0% and tracked separately.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#02050A"/><stop offset="1" stop-color="#07111C"/></linearGradient>
+    <linearGradient id="progressGradient" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0088FF"/><stop offset="1" stop-color="#62E5FF"/></linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#62E5FF" stroke-opacity="0.055" stroke-width="1"/></pattern>
+    <filter id="softGlow" x="-20%" y="-100%" width="140%" height="300%"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <clipPath id="trackClip"><rect x="50" y="126" width="1100" height="18" rx="9"/></clipPath>
+  </defs>
+  <rect x="1" y="1" width="1198" height="178" rx="20" fill="url(#bg)" stroke="#0088FF" stroke-opacity="0.55" stroke-width="2"/>
+  <rect x="1" y="1" width="1198" height="178" rx="20" fill="url(#grid)"/>
+  <path d="M24 28 H166" stroke="#62E5FF" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <text x="50" y="48" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="25" font-weight="700">CHECKOUT OF HELL</text>
+  <text x="50" y="78" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="15">Implemented/testable project milestones</text>
+  <text x="50" y="107" fill="#62E5FF" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="700">HARDENING</text>
+  <text x="190" y="107" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="14">5 weighted phases</text>
+  <text x="390" y="107" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="14">Demo Release readiness 20.0% · tracked separately</text>
+  <text x="1150" y="88" text-anchor="end" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="42" font-weight="800">76.4%</text>
+  <rect id="progress-track" x="50" y="126" width="1100" height="18" rx="9" fill="#0A1A29" stroke="#62E5FF" stroke-opacity="0.25"/>
+  <rect id="progress-fill" x="50" y="126" width="839.85" height="18" rx="9" fill="url(#progressGradient)" clip-path="url(#trackClip)" filter="url(#softGlow)"/>
+  <text x="50" y="164" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="12">Source: ROADMAP.md · weighted verified phase progress · generated deterministically</text>
+</svg>

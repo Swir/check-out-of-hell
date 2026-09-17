@@ -20,6 +20,7 @@ def main() -> None:
     for marker in (
         "<!-- SWIR-README-STANDARD:v2 -->",
         'src="assets/readme/hero.svg"',
+        'src="assets/readme/progress-card.svg"',
         "## 📌 Project status",
         "## ✨ Highlights",
         "## 🚀 Quick Start — Windows",
@@ -41,8 +42,8 @@ def main() -> None:
     if not 8 <= len(keywords) <= 20:
         raise AssertionError(f"README.md: expected 8-20 search phrases, found {len(keywords)}")
 
-    readme_progress = re.search(r"Implemented/testable progress \| \*\*(\d+)%\*\*", readme)
-    roadmap_progress = re.search(r"Overall progress:\*\* `[^`]*?\s(\d+)%`", roadmap)
+    readme_progress = re.search(r"Implemented/testable progress \| \*\*(\d+(?:\.\d+)?)%\*\*", readme)
+    roadmap_progress = re.search(r"Overall progress:\*\* `[^`]*?\s(\d+(?:\.\d+)?)%`", roadmap)
     if not readme_progress or not roadmap_progress:
         raise AssertionError("README/ROADMAP progress markers could not be parsed")
     if readme_progress.group(1) != roadmap_progress.group(1):

@@ -46,6 +46,9 @@ jobs:
       - name: SWIR README PRO v2 contract test
         run: python tools/test_readme_standard_contract.py
 
+      - name: SWIR Progress SVG PRO contract test
+        run: python tools/generate_progress_svgs.py --check
+
       - name: Closing Time layout contract test
         run: python tools/test_closing_time_layout.py
 
