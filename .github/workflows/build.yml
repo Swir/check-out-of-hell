@@ -76,6 +76,9 @@ jobs:
       - name: Controller support contract test
         run: python tools/test_controller_support_contract.py
 
+      - name: Performance hardening contract test
+        run: python tools/test_performance_contract.py
+
       - name: Overtime environmental hazard contract test
         run: python tools/test_overtime_hazard_contract.py
 
