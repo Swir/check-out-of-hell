@@ -47,10 +47,11 @@ run_scenario() {
 
   echo "Running pinned GZDoom $label scenario..."
   set +e
-  # Use GZDoom's startup -exec path instead of the post-start +exec console
-  # command. -exec is parsed during engine initialization and leaves delayed
-  # `wait` commands queued for the live game loop, which makes this reliable
-  # on hosted Xvfb runners as well as normal desktop launches.
+  # Use GZDoom's startup -exec path for the delayed test commands. The create
+  # pass deliberately uses +warp rather than +map: during GS_STARTUP GZDoom
+  # special-cases +warp into its autostart path, while +map is only queued as a
+  # delayed console command and can leave a headless runner sitting at the title
+  # screen forever before any game tic exists to drain that queue.
   timeout --signal=KILL 25s xvfb-run -a -s "-screen 0 640x480x24" \
     env LIBGL_ALWAYS_SOFTWARE=1 \
     gzdoom \
@@ -107,7 +108,7 @@ single_save() {
   printf '%s\n' "${matches[0]}"
 }
 
-run_scenario create-save "$CREATE_CFG" +map MAP01
+run_scenario create-save "$CREATE_CFG" +warp MAP01
 initial_save="$(single_save '*coh-save-load-ci*.zds' initial)"
 python "$INSPECTOR" "$initial_save" CheckoutFuse CorporateMemo | tee -a "$LOG"
 
