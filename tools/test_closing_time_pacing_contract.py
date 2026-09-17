@@ -19,10 +19,25 @@ environment = (GAME / "MAP01_ENVIRONMENT.udmf").read_text(encoding="utf-8")
 for marker in (
     'p.A_GiveInventory("SupervisorClearanceToken", 1)',
     'p.CountInv("SupervisorClearanceToken") > 0',
-    'p.CountInv("CheckoutFuse") < 3 || p.CountInv("SupervisorClearanceToken") > 0',
 ):
     if marker not in zscript:
         raise SystemExit(f"Closing Time post-boss pacing guard missing: {marker}")
+
+# Keep the boss-wave check scoped to its own class. The implementation may split the fuse
+# and clearance guards so a cleared watcher can self-destroy instead of idling forever.
+try:
+    boss_wave_block = zscript.split("class CheckoutBossWaveSpawner : Actor", 1)[1].split(
+        "class CheckoutStaffShutter : Actor", 1
+    )[0]
+except IndexError as exc:
+    raise SystemExit("CheckoutBossWaveSpawner class boundaries missing") from exc
+
+for marker in (
+    'p.CountInv("CheckoutFuse") < 3',
+    'p.CountInv("SupervisorClearanceToken") > 0',
+):
+    if marker not in boss_wave_block:
+        raise SystemExit(f"Closing Time boss-wave guard missing: {marker}")
 
 # Boss additions are deliberately spaced farther apart than the previous prototype cadence.
 for marker in (
@@ -69,7 +84,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
             raise SystemExit(f"Packaged ZSCRIPT missing pacing system marker: {marker}")
     for marker in ("SupervisorClearanceToken", "CheckoutPowerCache"):
         if marker not in decorate_pk3:
-            raise SystemExit(f"Packaged DECORATE missing pacing actor: {marker}")
+            raise SystemExit(f"Packaged DECORATE missing pacing actor marker: {marker}")
 
 wad_text = MAP_WAD.read_bytes()
 if b"type = 17128" not in wad_text:
