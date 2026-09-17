@@ -59,6 +59,15 @@ def pad_short_wavs(sound_dir: Path, min_frames: int = 4000) -> None:
             target.writeframes(frames + silence)
 
 
+def decorate_payload() -> bytes:
+    """Compose the core actors and optional subsystem actors into one DECORATE lump."""
+    chunks = [
+        (GAME / "DECORATE").read_text(encoding="utf-8").rstrip(),
+        (GAME / "DECORATE_OVERTIME").read_text(encoding="utf-8").rstrip(),
+    ]
+    return ("\n\n".join(chunks) + "\n").encode("utf-8")
+
+
 generate_assets(GAME)
 generate_combat_assets(GAME)
 generate_vehicle_enemy_assets(GAME)
@@ -76,7 +85,10 @@ for map_name in MAPS:
 pk3 = DIST / "checkout-of-hell-prototype.pk3"
 with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
     for lump in ROOT_LUMPS:
-        archive.write(GAME / lump, lump)
+        if lump == "DECORATE":
+            archive.writestr("DECORATE", decorate_payload())
+        else:
+            archive.write(GAME / lump, lump)
 
     for asset_dir in ASSET_DIRS:
         directory = GAME / asset_dir
