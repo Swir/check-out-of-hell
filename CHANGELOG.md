@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.20.0-dev — 2026-09-17
+
+### Added
+- `tools/gzdoom_save_load_roundtrip.ps1`, a real pinned-GZDoom process-to-process save/load regression that starts Closing Time, establishes a `2/3` Breaker Fuse + `1/3` Corporate Memo state, writes a save, restarts GZDoom, loads that slot and verifies the restored inventory with the engine's own `printinv` diagnostic.
+- Isolated CI save/config directories plus explicit runtime-log checks for missing/incompatible saves, parser errors and unknown commands.
+- `tools/test_save_load_contract.py`, protecting the roundtrip wiring, meaningful objective-state setup, failure guards, workflow timeout and documentation state.
+- Windows CI execution of the real save/load roundtrip with validation logs and the generated regression save uploaded for diagnostics.
+
+### Changed
+- Windows engine validation now goes beyond `-norun` parsing and exercises actual map startup, save creation, process restart and load restoration against the pinned official GZDoom runtime.
+- README/ROADMAP progress raised to 70% and Vertical Slice progress to 86% for the implemented/testable save/load milestone; hands-on Windows end-to-end playtesting and final Closing Time balance/polish remain the primary demo-readiness blocker.
+
 ## 0.19.0-dev — 2026-09-17
 
 ### Added
