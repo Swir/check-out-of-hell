@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.25.0-dev — 2026-09-17
+
+### Added
+- Player-local `Focus HUD` accessibility option with redundant text for objective, breaker/memo progress and Overtime pressure.
+- Player-local `Large warnings` accessibility option for critical health, Overtime and Hell Rush states.
+- Dedicated **CHECKOUT OF HELL Accessibility** entries in both full and simple GZDoom option menus.
+- `docs/ACCESSIBILITY.md` and `tools/test_accessibility_contract.py`, including packaged-PK3 regression coverage and CI execution.
+
+### Changed
+- Failing fluorescent props keep the haunted-store effect but use a slower 70/12/18/12 tic cycle instead of rapid two-tic flash cuts.
+- Accessibility rendering lives in a separate event handler so the serialized `CheckoutShiftDirector` save/load state remains untouched.
+- Build packaging now includes `CVARINFO`, `MENUDEF` and the accessibility ZScript layer in the generated PK3.
+- Demo Release readiness raised from **20.0%** to **30.0%** only after the implemented/testable accessibility pass; weighted project progress is now **78.35%**, displayed as **78.4%**. Controller, performance and target-Windows interactive sign-off remain open.
+
 ## 0.24.0-dev — 2026-09-17
 
 ### Added

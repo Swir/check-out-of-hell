@@ -67,7 +67,10 @@ actor_markers = (
     "actor EmployeeBreakSnack : Stimpack 17126",
     "actor FailingFluorescent 17127",
     'Inventory.PickupSound "coh/breaksnack"',
-    "FLIT A 58 Bright",
+    "FLIT A 70 Bright",
+    "FLIT B 12",
+    "FLIT C 18 Bright",
+    "FLIT D 12",
 )
 for marker in actor_markers:
     if marker not in decorate_env:
@@ -129,4 +132,4 @@ for doomednum in expected_counts:
         raise SystemExit(f"Built MAP01 does not contain environment DoomEdNum {doomednum}")
 
 print("Closing Time environment polish contract: PASS")
-print("Department signs, safe clutter, flickering fixtures and optional joke-reward snacks are packaged and placed.")
+print("Department signs, safe clutter, reduced-flash failing fixtures and optional joke-reward snacks are packaged and placed.")

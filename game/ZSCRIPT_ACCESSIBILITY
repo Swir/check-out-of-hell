@@ -1,0 +1,92 @@
+// CHECKOUT OF HELL - opt-in accessibility overlay
+// Kept in a separate handler so the serialized shift director remains untouched.
+
+class CheckoutAccessibilityHandler : EventHandler
+{
+    static ui bool GetPlayerOption(Name optionName)
+    {
+        if (consoleplayer < 0)
+        {
+            return false;
+        }
+
+        CVar option = CVar.GetCVar(optionName, players[consoleplayer]);
+        return option && option.GetBool();
+    }
+
+    override void RenderOverlay(RenderEvent e)
+    {
+        if (consoleplayer < 0 || !players[consoleplayer].mo)
+        {
+            return;
+        }
+
+        bool focusHud = GetPlayerOption('coh_access_focus_hud');
+        bool largeWarnings = GetPlayerOption('coh_access_large_warnings');
+        if (!focusHud && !largeWarnings)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[consoleplayer].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        int elapsedSeconds = Level.maptime / 35;
+        int stage = 0;
+        if (elapsedSeconds >= 270)
+        {
+            stage = 3;
+        }
+        else if (elapsedSeconds >= 180)
+        {
+            stage = 2;
+        }
+        else if (elapsedSeconds >= 90)
+        {
+            stage = 1;
+        }
+
+        int fuses = p.CountInv("CheckoutFuse");
+        int memos = p.CountInv("CorporateMemo");
+        bool cleared = p.CountInv("SupervisorClearanceToken") > 0;
+        String taskText = CheckoutShiftDirector.GetObjectiveText(fuses, cleared, false);
+        String statusText = String.Format("%s  //  %s",
+            CheckoutShiftDirector.GetOvertimeLabel(stage),
+            CheckoutShiftDirector.GetPressureMeter(stage));
+
+        if (focusHud)
+        {
+            Screen.DrawText(smallfont, Font.CR_WHITE, 148, 72, "ACCESSIBILITY FOCUS",
+                DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+            Screen.DrawText(smallfont, Font.CR_GOLD, 148, 86, taskText,
+                DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+            Screen.DrawText(smallfont, Font.CR_WHITE, 148, 100,
+                String.Format("POWER %d/3  //  MEMOS %d/3", fuses, memos),
+                DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+            Screen.DrawText(smallfont, Font.CR_WHITE, 148, 114, statusText,
+                DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+        }
+
+        if (largeWarnings)
+        {
+            if (p.health <= 25)
+            {
+                Screen.DrawText(smallfont, Font.CR_RED, 236, 208, "CRITICAL HEALTH",
+                    DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+            }
+            else if (stage >= 3)
+            {
+                Screen.DrawText(smallfont, Font.CR_RED, 230, 208, "HELL RUSH // MAXIMUM OVERTIME",
+                    DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+            }
+            else if (stage >= 2)
+            {
+                Screen.DrawText(smallfont, Font.CR_GOLD, 252, 208, "OVERTIME ACTIVE",
+                    DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
+            }
+        }
+    }
+}

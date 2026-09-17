@@ -22,16 +22,16 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.24-dev` |
-| Implemented/testable progress | **76.4%** |
+| Version | `0.25-dev` |
+| Implemented/testable progress | **78.4%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
 | Player packaging focus | One-click Windows bootstrap + CI portable development artifact |
 | Pinned runtime | GZDoom `g4.14.2` + Freedoom `v0.13.0` |
 
-<img width="100%" src="assets/readme/progress-card.svg" alt="CHECKOUT OF HELL project progress — 76.4% implemented/testable; demo release readiness tracked separately" />
+<img width="100%" src="assets/readme/progress-card.svg" alt="CHECKOUT OF HELL project progress — 78.4% implemented/testable; demo release readiness tracked separately" />
 
-**Progress fallback:** **76.4%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 20.0%**, tracked separately.
+**Progress fallback:** **78.4%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 30.0%**, tracked separately.
 
 Progress is based only on implemented and testable work. See [`ROADMAP.md`](ROADMAP.md) for the authoritative weighted milestone breakdown and separate release-readiness gate.
 
@@ -55,6 +55,7 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | 👔 Corporate bosses | Night Manager and the two-phase Regional Manager turn management into literal boss fights. |
 | 🔎 Optional discoveries | Staff Only rewards, Corporate Compliance Memos and useful workplace-comedy resource stashes reward exploration. |
 | ☠️ Authored difficulty | Closing Crew, Graveyard Shift and Corporate Hell tune resources and damage without hiding faster scripted hazards. |
+| ♿ Readability options | Optional focus HUD and large textual warnings reinforce objectives, pressure and critical-health states without changing combat rules. |
 | 🔊 Original presentation | Project-owned generated art, combat audio and department music; no ripped commercial game assets. |
 | 📦 One-click runtime setup | Missing redistributable runtime files are resolved from official upstream sources instead of making players hunt for them. |
 
@@ -178,9 +179,18 @@ This is intentionally a **development artifact, not a public demo release**.
 
 Runtime pins live in `runtime-lock.json` and change only after compatibility validation. The repository does **not** claim a public demo, installer or polished final-game support yet.
 
+## ♿ Accessibility & sensory readability
+
+Open **Options → CHECKOUT OF HELL Accessibility** to enable player-local comfort/readability aids:
+
+- **Focus HUD** adds a compact high-contrast text block with the current objective, breaker/memo counts and Overtime pressure.
+- **Large warnings** adds larger textual warnings for critical health, Overtime and Hell Rush pressure.
+
+Both options are disabled by default and do not alter combat timing, difficulty or objective logic. Overtime remains communicated through words/patterns as well as color, while failing fluorescent props now use a slower light-change cadence instead of rapid two-tic flash cuts. See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md).
+
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, generated art/audio/music, the Closing Time secret pass, portable packaging and bootstrap behavior, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, accessibility settings, generated art/audio/music, the Closing Time secret pass, portable packaging and bootstrap behavior, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
 
 Useful developer commands:
 
@@ -195,6 +205,7 @@ python tools/generate_progress_svgs.py --check
 python tools/test_closing_time_pacing_contract.py
 python tools/test_closing_time_secrets_contract.py
 python tools/test_hud_contract.py
+python tools/test_accessibility_contract.py
 python tools/test_overtime_hazard_contract.py
 python tools/test_original_assets.py
 python tools/test_combat_audio_polish.py
@@ -240,7 +251,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md) and [`docs/THIRD_PARTY.md`](d
 - `Closing Time` has a complete first secrets/joke-interaction pass but is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` is playable but not yet fully polished.
 - The cross-process save/load serialization gate is now green on the exact pinned engine, but a final target-Windows interactive save/load confirmation is still required before demo sign-off.
-- Controller, accessibility-option and performance passes for the public demo are not complete.
+- Controller and performance passes for the public demo are not complete.
 - Later departments remain planned until they have real playable content.
 
 ## 🔎 Search Keywords

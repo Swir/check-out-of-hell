@@ -1,0 +1,5 @@
+// CHECKOUT OF HELL - player-local accessibility preferences
+// These are opt-in comfort/readability aids and do not change combat rules.
+
+user bool coh_access_focus_hud = false;
+user bool coh_access_large_warnings = false;
