@@ -39,10 +39,10 @@ if (Test-Path -LiteralPath $RuntimeLog) {
     Remove-Item -LiteralPath $RuntimeLog -Force
 }
 
-# The create pass uses +warp instead of +map because GZDoom special-cases
-# +warp during GS_STARTUP into its autostart path. A startup +map is only a
-# delayed console command and can sit forever at the title screen before the
-# first game tic. -exec then queues the delayed mutation/save sequence safely.
+# The create pass uses GZDoom's real -warp command-line autostart switch. With
+# the Doom II-style Freedoom IWAD, `-warp 1` resolves to MAP01 before the main
+# loop. The startup -exec file then leaves its delayed mutation/save sequence
+# queued until the live level starts ticking. The load pass uses -loadgame.
 'wait 70; god; give CheckoutFuse 2; give CorporateMemo 1; wait 4; save coh-save-load-ci "CHECKOUT OF HELL CI SAVE"; wait 35; quit' |
     Set-Content -LiteralPath $CreateCfg -Encoding ASCII
 'wait 70; save coh-save-load-ci-roundtrip "CHECKOUT OF HELL CI ROUNDTRIP"; wait 35; quit' |
@@ -190,7 +190,7 @@ function Test-SaveState {
     }
 }
 
-Invoke-GZDoomScenario -Label "create-save" -ConfigPath $CreateCfg -ExtraArguments @("+warp", "MAP01")
+Invoke-GZDoomScenario -Label "create-save" -ConfigPath $CreateCfg -ExtraArguments @("-warp", "1")
 Write-SaveDirectory -Label "after create-save"
 $initialSave = Get-SingleSave -Pattern "*coh-save-load-ci*.zds" -Label "initial"
 Test-SaveState -SaveFile $initialSave -Label "initial"
