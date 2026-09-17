@@ -64,7 +64,7 @@ map MAP01 "Closing Time"
     levelnum = 1
     next = "MAP02"
     sky1 = "SKY1"
-    music = "$MUSIC_RUNNIN"
+    music = "D_COH01"
 }
 
 map MAP02 "Warehouse 13.5"
@@ -72,6 +72,6 @@ map MAP02 "Warehouse 13.5"
     levelnum = 2
     next = "MAP01"
     sky1 = "SKY1"
-    music = "$MUSIC_STALKS"
+    music = "D_COH02"
     nointermission
 }

@@ -11,6 +11,7 @@ from generate_presentation_assets import generate_presentation_assets
 from generate_overtime_assets import generate_overtime_assets
 from generate_environment_assets import generate_environment_assets
 from generate_combat_audio_polish import generate_combat_audio_polish
+from generate_music_assets import generate_music_assets
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
@@ -19,7 +20,7 @@ DIST.mkdir(exist_ok=True)
 
 MAPS = ["MAP01", "MAP02"]
 ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO"]
-ASSET_DIRS = ["textures", "flats", "sprites", "sounds"]
+ASSET_DIRS = ["textures", "flats", "sprites", "sounds", "music"]
 MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]
 
 
@@ -89,6 +90,7 @@ generate_presentation_assets(GAME)
 generate_overtime_assets(GAME)
 generate_environment_assets(GAME)
 generate_combat_audio_polish(GAME)
+generate_music_assets(GAME)
 pad_short_wavs(GAME / "sounds")
 
 built_maps = []

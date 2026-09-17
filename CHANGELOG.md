@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.21.0-dev — 2026-09-17
+
+### Added
+- Deterministic standard-library MIDI soundtrack generator with original themes for `Closing Time` and `Warehouse 13.5`.
+- `docs/MUSIC.md`, documenting soundtrack intent, legal/original-content policy and build validation.
+- `tools/test_music_contract.py`, validating deterministic regeneration, Standard MIDI structure, MAPINFO wiring and packaged PK3 contents.
+- GitHub Actions execution of the original soundtrack contract.
+
+### Changed
+- MAP01 and MAP02 now use project-owned `D_COH01` / `D_COH02` music instead of inherited compatible-IWAD music lumps.
+- The build pipeline now generates and packages the `music/` namespace alongside visual and sound assets.
+- README/ROADMAP progress raised to 72% and Vertical Slice progress to 88% for the implemented/testable soundtrack milestone.
+
 ## 0.20.0-dev — 2026-09-17
 
 ### Added
