@@ -29,18 +29,27 @@ def run_checked(command: list[str], *, timeout: int = 45) -> str:
     env = os.environ.copy()
     env["LIBGL_ALWAYS_SOFTWARE"] = "1"
     env.setdefault("MESA_LOADER_DRIVER_OVERRIDE", "llvmpipe")
-    process = subprocess.run(
-        command,
-        cwd=ROOT,
-        env=env,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        timeout=timeout,
-        check=False,
-    )
+    try:
+        process = subprocess.run(
+            command,
+            cwd=ROOT,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=timeout,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        partial = exc.stdout or ""
+        if isinstance(partial, bytes):
+            partial = partial.decode("utf-8", errors="replace")
+        raise RuntimeError(
+            f"Command timed out after {timeout}s: {' '.join(command)}\n"
+            f"--- partial GZDoom output ---\n{partial}"
+        ) from exc
     if process.returncode != 0:
         raise RuntimeError(f"Command failed with exit code {process.returncode}: {' '.join(command)}\n{process.stdout}")
     return process.stdout
@@ -63,6 +72,8 @@ def assert_clean_runtime(log: str, label: str) -> None:
 
 
 def engine_command(gzdoom: str, cfg: Path) -> list[str]:
+    # Xvfb windows are never focused on hosted CI. Force GZDoom to keep ticking
+    # while unfocused; otherwise the console `wait` chain never reaches save/quit.
     return [
         "xvfb-run",
         "-a",
@@ -71,6 +82,7 @@ def engine_command(gzdoom: str, cfg: Path) -> list[str]:
         gzdoom,
         "-stdout",
         "-nosound",
+        "-nomusic",
         "-config",
         str(ENGINE_INI),
         "-iwad",
@@ -79,6 +91,18 @@ def engine_command(gzdoom: str, cfg: Path) -> list[str]:
         str(PK3),
         "-savedir",
         str(SAVES),
+        "+set",
+        "i_pauseinbackground",
+        "0",
+        "+set",
+        "i_soundinbackground",
+        "0",
+        "+set",
+        "vid_fullscreen",
+        "0",
+        "+set",
+        "vid_preferbackend",
+        "0",
         "+exec",
         str(cfg),
     ]
@@ -109,13 +133,13 @@ def main() -> None:
         encoding="ascii",
     )
     SAVE_CFG.write_text(
-        'wait 175; give CheckoutFuse 2; wait 10; printinv; '
+        'wait 70; give CheckoutFuse 2; wait 10; printinv; '
         f'save {SAVE_STEM} "CHECKOUT OF HELL CI ROUNDTRIP"; '
-        'wait 70; echo COH_RUNTIME_SAVE_WRITTEN; quit\n',
+        'wait 35; echo COH_RUNTIME_SAVE_WRITTEN; quit\n',
         encoding="ascii",
     )
     LOAD_CFG.write_text(
-        "wait 175; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE; wait 10; quit\n",
+        "wait 70; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE; wait 10; quit\n",
         encoding="ascii",
     )
 
