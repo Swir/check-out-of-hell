@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.18.0-dev — 2026-09-17
+
+### Added
+- `CheckoutPowerCache`, a guaranteed full-power Backpack recovery cache using the existing project-owned restock-box presentation and interaction cue.
+- `CheckoutFullPowerCacheSpawner` plus DoomEdNum `17106`, placing exactly one recovery opportunity on the approach to the Night Manager after all three breakers are restored.
+- `SupervisorClearanceToken`, an invisible one-per-player shift-state marker used to shut down new reinforcement creation once management is defeated.
+- `tools/test_closing_time_pacing_contract.py`, validating the 3/3 power gate, cache placement, tuned boss-wave cadence, post-clear reinforcement cutoff and packaged PK3 wiring.
+- GitHub Actions execution of the Closing Time encounter-pacing contract.
+
+### Changed
+- Night Manager management-response reinforcements are widened from the original `12s / 26s / 42s / 58s` cadence to `15s / 34s / 54s / 76s`, preserving escalation while giving each threat more readable combat space.
+- Ambient Overtime spawners and unfinished supervisor-wave spawners stop creating fresh enemies after the supervisor dies; enemies already alive stay active, so the clock-out leg remains an escape instead of an endlessly repopulating route.
+- README/ROADMAP progress raised to 66% and Vertical Slice progress to 78% for the implemented/testable pacing milestone; the first genuinely fully polished Closing Time playtest remains the primary demo-readiness blocker.
+
 ## 0.17.0-dev — 2026-09-17
 
 ### Added
