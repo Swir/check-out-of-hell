@@ -47,9 +47,11 @@ poll_intervals = {
 
 for class_name, interval in poll_intervals.items():
     block = class_block(zscript, class_name)
+    # The time guard can share an `if` condition with a one-shot lifecycle flag; protect the
+    # actual bounded polling predicate rather than one exact formatting shape.
     for marker in (
         "int nextCheck;",
-        "if (Level.maptime < nextCheck)",
+        "Level.maptime < nextCheck",
         f"nextCheck = Level.maptime + {interval};",
     ):
         if marker not in block:
