@@ -31,7 +31,7 @@ class CheckoutShiftDirector : EventHandler
         return 0;
     }
 
-    static int GetNextOvertimeSecond(int stage)
+    static ui int GetNextOvertimeSecond(int stage)
     {
         if (stage == 0)
         {
@@ -48,7 +48,7 @@ class CheckoutShiftDirector : EventHandler
         return -1;
     }
 
-    static String GetOvertimeLabel(int stage)
+    static ui String GetOvertimeLabel(int stage)
     {
         if (stage == 1)
         {
@@ -65,7 +65,7 @@ class CheckoutShiftDirector : EventHandler
         return "SHIFT ACTIVE";
     }
 
-    static String GetPressureMeter(int stage)
+    static ui String GetPressureMeter(int stage)
     {
         if (stage == 1)
         {
@@ -82,7 +82,7 @@ class CheckoutShiftDirector : EventHandler
         return "PRESSURE [----]";
     }
 
-    static String GetObjectiveText(int fuses, bool cleared, bool clockingOut)
+    static ui String GetObjectiveText(int fuses, bool cleared, bool clockingOut)
     {
         if (clockingOut)
         {
@@ -99,7 +99,7 @@ class CheckoutShiftDirector : EventHandler
         return "OBJECTIVE  RETURN TO FRONT CHECKOUT";
     }
 
-    static String GetObjectiveHint(int fuses, bool cleared)
+    static ui String GetObjectiveHint(int fuses, bool cleared)
     {
         if (fuses < 2)
         {
@@ -281,7 +281,7 @@ class CheckoutShiftDirector : EventHandler
         if (exitPending && Level.maptime >= exitTic)
         {
             exitPending = false;
-            ExitLevel(0, false);
+            Level.ExitLevel(0, false);
         }
     }
 
@@ -301,7 +301,20 @@ class CheckoutShiftDirector : EventHandler
         int elapsedSeconds = Level.maptime / 35;
         int minutes = elapsedSeconds / 60;
         int seconds = elapsedSeconds % 60;
-        int stage = GetOvertimeStage();
+        int stage = 0;
+        if (elapsedSeconds >= 270)
+        {
+            stage = 3;
+        }
+        else if (elapsedSeconds >= 180)
+        {
+            stage = 2;
+        }
+        else if (elapsedSeconds >= 90)
+        {
+            stage = 1;
+        }
+
         int fuses = p.CountInv("CheckoutFuse");
         int memos = p.CountInv("CorporateMemo");
         int labels = p.CountInv("Clip");
@@ -388,7 +401,7 @@ class CheckoutShiftDirector : EventHandler
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
         }
 
-        if (powerPulseUntil > Level.maptime && powerPulseText.Len() > 0)
+        if (powerPulseUntil > Level.maptime && powerPulseText.Length() > 0)
         {
             Screen.DrawText(smallfont, Font.CR_GOLD, 112, 196, powerPulseText,
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
