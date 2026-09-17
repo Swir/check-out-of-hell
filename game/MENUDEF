@@ -1,0 +1,16 @@
+OptionMenu COHAccessibilityOptions
+{
+    Title "CHECKOUT OF HELL Accessibility"
+    Option "Focus HUD", "coh_access_focus_hud", "OnOff"
+    Option "Large warnings", "coh_access_large_warnings", "OnOff"
+}
+
+AddOptionMenu OptionsMenu
+{
+    Submenu "CHECKOUT OF HELL Accessibility", "COHAccessibilityOptions"
+}
+
+AddOptionMenu OptionsMenuSimple
+{
+    Submenu "CHECKOUT OF HELL Accessibility", "COHAccessibilityOptions"
+}
