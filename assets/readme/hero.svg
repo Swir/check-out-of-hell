@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320" role="img" aria-labelledby="title desc">
+  <title id="title">CHECKOUT OF HELL — comedy-horror retro FPS</title>
+  <desc id="desc">Dark electric-cyan SWIR project banner with a haunted shopping cart and supermarket checkout motif.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#02050A"/>
+      <stop offset="0.58" stop-color="#07111C"/>
+      <stop offset="1" stop-color="#02050A"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#62E5FF"/>
+      <stop offset="1" stop-color="#0088FF"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#62E5FF" stroke-opacity="0.055" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="320" rx="24" fill="url(#bg)"/>
+  <rect x="1" y="1" width="1198" height="318" rx="23" fill="none" stroke="#62E5FF" stroke-opacity="0.22"/>
+  <rect width="1200" height="320" rx="24" fill="url(#grid)"/>
+
+  <path d="M0 248 C180 210 250 286 430 246 S720 208 880 250 S1080 274 1200 228" fill="none" stroke="#0088FF" stroke-opacity="0.24" stroke-width="2"/>
+  <path d="M0 260 C170 222 270 296 438 258 S710 218 890 262 S1080 282 1200 240" fill="none" stroke="#62E5FF" stroke-opacity="0.14" stroke-width="1"/>
+
+  <g transform="translate(72 58)">
+    <rect x="0" y="0" width="188" height="188" rx="42" fill="#07111C" stroke="#62E5FF" stroke-opacity="0.35"/>
+    <g transform="translate(22 22)" filter="url(#glow)">
+      <path d="M10 28h22l15 86h88l19-60H44" fill="none" stroke="url(#cyan)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="62" cy="138" r="10" fill="#F4FAFF"/>
+      <circle cx="123" cy="138" r="10" fill="#F4FAFF"/>
+      <path d="M67 68l13 20 13-20 13 20 13-20" fill="none" stroke="#FF5364" stroke-width="8" stroke-linecap="round"/>
+      <path d="M70 103h47" stroke="#F4FAFF" stroke-width="7" stroke-linecap="round"/>
+      <path d="M80 103l-7 15M108 103l7 15" stroke="#F4FAFF" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g font-family="Segoe UI, Arial, sans-serif">
+    <text x="310" y="66" font-size="19" font-weight="700" letter-spacing="4" fill="#62E5FF">SWIR PROJECT</text>
+    <text x="310" y="136" font-size="58" font-weight="900" letter-spacing="1" fill="#F4FAFF">CHECKOUT OF HELL</text>
+    <rect x="310" y="154" width="494" height="3" rx="2" fill="url(#cyan)"/>
+    <text x="310" y="198" font-size="24" font-weight="650" fill="#F4FAFF">SHIFT HAPPENS.</text>
+    <text x="310" y="231" font-size="20" fill="#8DA8B8">Comedy-horror retro FPS · haunted supermarket night shift</text>
+    <text x="310" y="267" font-size="16" font-weight="600" letter-spacing="1" fill="#62E5FF">GZDOOM · ZSCRIPT · UDMF · WINDOWS DEVELOPMENT TARGET</text>
+  </g>
+
+  <g transform="translate(1006 44)" opacity="0.8">
+    <rect x="0" y="0" width="114" height="58" rx="9" fill="#02050A" stroke="#62E5FF" stroke-opacity="0.35"/>
+    <text x="57" y="24" text-anchor="middle" font-family="Consolas, monospace" font-size="12" fill="#8DA8B8">CLOCK OUT</text>
+    <text x="57" y="45" text-anchor="middle" font-family="Consolas, monospace" font-size="21" font-weight="700" fill="#62E5FF">06:00</text>
+  </g>
+</svg>
