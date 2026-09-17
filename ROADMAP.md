@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `██████░░░░ 58%`
+**Overall progress:** `██████░░░░ 61%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -57,10 +57,11 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Three-memo optional Corporate Compliance scavenger route in Closing Time
 - [x] Overtime environmental warning/trap layer with stage-matched escalation
 - [x] Proper final custom HUD with objective hierarchy, Overtime pressure, worker condition and signature-ammo reserves
+- [x] Closing Time department signage, safe retail clutter, flickering ceiling fixtures and optional Emergency Break Snack rewards
 - [ ] Full original combat/weapon sound set polish
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 64%
+## Phase 2 — Vertical Slice — 70%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -76,6 +77,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Closing Time HUD readability + optional Corporate Memo joke route implemented with a dedicated CI contract
 - [x] Closing Time Overtime escalation now adds readable warning alarms and timed electrical floor hazards with a dedicated CI contract
 - [x] Final-layout night-shift HUD presents objective/route hierarchy, 06:00 target, Overtime pressure, health and weapon reserves without color-only state cues
+- [x] Closing Time environment dressing adds readable department identity, off-route clutter, ceiling flicker and two optional useful joke rewards without blocking combat lanes
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods
