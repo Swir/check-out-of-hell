@@ -70,6 +70,9 @@ jobs:
       - name: Combat audio polish contract test
         run: python tools/test_combat_audio_polish.py
 
+      - name: Original soundtrack contract test
+        run: python tools/test_music_contract.py
+
       - name: Vehicle enemy asset contract test
         run: python tools/test_vehicle_enemy_assets.py
 
