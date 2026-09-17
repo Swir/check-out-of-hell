@@ -31,19 +31,21 @@ Current project-owned signature combat presentation includes:
 - Security Price Scanner turret animation + original scan-beam projectile + combat cues,
 - Cart of Doom pursuit/charge/pain/death animation set + dedicated combat cues,
 - Possessed Pallet Jack pursuit/fork-lunge/pain/death animation set + dedicated combat cues,
-- Night Manager animation set + Manager Memo projectile + boss cues.
+- Night Manager animation set + Manager Memo projectile + boss cues,
+- Regional Manager fifteen-frame boss animation set + Corporate Red Tape/Executive Stamp projectiles + dedicated phase/combat cues.
 
 Generated sprite PNGs include ZDoom-compatible `grAb` offsets so their placement is
 explicit and reproducible. The original atmosphere generator and combat-asset extensions
 use only Python's standard library and therefore do not add a new runtime or build dependency.
 
-Combat actors that have not yet received original art may still reference compatible
-IWAD-provided placeholders at runtime. Those placeholder assets are never copied into this
-repository or release package. The remaining high-visibility combat placeholder is the
-Regional Manager prototype boss.
+All current core prototype weapons and signature enemies/bosses now have project-owned visible
+combat presentation. Compatible IWAD/runtime data may still provide the legal engine/base-game
+layer during development, but proprietary content is never copied into this repository or the
+project's own distributable assets.
 
 ## Final strategy
 
-Replace every remaining placeholder visual/audio dependency with original project assets
-before calling the game standalone. Original generated prototype assets may be replaced by
-hand-authored production art later, but their source must remain traceable and legally safe.
+Continue replacing any remaining runtime-placeholder dependencies in UI, ambient audio,
+map decoration and supporting effects before calling the game standalone. Original generated
+prototype assets may be replaced by hand-authored production art later, but their source must
+remain traceable and legally safe.
