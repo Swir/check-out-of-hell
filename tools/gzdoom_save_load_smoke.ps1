@@ -72,9 +72,6 @@ function Stop-RuntimeProcess {
         return
     }
 
-    # The test is about save serialization across a real process boundary, not the
-    # UI quit menu. Once the phase sentinel is flushed, terminate the process from
-    # the harness so hosted runners cannot hang waiting for an unfocused GUI window.
     try {
         Stop-Process -Id $Process.Id -Force -ErrorAction Stop
     }
@@ -188,10 +185,6 @@ if (Test-Path -LiteralPath $WorkDir) {
 }
 New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
 
-# GZDoom 4.14.2 maps vid_preferbackend=1 to Vulkan. The hosted Windows image
-# cannot create the modern OpenGL context required by this build, so exercise the
-# pinned runtime through its other official renderer before declaring the runner
-# incapable of executing gameplay. Stay windowed and keep background ticks active.
 @(
     "[GlobalSettings]",
     "vid_preferbackend=1",
@@ -202,10 +195,10 @@ New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
     "i_soundinbackground=false"
 ) | Set-Content -LiteralPath $EngineConfig -Encoding ASCII
 
-# A fresh MAP01 load strips objective tokens during its first ticks. Enter the map,
-# let that cleanup finish, then enable god mode and author unmistakable 2/3 state.
-# This validates serialization without letting an unattended player die before save.
-$saveCommands = "wait 2; map MAP01; wait 10; god; give CheckoutFuse 2; give CorporateMemo 2; wait 5; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 20; echo COH_RUNTIME_SAVE_WRITTEN"
+# GZDoom's console `give` syntax accepts a single inventory class per command.
+# Repeat the command to create an unmistakable 2/3 objective state after the
+# fresh-world cleanup has run, and use god mode so unattended validation cannot die.
+$saveCommands = "wait 2; map MAP01; wait 10; god; give CheckoutFuse; give CheckoutFuse; give CorporateMemo; give CorporateMemo; wait 5; printinv; save $SaveStem `"CHECKOUT OF HELL CI ROUNDTRIP`"; wait 20; echo COH_RUNTIME_SAVE_WRITTEN"
 $loadCommands = "wait 10; printinv; echo COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE"
 Set-Content -LiteralPath $SaveConfig -Value $saveCommands -Encoding ASCII
 Set-Content -LiteralPath $LoadConfig -Value $loadCommands -Encoding ASCII
