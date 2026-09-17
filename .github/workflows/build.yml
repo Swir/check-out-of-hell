@@ -43,6 +43,9 @@ jobs:
       - name: Closing Time presentation contract test
         run: python tools/test_closing_time_presentation_contract.py
 
+      - name: Closing Time environment polish contract test
+        run: python tools/test_environment_polish_contract.py
+
       - name: Final HUD contract test
         run: python tools/test_hud_contract.py
 
