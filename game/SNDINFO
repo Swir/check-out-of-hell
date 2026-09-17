@@ -1,4 +1,6 @@
-// CHECKOUT OF HELL - original prototype interaction/combat cues
+// CHECKOUT OF HELL - project-owned interaction/combat cues
+// High-repeat combat cues use deterministic generated variant families to reduce audio fatigue.
+
 coh/fuse            sounds/fuse
 coh/shutter         sounds/shutter
 coh/bossalarm       sounds/bossalarm
@@ -8,34 +10,127 @@ coh/overtimealarm   sounds/overtime_alarm
 coh/overtimearc     sounds/overtime_arc
 coh/memo            sounds/memo
 coh/breaksnack      sounds/breaksnack
-coh/mopswing        sounds/mopswing
-coh/managerattack   sounds/managerattack
-coh/managerdown     sounds/managerdown
-coh/ripperfire      sounds/ripperfire
-coh/rippercycle     sounds/rippercycle
-coh/checkoutidle    sounds/checkoutidle
-coh/checkoutattack  sounds/checkoutattack
-coh/checkouthit     sounds/checkouthit
-coh/checkoutdown    sounds/checkoutdown
-coh/pricefire       sounds/pricefire
-coh/pricelabel      sounds/pricelabel
-coh/canlaunch       sounds/canlaunch
-coh/canexplode      sounds/canexplode
-coh/scanneridle     sounds/scanneridle
-coh/scannerattack   sounds/scannerattack
-coh/scannerhit      sounds/scannerhit
-coh/scannerdown     sounds/scannerdown
-coh/cartidle        sounds/cartidle
-coh/cartcharge      sounds/cartcharge
-coh/carthit         sounds/carthit
-coh/cartdown        sounds/cartdown
-coh/palletidle      sounds/palletidle
-coh/palletattack    sounds/palletattack
-coh/pallethit       sounds/pallethit
-coh/palletdown      sounds/palletdown
-coh/regionalidle    sounds/regionalidle
-coh/regionalattack  sounds/regionalattack
-coh/regionalphase   sounds/regionalphase
-coh/regionalstamp   sounds/regionalstamp
-coh/regionalhit     sounds/regionalhit
-coh/regionaldown    sounds/regionaldown
+
+coh/mopswing_v1 sounds/mopswing_v1
+coh/mopswing_v2 sounds/mopswing_v2
+coh/mopswing_v3 sounds/mopswing_v3
+$random coh/mopswing { coh/mopswing_v1 coh/mopswing_v2 coh/mopswing_v3 }
+
+coh/managerattack_v1 sounds/managerattack_v1
+coh/managerattack_v2 sounds/managerattack_v2
+coh/managerattack_v3 sounds/managerattack_v3
+$random coh/managerattack { coh/managerattack_v1 coh/managerattack_v2 coh/managerattack_v3 }
+coh/managerdown_v1 sounds/managerdown_v1
+coh/managerdown_v2 sounds/managerdown_v2
+$random coh/managerdown { coh/managerdown_v1 coh/managerdown_v2 }
+
+coh/ripperfire_v1 sounds/ripperfire_v1
+coh/ripperfire_v2 sounds/ripperfire_v2
+coh/ripperfire_v3 sounds/ripperfire_v3
+$random coh/ripperfire { coh/ripperfire_v1 coh/ripperfire_v2 coh/ripperfire_v3 }
+coh/rippercycle_v1 sounds/rippercycle_v1
+coh/rippercycle_v2 sounds/rippercycle_v2
+coh/rippercycle_v3 sounds/rippercycle_v3
+$random coh/rippercycle { coh/rippercycle_v1 coh/rippercycle_v2 coh/rippercycle_v3 }
+
+coh/checkoutidle_v1 sounds/checkoutidle_v1
+coh/checkoutidle_v2 sounds/checkoutidle_v2
+$random coh/checkoutidle { coh/checkoutidle_v1 coh/checkoutidle_v2 }
+coh/checkoutattack_v1 sounds/checkoutattack_v1
+coh/checkoutattack_v2 sounds/checkoutattack_v2
+coh/checkoutattack_v3 sounds/checkoutattack_v3
+$random coh/checkoutattack { coh/checkoutattack_v1 coh/checkoutattack_v2 coh/checkoutattack_v3 }
+coh/checkouthit_v1 sounds/checkouthit_v1
+coh/checkouthit_v2 sounds/checkouthit_v2
+coh/checkouthit_v3 sounds/checkouthit_v3
+$random coh/checkouthit { coh/checkouthit_v1 coh/checkouthit_v2 coh/checkouthit_v3 }
+coh/checkoutdown_v1 sounds/checkoutdown_v1
+coh/checkoutdown_v2 sounds/checkoutdown_v2
+$random coh/checkoutdown { coh/checkoutdown_v1 coh/checkoutdown_v2 }
+
+coh/pricefire_v1 sounds/pricefire_v1
+coh/pricefire_v2 sounds/pricefire_v2
+coh/pricefire_v3 sounds/pricefire_v3
+coh/pricefire_v4 sounds/pricefire_v4
+$random coh/pricefire { coh/pricefire_v1 coh/pricefire_v2 coh/pricefire_v3 coh/pricefire_v4 }
+coh/pricelabel_v1 sounds/pricelabel_v1
+coh/pricelabel_v2 sounds/pricelabel_v2
+coh/pricelabel_v3 sounds/pricelabel_v3
+$random coh/pricelabel { coh/pricelabel_v1 coh/pricelabel_v2 coh/pricelabel_v3 }
+
+coh/canlaunch_v1 sounds/canlaunch_v1
+coh/canlaunch_v2 sounds/canlaunch_v2
+coh/canlaunch_v3 sounds/canlaunch_v3
+$random coh/canlaunch { coh/canlaunch_v1 coh/canlaunch_v2 coh/canlaunch_v3 }
+coh/canexplode_v1 sounds/canexplode_v1
+coh/canexplode_v2 sounds/canexplode_v2
+coh/canexplode_v3 sounds/canexplode_v3
+coh/canexplode_v4 sounds/canexplode_v4
+$random coh/canexplode { coh/canexplode_v1 coh/canexplode_v2 coh/canexplode_v3 coh/canexplode_v4 }
+
+coh/scanneridle_v1 sounds/scanneridle_v1
+coh/scanneridle_v2 sounds/scanneridle_v2
+$random coh/scanneridle { coh/scanneridle_v1 coh/scanneridle_v2 }
+coh/scannerattack_v1 sounds/scannerattack_v1
+coh/scannerattack_v2 sounds/scannerattack_v2
+coh/scannerattack_v3 sounds/scannerattack_v3
+$random coh/scannerattack { coh/scannerattack_v1 coh/scannerattack_v2 coh/scannerattack_v3 }
+coh/scannerhit_v1 sounds/scannerhit_v1
+coh/scannerhit_v2 sounds/scannerhit_v2
+coh/scannerhit_v3 sounds/scannerhit_v3
+$random coh/scannerhit { coh/scannerhit_v1 coh/scannerhit_v2 coh/scannerhit_v3 }
+coh/scannerdown_v1 sounds/scannerdown_v1
+coh/scannerdown_v2 sounds/scannerdown_v2
+$random coh/scannerdown { coh/scannerdown_v1 coh/scannerdown_v2 }
+
+coh/cartidle_v1 sounds/cartidle_v1
+coh/cartidle_v2 sounds/cartidle_v2
+$random coh/cartidle { coh/cartidle_v1 coh/cartidle_v2 }
+coh/cartcharge_v1 sounds/cartcharge_v1
+coh/cartcharge_v2 sounds/cartcharge_v2
+coh/cartcharge_v3 sounds/cartcharge_v3
+$random coh/cartcharge { coh/cartcharge_v1 coh/cartcharge_v2 coh/cartcharge_v3 }
+coh/carthit_v1 sounds/carthit_v1
+coh/carthit_v2 sounds/carthit_v2
+coh/carthit_v3 sounds/carthit_v3
+$random coh/carthit { coh/carthit_v1 coh/carthit_v2 coh/carthit_v3 }
+coh/cartdown_v1 sounds/cartdown_v1
+coh/cartdown_v2 sounds/cartdown_v2
+$random coh/cartdown { coh/cartdown_v1 coh/cartdown_v2 }
+
+coh/palletidle_v1 sounds/palletidle_v1
+coh/palletidle_v2 sounds/palletidle_v2
+$random coh/palletidle { coh/palletidle_v1 coh/palletidle_v2 }
+coh/palletattack_v1 sounds/palletattack_v1
+coh/palletattack_v2 sounds/palletattack_v2
+coh/palletattack_v3 sounds/palletattack_v3
+$random coh/palletattack { coh/palletattack_v1 coh/palletattack_v2 coh/palletattack_v3 }
+coh/pallethit_v1 sounds/pallethit_v1
+coh/pallethit_v2 sounds/pallethit_v2
+coh/pallethit_v3 sounds/pallethit_v3
+$random coh/pallethit { coh/pallethit_v1 coh/pallethit_v2 coh/pallethit_v3 }
+coh/palletdown_v1 sounds/palletdown_v1
+coh/palletdown_v2 sounds/palletdown_v2
+$random coh/palletdown { coh/palletdown_v1 coh/palletdown_v2 }
+
+coh/regionalidle_v1 sounds/regionalidle_v1
+coh/regionalidle_v2 sounds/regionalidle_v2
+$random coh/regionalidle { coh/regionalidle_v1 coh/regionalidle_v2 }
+coh/regionalattack_v1 sounds/regionalattack_v1
+coh/regionalattack_v2 sounds/regionalattack_v2
+coh/regionalattack_v3 sounds/regionalattack_v3
+$random coh/regionalattack { coh/regionalattack_v1 coh/regionalattack_v2 coh/regionalattack_v3 }
+coh/regionalphase_v1 sounds/regionalphase_v1
+coh/regionalphase_v2 sounds/regionalphase_v2
+$random coh/regionalphase { coh/regionalphase_v1 coh/regionalphase_v2 }
+coh/regionalstamp_v1 sounds/regionalstamp_v1
+coh/regionalstamp_v2 sounds/regionalstamp_v2
+coh/regionalstamp_v3 sounds/regionalstamp_v3
+$random coh/regionalstamp { coh/regionalstamp_v1 coh/regionalstamp_v2 coh/regionalstamp_v3 }
+coh/regionalhit_v1 sounds/regionalhit_v1
+coh/regionalhit_v2 sounds/regionalhit_v2
+coh/regionalhit_v3 sounds/regionalhit_v3
+$random coh/regionalhit { coh/regionalhit_v1 coh/regionalhit_v2 coh/regionalhit_v3 }
+coh/regionaldown_v1 sounds/regionaldown_v1
+coh/regionaldown_v2 sounds/regionaldown_v2
+$random coh/regionaldown { coh/regionaldown_v1 coh/regionaldown_v2 }
