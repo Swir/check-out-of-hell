@@ -72,8 +72,10 @@ def assert_clean_runtime(log: str, label: str) -> None:
 
 
 def engine_command(gzdoom: str, cfg: Path) -> list[str]:
-    # Xvfb windows are never focused on hosted CI. Force GZDoom to keep ticking
-    # while unfocused; otherwise the console `wait` chain never reaches save/quit.
+    # Xvfb has no window manager, so its GZDoom window never becomes "active".
+    # GZDoom's main loop throttles inactive windows unless vid_activeinbackground
+    # is enabled; that would prevent delayed console commands from advancing.
+    # Force both background activity and no-pause semantics for deterministic CI.
     return [
         "xvfb-run",
         "-a",
@@ -91,6 +93,9 @@ def engine_command(gzdoom: str, cfg: Path) -> list[str]:
         str(PK3),
         "-savedir",
         str(SAVES),
+        "+set",
+        "vid_activeinbackground",
+        "1",
         "+set",
         "i_pauseinbackground",
         "0",
@@ -128,6 +133,7 @@ def main() -> None:
         "[GlobalSettings]\n"
         "vid_preferbackend=0\n"
         "vid_fullscreen=false\n"
+        "vid_activeinbackground=true\n"
         "i_pauseinbackground=false\n"
         "i_soundinbackground=false\n",
         encoding="ascii",
