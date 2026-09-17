@@ -26,6 +26,33 @@ function Quote-ProcessArgument([string]$Value)
     return '"' + $Value.Replace('"', '\"') + '"'
 }
 
+function Write-CombinedLog
+{
+    param(
+        [string]$StdoutPath,
+        [string]$StderrPath,
+        [string]$LogPath,
+        [string]$Fallback
+    )
+
+    $output = @()
+    if (Test-Path -LiteralPath $StdoutPath)
+    {
+        $output += Get-Content -LiteralPath $StdoutPath
+    }
+    if (Test-Path -LiteralPath $StderrPath)
+    {
+        $output += Get-Content -LiteralPath $StderrPath
+    }
+    if ($output.Count -eq 0)
+    {
+        $output = @($Fallback)
+    }
+
+    $output | Set-Content -LiteralPath $LogPath -Encoding UTF8
+    return $output
+}
+
 function Invoke-GZDoomChecked
 {
     param(
@@ -56,23 +83,21 @@ function Invoke-GZDoomChecked
     if (-not $process.WaitForExit($TimeoutSeconds * 1000))
     {
         try { $process.Kill() } catch { }
-        throw "GZDoom $Phase phase exceeded the ${TimeoutSeconds}s timeout."
+        try { $process.WaitForExit(5000) | Out-Null } catch { }
+        $timeoutOutput = Write-CombinedLog `
+            -StdoutPath $stdoutPath `
+            -StderrPath $stderrPath `
+            -LogPath $LogPath `
+            -Fallback "GZDoom $Phase phase timed out without redirected output."
+        $timeoutOutput | ForEach-Object { Write-Host $_ }
+        throw "GZDoom $Phase phase exceeded the ${TimeoutSeconds}s timeout. See $LogPath"
     }
 
-    $output = @()
-    if (Test-Path -LiteralPath $stdoutPath)
-    {
-        $output += Get-Content -LiteralPath $stdoutPath
-    }
-    if (Test-Path -LiteralPath $stderrPath)
-    {
-        $output += Get-Content -LiteralPath $stderrPath
-    }
-    if ($output.Count -eq 0)
-    {
-        $output = @("GZDoom $Phase phase completed with no redirected output.")
-    }
-    $output | Set-Content -LiteralPath $LogPath -Encoding UTF8
+    $output = Write-CombinedLog `
+        -StdoutPath $stdoutPath `
+        -StderrPath $stderrPath `
+        -LogPath $LogPath `
+        -Fallback "GZDoom $Phase phase completed with no redirected output."
     $output | ForEach-Object { Write-Host $_ }
 
     if ($process.ExitCode -ne 0)
@@ -86,6 +111,7 @@ function Invoke-GZDoomChecked
         "Execution could not continue",
         "Unknown class",
         "Unknown identifier",
+        "Unknown command",
         "Invalid parameter",
         "Parse error",
         "Could not save",
@@ -133,26 +159,15 @@ if (Test-Path -LiteralPath $WorkDir)
 }
 New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
 
-@'
-echo COH_SAVE_ROUNDTRIP_CREATE_BEGIN
-map MAP01
-wait 70
-give CheckoutFuse
-give CheckoutFuse
-give CorporateMemo
-wait 2
-save coh-ci-roundtrip
-wait 20
-echo COH_SAVE_ROUNDTRIP_CREATE_DONE
-quit
-'@ | Set-Content -LiteralPath $CreateCfg -Encoding ASCII
+# GZDoom's `wait` defers only the remainder of the same command string.
+# Keep each phase on one semicolon-delimited line so map startup, inventory
+# injection, save I/O and quit happen on deterministic later tics instead of
+# racing each other during initial console command dispatch.
+'echo COH_SAVE_ROUNDTRIP_CREATE_BEGIN; map MAP01; wait 70; give CheckoutFuse; give CheckoutFuse; give CorporateMemo; wait 2; save coh-ci-roundtrip; wait 20; echo COH_SAVE_ROUNDTRIP_CREATE_DONE; quit' |
+    Set-Content -LiteralPath $CreateCfg -Encoding ASCII
 
-@'
-echo COH_SAVE_ROUNDTRIP_LOAD_BEGIN
-wait 70
-echo COH_SAVE_ROUNDTRIP_LOAD_DONE
-quit
-'@ | Set-Content -LiteralPath $LoadCfg -Encoding ASCII
+'echo COH_SAVE_ROUNDTRIP_LOAD_BEGIN; wait 70; echo COH_SAVE_ROUNDTRIP_LOAD_DONE; quit' |
+    Set-Content -LiteralPath $LoadCfg -Encoding ASCII
 
 $commonArgs = @(
     "-stdout",
