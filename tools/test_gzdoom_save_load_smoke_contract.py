@@ -23,18 +23,21 @@ required_windows_markers = (
     '"-savedir", $SaveDir',
     'Start-Process -FilePath $GZDoomExe',
     'Stop-Process -Id $Process.Id -Force',
-    'give CheckoutFuse; give CheckoutFuse',
-    'give CorporateMemo; give CorporateMemo',
+    '"+map", "MAP01"',
     'save $SaveStem',
-    '"-loadgame", $saveFile.FullName',
+    '"-loadgame", $saveFile.Name',
     'COH_RUNTIME_SAVE_WRITTEN',
     'COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE',
 )
 for marker in required_windows_markers:
     if marker not in windows_script:
         raise SystemExit(f"Native Windows save/load harness is missing required marker: {marker}")
-if "give CheckoutFuse 2" in windows_script or "give CorporateMemo 2" in windows_script:
-    raise SystemExit("Windows harness must use the documented one-item GZDoom give syntax")
+if windows_script.count("give CheckoutFuse") < 2:
+    raise SystemExit("Windows harness must author CheckoutFuse 2/3 before saving")
+if windows_script.count("give CorporateMemo") < 2:
+    raise SystemExit("Windows harness must author CorporateMemo 2/3 before saving")
+if "$saveFile.FullName" in windows_script:
+    raise SystemExit("Windows harness must load by save basename when -savedir is active")
 if "quit\"" in windows_script or "; quit" in windows_script:
     raise SystemExit("Windows harness must not depend on an unfocused GZDoom GUI processing quit")
 
@@ -55,10 +58,9 @@ required_linux_markers = (
     '"LIBGL_ALWAYS_SOFTWARE"',
     '"MESA_LOADER_DRIVER_OVERRIDE"',
     '"llvmpipe"',
-    "give CheckoutFuse; give CheckoutFuse",
-    "give CorporateMemo; give CorporateMemo",
+    '[*common, "+map", "MAP01", "+exec", str(SAVE_CFG)]',
     "coh-ci-roundtrip-linux",
-    '"-loadgame"',
+    '"-loadgame", save_file.name',
     "COH_LINUX_RUNTIME_SAVE_WRITTEN",
     "COH_LINUX_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE",
     r"CheckoutFuse\s+#\d+\s+\(2/3\)",
@@ -68,8 +70,12 @@ required_linux_markers = (
 for marker in required_linux_markers:
     if marker not in linux_script:
         raise SystemExit(f"Linux runtime save/load smoke is missing required marker: {marker}")
-if "give CheckoutFuse 2" in linux_script or "give CorporateMemo 2" in linux_script:
-    raise SystemExit("Linux harness must use the documented one-item GZDoom give syntax")
+if linux_script.count("give CheckoutFuse") < 2:
+    raise SystemExit("Linux harness must author CheckoutFuse 2/3 before saving")
+if linux_script.count("give CorporateMemo") < 2:
+    raise SystemExit("Linux harness must author CorporateMemo 2/3 before saving")
+if "save_file.resolve()" in linux_script:
+    raise SystemExit("Linux harness must load by save basename when -savedir is active")
 if "; quit" in linux_script:
     raise SystemExit("Linux harness must own the process boundary instead of depending on GUI quit")
 
