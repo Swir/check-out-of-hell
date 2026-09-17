@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.14.0-dev — 2026-09-17
+
+### Added
+- Four dedicated Overtime environmental hazard anchors in `MAP01 — Closing Time`, positioned away from the player start and clock-out lane.
+- Stage-matched hazard behavior: warning-alarm flashes beginning at 90 seconds, telegraphed electrical floor arcs beginning at 180 seconds, and a 20-second Hell Rush trap cadence beginning at 270 seconds.
+- Project-owned warning and electrical-arc sprite set plus dedicated alarm/electrical cues generated deterministically with Python's standard library.
+- `game/DECORATE_OVERTIME` and `game/MAP01_OVERTIME.udmf` subsystem fragments, composed into the final PK3/map by the build without duplicating core source actors or geometry.
+- `tools/generate_overtime_assets.py` for deterministic Overtime presentation assets.
+- `tools/test_overtime_hazard_contract.py`, validating PNG offsets, WAV format, stage timing, damage telegraph, map placement, PK3 composition and sound/build wiring.
+- GitHub Actions execution of the Overtime environmental hazard contract.
+
+### Changed
+- Overtime now changes the physical store floor as well as reinforcement pressure, making prolonged shifts progressively more hazardous while keeping traps readable and avoidable.
+- The build now composes optional DECORATE and UDMF subsystem fragments into the packaged game, keeping core source files readable as prototype systems grow.
+- README/ROADMAP progress raised to 55% for the implemented/testable Overtime environmental-pressure milestone; final HUD, full sound polish and a fully decorated Closing Time still remain open.
+
 ## 0.13.0-dev — 2026-09-17
 
 ### Added
