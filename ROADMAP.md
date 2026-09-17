@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `███████░░░ 68%`
+**Overall progress:** `███████░░░ 70%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -61,9 +61,10 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Full original combat/weapon sound set polish with deterministic runtime cue variation
 - [x] Closing Time supervisor pacing pass with a full-power recovery cache, widened reinforcement cadence and post-clear reinforcement cutoff
 - [x] Three authored difficulty modes with regression coverage and pinned-engine parser validation
+- [x] Real pinned-GZDoom save/create/load roundtrip gate with isolated config/save directories and timeout protection
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 82%
+## Phase 2 — Vertical Slice — 85%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -82,6 +83,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Closing Time environment dressing adds readable department identity, off-route clutter, ceiling flicker and two optional useful joke rewards without blocking combat lanes
 - [x] Signature combat audio uses project-owned randomized cue families with deterministic generation, PCM/headroom checks and runtime parser coverage
 - [x] Closing Time full-power pre-boss recovery and post-supervisor reinforcement cutoff implemented with dedicated CI coverage
+- [x] Pinned GZDoom save/load validation creates a real MAP01 save containing custom objective state and reloads it in a second engine process
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods
@@ -89,7 +91,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [ ] Secrets and joke interactions — full level pass
 - [x] Difficulty modes
 - [ ] Original soundtrack
-- [ ] Save/load validation
+- [x] Save/load validation
 
 ## Phase 3 — Demo Release — 20%
 - [x] Automatic first-run dependency bootstrap design implemented
