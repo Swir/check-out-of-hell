@@ -11,6 +11,7 @@ $SaveDir = Join-Path $WorkDir "saves"
 $RuntimeLog = Join-Path $ProjectRoot "dist\gzdoom-save-load-smoke.log"
 $CreateCfg = Join-Path $WorkDir "create-save.cfg"
 $LoadCfg = Join-Path $WorkDir "load-save.cfg"
+$SaveInspector = Join-Path $PSScriptRoot "inspect_gzdoom_save.py"
 
 Write-Host "Building current prototype..."
 python (Join-Path $PSScriptRoot "build.py")
@@ -24,7 +25,7 @@ if ($LASTEXITCODE -ne 0) {
     throw "Runtime bootstrap failed with exit code $LASTEXITCODE."
 }
 
-foreach ($required in @($GZDoomExe, $FreedoomWad, $Pk3)) {
+foreach ($required in @($GZDoomExe, $FreedoomWad, $Pk3, $SaveInspector)) {
     if (-not (Test-Path -LiteralPath $required)) {
         throw "Save/load smoke prerequisite is missing: $required"
     }
@@ -38,11 +39,11 @@ if (Test-Path -LiteralPath $RuntimeLog) {
     Remove-Item -LiteralPath $RuntimeLog -Force
 }
 
-# Keep each scenario on one command line so GZDoom's built-in `wait` command
-# defers the remaining commands by deterministic game tics.
-'map MAP01; wait 70; god; give CheckoutFuse 2; give CorporateMemo 1; wait 2; printinv; save coh-save-load-ci "CHECKOUT OF HELL CI SAVE"; wait 35; quit' |
+# The first process creates a real in-level save with authored objective inventory.
+# The second process can only create the round-trip save after the first save has loaded.
+'map MAP01; wait 70; god; give CheckoutFuse 2; give CorporateMemo 1; wait 4; save coh-save-load-ci "CHECKOUT OF HELL CI SAVE"; wait 35; quit' |
     Set-Content -LiteralPath $CreateCfg -Encoding ASCII
-'load coh-save-load-ci; wait 70; printinv; wait 2; quit' |
+'load coh-save-load-ci; wait 70; save coh-save-load-ci-roundtrip "CHECKOUT OF HELL CI ROUNDTRIP"; wait 35; quit' |
     Set-Content -LiteralPath $LoadCfg -Encoding ASCII
 
 function Invoke-GZDoomScenario {
@@ -52,11 +53,6 @@ function Invoke-GZDoomScenario {
     )
 
     Write-Host "Running GZDoom $Label scenario..."
-    $consoleLog = Join-Path $WorkDir "$Label-console.log"
-    if (Test-Path -LiteralPath $consoleLog) {
-        Remove-Item -LiteralPath $consoleLog -Force
-    }
-
     $arguments = @(
         "-stdout",
         "-nosound",
@@ -66,38 +62,24 @@ function Invoke-GZDoomScenario {
         "-savedir", $SaveDir,
         "-iwad", $FreedoomWad,
         "-file", $Pk3,
-        "+logfile", $consoleLog,
         "+exec", $ConfigPath
     )
 
     $output = & $GZDoomExe @arguments 2>&1
     $exitCode = $LASTEXITCODE
     $outputLines = @($output | ForEach-Object { "$_" })
-    $consoleLines = @()
-    if (Test-Path -LiteralPath $consoleLog) {
-        $consoleLines = @(Get-Content -LiteralPath $consoleLog -ErrorAction Stop | ForEach-Object { "$_" })
-    }
 
     Add-Content -LiteralPath $RuntimeLog -Value "=== $Label (exit $exitCode) ===" -Encoding UTF8
     if ($outputLines.Count -gt 0) {
-        Add-Content -LiteralPath $RuntimeLog -Value "--- process output ---" -Encoding UTF8
         $outputLines | Add-Content -LiteralPath $RuntimeLog -Encoding UTF8
         $outputLines | ForEach-Object { Write-Host $_ }
-    }
-    if ($consoleLines.Count -gt 0) {
-        Add-Content -LiteralPath $RuntimeLog -Value "--- GZDoom console log ---" -Encoding UTF8
-        $consoleLines | Add-Content -LiteralPath $RuntimeLog -Encoding UTF8
-        $consoleLines | ForEach-Object { Write-Host $_ }
     }
 
     if ($exitCode -ne 0) {
         throw "GZDoom $Label scenario failed with exit code $exitCode. See $RuntimeLog"
     }
-    if ($consoleLines.Count -eq 0) {
-        throw "GZDoom $Label scenario produced no console logfile. See $RuntimeLog"
-    }
 
-    $text = (@($outputLines) + @($consoleLines)) -join "`n"
+    $text = $outputLines -join "`n"
     foreach ($pattern in @(
         "Script error",
         "Execution could not continue",
@@ -111,33 +93,47 @@ function Invoke-GZDoomScenario {
             throw "GZDoom $Label scenario reported '$pattern'. See $RuntimeLog"
         }
     }
-
-    return $text
 }
 
-$createOutput = Invoke-GZDoomScenario -Label "create-save" -ConfigPath $CreateCfg
+function Get-SingleSave {
+    param(
+        [string]$Pattern,
+        [string]$Label
+    )
 
-$saveFiles = @(Get-ChildItem -LiteralPath $SaveDir -Filter "coh-save-load-ci*.zds" -File -ErrorAction SilentlyContinue)
-if ($saveFiles.Count -ne 1) {
-    throw "Expected exactly one CI savegame in $SaveDir, found $($saveFiles.Count). See $RuntimeLog"
-}
-if ($saveFiles[0].Length -lt 1024) {
-    throw "CI savegame is unexpectedly small: $($saveFiles[0].Length) bytes."
-}
-
-if ($createOutput -notmatch "CheckoutFuse.*\(2/3\)") {
-    throw "Pre-save inventory did not contain CheckoutFuse 2/3. See $RuntimeLog"
-}
-if ($createOutput -notmatch "CorporateMemo.*\(1/3\)") {
-    throw "Pre-save inventory did not contain CorporateMemo 1/3. See $RuntimeLog"
+    $matches = @(Get-ChildItem -LiteralPath $SaveDir -Filter $Pattern -File -ErrorAction SilentlyContinue)
+    if ($matches.Count -ne 1) {
+        throw "Expected exactly one $Label savegame matching '$Pattern' in $SaveDir, found $($matches.Count)."
+    }
+    if ($matches[0].Length -lt 1024) {
+        throw "$Label savegame is unexpectedly small: $($matches[0].Length) bytes."
+    }
+    return $matches[0]
 }
 
-$loadOutput = Invoke-GZDoomScenario -Label "load-save" -ConfigPath $LoadCfg
-if ($loadOutput -notmatch "CheckoutFuse.*\(2/3\)") {
-    throw "Loaded inventory did not preserve CheckoutFuse 2/3. See $RuntimeLog"
+function Test-SaveState {
+    param(
+        [System.IO.FileInfo]$SaveFile,
+        [string]$Label
+    )
+
+    Write-Host "Inspecting $Label save archive: $($SaveFile.FullName)"
+    python $SaveInspector $SaveFile.FullName CheckoutFuse CorporateMemo CheckoutPersistentShiftDirector
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Label save archive did not preserve required serialized game state."
+    }
 }
-if ($loadOutput -notmatch "CorporateMemo.*\(1/3\)") {
-    throw "Loaded inventory did not preserve CorporateMemo 1/3. See $RuntimeLog"
-}
+
+Invoke-GZDoomScenario -Label "create-save" -ConfigPath $CreateCfg
+$initialSave = Get-SingleSave -Pattern "coh-save-load-ci.zds" -Label "initial"
+Test-SaveState -SaveFile $initialSave -Label "initial"
+
+Invoke-GZDoomScenario -Label "load-save" -ConfigPath $LoadCfg
+$roundTripSave = Get-SingleSave -Pattern "coh-save-load-ci-roundtrip.zds" -Label "round-trip"
+Test-SaveState -SaveFile $roundTripSave -Label "round-trip"
+
+Add-Content -LiteralPath $RuntimeLog -Value "Initial save: $($initialSave.Length) bytes" -Encoding UTF8
+Add-Content -LiteralPath $RuntimeLog -Value "Round-trip save: $($roundTripSave.Length) bytes" -Encoding UTF8
+Add-Content -LiteralPath $RuntimeLog -Value "Required serialized state: CheckoutFuse, CorporateMemo, CheckoutPersistentShiftDirector" -Encoding UTF8
 
 Write-Host "Pinned GZDoom save/load smoke test: PASS"
