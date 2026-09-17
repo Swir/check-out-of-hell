@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `██████░░░░ 64%`
+**Overall progress:** `██████░░░░ 66%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -59,9 +59,10 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Proper final custom HUD with objective hierarchy, Overtime pressure, worker condition and signature-ammo reserves
 - [x] Closing Time department signage, safe retail clutter, flickering ceiling fixtures and optional Emergency Break Snack rewards
 - [x] Full original combat/weapon sound set polish with deterministic runtime cue variation
+- [x] Closing Time supervisor pacing pass with a full-power recovery cache, widened reinforcement cadence and post-clear reinforcement cutoff
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 74%
+## Phase 2 — Vertical Slice — 78%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -79,6 +80,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Final-layout night-shift HUD presents objective/route hierarchy, 06:00 target, Overtime pressure, health and weapon reserves without color-only state cues
 - [x] Closing Time environment dressing adds readable department identity, off-route clutter, ceiling flicker and two optional useful joke rewards without blocking combat lanes
 - [x] Signature combat audio uses project-owned randomized cue families with deterministic generation, PCM/headroom checks and runtime parser coverage
+- [x] Closing Time full-power pre-boss recovery and post-supervisor reinforcement cutoff implemented with dedicated CI coverage
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods
