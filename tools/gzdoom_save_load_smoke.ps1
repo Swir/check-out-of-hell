@@ -39,28 +39,30 @@ if (Test-Path -LiteralPath $RuntimeLog) {
     Remove-Item -LiteralPath $RuntimeLog -Force
 }
 
-# Startup exec files are evaluated before the requested map is fully live. A delayed
-# alias keeps the state mutation/save commands in GZDoom's command buffer until the
-# map has ticked, rather than letting a trailing quit run during startup.
-@'
-alias coh_ci_create "wait 70; god; give CheckoutFuse 2; give CorporateMemo 1; wait 4; save coh-save-load-ci \"CHECKOUT OF HELL CI SAVE\"; wait 35; quit"
-map MAP01
-coh_ci_create
-'@ | Set-Content -LiteralPath $CreateCfg -Encoding ASCII
-
-@'
-alias coh_ci_roundtrip "wait 70; save coh-save-load-ci-roundtrip \"CHECKOUT OF HELL CI ROUNDTRIP\"; wait 35; quit"
-load coh-save-load-ci
-coh_ci_roundtrip
-'@ | Set-Content -LiteralPath $LoadCfg -Encoding ASCII
+# +map is converted by GZDoom into an autostart map before the main loop. The
+# startup exec therefore only needs to defer state mutation/save commands until
+# the level has ticked. The load pass uses GZDoom's native -loadgame path.
+'wait 70; god; give CheckoutFuse 2; give CorporateMemo 1; wait 4; save coh-save-load-ci "CHECKOUT OF HELL CI SAVE"; wait 35; quit' |
+    Set-Content -LiteralPath $CreateCfg -Encoding ASCII
+'wait 70; save coh-save-load-ci-roundtrip "CHECKOUT OF HELL CI ROUNDTRIP"; wait 35; quit' |
+    Set-Content -LiteralPath $LoadCfg -Encoding ASCII
 
 function Invoke-GZDoomScenario {
     param(
         [string]$Label,
-        [string]$ConfigPath
+        [string]$ConfigPath,
+        [string[]]$ExtraArguments = @()
     )
 
     Write-Host "Running GZDoom $Label scenario..."
+    $stdoutPath = Join-Path $WorkDir "$Label.stdout.log"
+    $stderrPath = Join-Path $WorkDir "$Label.stderr.log"
+    foreach ($path in @($stdoutPath, $stderrPath)) {
+        if (Test-Path -LiteralPath $path) {
+            Remove-Item -LiteralPath $path -Force
+        }
+    }
+
     $arguments = @(
         "-stdout",
         "-nosound",
@@ -69,13 +71,33 @@ function Invoke-GZDoomScenario {
         "-height", "200",
         "-savedir", $SaveDir,
         "-iwad", $FreedoomWad,
-        "-file", $Pk3,
+        "-file", $Pk3
+    ) + $ExtraArguments + @(
         "+exec", $ConfigPath
     )
 
-    $output = & $GZDoomExe @arguments 2>&1
-    $exitCode = $LASTEXITCODE
-    $outputLines = @($output | ForEach-Object { "$_" })
+    # GZDoom is a Windows GUI executable. Direct PowerShell invocation may return
+    # before the game process has actually finished, so explicitly track the
+    # process and wait for its delayed save/quit command sequence.
+    $process = Start-Process -FilePath $GZDoomExe `
+        -ArgumentList $arguments `
+        -WorkingDirectory $ProjectRoot `
+        -RedirectStandardOutput $stdoutPath `
+        -RedirectStandardError $stderrPath `
+        -PassThru
+
+    if (-not $process.WaitForExit(45000)) {
+        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+        throw "GZDoom $Label scenario timed out after 45 seconds. See $RuntimeLog"
+    }
+    $exitCode = $process.ExitCode
+
+    $outputLines = @()
+    foreach ($path in @($stdoutPath, $stderrPath)) {
+        if (Test-Path -LiteralPath $path) {
+            $outputLines += @(Get-Content -LiteralPath $path -ErrorAction SilentlyContinue | ForEach-Object { "$_" })
+        }
+    }
 
     Add-Content -LiteralPath $RuntimeLog -Value "=== $Label (exit $exitCode) ===" -Encoding UTF8
     if ($outputLines.Count -gt 0) {
@@ -95,7 +117,8 @@ function Invoke-GZDoomScenario {
         "Unknown identifier",
         "Invalid parameter",
         "Parse error",
-        "Cannot execute unsafe command"
+        "Cannot execute unsafe command",
+        "Save failed"
     )) {
         if ($text -match [regex]::Escape($pattern)) {
             throw "GZDoom $Label scenario reported '$pattern'. See $RuntimeLog"
@@ -153,12 +176,12 @@ function Test-SaveState {
     }
 }
 
-Invoke-GZDoomScenario -Label "create-save" -ConfigPath $CreateCfg
+Invoke-GZDoomScenario -Label "create-save" -ConfigPath $CreateCfg -ExtraArguments @("+map", "MAP01")
 Write-SaveDirectory -Label "after create-save"
 $initialSave = Get-SingleSave -Pattern "*coh-save-load-ci*.zds" -Label "initial"
 Test-SaveState -SaveFile $initialSave -Label "initial"
 
-Invoke-GZDoomScenario -Label "load-save" -ConfigPath $LoadCfg
+Invoke-GZDoomScenario -Label "load-save" -ConfigPath $LoadCfg -ExtraArguments @("-loadgame", "coh-save-load-ci")
 Write-SaveDirectory -Label "after load-save"
 $roundTripSave = Get-SingleSave -Pattern "*coh-save-load-ci-roundtrip*.zds" -Label "round-trip"
 Test-SaveState -SaveFile $roundTripSave -Label "round-trip"
