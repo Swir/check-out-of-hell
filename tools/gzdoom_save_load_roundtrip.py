@@ -78,10 +78,11 @@ def run_phase(
         "1",
     ]
 
-    # -warp is the engine startup parameter. Using +warp invokes the live console
-    # coordinate-warp command instead, which rejects a single map-number argument.
+    # +map is a post-initialization console command, so placing it immediately before
+    # +exec guarantees MAP01 and its player exist before the delayed cfg commands run.
+    # This differs from +warp, which is a coordinate-warp console command.
     if autostart_map01:
-        argv.extend(["-warp", "1"])
+        argv.extend(["+map", "MAP01"])
 
     argv.extend(["+exec", str(COMMAND_PATH)])
 
