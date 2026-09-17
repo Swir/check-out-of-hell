@@ -43,10 +43,13 @@ for enemy in ("AngrySelfCheckout", "CartOfDoom", "ScannerTurret", "PalletJack"):
     if f'Actor.Spawn("{enemy}", Pos)' not in ZSCRIPT:
         raise SystemExit(f"Boss-wave sequence is missing {enemy}")
 
-for threshold in (12, 26, 42, 58):
+# The tuned cadence deliberately leaves more room to read the supervisor and each reinforcement.
+for threshold in (15, 34, 54, 76):
     if f"elapsed >= {threshold}" not in ZSCRIPT:
-        raise SystemExit(f"Boss-wave sequence is missing the {threshold}s stage")
+        raise SystemExit(f"Boss-wave sequence is missing the tuned {threshold}s stage")
 
+if 'CountInv("SupervisorClearanceToken") > 0' not in ZSCRIPT:
+    raise SystemExit("Boss-wave pressure must stop adding new threats after supervisor clearance")
 if 'return "OBJECTIVE  RETURN TO FRONT CHECKOUT";' not in ZSCRIPT:
     raise SystemExit("HUD must send the player back to the front checkout after the boss")
 if 'return "ROUTE: CLOCK OUT AT THE FRONT LANES";' not in ZSCRIPT:
@@ -59,4 +62,4 @@ if "TIMECARD ACCEPTED - SHIFT COMPLETE" not in ZSCRIPT:
     raise SystemExit("Clock-out interaction needs explicit completion feedback")
 
 print("Boss + escape contract: PASS")
-print("Full power starts staged rear-arena pressure; supervisor clearance requires a return to checkout.")
+print("Full power starts tuned staged rear-arena pressure; supervisor clearance requires a readable return to checkout.")
