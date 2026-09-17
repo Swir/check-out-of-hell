@@ -35,7 +35,11 @@ def map_source(map_name: str) -> bytes:
 
 def make_udmf_wad(map_name: str, path: Path) -> None:
     textmap = map_source(map_name)
-    lumps = [("TEXTMAP", textmap), ("ENDMAP", b"")]
+    # An embedded WAD still needs a real map marker before TEXTMAP. The earlier
+    # two-lump archive looked plausible to static ZIP checks but GZDoom could not
+    # register MAP01/MAP02 at runtime ("No map MAP01"). Keep the canonical UDMF
+    # MAPxx -> TEXTMAP -> ENDMAP structure so MAPINFO targets resolve in-engine.
+    lumps = [(map_name, b""), ("TEXTMAP", textmap), ("ENDMAP", b"")]
     data_offset = 12
     blob = bytearray()
     directory = bytearray()
