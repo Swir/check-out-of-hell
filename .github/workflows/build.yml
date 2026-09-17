@@ -34,6 +34,9 @@ jobs:
       - name: Gameplay contract test
         run: python tools/test_gameplay_contract.py
 
+      - name: Difficulty modes contract test
+        run: python tools/test_difficulty_modes_contract.py
+
       - name: Closing Time layout contract test
         run: python tools/test_closing_time_layout.py
 
