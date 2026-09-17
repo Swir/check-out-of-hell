@@ -75,11 +75,11 @@ def select_asset(release: dict, pattern: str, description: str) -> dict:
     return matches[0]
 
 
-def write_download(asset: dict, destination: Path) -> None:
+def write_download(asset: dict, destination: Path, *, min_bytes: int = 1) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     print(f"Downloading official release asset: {asset['browser_download_url']}")
     destination.write_bytes(fetch_bytes(asset["browser_download_url"]))
-    if destination.stat().st_size < 1024:
+    if destination.stat().st_size < min_bytes:
         raise RuntimeError(f"Downloaded asset looks unexpectedly small: {destination}")
 
 
@@ -115,10 +115,10 @@ def main() -> int:
     fd_cache = CACHE_DIR / fd_asset["name"]
     checksum_cache = CACHE_DIR / checksum_asset["name"]
     if not gz_cache.exists():
-        write_download(gz_asset, gz_cache)
+        write_download(gz_asset, gz_cache, min_bytes=1024 * 1024)
     if not fd_cache.exists():
-        write_download(fd_asset, fd_cache)
-    write_download(checksum_asset, checksum_cache)
+        write_download(fd_asset, fd_cache, min_bytes=1024 * 1024)
+    write_download(checksum_asset, checksum_cache, min_bytes=1)
 
     checksum_text = checksum_cache.read_text(encoding="utf-8", errors="replace")
     expected = None
