@@ -13,6 +13,9 @@ required_script_markers = (
     '"-file", $Pk3',
     '"-savedir", $SaveDir',
     '"-noautoload"',
+    '"+i_pauseinbackground", "false"',
+    'Start-Process -FilePath $GZDoomExe',
+    '-Wait `',
     'setinv CheckoutFuse 2',
     'setinv CorporateMemo 2',
     'save $SaveStem',
@@ -43,4 +46,4 @@ for marker in workflow_markers:
         raise SystemExit(f"GitHub Actions is not wired for runtime save/load validation: {marker}")
 
 print("GZDoom save/load smoke contract: PASS")
-print("Windows CI is required to perform a real save -> process exit -> load and verify serialized department state.")
+print("Windows CI must wait for the real GZDoom process, keep background ticks active, and verify serialized department state after a second-process load.")
