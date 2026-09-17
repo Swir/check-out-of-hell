@@ -47,21 +47,21 @@ def main() -> None:
     require(linux_runtime_script, "save coh-save-load-ci-roundtrip", "gzdoom_save_load_smoke_linux.sh")
     require(linux_runtime_script, "LIBGL_ALWAYS_SOFTWARE=1", "gzdoom_save_load_smoke_linux.sh")
     require(linux_runtime_script, "xvfb-run", "gzdoom_save_load_smoke_linux.sh")
-    require(linux_runtime_script, 'run_scenario create-save "$CREATE_CFG" +warp MAP01', "gzdoom_save_load_smoke_linux.sh")
+    require(linux_runtime_script, 'run_scenario create-save "$CREATE_CFG" -warp 1', "gzdoom_save_load_smoke_linux.sh")
     require(linux_runtime_script, '-exec "$cfg"', "gzdoom_save_load_smoke_linux.sh")
-    if 'run_scenario create-save "$CREATE_CFG" +map MAP01' in linux_runtime_script:
-        raise AssertionError("Linux save/load smoke regressed to +map; GZDoom needs startup +warp to autostart")
+    if '+warp MAP01' in linux_runtime_script or '+map MAP01' in linux_runtime_script:
+        raise AssertionError("Linux save/load smoke must use GZDoom's real -warp command-line autostart switch")
 
     require(windows_runtime_script, "give CheckoutFuse 2", "gzdoom_save_load_smoke.ps1")
     require(windows_runtime_script, "give CorporateMemo 1", "gzdoom_save_load_smoke.ps1")
     require(windows_runtime_script, "save coh-save-load-ci", "gzdoom_save_load_smoke.ps1")
     require(windows_runtime_script, '"-loadgame", "coh-save-load-ci"', "gzdoom_save_load_smoke.ps1")
     require(windows_runtime_script, "save coh-save-load-ci-roundtrip", "gzdoom_save_load_smoke.ps1")
-    require(windows_runtime_script, '@("+warp", "MAP01")', "gzdoom_save_load_smoke.ps1")
+    require(windows_runtime_script, '@("-warp", "1")', "gzdoom_save_load_smoke.ps1")
     require(windows_runtime_script, '"-exec", $ConfigPath', "gzdoom_save_load_smoke.ps1")
     require(windows_runtime_script, "inspect_gzdoom_save.py", "gzdoom_save_load_smoke.ps1")
-    if '@("+map", "MAP01")' in windows_runtime_script:
-        raise AssertionError("Windows save/load smoke regressed to startup +map instead of +warp")
+    if '@("+warp", "MAP01")' in windows_runtime_script or '@("+map", "MAP01")' in windows_runtime_script:
+        raise AssertionError("Windows save/load smoke must use GZDoom's real -warp command-line autostart switch")
 
     require(linux_bootstrap, 'runtime-lock.json', "bootstrap_runtime_linux.py")
     require(linux_bootstrap, 'browser_download_url', "bootstrap_runtime_linux.py")
