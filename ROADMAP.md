@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `███████░░░ 72%`
+**Overall progress:** `███████░░░ 74%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -62,9 +62,10 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Closing Time supervisor pacing pass with a full-power recovery cache, widened reinforcement cadence and post-clear reinforcement cutoff
 - [x] Three authored difficulty modes with regression coverage and pinned-engine parser validation
 - [x] Department-local breaker/supervisor objective reset without clobbering save-restored shift state
+- [x] Closing Time side-route secret pass with three useful workplace-comedy resource stashes and dedicated regression coverage
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 88%
+## Phase 2 — Vertical Slice — 91%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -88,7 +89,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods
 - [x] Boss: The Regional Manager — original behavior/art
-- [ ] Secrets and joke interactions — full level pass
+- [x] Secrets and joke interactions — full Closing Time level pass
 - [x] Difficulty modes
 - [x] Original soundtrack for every currently playable department, generated deterministically and regression-tested
 - [ ] End-to-end runtime save/load validation

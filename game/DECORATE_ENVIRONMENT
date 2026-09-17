@@ -141,3 +141,44 @@ actor CheckoutPowerCache : Backpack
         Stop
     }
 }
+
+// Optional Closing Time side-route rewards. These deliberately reuse project-owned sprites so
+// discovering them never exposes inherited IWAD pickup art. None is required for progression.
+actor ReturnsDeskReceiptStash : ShellBox 17129
+{
+    Tag "Unclaimed Receipt Roll"
+    Inventory.PickupMessage "Unclaimed receipt roll found. Customer Service marked the return emotionally non-refundable."
+    Inventory.PickupSound "coh/breaksnack"
+    States
+    {
+    Spawn:
+        CMEM A -1 Bright
+        Stop
+    }
+}
+
+actor DamagedGoodsLabelStash : ClipBox 17130
+{
+    Tag "Damaged-Goods Label Crate"
+    Inventory.PickupMessage "Damaged-goods labels recovered. The damage appears to be managerial."
+    Inventory.PickupSound "coh/breaksnack"
+    States
+    {
+    Spawn:
+        BOXE A -1 Bright
+        Stop
+    }
+}
+
+actor EmployeeReliefKit : Medikit 17131
+{
+    Tag "Unauthorized Employee Relief Kit"
+    Inventory.PickupMessage "Unauthorized relief kit found. Please recover off the clock."
+    Inventory.PickupSound "coh/breaksnack"
+    States
+    {
+    Spawn:
+        BRKS A -1 Bright
+        Stop
+    }
+}

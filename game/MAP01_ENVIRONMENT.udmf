@@ -25,6 +25,13 @@ thing { x =  260.0; y =  330.0; height = 154.0; angle = 0; type = 17127; skill1 
 thing { x = -710.0; y = -455.0; angle = 0; type = 17126; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -700.0; y =  470.0; angle = 0; type = 17126; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
+// Closing Time secret pass: three resource stashes reward checking dead-end retail corners.
+// All remain optional, all stay outside the central combat/clock-out lane, and each pays out a
+// different useful resource with a workplace-comedy pickup interaction.
+thing { x =  720.0; y = -455.0; angle = 180; type = 17129; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  720.0; y =  465.0; angle = 180; type = 17130; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -730.0; y =  300.0; angle = 0;   type = 17131; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
 // Full power guarantees one readable recovery cache on the approach to the supervisor arena.
 // The spawner stays invisible until 3/3 breakers, so players cannot consume it before the fight.
 thing { x = 0.0; y = 250.0; angle = 0; type = 17128; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

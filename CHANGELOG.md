@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.23.0-dev — 2026-09-17
+
+### Added
+- Three optional Closing Time side-route resource stashes: Unclaimed Receipt Roll, Damaged-Goods Label Crate and Unauthorized Employee Relief Kit.
+- Workplace-comedy pickup interactions for the new secrets while keeping every reward useful and fully optional.
+- `tools/test_closing_time_secrets_contract.py`, validating authored placements, project-owned visible sprites, the existing three-memo scavenger route, packaged DECORATE and built MAP01 contents.
+- GitHub Actions execution of the Closing Time secrets/joke-interactions contract.
+
+### Changed
+- Closing Time now has a complete first secrets/joke-interaction pass across the existing Corporate Compliance Memos, Staff Only reward route, Emergency Break Snacks and three new dead-end resource stashes.
+- New resource stashes stay outside the central combat/clock-out lane and do not gate breakers, bosses or exit progression.
+- README/ROADMAP progress raised to **74%** and Vertical Slice progress to **91%** for the implemented/testable exploration milestone; the level is still not marked fully polished before end-to-end Windows playtesting.
+
 ## 0.22.0-dev — 2026-09-17
 
 ### Added
