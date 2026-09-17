@@ -49,10 +49,10 @@ New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
 # If WorldLoaded incorrectly treats the later restore as a fresh map, CheckoutFuse will
 # be stripped and the second-process assertion below will fail.
 $saveCommands = @"
-map MAP01; wait 15; god; notarget; wait 20; setinv CheckoutFuse 2; setinv CorporateMemo 2; wait 5; printinv; save $SaveStem "CHECKOUT OF HELL runtime state"; wait 70; quickexit
+map MAP01; wait 15; god; notarget; wait 20; setinv CheckoutFuse 2; setinv CorporateMemo 2; wait 5; printinv; save $SaveStem "CHECKOUT OF HELL runtime state"; wait 70; quit
 "@
 $loadCommands = @"
-load $SaveStem; wait 70; printinv; wait 10; quickexit
+load $SaveStem; wait 70; printinv; wait 10; quit
 "@
 $saveCommands.Trim() | Set-Content -LiteralPath $SaveCommandPath -Encoding ASCII
 $loadCommands.Trim() | Set-Content -LiteralPath $LoadCommandPath -Encoding ASCII
@@ -131,7 +131,7 @@ function Invoke-GZDoomPhase(
     # GZDoom is a Windows GUI executable. A direct PowerShell invocation can return
     # before the game process exits, so explicitly wait for the real engine process.
     # Hosted CI has no focused game window: keep rendering/ticks active and disable
-    # background pausing so delayed save/load assertions and quickexit can advance.
+    # background pausing so delayed save/load assertions and the final quit can advance.
     $process = Start-Process -FilePath $GZDoomExe `
         -ArgumentList $argumentLine `
         -PassThru `
