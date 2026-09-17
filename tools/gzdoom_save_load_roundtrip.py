@@ -38,11 +38,12 @@ MEMO_RE = re.compile(r"CorporateMemo #[0-9]+ \(1/3\)")
 
 def run_phase(executable: Path, iwad: Path, commands: str, phase: str) -> str:
     COMMAND_PATH.write_text(commands + "\n", encoding="ascii")
-    error_log = ROUNDTRIP / f"{phase}-engine.log"
     phase_log = ROUNDTRIP / f"{phase}-phase.log"
-    for path in (error_log, phase_log):
-        path.unlink(missing_ok=True)
+    phase_log.unlink(missing_ok=True)
 
+    # Do not pass -errorlog here. In GZDoom it intentionally enables batch mode,
+    # which exits after initialization instead of entering the live game loop.
+    # Parser-only smoke tests use -errorlog separately; this harness needs real play.
     argv = [
         str(executable),
         "-stdout",
@@ -54,8 +55,6 @@ def run_phase(executable: Path, iwad: Path, commands: str, phase: str) -> str:
         "-nosound",
         "-nomusic",
         "-noautoload",
-        "-errorlog",
-        str(error_log),
         "-config",
         str(INI_PATH),
         "-savedir",
@@ -82,19 +81,15 @@ def run_phase(executable: Path, iwad: Path, commands: str, phase: str) -> str:
             env=os.environ.copy(),
             check=False,
         )
-        console = completed.stdout or ""
+        text = completed.stdout or ""
         return_code = completed.returncode
     except subprocess.TimeoutExpired as exc:
-        console = exc.stdout or ""
-        if isinstance(console, bytes):
-            console = console.decode("utf-8", errors="replace")
-        engine = error_log.read_text(encoding="utf-8", errors="replace") if error_log.exists() else ""
-        text = console + ("\n===== engine log =====\n" + engine if engine else "")
+        text = exc.stdout or ""
+        if isinstance(text, bytes):
+            text = text.decode("utf-8", errors="replace")
         phase_log.write_text(text, encoding="utf-8")
         raise RuntimeError(f"GZDoom {phase} phase timed out after {PHASE_TIMEOUT_SECONDS}s; see {phase_log}") from exc
 
-    engine = error_log.read_text(encoding="utf-8", errors="replace") if error_log.exists() else ""
-    text = console + ("\n===== engine log =====\n" + engine if engine else "")
     phase_log.write_text(text, encoding="utf-8")
     if text:
         print(text)
