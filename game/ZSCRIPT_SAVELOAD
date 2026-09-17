@@ -1,0 +1,14 @@
+// Keep serialized shift-director state intact when GZDoom restores a savegame.
+// Fresh level loads still use the base initialization path.
+class CheckoutPersistentShiftDirector : CheckoutShiftDirector
+{
+    override void WorldLoaded(WorldEvent e)
+    {
+        if (e.IsSaveGame)
+        {
+            return;
+        }
+
+        Super.WorldLoaded(e);
+    }
+}
