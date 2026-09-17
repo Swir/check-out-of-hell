@@ -1,19 +1,48 @@
+<!-- SWIR-README-STANDARD:v1 -->
+
+<div align="center">
+  <img src="branding/icon.svg" width="148" alt="CHECKOUT OF HELL icon" />
+
 # CHECKOUT OF HELL
 
-[![Build prototype](https://github.com/Swir/check-out-of-hell/actions/workflows/build.yml/badge.svg)](https://github.com/Swir/check-out-of-hell/actions/workflows/build.yml)
+**SHIFT HAPPENS.**
 
 A fast, readable comedy-horror retro FPS about surviving the worst supermarket night shift imaginable.
 
-> **Status:** Prototype 0.21-dev — original department soundtrack pass  
-> **Project progress:** `███████░░░ 72%`
+[![Build prototype](https://github.com/Swir/check-out-of-hell/actions/workflows/build.yml/badge.svg)](https://github.com/Swir/check-out-of-hell/actions/workflows/build.yml)
+![Prototype](https://img.shields.io/badge/status-prototype-62E5FF?style=flat-square&labelColor=071018)
+![GZDoom](https://img.shields.io/badge/GZDoom-g4.14.2-62E5FF?style=flat-square&labelColor=071018)
+![License](https://img.shields.io/badge/license-MIT-62E5FF?style=flat-square&labelColor=071018)
 
-## Premise
+**Prototype 0.21-dev · 72% implemented/testable progress**
+
+</div>
+
+---
+
+## ⚡ Overview
 
 The store is closed. The lights are flickering. Self-checkouts are angry. Shopping carts are hunting staff. Management has decided this is somehow still your responsibility.
 
-CHECKOUT OF HELL is an original project inspired by the speed and readability of classic shooters while building its own setting, characters, weapons, jokes, levels, art, sound and music. No proprietary Doom, Star Wars or other ripped commercial assets belong in this repository.
+CHECKOUT OF HELL is an original comedy-horror retro FPS built around fast readable combat, creepy empty-store atmosphere, absurd workplace weapons, hostile retail equipment, real department objectives and an escalating **Overtime** system. The target is not merely to clear rooms: restore the store, survive management, and clock out alive at `06:00`.
 
-## Core shift loop
+The project creates its own setting, characters, weapons, jokes, levels, art, sound and music. **No proprietary Doom, Star Wars or other ripped commercial assets belong in this repository.**
+
+## ✨ Highlights
+
+- Fast classic-FPS combat with deliberate enemy tells and uncluttered encounter lanes.
+- Real workplace objectives: breakers, powered routes, shutters, supervisor gates and a physical clock-out finish.
+- Deterministic **Overtime** escalation that changes enemy pressure, alarms and environmental hazards without becoming random noise.
+- Signature weapons: **Emergency Mop**, **Receipt Ripper**, **Price-Gun SMG** and **Turbo Can Launcher**.
+- Signature threats: **Angry Self-Checkout**, **Cart of Doom**, **Security Price Scanner** and **Possessed Pallet Jack**.
+- Corporate bosses: **Night Manager** and the two-phase **Regional Manager**.
+- Optional Corporate Compliance Memos, Staff Only rewards, secrets and workplace-comedy interactions.
+- Three authored difficulty modes that change resource/combat pressure while preserving objective and Overtime timing.
+- Project-owned generated visual assets, combat audio and original department music.
+- One-click Windows bootstrap that resolves required redistributable runtime files from official upstream sources.
+- CI-built portable Windows development artifact with SHA-256 sidecar and pinned-engine parser validation.
+
+## 🎮 Core shift loop
 
 Every department is built around a real workplace objective rather than pure arena shooting:
 
@@ -24,11 +53,11 @@ Every department is built around a real workplace objective rather than pure are
 5. defeat the department supervisor while Overtime escalates,
 6. reach the required exit task and keep moving toward clocking out alive at `06:00`.
 
-`MAP01 — Closing Time` currently implements the most complete version of that loop. Three Breaker Fuses pull the player through left, right and rear routes. At `2/3` power, a Staff Only side room opens. At `3/3`, a Full-Power Emergency Cache becomes available and the Night Manager enters the floor. Two management-response anchors then feed a readable Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack sequence at `15 / 34 / 54 / 76` seconds after full power. Once the supervisor is dead, fresh reinforcements stop and the player must physically return to the front checkout to clock out.
+`MAP01 — Closing Time` currently implements the most complete version of this loop. Three Breaker Fuses pull the player through left, right and rear routes. At `2/3` power, a Staff Only side room opens. At `3/3`, a Full-Power Emergency Cache becomes available and the Night Manager enters the floor. Two management-response anchors then feed a readable Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack sequence at `15 / 34 / 54 / 76` seconds after full power. Once the supervisor is dead, fresh reinforcements stop and the player must physically return to the front checkout to clock out.
 
 `MAP02 — Warehouse 13.5` requires all three breakers before The Regional Manager arrives. Breaker and supervisor-clearance tokens are department-local: a normal map transition clears them before the next department objective begins, while loading a save preserves serialized shift state.
 
-## Overtime
+## ⏱️ Overtime
 
 Waiting is dangerous. Overtime escalates deterministically so the player can learn it:
 
@@ -41,7 +70,7 @@ Waiting is dangerous. Overtime escalates deterministically so the player can lea
 
 Closing Time uses authored reinforcement and hazard anchors instead of random spawning on top of the player. Electrical hazards telegraph before dealing damage, and the front clock-out lane is protected from trap anchors.
 
-## Difficulty modes
+## ☠️ Difficulty modes
 
 Prototype `0.21-dev` includes three authored shift difficulties while keeping breaker gates, boss-wave timing and Overtime timing identical across all modes:
 
@@ -53,24 +82,24 @@ Prototype `0.21-dev` includes three authored shift difficulties while keeping br
 
 `Graveyard Shift` is the default. `Corporate Hell` requires explicit confirmation before clocking in. Difficulty changes combat forgiveness and resource pressure instead of hiding faster scripted traps or opaque respawn rules behind the selection.
 
-## Original soundtrack
+## 🔊 Original soundtrack
 
-Every currently playable department now uses project-owned music instead of inherited base-game tracks:
+Every currently playable department uses project-owned music instead of inherited base-game tracks:
 
-- **Closing Time — Empty Aisles** — slow two-bar drones, sparse vibraphone phrases and checkout-like chimes that leave room for combat and Overtime telegraphs.
+- **Closing Time — Empty Aisles** — slow drones, sparse vibraphone phrases and checkout-like chimes that leave room for combat and Overtime telegraphs.
 - **Warehouse 13.5 — Forklift Graveyard** — colder low-register drones, restrained machinery-like percussion and a darker warehouse motif.
 
-The tracks are deterministic Standard MIDI files produced by `tools/generate_music_assets.py` using only Python's standard library. They are regenerated during every build, packaged under the PK3 `music/` namespace and protected by a dedicated regression contract. This keeps the package small and avoids adding an encoder dependency while preserving original composition data.
+The tracks are deterministic Standard MIDI files produced by `tools/generate_music_assets.py` using only Python's standard library. They are regenerated during every build, packaged under the PK3 `music/` namespace and protected by a dedicated regression contract.
 
 See [`docs/MUSIC.md`](docs/MUSIC.md).
 
-## Save/load state safety
+## 💾 Save/load state safety
 
 The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear only department-local Breaker Fuse and supervisor-clearance tokens before objective logic starts; save restores leave serialized director state intact. Supervisor kills also write the clearance token immediately, and the director can recover its cleared state from that token when loading older development saves.
 
-A dedicated static/package contract verifies those invariants. Full interactive Windows save → quit → load validation remains open before demo readiness.
+A dedicated static/package contract verifies those invariants. A real pinned-GZDoom save → process exit → load runtime regression is being added before this milestone is considered demo-ready; the roadmap item stays open until that runtime test passes in CI.
 
-## Signature arsenal
+## 🧰 Signature arsenal
 
 - **Emergency Mop** — melee opener with original first-person animation and swing cue family.
 - **Receipt Ripper** — paper-shredding shotgun analogue with original pickup/view animation and fire/cycle cues.
@@ -79,7 +108,7 @@ A dedicated static/package contract verifies those invariants. Full interactive 
 
 See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
-## Signature threats
+## 👹 Signature threats
 
 - **Angry Self-Checkout**
 - **Cart of Doom**
@@ -90,7 +119,7 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 All current signature weapons, enemies and bosses use project-owned visible combat presentation and project-owned combat-audio families. High-repeat sounds are selected from deterministic generated variation families so combat stays recognizable without repeating one identical sample every time.
 
-## Closing Time presentation
+## 🛒 Closing Time presentation
 
 The current vertical-slice work includes:
 
@@ -109,7 +138,7 @@ The current vertical-slice work includes:
 
 Project-owned runtime art, audio and MIDI music are generated deterministically from repository code using Python's standard library. CI checks generated assets, mappings, actor wiring, music structure and packaged PK3 contents.
 
-## One-click Windows start
+## 🚀 Quick Start — Windows
 
 **Players should never need to hunt for required runtime files manually.**
 
@@ -133,13 +162,13 @@ Downloaded runtime files are cached locally. Network or verification failures st
 
 See [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) and [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
-## Portable Windows development artifact
+## 📦 Portable Windows development artifact
 
 CI builds and verifies `CHECKOUT-OF-HELL-Windows-Portable-dev.zip`. It contains the prebuilt PK3, a dedicated `PLAY.bat`, runtime lock, official-source bootstrap and license notices. No Python or source build toolchain is required on the player's PC. First launch obtains only missing pinned redistributable runtime dependencies from official upstream sources. A SHA-256 sidecar is generated and validated in CI.
 
-This is intentionally a **development artifact**, not a public demo release.
+This is intentionally a **development artifact, not a public demo release**.
 
-## What already works
+## ✅ What already works
 
 - buildable PK3 prototype,
 - structured `Closing Time` and power-gated `Warehouse 13.5`,
@@ -158,12 +187,23 @@ This is intentionally a **development artifact**, not a public demo release.
 - one-click official-source dependency bootstrap,
 - verified portable Windows artifact builder with SHA-256 sidecar,
 - pinned GZDoom runtime parser/startup validation on Windows CI,
-- save/load state regression contract packaged into CI,
-- custom CHECKOUT OF HELL branding/icon concept.
+- save/load state static/package regression contract,
+- custom CHECKOUT OF HELL branding/icon.
 
-## Development runtime
+## 🖥️ Requirements & compatibility
 
-The current pinned runtime is GZDoom `g4.14.2` plus Freedoom `v0.13.0`. Runtime pins live in `runtime-lock.json` and should only change after compatibility validation.
+The current pinned development/runtime stack is:
+
+| Component | Pinned target |
+| --- | --- |
+| GZDoom | `g4.14.2` |
+| Freedoom | `v0.13.0` |
+| Build/bootstrap Python | `3.12.10` portable fallback |
+| Player packaging focus | Windows portable/source bootstrap |
+
+Runtime pins live in `runtime-lock.json` and should only change after compatibility validation. The repository does **not** claim a public demo, installer or polished final-game support yet.
+
+## 🧪 Development & validation
 
 CI downloads the pinned official runtime and asks GZDoom itself to load and parse the current PK3 through its non-interactive `-norun` startup path. This catches engine-level MAPINFO/ZScript/package errors that static Python checks cannot detect.
 
@@ -175,6 +215,7 @@ python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_difficulty_modes_contract.py
 python tools/test_save_load_state_contract.py
+python tools/test_runtime_save_load_smoke_contract.py
 python tools/test_closing_time_layout.py
 python tools/test_staff_room_contract.py
 python tools/test_closing_time_presentation_contract.py
@@ -194,9 +235,9 @@ python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
 ```
 
-The automated Linux job runs all static/build/package contracts, including difficulty, save-state and original-soundtrack checks. The Windows job resolves the official pinned runtime and validates the packaged prototype with GZDoom itself.
+The automated Linux job runs static/build/package contracts. The Windows job resolves the official pinned runtime and validates the packaged prototype with GZDoom itself.
 
-## Maps
+## 🗺️ Maps
 
 - `MAP01` — **Closing Time** — structured objective slice with original retail surfaces, department signage, optional powered exploration, staged Overtime floor hazards, tuned supervisor response, original ambient music and physical clock-out escape.
 - `MAP02` — **Warehouse 13.5** — power-restoration arena with original retail surfaces, original ambient music and a gated two-phase Regional Manager boss; department-local objective tokens reset before its breaker loop begins.
@@ -204,19 +245,50 @@ The automated Linux job runs all static/build/package contracts, including diffi
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md) and [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
 
-## Asset and distribution policy
+## 🧱 Technology & architecture
+
+- **GZDoom / ZScript** — runtime gameplay, HUD, bosses, objective state and encounter direction.
+- **UDMF** — authored department geometry and gameplay layers.
+- **PK3** — game package format.
+- **Python 3** — deterministic original asset/music generation, build tooling and regression contracts.
+- **PowerShell / Batch** — Windows bootstrap, pinned runtime validation and one-click launch flow.
+- **GitHub Actions** — Linux contracts plus pinned Windows GZDoom validation and portable artifact builds.
+
+## ⚖️ Asset & distribution policy
 
 No proprietary Doom, Star Wars or other commercial game assets are committed. The current runtime art/audio/music pack is generated from original repository source. Compatible legal engine/base-game data is obtained from upstream at setup time rather than copied into the project.
 
 For a public demo, the preferred package is fully self-contained where licenses permit redistribution. Otherwise first run must automatically obtain every missing redistributable dependency from official upstream sources so a normal Windows player never has to search for files manually.
 
-See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md).
+See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md) and [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md).
 
-## Roadmap
+## 🧭 Roadmap & releases
 
-See [`ROADMAP.md`](ROADMAP.md).
+- Project roadmap: [`ROADMAP.md`](ROADMAP.md)
+- Changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- GitHub Releases: [releases](https://github.com/Swir/check-out-of-hell/releases)
 
-## Author
+**Public demo rule:** no demo release until the project is genuinely presentable, fun enough to represent the final direction and one-click for a normal Windows player. Current portable packages are development artifacts only.
 
-**by Swir**  
-GitHub: https://github.com/Swir
+## ⚠️ Current limitations
+
+- `Closing Time` is not yet signed off as the first fully polished level.
+- `Warehouse 13.5` is playable but not yet fully polished.
+- Full runtime save/load validation is still a demo-readiness gate until the real pinned-engine round-trip test passes CI.
+- Controller, accessibility-option and performance passes for the public demo are not complete.
+- Frozen Foods, Electronics, Customer Service and Management Floor remain planned until they have real playable content.
+
+## 🔎 Search Keywords
+
+`retro FPS` · `comedy horror FPS` · `supermarket horror game` · `workplace horror game` · `retail horror` · `boomer shooter` · `GZDoom game` · `GZDoom ZScript` · `UDMF FPS` · `PK3 game` · `Windows retro shooter` · `Overtime mechanic` · `original GZDoom project` · `one-click Windows bootstrap` · `Freedoom runtime` · `night shift horror`
+
+---
+
+<div align="center">
+
+**CHECKOUT OF HELL** · by **Swir**  
+[GitHub profile](https://github.com/Swir) · [Repository](https://github.com/Swir/check-out-of-hell)
+
+*Original retail nightmare. No ripped commercial game assets.*
+
+</div>
