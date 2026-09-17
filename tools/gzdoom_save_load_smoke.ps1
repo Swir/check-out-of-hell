@@ -185,12 +185,13 @@ if (Test-Path -LiteralPath $WorkDir) {
 }
 New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
 
-# Hosted Windows runners have no usable Vulkan adapter and the game window never
-# receives normal desktop focus. Force the OpenGL backend, stay windowed and keep
-# game ticks active in the background so delayed console commands can advance.
+# GZDoom 4.14.2 maps vid_preferbackend=1 to Vulkan. The hosted Windows image
+# cannot create the modern OpenGL context required by this build, so exercise the
+# pinned runtime through its other official renderer before declaring the runner
+# incapable of executing gameplay. Stay windowed and keep background ticks active.
 @(
     "[GlobalSettings]",
-    "vid_preferbackend=0",
+    "vid_preferbackend=1",
     "vid_fullscreen=false",
     "vid_lowerinbackground=false",
     "vid_activeinbackground=true",
