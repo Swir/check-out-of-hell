@@ -5,12 +5,34 @@ OptionMenu COHAccessibilityOptions
     Option "Large warnings", "coh_access_large_warnings", "OnOff"
 }
 
+OptionMenu COHControllerOptions
+{
+    Title "CHECKOUT OF HELL Controller"
+    StaticText "Core gameplay uses standard GZDoom actions."
+    StaticText "Existing player bindings are never overwritten."
+    StaticText ""
+    Control "Primary fire", "+attack"
+    Control "Alternate fire", "+altattack"
+    Control "Use / interact", "+use"
+    Control "Jump", "+jump"
+    Control "Crouch", "+crouch"
+    Control "Run / sprint", "+speed"
+    Control "Previous weapon", "weapprev"
+    Control "Next weapon", "weapnext"
+    Control "Automap", "togglemap"
+    StaticText ""
+    Submenu "Device / stick setup", "JoystickOptions"
+    Submenu "Full control bindings", "CustomizeControls"
+}
+
 AddOptionMenu OptionsMenu
 {
     Submenu "CHECKOUT OF HELL Accessibility", "COHAccessibilityOptions"
+    Submenu "CHECKOUT OF HELL Controller", "COHControllerOptions"
 }
 
 AddOptionMenu OptionsMenuSimple
 {
     Submenu "CHECKOUT OF HELL Accessibility", "COHAccessibilityOptions"
+    Submenu "CHECKOUT OF HELL Controller", "COHControllerOptions"
 }
