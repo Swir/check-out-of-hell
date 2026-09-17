@@ -436,6 +436,7 @@ class CorporateMemo : Inventory
 class CheckoutOvertimeSpawner : Actor
 {
     int nextSpawn;
+    int nextCheck;
 
     Default
     {
@@ -455,11 +456,21 @@ class CheckoutOvertimeSpawner : Actor
     {
         Super.PostBeginPlay();
         nextSpawn = 35 * 95;
+        nextCheck = 0;
     }
 
     override void Tick()
     {
         Super.Tick();
+
+        // Reinforcement anchors do not need 35 inventory/stage polls every second.
+        // Seven-tic sampling keeps their worst-case response below 0.2 s while preserving
+        // the existing deterministic 55/38/25-second spawn cadence.
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
 
         if (!players[0].mo)
         {
@@ -467,8 +478,13 @@ class CheckoutOvertimeSpawner : Actor
         }
 
         PlayerPawn p = PlayerPawn(players[0].mo);
-        if (!p || p.CountInv("SupervisorClearanceToken") > 0)
+        if (!p)
         {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            Destroy();
             return;
         }
 
@@ -499,6 +515,7 @@ class CheckoutOvertimeSpawner : Actor
 class CheckoutManagerSpawner : Actor
 {
     bool spawned;
+    int nextCheck;
 
     Default
     {
@@ -518,13 +535,20 @@ class CheckoutManagerSpawner : Actor
     {
         Super.PostBeginPlay();
         spawned = false;
+        nextCheck = 0;
     }
 
     override void Tick()
     {
         Super.Tick();
 
-        if (spawned || !players[0].mo)
+        if (spawned || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
         {
             return;
         }
@@ -541,6 +565,7 @@ class CheckoutManagerSpawner : Actor
         {
             manager.A_StartSound("coh/bossalarm", CHAN_BODY);
             spawned = true;
+            Destroy();
         }
     }
 }
@@ -549,6 +574,7 @@ class CheckoutBossWaveSpawner : Actor
 {
     int startTic;
     int nextWave;
+    int nextCheck;
 
     Default
     {
@@ -569,11 +595,20 @@ class CheckoutBossWaveSpawner : Actor
         Super.PostBeginPlay();
         startTic = -1;
         nextWave = 0;
+        nextCheck = 0;
     }
 
     override void Tick()
     {
         Super.Tick();
+
+        // Wave thresholds are measured in whole seconds, so checking every four tics
+        // avoids needless per-tic inventory work without changing the authored sequence.
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 4;
 
         if (!players[0].mo)
         {
@@ -581,8 +616,13 @@ class CheckoutBossWaveSpawner : Actor
         }
 
         PlayerPawn p = PlayerPawn(players[0].mo);
-        if (!p || p.CountInv("CheckoutFuse") < 3 || p.CountInv("SupervisorClearanceToken") > 0)
+        if (!p || p.CountInv("CheckoutFuse") < 3)
         {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            Destroy();
             return;
         }
 
@@ -625,6 +665,7 @@ class CheckoutBossWaveSpawner : Actor
             Actor.Spawn("TeleportFog", Pos);
             Actor.Spawn("PalletJack", Pos);
             nextWave = 5;
+            Destroy();
         }
     }
 }
@@ -632,6 +673,7 @@ class CheckoutBossWaveSpawner : Actor
 class CheckoutStaffShutter : Actor
 {
     bool opened;
+    int nextCheck;
 
     Default
     {
@@ -652,13 +694,20 @@ class CheckoutStaffShutter : Actor
     {
         Super.PostBeginPlay();
         opened = false;
+        nextCheck = 0;
     }
 
     override void Tick()
     {
         Super.Tick();
 
-        if (opened || !players[0].mo)
+        if (opened || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
         {
             return;
         }
@@ -679,6 +728,7 @@ class CheckoutStaffShutter : Actor
 class CheckoutFullPowerCacheSpawner : Actor
 {
     bool spawned;
+    int nextCheck;
 
     Default
     {
@@ -698,13 +748,20 @@ class CheckoutFullPowerCacheSpawner : Actor
     {
         Super.PostBeginPlay();
         spawned = false;
+        nextCheck = 0;
     }
 
     override void Tick()
     {
         Super.Tick();
 
-        if (spawned || !players[0].mo)
+        if (spawned || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
         {
             return;
         }
@@ -721,6 +778,7 @@ class CheckoutFullPowerCacheSpawner : Actor
         {
             cache.A_StartSound("coh/breaksnack", CHAN_ITEM);
             spawned = true;
+            Destroy();
         }
     }
 }
@@ -728,6 +786,7 @@ class CheckoutFullPowerCacheSpawner : Actor
 class CheckoutRegionalManagerSpawner : Actor
 {
     bool spawned;
+    int nextCheck;
 
     Default
     {
@@ -747,13 +806,20 @@ class CheckoutRegionalManagerSpawner : Actor
     {
         Super.PostBeginPlay();
         spawned = false;
+        nextCheck = 0;
     }
 
     override void Tick()
     {
         Super.Tick();
 
-        if (spawned || !players[0].mo)
+        if (spawned || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
         {
             return;
         }
@@ -770,6 +836,7 @@ class CheckoutRegionalManagerSpawner : Actor
         {
             manager.A_StartSound("coh/regionalphase", CHAN_BODY);
             spawned = true;
+            Destroy();
         }
     }
 }
