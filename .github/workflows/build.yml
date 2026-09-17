@@ -70,6 +70,9 @@ jobs:
       - name: Final HUD contract test
         run: python tools/test_hud_contract.py
 
+      - name: Accessibility contract test
+        run: python tools/test_accessibility_contract.py
+
       - name: Overtime environmental hazard contract test
         run: python tools/test_overtime_hazard_contract.py
 
