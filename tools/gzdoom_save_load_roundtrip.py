@@ -72,6 +72,10 @@ def run_phase(
         str(PK3),
         "+i_pauseinbackground",
         "0",
+        # This is an isolated CI-only process. Cheats make state seeding deterministic
+        # and keep the persistence test independent from combat timing/AI randomness.
+        "+sv_cheats",
+        "1",
     ]
 
     # +warp is GZDoom's startup-safe autostart path. A plain `map MAP01` inside
@@ -150,13 +154,12 @@ def main() -> int:
         encoding="ascii",
     )
 
-    # Seed the persisted state through authored MAP01 pickups instead of `give`.
-    # This makes the regression exercise the same inventory path as a real player:
-    # memo at (-690,-310), then two breaker fuses at (-640,140) and (620,340).
+    # Seed a meaningful mid-objective state through GZDoom's own inventory system.
+    # MAP layout/pickup placement already has dedicated contracts; this regression is
+    # deliberately isolated from navigation and combat so it tests serialization only.
     save_commands = (
-        "wait 105; warp -690 -310 0; wait 12; "
-        "warp -640 140 0; wait 12; "
-        "warp 620 340 0; wait 12; printinv; "
+        "wait 105; god; notarget; give CheckoutFuse 2; "
+        "give CorporateMemo 1; wait 8; printinv; "
         'save coh_ci_roundtrip "COH CI roundtrip"; wait 20; quit'
     )
     save_text = run_phase(
