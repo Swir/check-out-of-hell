@@ -7,12 +7,14 @@ LINUX_BOOTSTRAP = ROOT / "tools" / "bootstrap_linux_runtime.py"
 LINUX_SCRIPT = ROOT / "tools" / "gzdoom_save_load_smoke_linux.py"
 WORKFLOW = ROOT / ".github" / "workflows" / "build.yml"
 LOCK = ROOT / "runtime-lock.json"
+ZSCRIPT = ROOT / "game" / "ZSCRIPT"
 
 windows_script = WINDOWS_SCRIPT.read_text(encoding="utf-8")
 linux_bootstrap = LINUX_BOOTSTRAP.read_text(encoding="utf-8")
 linux_script = LINUX_SCRIPT.read_text(encoding="utf-8")
 workflow = WORKFLOW.read_text(encoding="utf-8")
 lock = json.loads(LOCK.read_text(encoding="utf-8"))
+zscript = ZSCRIPT.read_text(encoding="utf-8")
 
 required_windows_markers = (
     '"bootstrap_runtime.ps1"',
@@ -69,6 +71,22 @@ if "; quit" in linux_script:
 
 if lock.get("gzdoom", {}).get("linux_asset_regex") != r"^gzdoom_.*_amd64\.deb$":
     raise SystemExit("runtime-lock.json must pin the official amd64 GZDoom Linux package pattern")
+
+# These malformed state blocks survived the old static/parser checks but fail when
+# GZDoom actually initializes gameplay. Keep a cheap regression guard next to the
+# live round-trip so the exact parser regression cannot silently return.
+malformed_state_fragments = (
+    "TNT1 A -1\n        Stop",
+    "COSH A -1 Bright\n        Stop",
+)
+for fragment in malformed_state_fragments:
+    if fragment in zscript:
+        raise SystemExit(f"ZScript contains a state frame/Stop sequence without terminators: {fragment!r}")
+
+if zscript.count("TNT1 A -1;\n        Stop;") < 5:
+    raise SystemExit("Expected all invisible runtime spawner state blocks to use terminated frame/Stop statements")
+if "COSH A -1 Bright;\n        Stop;" not in zscript:
+    raise SystemExit("Staff shutter state block must use terminated frame/Stop statements")
 
 required_workflow_markers = (
     "python tools/test_gzdoom_save_load_smoke_contract.py",
