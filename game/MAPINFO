@@ -15,6 +15,45 @@ DoomEdNums
     17128 = "CheckoutFullPowerCacheSpawner"
 }
 
+// Three authored shift difficulties keep the same readable objective and Overtime timing.
+// Difficulty changes combat forgiveness/resource pressure instead of making scripted hazards random.
+clearskills
+
+skill closingcrew
+{
+    Name = "Closing Crew"
+    Key = "c"
+    SpawnFilter = Easy
+    AmmoFactor = 1.25
+    DamageFactor = 0.75
+    HealthFactor = 1.20
+    MonsterHealth = 0.90
+}
+
+skill graveyardshift
+{
+    Name = "Graveyard Shift"
+    Key = "g"
+    SpawnFilter = Normal
+    AmmoFactor = 1.00
+    DamageFactor = 1.00
+    HealthFactor = 1.00
+    MonsterHealth = 1.00
+    DefaultSkill
+}
+
+skill corporatehell
+{
+    Name = "Corporate Hell"
+    Key = "h"
+    SpawnFilter = Hard
+    AmmoFactor = 0.85
+    DamageFactor = 1.25
+    HealthFactor = 0.85
+    MonsterHealth = 1.15
+    MustConfirm = "Corporate Hell cuts supplies and recovery while management hits harder. Clock in anyway?"
+}
+
 episode MAP01
 {
     name = "The Worst Shift"
