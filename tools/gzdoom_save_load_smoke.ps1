@@ -31,7 +31,10 @@ function Assert-NoRuntimeErrors {
         "VM execution aborted",
         "Could not load savegame",
         "Savegame is from a different version",
-        "Savegame uses a different set of files"
+        "Savegame uses a different set of files",
+        "Initialization of Vulkan failed",
+        "Unable to initialize OpenGL",
+        "Unable to create OpenGL context"
     )
 
     foreach ($pattern in $errorPatterns) {
@@ -122,6 +125,9 @@ if (Test-Path -LiteralPath $ProbeRoot) {
 }
 New-Item -ItemType Directory -Path $SaveDir -Force | Out-Null
 
+# GitHub-hosted Windows runners do not expose a usable Vulkan device. Force the official
+# GZDoom OpenGLES backend and classic software world renderer so the serialization probe
+# does not depend on a GPU while still executing the real Windows engine binary.
 $common = @(
     "-stdout",
     "-nosound",
@@ -131,7 +137,9 @@ $common = @(
     "-savedir", $SaveDir,
     "-iwad", $FreedoomWad,
     "-file", $Pk3,
-    "+vid_fullscreen", "0"
+    "+vid_fullscreen", "0",
+    "+vid_preferbackend", "2",
+    "+vid_rendermode", "0"
 )
 
 Write-Host "Creating an actual MAP01 savegame with the pinned GZDoom runtime..."
