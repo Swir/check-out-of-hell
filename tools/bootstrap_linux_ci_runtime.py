@@ -8,6 +8,7 @@ import json
 import os
 import re
 import shutil
+import time
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -45,13 +46,23 @@ def release_asset(repo: str, tag: str, pattern: str) -> dict:
 def download(url: str, destination: Path, expected_size: int | None = None) -> None:
     destination.parent.mkdir(parents=True, exist_ok=True)
     headers = {"User-Agent": "checkout-of-hell-ci-runtime-resolver"}
-    request = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(request, timeout=60) as response, destination.open("wb") as target:
-        shutil.copyfileobj(response, target)
-    if expected_size and destination.stat().st_size != expected_size:
-        raise RuntimeError(
-            f"Downloaded size mismatch for {destination.name}: {destination.stat().st_size} != {expected_size}"
-        )
+    last_error: Exception | None = None
+    for attempt in range(1, 4):
+        try:
+            request = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(request, timeout=60) as response, destination.open("wb") as target:
+                shutil.copyfileobj(response, target)
+            if expected_size and destination.stat().st_size != expected_size:
+                raise RuntimeError(
+                    f"Downloaded size mismatch for {destination.name}: {destination.stat().st_size} != {expected_size}"
+                )
+            return
+        except Exception as exc:  # network failures are retried, then surfaced clearly
+            last_error = exc
+            destination.unlink(missing_ok=True)
+            if attempt < 3:
+                time.sleep(2**attempt)
+    raise RuntimeError(f"Download failed after 3 attempts: {url}\n{last_error}") from last_error
 
 
 def sha256(path: Path) -> str:
@@ -63,9 +74,12 @@ def sha256(path: Path) -> str:
 
 
 def checksum_for(checksum_text: str, filename: str) -> str:
+    """Accept sha256sum and BSD/OpenSSL-style upstream checksum lines."""
     for line in checksum_text.splitlines():
-        match = re.search(r"\b([0-9a-fA-F]{64})\b\s+\*?(.+?)\s*$", line)
-        if match and Path(match.group(2)).name == filename:
+        if filename not in line:
+            continue
+        match = re.search(r"\b([0-9a-fA-F]{64})\b", line)
+        if match:
             return match.group(1).lower()
     raise RuntimeError(f"Official checksum file does not contain SHA-256 for {filename}")
 
