@@ -22,8 +22,8 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.23-dev` |
-| Implemented/testable progress | **74%** |
+| Version | `0.24-dev` |
+| Implemented/testable progress | **76%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
 | Player packaging focus | One-click Windows bootstrap + CI portable development artifact |
@@ -131,7 +131,9 @@ The tracks are deterministic Standard MIDI files produced by `tools/generate_mus
 
 The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear only department-local Breaker Fuse and supervisor-clearance tokens; save restores keep serialized shift state intact.
 
-Static/package regression coverage is active and the pinned Windows runtime already parses the current PK3 in CI. A real **save → process exit → load** round-trip remains intentionally open and is not claimed as complete until it passes against the target Windows runtime path.
+The repository now runs a real **save → process exit → load** regression against the exact pinned GZDoom `g4.14.2`: CI boots the official Linux package under Xvfb/Mesa software rendering, authors unmistakable `CheckoutFuse 2/3` plus `CorporateMemo 2/3` state in live MAP01, writes a real `.zds`, starts a second engine process, reloads that save and verifies both objective counters survived. The same runtime lock and official Freedoom release are used, with the Freedoom archive SHA-256 verified against its official checksum file.
+
+A hardened Windows desktop helper is retained for target-machine confirmation. GitHub's hosted Windows runner remains parser/startup validation only because it does not expose a suitable live GZDoom graphics context; final demo sign-off still requires an interactive Windows playtest including a save/load confirmation.
 
 ## 🚀 Quick Start — Windows
 
@@ -174,7 +176,7 @@ Runtime pins live in `runtime-lock.json` and change only after compatibility val
 
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, generated art/audio/music, the Closing Time secret pass, portable packaging and bootstrap behavior, then asks pinned GZDoom on Windows to parse the current package. Save/load source invariants are protected by a dedicated regression contract; a process-level target-Windows round-trip remains the next runtime gate.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, generated art/audio/music, the Closing Time secret pass, portable packaging and bootstrap behavior, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
 
 Useful developer commands:
 
@@ -183,6 +185,7 @@ python tools/build.py
 python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_save_load_state_contract.py
+python tools/test_gzdoom_save_load_smoke_contract.py
 python tools/test_readme_standard_contract.py
 python tools/test_closing_time_pacing_contract.py
 python tools/test_closing_time_secrets_contract.py
@@ -195,7 +198,10 @@ python tools/test_bootstrap_contract.py
 python tools/package_portable.py
 python tools/test_portable_package.py
 .\tools\gzdoom_runtime_smoke.ps1
+.\tools\gzdoom_save_load_smoke.ps1
 ```
+
+The automated headless round-trip additionally uses `tools/bootstrap_linux_runtime.py` and `tools/gzdoom_save_load_smoke_linux.py` inside the Linux CI job.
 
 ## 🧱 Technology & architecture
 
@@ -206,7 +212,7 @@ python tools/test_portable_package.py
 | **PK3** | Game package format |
 | **Python 3** | Deterministic original asset/music generation, builds and regression contracts |
 | **PowerShell / Batch** | Windows bootstrap, pinned runtime validation and one-click launch flow |
-| **GitHub Actions** | Build/package contracts plus pinned-engine parser validation |
+| **GitHub Actions** | Build/package contracts plus pinned-engine parser and two-process save/load validation |
 
 ## ⚖️ Asset & distribution policy
 
@@ -228,7 +234,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md) and [`docs/THIRD_PARTY.md`](d
 
 - `Closing Time` has a complete first secrets/joke-interaction pass but is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` is playable but not yet fully polished.
-- The real target-Windows save → process exit → load round-trip remains a demo-readiness gate.
+- The cross-process save/load serialization gate is now green on the exact pinned engine, but a final target-Windows interactive save/load confirmation is still required before demo sign-off.
 - Controller, accessibility-option and performance passes for the public demo are not complete.
 - Later departments remain planned until they have real playable content.
 

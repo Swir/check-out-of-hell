@@ -3,7 +3,8 @@
   "gzdoom": {
     "repo": "ZDoom/gzdoom",
     "tag": "g4.14.2",
-    "asset_regex": "^gzdoom-.*-windows\\.zip$"
+    "asset_regex": "^gzdoom-.*-windows\\.zip$",
+    "linux_asset_regex": "^gzdoom_.*_amd64\\.deb$"
   },
   "freedoom": {
     "repo": "freedoom/freedoom",

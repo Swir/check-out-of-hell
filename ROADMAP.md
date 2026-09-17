@@ -1,6 +1,6 @@
 # ROADMAP — CHECKOUT OF HELL
 
-**Overall progress:** `███████░░░ 74%`
+**Overall progress:** `████████░░ 76%`
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -65,7 +65,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Closing Time side-route secret pass with three useful workplace-comedy resource stashes and dedicated regression coverage
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 91%
+## Phase 2 — Vertical Slice — 94%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -92,7 +92,7 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [x] Secrets and joke interactions — full Closing Time level pass
 - [x] Difficulty modes
 - [x] Original soundtrack for every currently playable department, generated deterministically and regression-tested
-- [ ] End-to-end runtime save/load validation
+- [x] End-to-end runtime save/load validation with a real two-process pinned-GZDoom round-trip; target-Windows interactive confirmation remains a demo sign-off task
 
 ## Phase 3 — Demo Release — 20%
 - [x] Automatic first-run dependency bootstrap design implemented
@@ -106,6 +106,8 @@ The percentage reflects implemented/testable milestones, not ideas.
 - [ ] GitHub Release
 
 **Release rule:** a normal Windows player must not need to search for dependencies manually. A demo release must either contain every legally redistributable required runtime file or automatically obtain missing redistributable dependencies from official upstream sources on first run.
+
+**Current demo-readiness gate:** finish an interactive target-Windows playtest of Closing Time, including save/load confirmation, balance/polish sign-off, and the remaining controller/accessibility/performance passes before any public demo is published.
 
 ## Phase 4 — Full Game — 0%
 - [ ] Full campaign
