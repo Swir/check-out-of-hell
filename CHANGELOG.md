@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.25.0-dev — 2026-09-17
+
+### Added
+- Dedicated `Options → CHECKOUT OF HELL Accessibility` menu exposing engine-native UI scale, notification scale, crosshair scale, centered notifications, reduced notification pulsing, intermission subtitles and direct display/input/audio shortcuts.
+- `docs/ACCESSIBILITY.md` documenting the first accessibility pass, reduced-flash Overtime presentation and remaining scope honestly.
+- `tools/test_accessibility_contract.py`, validating accessibility menu wiring, packaged `MENUDEF`, unchanged Overtime gameplay timing and the reduced-flash presentation contract.
+- GitHub Actions execution of the accessibility contract.
+
+### Changed
+- Overtime warning and electrical-arc actors now use one short three-tic Bright pulse followed by normal-lit telegraph frames instead of remaining Bright through most of their visible lifetime; sound, damage, thresholds and hazard cadence are unchanged.
+- Build packaging now includes the project `MENUDEF` lump.
+- README/ROADMAP progress raised to **77%** and Demo Release progress to **30%** for the implemented/testable accessibility milestone; target-Windows playtesting, controller validation and performance work remain open before demo sign-off.
+
 ## 0.24.0-dev — 2026-09-17
 
 ### Added

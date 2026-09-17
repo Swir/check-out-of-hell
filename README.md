@@ -22,8 +22,8 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.24-dev` |
-| Implemented/testable progress | **76%** |
+| Version | `0.25-dev` |
+| Implemented/testable progress | **77%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
 | Player packaging focus | One-click Windows bootstrap + CI portable development artifact |
@@ -51,6 +51,7 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | 👔 Corporate bosses | Night Manager and the two-phase Regional Manager turn management into literal boss fights. |
 | 🔎 Optional discoveries | Staff Only rewards, Corporate Compliance Memos and useful workplace-comedy resource stashes reward exploration. |
 | ☠️ Authored difficulty | Closing Crew, Graveyard Shift and Corporate Hell tune resources and damage without hiding faster scripted hazards. |
+| ♿ Accessibility-first readability | Dedicated in-game shortcuts for scale/readability controls plus a reduced-flash Overtime presentation pass. |
 | 🔊 Original presentation | Project-owned generated art, combat audio and department music; no ripped commercial game assets. |
 | 📦 One-click runtime setup | Missing redistributable runtime files are resolved from official upstream sources instead of making players hunt for them. |
 
@@ -91,6 +92,14 @@ Closing Time uses authored reinforcement and hazard anchors instead of random sp
 | **Corporate Hell** | High-pressure replay | -15% ammo, +25% incoming damage, -15% healing, enemies at 115% health |
 
 Breaker gates, Night Manager wave timing and Overtime timing remain identical across all three modes. `Corporate Hell` requires explicit confirmation before clocking in.
+
+## ♿ Accessibility
+
+**Options → CHECKOUT OF HELL Accessibility** now exposes useful engine-native controls in one predictable place: UI scale, notification-text scale, crosshair scale, centered notifications, reduced pulsing notifications, intermission subtitles and direct links to display/UI, controller/input and audio settings.
+
+The Overtime warning actors also use a single short bright pulse followed by normal-lit telegraph frames instead of remaining bright through most of their visible lifetime. Alarm timing, arc timing, damage radius and Overtime cadence are unchanged, and the HUD continues to communicate state with explicit text/pattern cues rather than color alone.
+
+This is a practical first accessibility pass, not a claim that every accessibility need is solved. See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md).
 
 ## 🧰 Signature arsenal & threats
 
@@ -176,7 +185,7 @@ Runtime pins live in `runtime-lock.json` and change only after compatibility val
 
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, generated art/audio/music, the Closing Time secret pass, portable packaging and bootstrap behavior, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, generated art/audio/music, accessibility/readability behavior, the Closing Time secret pass, portable packaging and bootstrap behavior, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
 
 Useful developer commands:
 
@@ -190,6 +199,7 @@ python tools/test_readme_standard_contract.py
 python tools/test_closing_time_pacing_contract.py
 python tools/test_closing_time_secrets_contract.py
 python tools/test_hud_contract.py
+python tools/test_accessibility_contract.py
 python tools/test_overtime_hazard_contract.py
 python tools/test_original_assets.py
 python tools/test_combat_audio_polish.py
@@ -235,7 +245,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md) and [`docs/THIRD_PARTY.md`](d
 - `Closing Time` has a complete first secrets/joke-interaction pass but is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` is playable but not yet fully polished.
 - The cross-process save/load serialization gate is now green on the exact pinned engine, but a final target-Windows interactive save/load confirmation is still required before demo sign-off.
-- Controller, accessibility-option and performance passes for the public demo are not complete.
+- Controller and performance passes for the public demo are not complete.
 - Later departments remain planned until they have real playable content.
 
 ## 🔎 Search Keywords

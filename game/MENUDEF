@@ -1,0 +1,31 @@
+// CHECKOUT OF HELL - project accessibility shortcuts
+// Uses GZDoom's own archived CVARs so settings remain engine-native and persistent.
+
+OptionMenu "COHAccessibilityMenu"
+{
+    Title "CHECKOUT OF HELL - ACCESSIBILITY"
+
+    StaticText "READABILITY", 1
+    ScaleSlider "UI scale", "uiscale", 0.0, 8.0, 1.0, "Automatic"
+    ScaleSlider "Notification text scale", "con_scaletext", 0.0, 8.0, 1.0, "Use UI scale"
+    Slider "Crosshair scale", "crosshairscale", 0.0, 2.0, 0.05, 2
+    Option "Center notifications", "con_centernotify", "OnOff"
+    Option "Reduce pulsing notifications", "con_pulsetext", "OffOn"
+    Option "Intermission subtitles", "inter_subtitles", "OnOff"
+
+    StaticText ""
+    StaticText "MORE ACCESSIBILITY CONTROLS", 1
+    Submenu "Display / UI options", "VideoOptions"
+    Submenu "Controller / input options", "InputMenu"
+    Submenu "Audio options", "SoundOptions"
+}
+
+AddOptionMenu "OptionsMenu"
+{
+    Submenu "CHECKOUT OF HELL Accessibility", "COHAccessibilityMenu"
+}
+
+AddOptionMenu "OptionsMenuSimple"
+{
+    Submenu "CHECKOUT OF HELL Accessibility", "COHAccessibilityMenu"
+}
