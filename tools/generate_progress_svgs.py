@@ -17,8 +17,6 @@ MINI = ROOT / "assets" / "readme" / "progress-mini.svg"
 TEMPLATE = ROOT / "assets" / "readme" / "progress-template.svg"
 
 PROJECT_NAME = "CHECKOUT OF HELL"
-MEASURED_SCOPE = "Implemented/testable project milestones"
-STATUS = "HARDENING"
 WEIGHTS_BEGIN = "<!-- SWIR-PROGRESS-WEIGHTS:BEGIN -->"
 WEIGHTS_END = "<!-- SWIR-PROGRESS-WEIGHTS:END -->"
 
@@ -27,6 +25,8 @@ WEIGHT_RE = re.compile(r"^\|\s*([^|]+?)\s*\|\s*(\d+(?:\.\d+)?)%\s*\|\s*$", re.MU
 OVERALL_RE = re.compile(r"\*\*Overall progress:\*\* `[^`]*?\s(\d+(?:\.\d+)?)%`")
 README_PROGRESS_RE = re.compile(r"Implemented/testable progress \| \*\*(\d+(?:\.\d+)?)%\*\*")
 DEMO_RE = re.compile(r"^## Phase\s+3\s+—\s+Demo Release\s+—\s+(\d+(?:\.\d+)?)%\s*$", re.MULTILINE)
+SCOPE_RE = re.compile(r"^\*\*Measured scope:\*\*\s+(.+?)\s*$", re.MULTILINE)
+STATUS_RE = re.compile(r"^\*\*Progress status:\*\*\s+([A-Z][A-Z ]+)\s*$", re.MULTILINE)
 
 
 @dataclass(frozen=True)
@@ -35,6 +35,8 @@ class ProgressData:
     display_percent: str
     phase_count: int
     demo_percent: str
+    measured_scope: str
+    status: str
 
 
 def _display_percent(value: Decimal | None) -> str:
@@ -46,11 +48,16 @@ def _display_percent(value: Decimal | None) -> str:
 
 def parse_progress(roadmap_text: str) -> ProgressData:
     phases = {name.strip(): Decimal(percent) / Decimal("100") for name, percent in PHASE_RE.findall(roadmap_text)}
+    scope_match = SCOPE_RE.search(roadmap_text)
+    status_match = STATUS_RE.search(roadmap_text)
+    scope = scope_match.group(1).strip() if scope_match else "N/A"
+    status = status_match.group(1).strip() if status_match else "N/A"
+
     if not phases:
-        return ProgressData(None, "N/A", 0, "N/A")
+        return ProgressData(None, "N/A", 0, "N/A", scope, status)
 
     if WEIGHTS_BEGIN not in roadmap_text or WEIGHTS_END not in roadmap_text:
-        return ProgressData(None, "N/A", len(phases), "N/A")
+        return ProgressData(None, "N/A", len(phases), "N/A", scope, status)
     block = roadmap_text.split(WEIGHTS_BEGIN, 1)[1].split(WEIGHTS_END, 1)[0]
     weights: dict[str, Decimal] = {}
     for name, percent in WEIGHT_RE.findall(block):
@@ -60,9 +67,11 @@ def parse_progress(roadmap_text: str) -> ProgressData:
         weights[name] = Decimal(percent) / Decimal("100")
 
     if not weights or set(weights) != set(phases):
-        return ProgressData(None, "N/A", len(phases), "N/A")
+        return ProgressData(None, "N/A", len(phases), "N/A", scope, status)
     if sum(weights.values(), Decimal("0")) != Decimal("1"):
-        return ProgressData(None, "N/A", len(phases), "N/A")
+        return ProgressData(None, "N/A", len(phases), "N/A", scope, status)
+    if scope == "N/A" or status == "N/A":
+        return ProgressData(None, "N/A", len(phases), "N/A", scope, status)
 
     weighted = sum((phases[name] * weights[name] for name in phases), Decimal("0"))
     if weighted < 0 or weighted > 1:
@@ -70,7 +79,7 @@ def parse_progress(roadmap_text: str) -> ProgressData:
 
     demo_match = DEMO_RE.search(roadmap_text)
     demo = f"{Decimal(demo_match.group(1)):.1f}%" if demo_match else "N/A"
-    return ProgressData(weighted, _display_percent(weighted), len(phases), demo)
+    return ProgressData(weighted, _display_percent(weighted), len(phases), demo, scope, status)
 
 
 def _trim_label(text: str, limit: int) -> str:
@@ -97,7 +106,7 @@ def render_card(data: ProgressData) -> str:
     if fraction is not None and fraction > 0:
         fill_markup = f'''\n  <rect id="progress-fill" x="50" y="126" width="{_fmt_num(fill)}" height="18" rx="9" fill="url(#progressGradient)" clip-path="url(#trackClip)" filter="url(#softGlow)"/>'''
     description = (
-        f"{PROJECT_NAME} {MEASURED_SCOPE}: {data.display_percent} across {data.phase_count} weighted roadmap phases. "
+        f"{PROJECT_NAME} {data.measured_scope}: {data.display_percent} across {data.phase_count} weighted roadmap phases. "
         f"Demo Release readiness is {data.demo_percent} and tracked separately."
     )
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="180" viewBox="0 0 1200 180" role="img" aria-labelledby="title desc">
@@ -114,8 +123,8 @@ def render_card(data: ProgressData) -> str:
   <rect x="1" y="1" width="1198" height="178" rx="20" fill="url(#grid)"/>
   <path d="M24 28 H166" stroke="#62E5FF" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
   <text x="50" y="48" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="25" font-weight="700">{escape(PROJECT_NAME)}</text>
-  <text x="50" y="78" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="15">{escape(_trim_label(MEASURED_SCOPE, 70))}</text>
-  <text x="50" y="107" fill="#62E5FF" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="700">{escape(STATUS)}</text>
+  <text x="50" y="78" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="15">{escape(_trim_label(data.measured_scope, 70))}</text>
+  <text x="50" y="107" fill="#62E5FF" font-family="Segoe UI,Arial,sans-serif" font-size="14" font-weight="700">{escape(data.status)}</text>
   <text x="190" y="107" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="14">{data.phase_count} weighted phases</text>
   <text x="390" y="107" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="14">Demo Release readiness {escape(data.demo_percent)} · tracked separately</text>
   <text x="1150" y="88" text-anchor="end" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="42" font-weight="800">{escape(data.display_percent)}</text>
@@ -145,7 +154,7 @@ def render_mini(data: ProgressData) -> str:
   </defs>
   <rect x="1" y="1" width="898" height="70" rx="14" fill="url(#bg)" stroke="#0088FF" stroke-opacity="0.5" stroke-width="2"/>
   <text x="20" y="27" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="700">{escape(PROJECT_NAME)}</text>
-  <text x="220" y="27" fill="#62E5FF" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700">PROJECT · {escape(STATUS)}</text>
+  <text x="220" y="27" fill="#62E5FF" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700">PROJECT · {escape(data.status)}</text>
   <text x="870" y="27" text-anchor="end" fill="#F4FAFF" font-family="Segoe UI,Arial,sans-serif" font-size="20" font-weight="800">{escape(data.display_percent)}</text>
   <text x="20" y="52" fill="#8DA8B8" font-family="Segoe UI,Arial,sans-serif" font-size="11">{data.phase_count} weighted phases</text>
   <rect id="progress-track" x="170" y="42" width="700" height="12" rx="6" fill="#0A1A29" stroke="#62E5FF" stroke-opacity="0.25"/>{fill_markup}
@@ -223,6 +232,8 @@ def verify_document_links(data: ProgressData, readme_text: str, roadmap_text: st
         (readme_text, 'src="assets/readme/progress-card.svg"', README),
         (roadmap_text, 'src="assets/readme/progress-mini.svg"', ROADMAP),
         (roadmap_text, "<!-- SWIR-PROGRESS-SVG-PRO:v1 -->", ROADMAP),
+        (roadmap_text, f"**Measured scope:** {data.measured_scope}", ROADMAP),
+        (roadmap_text, f"**Progress status:** {data.status}", ROADMAP),
     ):
         if needle not in text:
             raise AssertionError(f"{source}: missing {needle}")
@@ -235,10 +246,11 @@ def verify_document_links(data: ProgressData, readme_text: str, roadmap_text: st
 
 
 def self_test() -> None:
-    partial = ProgressData(Decimal("0.5"), "50.0%", 1, "N/A")
-    zero = ProgressData(Decimal("0"), "0.0%", 1, "N/A")
-    complete = ProgressData(Decimal("1"), "100.0%", 1, "N/A")
-    unknown = ProgressData(None, "N/A", 0, "N/A")
+    scope = "Verified test scope"
+    partial = ProgressData(Decimal("0.5"), "50.0%", 1, "N/A", scope, "IN PROGRESS")
+    zero = ProgressData(Decimal("0"), "0.0%", 1, "N/A", scope, "PLANNING")
+    complete = ProgressData(Decimal("1"), "100.0%", 1, "N/A", scope, "COMPLETE")
+    unknown = ProgressData(None, "N/A", 0, "N/A", "N/A", "N/A")
     for case in (partial, zero, complete, unknown):
         card = render_card(case)
         expected = _fill_width(Decimal("1100"), case.fraction)
@@ -264,7 +276,7 @@ def main() -> None:
     readme_text = README.read_text(encoding="utf-8")
     data = parse_progress(roadmap_text)
     if data.fraction is None:
-        raise SystemExit("Progress source is incomplete/unverifiable; expected a complete weighted ROADMAP model, refusing to fabricate a percentage.")
+        raise SystemExit("Progress source is incomplete/unverifiable; expected a complete weighted ROADMAP model with measured scope/status, refusing to fabricate a percentage.")
 
     self_test()
     outputs = expected_outputs(data)
