@@ -114,7 +114,7 @@ function Write-EvidenceReport {
     ($Evidence | ConvertTo-Json -Depth 10) + "`n" | Set-Content -LiteralPath $EvidenceJson -Encoding UTF8
 
     $lines = @(
-        "# CHECKOUT OF HELL — Target Windows Demo Sign-off Evidence",
+        "# CHECKOUT OF HELL - Target Windows Demo Sign-off Evidence",
         "",
         "**Status:** $($Evidence.status)",
         "**Source branch:** $($Evidence.source.branch)",
@@ -181,7 +181,7 @@ function Start-ManualGameSession([string]$Instruction) {
 }
 
 function Run-StandardDifficultyPass([string]$Difficulty, [string]$Key) {
-    $launchedCleanly = Start-ManualGameSession "Play MAP01 — Closing Time from a fresh start on $Difficulty. Restore all breakers, defeat the Night Manager and physically clock out."
+    $launchedCleanly = Start-ManualGameSession "Play MAP01 - Closing Time from a fresh start on $Difficulty. Restore all breakers, defeat the Night Manager and physically clock out."
     $result = [ordered]@{
         engine_exit_ok = $launchedCleanly
         completed = Read-RequiredYesNo "Did you complete Closing Time and clock out on $Difficulty without using console cheats?"
