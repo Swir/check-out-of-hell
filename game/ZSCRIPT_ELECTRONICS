@@ -1,8 +1,9 @@
 // CHECKOUT OF HELL - Electronics department-local state and encounter helpers.
 
-// MAP04 places exactly one initializer near the player start. It clears optional memo and display
-// isolation state carried from a previous department, then destroys itself. A destroyed map actor
-// remains destroyed in savegames, so normal save/restore inside Electronics preserves new progress.
+// MAP04 places exactly one initializer near the player start. It clears optional memo, display
+// isolation and reboot hand-off state carried from a previous department, then destroys itself. A
+// destroyed map actor remains destroyed in savegames, so normal save/restore inside Electronics
+// preserves new progress.
 class ElectronicsDepartmentInitSpawner : Actor
 {
     int nextCheck;
@@ -50,13 +51,14 @@ class ElectronicsDepartmentInitSpawner : Actor
 
         p.A_TakeInventory("CorporateMemo", 3);
         p.A_TakeInventory("ElectronicsDisplayKillSwitch", 1);
+        p.A_TakeInventory("ElectronicsRebootPending", 1);
         Destroy();
     }
 }
 
 // The first two restored electronics circuits trigger a readable side response after a three-second
-// warning. The physical Store Network Reboot supplies the final power step instead of another loose
-// breaker and therefore hands full-power pressure to the existing management systems.
+// warning. The physical Store Network Reboot then starts a separate timed defence instead of granting
+// full power immediately.
 class ElectronicsBreakerResponseSpawner : Actor
 {
     int observedFuseCount;
@@ -157,9 +159,8 @@ class ElectronicsBreakerResponseSpawner : Actor
     }
 }
 
-// Two breaker repairs reveal a rear project-owned network console. Picking it up grants the third
-// authoritative CheckoutFuse token so existing cache, Night Manager and clock-out gates stay on the
-// same hardened progression state instead of creating a parallel Electronics-only completion ledger.
+// Two breaker repairs reveal one project-owned network console. Picking it up only grants the hidden
+// pending token; the timed sequence actor owns the final authoritative CheckoutFuse hand-off.
 class ElectronicsNetworkRebootSpawner : Actor
 {
     bool spawned;
@@ -223,6 +224,118 @@ class ElectronicsNetworkRebootSpawner : Actor
         if (reboot)
         {
             spawned = true;
+            Destroy();
+        }
+    }
+}
+
+// The reboot is now a short, readable hold-the-department objective instead of an instant third fuse.
+// It waits for physical interaction, warns before each response, attacks from one authored outer lane,
+// then commits the existing 3/3 CheckoutFuse state after ten seconds. State is map-actor state, so a
+// normal save/restore during the sequence resumes the timer/waves instead of resetting progression.
+class ElectronicsNetworkRebootSequence : Actor
+{
+    bool active;
+    int startTic;
+    int stage;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        active = false;
+        startTic = 0;
+        stage = 0;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        if (p.CountInv("SupervisorClearanceToken") > 0 || p.CountInv("CheckoutFuse") >= 3)
+        {
+            p.A_TakeInventory("ElectronicsRebootPending", 1);
+            Destroy();
+            return;
+        }
+
+        if (p.CountInv("ElectronicsRebootPending") <= 0)
+        {
+            if (active)
+            {
+                Destroy();
+            }
+            return;
+        }
+
+        if (!active)
+        {
+            active = true;
+            startTic = Level.maptime;
+            stage = 0;
+            Actor.Spawn("OvertimeWarningFlash", Pos);
+            return;
+        }
+
+        int elapsed = Level.maptime - startTic;
+
+        if (stage == 0 && elapsed >= 35 * 2)
+        {
+            Actor.Spawn("TeleportFog", Pos);
+            Actor.Spawn("ScannerTurret", Pos);
+            stage = 1;
+        }
+
+        if (stage == 1 && elapsed >= 35 * 5)
+        {
+            Actor.Spawn("OvertimeWarningFlash", Pos);
+            stage = 2;
+        }
+
+        if (stage == 2 && elapsed >= 35 * 7)
+        {
+            Actor.Spawn("TeleportFog", Pos);
+            Actor.Spawn("CartOfDoom", Pos);
+            stage = 3;
+        }
+
+        if (stage == 3 && elapsed >= 35 * 10)
+        {
+            p.A_GiveInventory("CheckoutFuse", 1);
+            p.A_TakeInventory("ElectronicsRebootPending", 1);
+            Actor.Spawn("TeleportFog", Pos);
             Destroy();
         }
     }
