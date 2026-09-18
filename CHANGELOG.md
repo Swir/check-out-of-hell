@@ -1,20 +1,27 @@
 # Changelog
 
-## Unreleased — 2026-09-18
+## 0.29.0-dev — 2026-09-18
 
 ### Added
 - `tools/test_closing_time_combat_readability_contract.py`, protecting the authored center navigation strip, flanked Night Manager response anchors, off-center Overtime reinforcement anchors, mirrored non-blocking Lane 06 wayfinding, the existing physical clock-out trigger and the built MAP01/PK3 output.
 - GitHub Actions execution of the Closing Time combat-readability contract.
+- `tools/package_release_candidate.py` and dedicated `packaging/PLAY-RC.bat` for a prebuilt, Python-free Windows portable release-candidate ZIP with a stable `game/CHECKOUT-OF-HELL.pk3` player payload.
+- Deterministic `package-manifest.json` generation with SHA-256 and byte counts for every bundled project file, plus `tools/verify_player_package.ps1` for local integrity verification before any runtime download.
+- `tools/test_release_candidate_package.py`, CI upload of the release-candidate ZIP/checksum pair and a Windows job that extracts the candidate and executes its PowerShell integrity verifier.
 
 ### Changed
 - Closing Time's two inner Angry Self-Checkouts moved from the center strip to mirrored side positions, keeping initial pressure while preserving a cleaner front-to-rear navigation/sightline axis.
 - The front sales-floor Overtime reinforcement anchor moved out of the physical center/clock-out approach; all three ambient reinforcement anchors now remain off that axis while preserving the existing Overtime cadence.
 - Night Manager response anchors moved to the rear flanks so the authored `15 / 34 / 54 / 76` second reinforcement sequence no longer materializes on the central supervisor approach.
 - Front Lane 06 wayfinding is now mirrored with a second project-owned non-blocking sign. No solid geometry, breaker route, objective trigger, Overtime timing or boss-wave timing changed.
-- Project progress remains **82.75%**, displayed as **82.8%**, and Demo Release readiness remains **50.0%**. This readability pass improves the testable map layout but does not substitute for the remaining target-Windows interactive polish/sign-off gate.
+- The new Windows candidate verifies its bundled game/project files first, then obtains pinned GZDoom/Freedoom runtime files only from official upstream releases; it does not silently bundle runtime EXE/WAD files or require Python on the player's PC.
+- `docs/PACKAGING.md` and README now distinguish the development ZIP, the verified non-public release candidate and the still-open truly self-contained legal-content package gate.
+- Demo Release readiness raised from **50.0%** to **60.0%** only for the implemented/testable portable Windows release-package milestone. Weighted project progress is now **84.75%**, displayed as **84.8%**; no public demo or GitHub Release was created.
 
 ### Validation
-- The new contract validates source placement, packaged actor behavior and the generated MAP01 `TEXTMAP`, while existing layout, pacing, Overtime, performance, progress-SVG and pinned-GZDoom runtime/parser gates remain in force.
+- The combat-readability contract validates source placement, packaged actor behavior and generated MAP01 `TEXTMAP` while preserving existing layout/pacing/Overtime gates.
+- The release-candidate package contract recomputes its internal manifest hashes/sizes and outer ZIP SHA-256, rejects source/runtime leakage, checks one-click launch ordering and verifies runtime pins against `runtime-lock.json`.
+- Windows CI additionally extracts the candidate and runs `tools/verify_player_package.ps1`; existing pinned-GZDoom parser/runtime and two-process save/load gates remain in force.
 
 ## 0.28.0-dev — 2026-09-18
 
