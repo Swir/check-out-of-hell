@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.28.0-dev — 2026-09-18
+
+### Added
+- Clearance-aware `game/ZSCRIPT_CLOCKOUT` layer for the Closing Time post-boss escape, including the Overtime hazard lifecycle and one-shot front-lane clock-out guide spawner.
+- Deterministic `tools/generate_clockout_assets.py` generator for the project-owned `CLOCK OUT` guide sprite.
+- `tools/test_post_boss_clockout_polish_contract.py` with source, generated-asset, map and packaged-PK3 coverage, wired into GitHub Actions.
+
+### Changed
+- Closing Time Overtime environmental hazard anchors moved from an uninterruptible DECORATE state sequence to ZScript while preserving the exact authored `90 / 135 / 180 / 212 / 244 / 270` second opening schedule and 20-second Hell Rush cadence.
+- Earning supervisor clearance now retires all remaining Overtime hazard anchors, matching the existing post-boss reinforcement cutoff so no fresh electrical trap appears during the deliberate return-to-checkout leg.
+- Supervisor clearance now reveals one original non-blocking `CLOCK OUT` guide at the front-lane approach; the existing physical checkout completion trigger and exit logic are unchanged.
+- Vertical Slice progress raised from **94%** to **95%** for this implemented/testable escape-readability milestone. Demo Release readiness remains **50.0%** because target-Windows interactive sign-off is still open. Weighted project progress is now **82.75%**, displayed as **82.8%**.
+
+### Validation
+- The Overtime contract now verifies the migrated schedule and clearance retirement behavior, while the dedicated post-boss contract verifies generated art, actor registration, single authored placement and packaged PK3/MAP01 contents. Pinned-GZDoom parser/runtime jobs remain the engine-level gate.
+
 ## 0.27.0-dev — 2026-09-18
 
 ### Added

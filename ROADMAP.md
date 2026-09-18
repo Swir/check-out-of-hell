@@ -1,14 +1,14 @@
 # ROADMAP — CHECKOUT OF HELL
 <!-- SWIR-PROGRESS-SVG-PRO:v1 -->
 
-**Overall progress:** `████████░░ 82.4%`
+**Overall progress:** `████████░░ 82.8%`
 
 **Measured scope:** Implemented/testable project milestones  
 **Progress status:** HARDENING
 
-<img width="100%" src="assets/readme/progress-mini.svg" alt="CHECKOUT OF HELL project progress — 82.4% implemented/testable; demo release readiness tracked separately" />
+<img width="100%" src="assets/readme/progress-mini.svg" alt="CHECKOUT OF HELL project progress — 82.8% implemented/testable; demo release readiness tracked separately" />
 
-**Progress fallback:** **82.4%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 50.0%**, tracked separately.
+**Progress fallback:** **82.8%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 50.0%**, tracked separately.
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -26,7 +26,7 @@ Project completion is a weighted roll-up of the verified phase percentages in th
 | Full Game | 5% |
 <!-- SWIR-PROGRESS-WEIGHTS:END -->
 
-Current weighted calculation: `(100 × 10%) + (99 × 25%) + (94 × 40%) + (50 × 20%) + (0 × 5%) = 82.35%`, displayed as **82.4%**. Geometry uses the unrounded `82.35%` fraction.
+Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (50 × 20%) + (0 × 5%) = 82.75%`, displayed as **82.8%**. Geometry uses the unrounded `82.75%` fraction.
 
 ## Phase 0 — Foundation — 100%
 - [x] Project identity and concept
@@ -89,7 +89,7 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (94 × 40%) + (50 ×
 - [x] Closing Time side-route secret pass with three useful workplace-comedy resource stashes and dedicated regression coverage
 - [ ] First fully decorated/polished level
 
-## Phase 2 — Vertical Slice — 94%
+## Phase 2 — Vertical Slice — 95%
 - [x] Level concepts documented
 - [x] Core shift objective loop implemented
 - [x] Overtime pressure system implemented
@@ -109,6 +109,7 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (94 × 40%) + (50 ×
 - [x] Signature combat audio uses project-owned randomized cue families with deterministic generation, PCM/headroom checks and runtime parser coverage
 - [x] Closing Time full-power pre-boss recovery and post-supervisor reinforcement cutoff implemented with dedicated CI coverage
 - [x] Save-state hardening preserves serialized shift-director state and resets department-local objective tokens only on fresh map loads
+- [x] Closing Time post-supervisor escape polish retires fresh Overtime floor hazards and reveals an original front-lane CLOCK OUT guide without moving the physical completion trigger
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
 - [ ] Level 03: Frozen Foods
@@ -131,7 +132,7 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (94 × 40%) + (50 ×
 
 **Release rule:** a normal Windows player must not need to search for dependencies manually. A demo release must either contain every legally redistributable required runtime file or automatically obtain missing redistributable dependencies from official upstream sources on first run.
 
-**Current demo-readiness gate:** finish an interactive target-Windows playtest of Closing Time, including save/load confirmation, real-controller confirmation, final balance/polish sign-off and a real-hardware performance sanity check before any public demo is published.
+**Current demo-readiness gate:** finish an interactive target-Windows playtest of Closing Time, including save/load confirmation, real-controller confirmation, final balance/polish sign-off and a real-hardware performance sanity check before any public demo is published. The automated post-boss polish pass does not replace this manual sign-off.
 
 ## Phase 4 — Full Game — 0%
 - [ ] Full campaign

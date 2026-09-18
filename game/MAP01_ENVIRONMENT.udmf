@@ -35,3 +35,8 @@ thing { x = -730.0; y =  300.0; angle = 0;   type = 17131; skill1 = true; skill2
 // Full power guarantees one readable recovery cache on the approach to the supervisor arena.
 // The spawner stays invisible until 3/3 breakers, so players cannot consume it before the fight.
 thing { x = 0.0; y = 250.0; angle = 0; type = 17128; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Post-boss wayfinding: this invisible anchor produces the original CLOCK OUT sign only after
+// supervisor clearance. It sits just ahead of the safe front-lane completion zone so the player
+// gets a readable physical destination without changing the existing clock-out trigger.
+thing { x = 0.0; y = -315.0; angle = 180; type = 17132; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

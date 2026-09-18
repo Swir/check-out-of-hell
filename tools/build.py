@@ -10,6 +10,7 @@ from generate_regional_manager_assets import generate_regional_manager_assets
 from generate_presentation_assets import generate_presentation_assets
 from generate_overtime_assets import generate_overtime_assets
 from generate_environment_assets import generate_environment_assets
+from generate_clockout_assets import generate_clockout_assets
 from generate_combat_audio_polish import generate_combat_audio_polish
 from generate_music_assets import generate_music_assets
 
@@ -87,9 +88,10 @@ def decorate_payload() -> bytes:
 
 
 def zscript_payload() -> bytes:
-    """Compose stable shift logic with the opt-in accessibility handler."""
+    """Compose shift logic, post-boss polish and opt-in accessibility into one ZSCRIPT lump."""
     chunks = [
         (GAME / "ZSCRIPT").read_text(encoding="utf-8").rstrip(),
+        (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ACCESSIBILITY").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
@@ -102,6 +104,7 @@ generate_regional_manager_assets(GAME)
 generate_presentation_assets(GAME)
 generate_overtime_assets(GAME)
 generate_environment_assets(GAME)
+generate_clockout_assets(GAME)
 generate_combat_audio_polish(GAME)
 generate_music_assets(GAME)
 pad_short_wavs(GAME / "sounds")

@@ -22,16 +22,16 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.27-dev` |
-| Implemented/testable progress | **82.4%** |
+| Version | `0.28-dev` |
+| Implemented/testable progress | **82.8%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
 | Player packaging focus | One-click Windows bootstrap + CI portable development artifact |
 | Pinned runtime | GZDoom `g4.14.2` + Freedoom `v0.13.0` |
 
-<img width="100%" src="assets/readme/progress-card.svg" alt="CHECKOUT OF HELL project progress — 82.4% implemented/testable; demo release readiness tracked separately" />
+<img width="100%" src="assets/readme/progress-card.svg" alt="CHECKOUT OF HELL project progress — 82.8% implemented/testable; demo release readiness tracked separately" />
 
-**Progress fallback:** **82.4%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 50.0%**, tracked separately.
+**Progress fallback:** **82.8%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 50.0%**, tracked separately.
 
 Progress is based only on implemented and testable work. See [`ROADMAP.md`](ROADMAP.md) for the authoritative weighted milestone breakdown and separate release-readiness gate.
 
@@ -49,7 +49,7 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | --- | --- |
 | ⚡ Fast readable combat | Clear attacks, uncluttered lanes and classic-FPS movement pressure. |
 | 🛠️ Real shift objectives | Breakers, powered routes, shutters, supervisor gates and a physical clock-out finish. |
-| ⏱️ Overtime | Deterministic escalation adds alarms, enemy pressure and telegraphed electrical hazards as the shift drags on. |
+| ⏱️ Overtime | Deterministic escalation adds alarms, enemy pressure and telegraphed electrical hazards, then retires fresh pressure after supervisor clearance for a readable escape leg. |
 | 🧰 Retail arsenal | Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher use original presentation and audio. |
 | 👹 Store hazards | Angry Self-Checkout, Cart of Doom, Security Price Scanner and Possessed Pallet Jack fill distinct combat roles. |
 | 👔 Corporate bosses | Night Manager and the two-phase Regional Manager turn management into literal boss fights. |
@@ -72,7 +72,7 @@ Every department is designed around a useful workplace task rather than pure are
 5. defeat the department supervisor while Overtime escalates,
 6. finish the exit task and keep moving toward clocking out alive at `06:00`.
 
-`MAP01 — Closing Time` currently implements the most complete version of this loop. Three Breaker Fuses pull the player through left, right and rear routes. At `2/3` power, a Staff Only side room opens. At `3/3`, a Full-Power Emergency Cache becomes available and the Night Manager enters the floor. Two management-response anchors then feed a readable Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack sequence at `15 / 34 / 54 / 76` seconds after full power. Once the supervisor is dead, fresh reinforcements stop and the player must physically return to the front checkout to clock out.
+`MAP01 — Closing Time` currently implements the most complete version of this loop. Three Breaker Fuses pull the player through left, right and rear routes. At `2/3` power, a Staff Only side room opens. At `3/3`, a Full-Power Emergency Cache becomes available and the Night Manager enters the floor. Two management-response anchors then feed a readable Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack sequence at `15 / 34 / 54 / 76` seconds after full power. Once the supervisor is dead, fresh reinforcements and newly spawned Overtime floor hazards stop, an original `CLOCK OUT` guide appears near the front lanes, and the player must physically return to the existing checkout trigger to finish the shift.
 
 `MAP02 — Warehouse 13.5` requires all three breakers before The Regional Manager arrives. Breaker and supervisor-clearance tokens are department-local: a normal map transition clears them before the next department objective begins, while loading a save preserves serialized shift state.
 
@@ -87,7 +87,7 @@ Overtime is deterministic enough to learn while still raising pressure:
 | `3:00–4:29` | OVERTIME | Cart of Doom pressure + active electrical floor hazards |
 | `4:30+` | HELL RUSH | Possessed Pallet Jack pressure + faster hazard cadence |
 
-Closing Time uses authored reinforcement and hazard anchors instead of random spawning on top of the player. Electrical hazards telegraph before dealing damage, and the front clock-out lane is protected from trap anchors.
+Closing Time uses authored reinforcement and hazard anchors instead of random spawning on top of the player. Electrical hazards telegraph before dealing damage, and the front clock-out lane is protected from trap anchors. The authored warning/arc schedule remains unchanged, but the hazard anchors now retire when supervisor clearance is earned so no fresh electrical trap appears during the deliberate return-to-checkout leg; enemies already alive remain part of the escape pressure.
 
 ## ☠️ Difficulty modes
 
@@ -113,7 +113,7 @@ See [`docs/WEAPONS.md`](docs/WEAPONS.md).
 
 ### MAP01 — Closing Time
 
-The current vertical-slice level includes original supermarket surfaces and signage, Customer Service / Frozen Foods / Electronics identity, safe retail clutter, failing fluorescent fixtures, optional Emergency Break Snacks, three Corporate Compliance Memos, three off-route resource stashes with workplace-comedy pickup interactions, a final-layout night-shift HUD, a full-power recovery cache, staged Overtime floor hazards, a tuned Night Manager response and a physical return-to-checkout finish.
+The current vertical-slice level includes original supermarket surfaces and signage, Customer Service / Frozen Foods / Electronics identity, safe retail clutter, failing fluorescent fixtures, optional Emergency Break Snacks, three Corporate Compliance Memos, three off-route resource stashes with workplace-comedy pickup interactions, a final-layout night-shift HUD, a full-power recovery cache, staged Overtime floor hazards, a tuned Night Manager response and a physical return-to-checkout finish. The post-boss leg now suppresses fresh reinforcements and electrical hazards and exposes a project-owned `CLOCK OUT` guide at the front approach without changing the completion zone itself.
 
 The secret pass keeps progression readable: the Unclaimed Receipt Roll, Damaged-Goods Label Crate and Unauthorized Employee Relief Kit sit in dead-end retail corners away from the central combat/clock-out lane. They reward exploration with receipts, labels or health but never gate a breaker, boss or exit objective.
 
@@ -186,7 +186,7 @@ Runtime pins live in `runtime-lock.json` and change only after compatibility val
 Open **Options → CHECKOUT OF HELL Accessibility** to enable player-local comfort/readability aids:
 
 - **Focus HUD** adds a compact high-contrast text block with the current objective, breaker/memo counts and Overtime pressure.
-- **Large warnings** adds larger textual warnings for critical health, Overtime and Hell Rush pressure.
+- **Large warnings** adds larger textual warnings for critical health, Overtime and Hell Rush states.
 
 Both options are disabled by default and do not alter combat timing, difficulty or objective logic. Overtime remains communicated through words/patterns as well as color, while failing fluorescent props now use a slower light-change cadence instead of rapid two-tic flash cuts. See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md).
 
@@ -200,13 +200,13 @@ Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher firing cues 
 
 ## ⚙️ Performance hardening
 
-Objective and encounter watcher actors now avoid unnecessary 35-Hz inventory/stage polling. Most slow-changing gates sample every **7 tics** (worst-case response below 0.2 seconds), while the authored Night Manager response sequence samples every **4 tics**. One-shot manager/cache/shutter watchers remove themselves after completing their job, and reinforcement watchers retire after supervisor clearance instead of idling for the rest of the map.
+Objective and encounter watcher actors now avoid unnecessary 35-Hz inventory/stage polling. Most slow-changing gates sample every **7 tics** (worst-case response below 0.2 seconds), while the authored Night Manager response sequence samples every **4 tics**. One-shot manager/cache/shutter/clock-out-guide watchers remove themselves after completing their job, reinforcement watchers retire after supervisor clearance, and Overtime hazard anchors now use sparse clearance checks while preserving their authored schedule.
 
-The `55 / 38 / 25` second Overtime reinforcement cadence and `15 / 34 / 54 / 76` second Night Manager wave thresholds are unchanged. CI protects these invariants in `tools/test_performance_contract.py` and the pinned-engine parser still validates the resulting ZScript. This is a script-overhead hardening pass, **not** a fabricated FPS claim; real-hardware Windows performance sanity remains part of final demo sign-off. See [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
+The `55 / 38 / 25` second Overtime reinforcement cadence, `15 / 34 / 54 / 76` second Night Manager wave thresholds and `90 / 135 / 180 / 212 / 244 / 270` second initial environmental-hazard events are unchanged. CI protects these invariants and the pinned-engine parser still validates the resulting ZScript. This is script-overhead and lifecycle hardening, **not** a fabricated FPS claim; real-hardware Windows performance sanity remains part of final demo sign-off. See [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
 
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, accessibility, controller and performance hardening, generated art/audio/music, the Closing Time secret pass, portable packaging and bootstrap behavior, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, accessibility, controller and performance hardening, generated art/audio/music, the Closing Time secret pass and post-boss clock-out polish, portable packaging and bootstrap behavior, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
 
 Useful developer commands:
 
@@ -220,6 +220,7 @@ python tools/test_readme_standard_contract.py
 python tools/generate_progress_svgs.py --check
 python tools/test_closing_time_pacing_contract.py
 python tools/test_closing_time_secrets_contract.py
+python tools/test_post_boss_clockout_polish_contract.py
 python tools/test_hud_contract.py
 python tools/test_accessibility_contract.py
 python tools/test_controller_support_contract.py
@@ -266,7 +267,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md) and [`docs/THIRD_PARTY.md`](d
 
 ## ⚠️ Current limitations
 
-- `Closing Time` has a complete first secrets/joke-interaction pass but is not yet signed off as the first fully polished level.
+- `Closing Time` has its authored post-boss clock-out polish and a complete first secrets/joke-interaction pass, but is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` is playable but not yet fully polished.
 - The cross-process save/load serialization gate is green on the exact pinned engine, but a final target-Windows interactive save/load confirmation is still required before demo sign-off.
 - Controller setup/haptics and the script-overhead performance pass are implemented and contract-tested, but physical controller and real-hardware performance confirmation remain part of the target-Windows demo sign-off.

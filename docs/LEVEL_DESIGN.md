@@ -18,26 +18,25 @@ Current prototype includes:
 - an optional rear-left Staff Only room with a physical security barrier,
 - Staff Only access unlocking at `2/3` breakers instead of waiting for full power,
 - an `Employee of the Month Stash` reward inside the optional room,
-- no mandatory breaker inside the optional room, preserving route clarity.
+- no mandatory breaker inside the optional room, preserving route clarity,
+- clearance-aware Overtime hazard anchors that stop creating fresh electrical hazards once the Night Manager is down,
+- an original `CLOCK OUT` guide that appears near the front lanes only after supervisor clearance, pointing back toward the existing physical completion zone without changing the trigger.
 
 The Staff Only room is deliberately a reward loop rather than a key hunt. Partial power gives the
 player a useful side benefit before the main objective is complete, teaching that restoring store
 systems can change the environment without making every side route mandatory.
 
 The supervisor encounter is now a pressure sequence rather than one isolated monster spawn. Full
-power activates two management-response anchors on opposite sides of the rear arena. After the
-Night Manager is defeated, surviving threats remain relevant because the player must fight back to
-the front checkout and clock out before the map advances.
+power activates two management-response anchors on opposite sides of the rear arena. Once the Night
+Manager is defeated, surviving threats still matter on the run back to the registers, but new
+management reinforcements and fresh Overtime floor hazards retire. The front-lane `CLOCK OUT` guide
+then becomes visible, preserving tension while making the final workplace objective unambiguous.
 
-Next polish:
-- entrance shutters visibly slam shut behind the player,
-- replace temporary Staff Only barrier visuals with original shutter/sign art,
-- stronger authored checkout-lane cover and sightlines,
-- authored lighting changes for each breaker state,
-- PA announcements react to breaker restoration, supervisor arrival, reinforcement waves and clock-out,
-- original signs, props, lighting and retail textures,
-- stronger authored Night Manager arena geometry around the two response anchors,
-- original Night Manager presentation instead of runtime placeholder visuals.
+Remaining Closing Time polish:
+- complete an interactive target-Windows full-level pass with manual save/load, physical-controller and real-hardware performance confirmation,
+- finish balance/sign-off on all three difficulty modes using that real playtest evidence,
+- strengthen checkout-lane cover and sightlines only where the playtest shows a readability or pacing problem,
+- keep any additional lighting/geometry reactions subordinate to combat readability rather than adding decoration for its own sake.
 
 ## MAP02 — Warehouse 13.5
 Purpose: larger arena, heavier enemies and first boss-scale fight.
@@ -45,8 +44,10 @@ Purpose: larger arena, heavier enemies and first boss-scale fight.
 Current prototype includes:
 - Security Price Scanners,
 - Possessed Pallet Jacks,
-- The Regional Manager placeholder boss,
-- access to Receipt Ripper, Price-Gun SMG and Turbo Can Launcher.
+- The Regional Manager prototype boss,
+- access to Receipt Ripper, Price-Gun SMG and Turbo Can Launcher,
+- all three breakers required before The Regional Manager can enter the fight,
+- project-owned retail surfaces and an original department soundtrack.
 
 Planned polish:
 - moving pallet hazards,
