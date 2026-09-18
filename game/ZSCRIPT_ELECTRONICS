@@ -1,0 +1,405 @@
+// CHECKOUT OF HELL - Electronics department-local state and encounter helpers.
+
+// MAP04 places exactly one initializer near the player start. It clears optional memo and display
+// isolation state carried from a previous department, then destroys itself. A destroyed map actor
+// remains destroyed in savegames, so normal save/restore inside Electronics preserves new progress.
+class ElectronicsDepartmentInitSpawner : Actor
+{
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        nextCheck = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        p.A_TakeInventory("CorporateMemo", 3);
+        p.A_TakeInventory("ElectronicsDisplayKillSwitch", 1);
+        Destroy();
+    }
+}
+
+// The first two restored electronics circuits trigger a readable side response after a three-second
+// warning. The physical Store Network Reboot supplies the final power step instead of another loose
+// breaker and therefore hands full-power pressure to the existing management systems.
+class ElectronicsBreakerResponseSpawner : Actor
+{
+    int observedFuseCount;
+    int pendingFuse;
+    int responseTic;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        observedFuseCount = 0;
+        pendingFuse = 0;
+        responseTic = 0;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            Destroy();
+            return;
+        }
+
+        int fuses = p.CountInv("CheckoutFuse");
+
+        if (pendingFuse > 0)
+        {
+            if (Level.maptime < responseTic)
+            {
+                return;
+            }
+
+            Actor.Spawn("TeleportFog", Pos);
+            if (pendingFuse == 1)
+            {
+                Actor.Spawn("ScannerTurret", Pos);
+            }
+            else if (pendingFuse == 2)
+            {
+                Actor.Spawn("AngrySelfCheckout", Pos);
+            }
+
+            observedFuseCount = pendingFuse;
+            pendingFuse = 0;
+
+            if (observedFuseCount >= 2 && fuses >= 3)
+            {
+                Destroy();
+            }
+            return;
+        }
+
+        if (fuses >= 3 && observedFuseCount >= 2)
+        {
+            Destroy();
+            return;
+        }
+
+        if (fuses > observedFuseCount && observedFuseCount < 2)
+        {
+            pendingFuse = observedFuseCount + 1;
+            responseTic = Level.maptime + 35 * 3;
+            Actor.Spawn("OvertimeWarningFlash", Pos);
+        }
+    }
+}
+
+// Two breaker repairs reveal a rear project-owned network console. Picking it up grants the third
+// authoritative CheckoutFuse token so existing cache, Night Manager and clock-out gates stay on the
+// same hardened progression state instead of creating a parallel Electronics-only completion ledger.
+class ElectronicsNetworkRebootSpawner : Actor
+{
+    bool spawned;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (spawned || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        int fuses = p.CountInv("CheckoutFuse");
+        if (p.CountInv("SupervisorClearanceToken") > 0 || fuses >= 3)
+        {
+            Destroy();
+            return;
+        }
+        if (fuses < 2)
+        {
+            return;
+        }
+
+        Actor.Spawn("OvertimeWarningFlash", Pos);
+        Actor reboot = Actor.Spawn("ElectronicsNetworkReboot", Pos);
+        if (reboot)
+        {
+            spawned = true;
+            Destroy();
+        }
+    }
+}
+
+// Full power reveals one optional safety control on the opposite display lane. It never grants
+// progression and only suppresses the department-specific demo-wall surge.
+class ElectronicsKillSwitchSpawner : Actor
+{
+    bool spawned;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (spawned || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0 || p.CountInv("ElectronicsDisplayKillSwitch") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        Actor.Spawn("TeleportFog", Pos);
+        Actor safety = Actor.Spawn("ElectronicsDisplayKillSwitch", Pos);
+        if (safety)
+        {
+            spawned = true;
+            Destroy();
+        }
+    }
+}
+
+// Powered display hardware becomes unstable only after Overtime begins. Every burst has a two-second
+// warning, stays on an outer display lane and uses deterministic stage-scaled spacing. The optional
+// kill switch or supervisor clearance cancels even an already armed burst without stopping enemies.
+class ElectronicsDemoSurgeSpawner : Actor
+{
+    bool warningArmed;
+    int burstTic;
+    int nextCheck;
+    int nextSurgeTic;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        warningArmed = false;
+        burstTic = 0;
+        nextCheck = Level.maptime + 7;
+        nextSurgeTic = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0 || p.CountInv("ElectronicsDisplayKillSwitch") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        int stage = CheckoutShiftDirector.GetOvertimeStage();
+        if (stage <= 0)
+        {
+            return;
+        }
+
+        if (warningArmed)
+        {
+            if (Level.maptime < burstTic)
+            {
+                return;
+            }
+
+            Actor.Spawn("ElectronicsDisplayBurst", Pos);
+            warningArmed = false;
+
+            int delaySeconds = 32;
+            if (stage >= 3)
+            {
+                delaySeconds = 18;
+            }
+            else if (stage >= 2)
+            {
+                delaySeconds = 24;
+            }
+            nextSurgeTic = Level.maptime + 35 * delaySeconds;
+            return;
+        }
+
+        if (nextSurgeTic == 0)
+        {
+            nextSurgeTic = Level.maptime + 35 * 16;
+            return;
+        }
+        if (Level.maptime < nextSurgeTic)
+        {
+            return;
+        }
+
+        Actor.Spawn("OvertimeWarningFlash", Pos);
+        warningArmed = true;
+        burstTic = Level.maptime + 35 * 2;
+    }
+}
