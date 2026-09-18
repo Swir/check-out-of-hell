@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 lock = json.loads((ROOT / "runtime-lock.json").read_text(encoding="utf-8"))
 package = (ROOT / "tools" / "package_release_candidate.py").read_text(encoding="utf-8")
+bundle_test = (ROOT / "tools" / "test_legal_content_bundle.py").read_text(encoding="utf-8")
 bootstrap = (ROOT / "tools" / "bootstrap_runtime.ps1").read_text(encoding="utf-8")
 verifier = (ROOT / "tools" / "verify_player_package.ps1").read_text(encoding="utf-8")
 third_party = (ROOT / "docs" / "THIRD_PARTY.md").read_text(encoding="utf-8")
@@ -27,6 +28,12 @@ for marker in (
     '"license": "BSD-3-Clause"',
     '"freedoom_delivery": "bundled-verified-content"',
     '"gzdoom_delivery": "official-source-bootstrap"',
+    'LEGAL_OUTPUT = DIST / "CHECKOUT-OF-HELL-Legal-Content-rc.zip"',
+    '"package_kind": "legal-content-release-candidate"',
+    '"content_only": True',
+    '"gzdoom_included": False',
+    "build_legal_content_entries",
+    "build_legal_manifest",
 ):
     assert marker in package, f"release-candidate builder missing legal-content marker: {marker}"
 
@@ -54,13 +61,24 @@ for marker in (
 ):
     assert marker in verifier, f"player package verifier missing legal-content gate: {marker}"
 
+for marker in (
+    "content-manifest.json",
+    "legal-content-release-candidate",
+    "official-source-bootstrap-via-player-package",
+    "byte-for-byte identical",
+    "sha256(CONTENT.read_bytes())",
+):
+    assert marker in bundle_test, f"standalone legal-content bundle test missing: {marker}"
+
 for text, source in ((third_party, "THIRD_PARTY"), (packaging, "PACKAGING")):
     for marker in ("BSD 3-Clause", "official", "checksum", "GZDoom"):
         assert marker in text, f"{source} docs missing: {marker}"
 
 assert "python tools/test_legal_content_package_contract.py" in workflow
+assert "python tools/test_legal_content_bundle.py" in workflow
+assert "checkout-of-hell-legal-content-rc" in workflow
 assert "Build portable Windows release-candidate package" in workflow
 assert "GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}" in workflow
 
 print("Standalone legal base-content packaging contract: PASS")
-print("Freedoom bundling is pinned, official-source checksum verified, notice/provenance protected, and GZDoom remains official-source bootstrap.")
+print("Freedoom bundling is pinned, official-source checksum verified, notice/provenance protected, and the reusable content-only RC is independently verified while GZDoom remains official-source bootstrap.")
