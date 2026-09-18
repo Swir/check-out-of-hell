@@ -1,0 +1,108 @@
+namespace = "ZDoom";
+
+vertex { x = -760.0; y = -500.0; }
+vertex { x =  760.0; y = -500.0; }
+vertex { x =  760.0; y =  500.0; }
+vertex { x = -760.0; y =  500.0; }
+
+// Alternating demo-wall rows create readable electronics aisles while preserving a clean central
+// service lane for the rear network reboot and the final return-to-clock-out route.
+vertex { x = -420.0; y = -300.0; }
+vertex { x = -420.0; y =   40.0; }
+vertex { x = -140.0; y =  -40.0; }
+vertex { x = -140.0; y =  300.0; }
+vertex { x =  140.0; y = -300.0; }
+vertex { x =  140.0; y =   40.0; }
+vertex { x =  420.0; y =  -40.0; }
+vertex { x =  420.0; y =  300.0; }
+
+sector
+{
+    heightfloor = 0;
+    heightceiling = 176;
+    texturefloor = "CHKFLR";
+    textureceiling = "CHKCEIL";
+    lightlevel = 146;
+}
+
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+
+linedef { v1 = 0; v2 = 1; sidefront = 0; blocking = true; }
+linedef { v1 = 1; v2 = 2; sidefront = 1; blocking = true; }
+linedef { v1 = 2; v2 = 3; sidefront = 2; blocking = true; }
+linedef { v1 = 3; v2 = 0; sidefront = 3; blocking = true; }
+
+// Same-sector display walls create line-of-sight breaks without introducing fragile sector logic.
+linedef { v1 = 4; v2 = 5; sidefront = 4; sideback = 5; blocking = true; }
+linedef { v1 = 6; v2 = 7; sidefront = 6; sideback = 7; blocking = true; }
+linedef { v1 = 8; v2 = 9; sidefront = 8; sideback = 9; blocking = true; }
+linedef { v1 = 10; v2 = 11; sidefront = 10; sideback = 11; blocking = true; }
+
+thing
+{
+    x = 0.0; y = -430.0; angle = 90; type = 1;
+    skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true;
+    single = true; coop = true; dm = true;
+}
+
+// One-shot fresh-entry cleanup keeps optional memo/kill-switch state department-local while normal
+// save/restore inside Electronics preserves everything collected after the initializer destroys itself.
+thing { x = 0.0; y = -418.0; angle = 0; type = 17144; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -190.0; y = -350.0; angle = 0; type = 2001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  190.0; y = -350.0; angle = 180; type = 2002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =    0.0; y = -255.0; angle = 0; type = 17010; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Initial pressure occupies side aisles rather than the central service lane.
+thing { x = -580.0; y = -180.0; angle = 0; type = 17004; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  575.0; y = -145.0; angle = 180; type = 17001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -545.0; y =  180.0; angle = 315; type = 17002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  545.0; y =  195.0; angle = 225; type = 17005; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Two UPS/breaker repairs pull the player through opposite display aisles. After both are live, the
+// project-owned rear Store Network Reboot appears and supplies the final authoritative 3/3 power step.
+thing { x = -650.0; y =   85.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  650.0; y =  300.0; angle = 180; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 0.0; y = 445.0; angle = 180; type = 17146; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Each breaker repair receives a three-second telegraph before a themed right-flank response.
+thing { x = 615.0; y = 130.0; angle = 180; type = 17145; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Full power hands off to the hardened supervisor/response systems instead of stacking an instant
+// third side-lane enemy on the network reboot interaction.
+thing { x = 0.0; y = 365.0; angle = 270; type = 17101; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -475.0; y = 345.0; angle = 315; type = 17103; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Full power grants recovery plus an optional opposite-lane display safety control.
+thing { x = 475.0; y = 315.0; angle = 180; type = 17128; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -620.0; y = 170.0; angle = 0; type = 17148; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// One authored demo-wall surge anchor stays on the outer right lane and activates only after full
+// power plus Overtime. The optional kill switch suppresses only this hazard, not hostile pressure.
+thing { x = 620.0; y = -70.0; angle = 180; type = 17147; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Clearance reveals a non-blocking return guide near the entry; physical completion remains in the
+// shared shift director and still requires returning to the front service lane.
+thing { x = 0.0; y = -370.0; angle = 90; type = 17132; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Optional compliance-route jokes never gate power, management or the exit.
+thing { x = -675.0; y = -325.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  675.0; y =   65.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -545.0; y =  420.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Ambient Overtime pressure remains outside the entry/clock-out centerline.
+thing { x = -685.0; y = 370.0; angle = 315; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  685.0; y = 405.0; angle = 225; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  545.0; y = -280.0; angle = 180; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
