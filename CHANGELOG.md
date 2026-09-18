@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.32.6-dev — 2026-09-18
+
+### Added
+- Warehouse 13.5 now includes an optional right-side Damaged Goods cage sealed by four project-owned, shootable stock piles. Breaking a useful gap spends ammunition to reach a Damaged-Goods Label Crate and Emergency Break Snack while all mandatory objectives remain outside the nook.
+- `WarehouseStockPile` (`17136`) reuses the project-owned generated `BOXE` presentation, has explicit solid/shootable collision, and clears its blocking state on destruction with an existing project-owned warehouse impact cue.
+
+### Changed
+- `tools/test_warehouse_lift_objective_contract.py` now protects the four-pile barrier, stock-pile damage/death behavior, optional side-cage geometry, reward placement, mandatory-objective exclusion and packaged PK3/MAP02 payload in addition to the existing lift, management-response, recovery-cache and return-guide gates.
+- Warehouse design/gameplay documentation now records the ammo-for-supplies route and removes breakable stock piles from the remaining-polish list. Project progress remains **86.8%** and Demo Release readiness remains **70.0%** because this playable side-route improvement does not complete a weighted phase, target-Windows sign-off, release notes or a public release.
+
+### Validation
+- The full repository CI remains the merge gate, including the expanded Warehouse contract, pinned-GZDoom parser/runtime checks, real two-process save/load, RC packaging, README PRO v2 and Progress SVG PRO.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.32.5-dev — 2026-09-18
 
 ### Added
@@ -90,7 +104,7 @@
 
 ### Changed
 - Warehouse 13.5 is no longer only a three-breaker → automatic boss gate: the useful workplace task is now restore circuits → activate the freight lift → survive Regional Management → return to the warehouse entry.
-- Department-local warehouse/lift inventory state is cleared only on genuinely fresh map loads; savegame restores preserve it alongside the existing serialized shift state.
+- Department-local warehouse/lift inventory state is cleared only on genuinely fresh map loads; savegame restores preserve them alongside the existing serialized shift state.
 - Project progress remains **84.8%** and Demo Release readiness remains **60.0%**. This is real playable MAP02 work, but it does not mark Warehouse 13.5 polished, complete the target-Windows Closing Time sign-off, finish legal packaging/release notes or create a release.
 
 ### Validation
