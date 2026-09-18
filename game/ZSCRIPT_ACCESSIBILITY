@@ -52,10 +52,16 @@ class CheckoutAccessibilityHandler : EventHandler
         int fuses = p.CountInv("CheckoutFuse");
         int memos = p.CountInv("CorporateMemo");
         bool cleared = p.CountInv("SupervisorClearanceToken") > 0;
-        String taskText = CheckoutShiftDirector.GetObjectiveText(fuses, cleared, false);
+        bool warehouse = p.CountInv("WarehouseDepartmentToken") > 0;
+        bool liftEngaged = p.CountInv("WarehouseLiftOverride") > 0;
+        String taskText = CheckoutShiftDirector.GetDepartmentObjectiveText(
+            fuses, cleared, false, warehouse, liftEngaged);
         String statusText = String.Format("%s  //  %s",
             CheckoutShiftDirector.GetOvertimeLabel(stage),
             CheckoutShiftDirector.GetPressureMeter(stage));
+        String progressText = warehouse
+            ? String.Format("POWER %d/3  //  LIFT %s", fuses, liftEngaged ? "ONLINE" : "OFFLINE")
+            : String.Format("POWER %d/3  //  MEMOS %d/3", fuses, memos);
 
         if (focusHud)
         {
@@ -63,8 +69,7 @@ class CheckoutAccessibilityHandler : EventHandler
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
             Screen.DrawText(smallfont, Font.CR_GOLD, 148, 86, taskText,
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
-            Screen.DrawText(smallfont, Font.CR_WHITE, 148, 100,
-                String.Format("POWER %d/3  //  MEMOS %d/3", fuses, memos),
+            Screen.DrawText(smallfont, Font.CR_WHITE, 148, 100, progressText,
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
             Screen.DrawText(smallfont, Font.CR_WHITE, 148, 114, statusText,
                 DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
