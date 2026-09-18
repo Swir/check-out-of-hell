@@ -182,3 +182,20 @@ actor EmployeeReliefKit : Medikit 17131
         Stop
     }
 }
+
+// Spawned only after supervisor clearance. This makes the physical return-to-checkout objective
+// visually legible without adding collision, blocking combat lanes or changing the exit trigger.
+actor CheckoutClockOutGuide
+{
+    Radius 4
+    Height 96
+    +NOBLOCKMAP
+    +NOGRAVITY
+    States
+    {
+    Spawn:
+        COUT A 24 Bright
+        COUT A 12
+        Loop
+    }
+}
