@@ -22,12 +22,15 @@ if not CHECKSUM.is_file():
 
 required = {
     "PLAY.bat",
+    "PLAYTEST-WINDOWS.bat",
     "README-FIRST.txt",
     "package-manifest.json",
     "runtime-lock.json",
     "tools/bootstrap_runtime.ps1",
     "tools/verify_player_package.ps1",
+    "tools/windows_playtest_assistant.ps1",
     "docs/THIRD_PARTY.md",
+    "docs/WINDOWS_PLAYTEST.md",
     "branding/icon.svg",
     "LICENSE",
     "game/CHECKOUT-OF-HELL.pk3",
@@ -78,6 +81,25 @@ with zipfile.ZipFile(PACKAGE, "r") as archive:
     if "freedoom base content is bundled" not in launcher:
         raise SystemExit("Release-candidate launcher must explain that verified Freedoom content is bundled")
 
+    playtest_launcher = archive.read("PLAYTEST-WINDOWS.bat").decode("utf-8", errors="strict").lower()
+    if "windows_playtest_assistant.ps1" not in playtest_launcher:
+        raise SystemExit("Release-candidate playtest launcher is not wired to the evidence assistant")
+    if "auto-approve" not in playtest_launcher or "publish" not in playtest_launcher:
+        raise SystemExit("Release-candidate playtest launcher must state that it cannot authorize/publish a demo")
+
+    playtest_script = archive.read("tools/windows_playtest_assistant.ps1").decode("utf-8", errors="strict")
+    for marker in (
+        'public_release_authorized = $false',
+        '"manual_save_quit_load"',
+        '"physical_controller"',
+        '"real_hardware_performance"',
+        "Get-FileHash",
+        "bootstrap_runtime.ps1",
+        "Start-Process -FilePath $GZDoomExe",
+    ):
+        if marker not in playtest_script:
+            raise SystemExit(f"Release-candidate playtest assistant is missing required evidence behavior: {marker}")
+
     readme = archive.read("README-FIRST.txt").decode("utf-8", errors="strict")
     for phrase in (
         "NOT A PUBLIC DEMO RELEASE",
@@ -86,6 +108,8 @@ with zipfile.ZipFile(PACKAGE, "r") as archive:
         "Freedoom v0.13.0 base content is already bundled",
         "GZDoom engine",
         "official upstream",
+        "PLAYTEST-WINDOWS.bat",
+        "never publishes a release or auto-approves the demo",
     ):
         if phrase not in readme:
             raise SystemExit(f"Release-candidate README is missing required player/legal wording: {phrase}")
@@ -99,6 +123,16 @@ with zipfile.ZipFile(PACKAGE, "r") as archive:
         raise SystemExit("Release-candidate package must explicitly remain non-public-release metadata")
     if manifest.get("game_entry") != "game/CHECKOUT-OF-HELL.pk3":
         raise SystemExit("Release-candidate manifest names the wrong game payload")
+
+    source = manifest.get("source")
+    if not isinstance(source, dict):
+        raise SystemExit("Release-candidate manifest must record source identity")
+    commit = source.get("commit")
+    branch = source.get("branch")
+    if not isinstance(commit, str) or not commit or not (commit == "unknown" or re.fullmatch(r"[0-9a-fA-F]{40}", commit)):
+        raise SystemExit("Release-candidate manifest source commit is invalid")
+    if not isinstance(branch, str) or not branch:
+        raise SystemExit("Release-candidate manifest source branch is invalid")
 
     entries = manifest.get("entries")
     if not isinstance(entries, dict) or not entries:
@@ -185,4 +219,4 @@ if sha256(PACKAGE.read_bytes()).hexdigest() != match.group(1):
     raise SystemExit("Release-candidate package SHA-256 sidecar does not match the ZIP")
 
 print("Windows portable release-candidate package contract: PASS")
-print("Artifact is Python-free, locally integrity-checked, bundles verified BSD-licensed Freedoom content, uses official-source GZDoom bootstrap, and is not public-released.")
+print("Artifact is Python-free, locally integrity-checked, bundles verified BSD-licensed Freedoom content, includes non-authorizing Windows sign-off evidence tooling, uses official-source GZDoom bootstrap, and is not public-released.")
