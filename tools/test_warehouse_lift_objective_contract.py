@@ -56,8 +56,12 @@ for marker in (
         raise SystemExit(f"Warehouse objective presentation is incomplete: {marker}")
 
 mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
-if '17133 = "WarehouseLiftControlSpawner"' not in mapinfo:
-    raise SystemExit("Warehouse lift-control spawner DoomEdNum is missing")
+for marker in (
+    '17133 = "WarehouseLiftControlSpawner"',
+    '17135 = "WarehouseManagementWaveSpawner"',
+):
+    if marker not in mapinfo:
+        raise SystemExit(f"Warehouse DoomEdNum registration is missing: {marker}")
 
 zscript = (GAME / "ZSCRIPT").read_text(encoding="utf-8")
 for marker in (
@@ -84,6 +88,24 @@ for marker in (
     if marker not in regional_block:
         raise SystemExit(f"Regional Manager must remain behind breakers + freight-lift activation: {marker}")
 
+wave_block = zscript.split("class WarehouseManagementWaveSpawner : Actor", 1)[1]
+for marker in (
+    'p.CountInv("WarehouseDepartmentToken") < 1',
+    'p.CountInv("WarehouseLiftOverride") < 1',
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    "nextCheck = Level.maptime + 7;",
+    "elapsed >= 12",
+    'Actor.Spawn("ScannerTurret", Pos)',
+    "elapsed >= 30",
+    'Actor.Spawn("PalletJack", Pos)',
+    "elapsed >= 52",
+    'Actor.Spawn("CartOfDoom", Pos)',
+):
+    if marker not in wave_block:
+        raise SystemExit(f"Warehouse management-response cadence is incomplete: {marker}")
+if wave_block.count("Destroy();") < 2:
+    raise SystemExit("Warehouse management-response spawner must retire after clearance or its final wave")
+
 accessibility = (GAME / "ZSCRIPT_ACCESSIBILITY").read_text(encoding="utf-8")
 for marker in (
     'p.CountInv("WarehouseDepartmentToken") > 0',
@@ -99,15 +121,22 @@ if map02.count("type = 17111") != 3:
     raise SystemExit("Warehouse 13.5 must retain exactly three breaker fuses")
 if map02.count("type = 17133") != 1 or map02.count("type = 17104") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one lift-control anchor and one Regional Manager anchor")
+if map02.count("type = 17135") != 1:
+    raise SystemExit("Warehouse 13.5 needs exactly one authored management-response anchor")
 if "type = 17006" in map02:
     raise SystemExit("Warehouse 13.5 must not pre-place the Regional Manager")
 
 control_match = re.search(r"x = 0\.0; y = ([0-9.]+); angle = 270; type = 17133", map02)
 boss_match = re.search(r"x = 0\.0; y = ([0-9.]+); angle = 270; type = 17104", map02)
+wave_match = re.search(r"x = (-?[0-9.]+); y = ([0-9.]+); angle = 315; type = 17135", map02)
 if not control_match or not boss_match:
     raise SystemExit("Warehouse rear-bay objective anchors are not at the expected readable centerline")
 if float(boss_match.group(1)) - float(control_match.group(1)) < 96.0:
     raise SystemExit("Regional Manager anchor is too close to the lift-control interaction")
+if not wave_match or abs(float(wave_match.group(1))) < 350.0:
+    raise SystemExit("Warehouse management-response anchor must stay on a rear flank, not the objective centerline")
+if float(wave_match.group(2)) < 240.0:
+    raise SystemExit("Warehouse management-response anchor must remain in the rear loading-bay combat zone")
 
 environment = (GAME / "MAP02_ENVIRONMENT.udmf").read_text(encoding="utf-8")
 if environment.count("type = 17134") < 2:
@@ -126,11 +155,13 @@ with zipfile.ZipFile(PK3, "r") as archive:
     runtime_map = archive.read("maps/MAP02.wad")
     if "class WarehouseLiftControlSpawner : Actor" not in runtime_zscript:
         raise SystemExit("Packaged ZSCRIPT lost the warehouse lift-control spawner")
+    if "class WarehouseManagementWaveSpawner : Actor" not in runtime_zscript:
+        raise SystemExit("Packaged ZSCRIPT lost the warehouse management-response spawner")
     if "actor WarehouseLiftOverride : Inventory" not in runtime_decorate:
         raise SystemExit("Packaged DECORATE lost the warehouse lift override")
-    for marker in (b"type = 17133", b"type = 17104", b"type = 17134"):
+    for marker in (b"type = 17133", b"type = 17104", b"type = 17135", b"type = 17134"):
         if marker not in runtime_map:
             raise SystemExit(f"Packaged MAP02 lost warehouse objective/environment marker: {marker!r}")
 
-print("Warehouse 13.5 freight-lift objective contract: PASS")
-print("Three breakers now power a deliberate lift override before Regional Management can enter; HUD/accessibility and project-owned loading-bay presentation stay synchronized.")
+print("Warehouse 13.5 freight-lift objective + management-response contract: PASS")
+print("Three breakers power the lift override; Regional Management then gets a deterministic flank response at 12/30/52 seconds that retires on supervisor clearance.")
