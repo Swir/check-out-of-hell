@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.32.1-dev — 2026-09-18
+
+### Added
+- Build-source provenance in every non-public Windows release-candidate `package-manifest.json`: the exact Git commit, active branch/ref and tracked-source clean state are captured before build outputs are generated.
+- `docs/RC_SOURCE_PROVENANCE.md`, documenting how RC source identity is recorded, verified and kept separate from public-release authorization.
+
+### Changed
+- `tools/test_release_candidate_package.py` now rejects CI candidates without a full commit SHA, a usable branch/ref, a clean tracked source snapshot or an embedded commit that differs from the checkout validating the package.
+- Source archives without `.git` metadata remain buildable for development but record provenance as unavailable rather than fabricating a commit identity; such packages cannot pass the CI RC provenance contract.
+- GZDoom remains a pinned official-source first-run bootstrap and verified Freedoom bundling is unchanged. Project progress remains **84.8%** and Demo Release readiness remains **60.0%**; provenance hardening does not complete the interactive Windows sign-off, standalone legal-content gate, release notes or GitHub Release.
+
+### Validation
+- The existing release-candidate package contract rebuilds the candidate and verifies the embedded source commit against `git rev-parse HEAD` in CI while retaining all package SHA-256, Freedoom license/provenance, Windows extraction, pinned-GZDoom parser and real two-process save/load gates.
+- No public demo or GitHub Release was created.
+
 ## 0.32.0-dev — 2026-09-18
 
 ### Added
@@ -147,7 +162,7 @@
 ### Added
 - Real two-process pinned-GZDoom save → process exit → load validation in CI under Xvfb/Mesa software rendering.
 - Official-source Linux runtime resolver for the exact locked GZDoom release plus official Freedoom release, including Freedoom SHA-256 verification against the upstream checksum asset.
-- `tools/gzdoom_save_load_smoke_linux.py`, which authors `CheckoutFuse 2/3` and `CorporateMemo 2/3` state in live MAP01, writes a real `.zds`, launches a second GZDoom process and verifies both counters survive restore.
+- `tools/gzdoom_save_load_smoke_linux.py`, which authors `CheckoutFuse 2/3` and `CorporateMemo 2/3` state in live MAP01, writes a real `.zds`, starts a second engine process and verifies both counters survive restore.
 - `tools/test_gzdoom_save_load_smoke_contract.py`, protecting runtime-lock use, process-boundary behavior, save-file sanity checks and CI wiring.
 - SWIR Progress SVG PRO assets: `assets/readme/progress-card.svg`, `assets/readme/progress-mini.svg` and reusable `assets/readme/progress-template.svg`.
 - `tools/generate_progress_svgs.py`, a deterministic generator/check that reads the authoritative ROADMAP phase progress and weights, verifies README/ROADMAP agreement, validates bounded SVG geometry/XML and self-tests zero/partial/complete/N/A cases.
