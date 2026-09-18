@@ -29,11 +29,14 @@ if reset_marker < 0 or save_guard > reset_marker:
 if "freshWorldInitPending = true;" not in loaded_body:
     raise SystemExit("Fresh maps must schedule a department-local inventory reset")
 
-for marker in (
+fresh_reset_markers = (
     'p.A_TakeInventory("CheckoutFuse", 3);',
     'p.A_TakeInventory("SupervisorClearanceToken", 1);',
+    'p.A_TakeInventory("WarehouseDepartmentToken", 1);',
+    'p.A_TakeInventory("WarehouseLiftOverride", 1);',
     "freshWorldInitPending = false;",
-):
+)
+for marker in fresh_reset_markers:
     if marker not in source:
         raise SystemExit(f"Fresh-map carry-over protection missing: {marker}")
 
@@ -57,9 +60,11 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "freshWorldInitPending",
         'A_TakeInventory("CheckoutFuse", 3)',
         'A_TakeInventory("SupervisorClearanceToken", 1)',
+        'A_TakeInventory("WarehouseDepartmentToken", 1)',
+        'A_TakeInventory("WarehouseLiftOverride", 1)',
     ):
         if marker not in packaged:
             raise SystemExit(f"Packaged ZSCRIPT missing save/load marker: {marker}")
 
 print("Save/load state contract: PASS")
-print("Save restores preserve serialized shift state, while fresh departments reset breaker/supervisor carry-over before objective logic runs.")
+print("Save restores preserve serialized shift state, while fresh departments reset breaker/supervisor/warehouse objective carry-over before objective logic runs.")
