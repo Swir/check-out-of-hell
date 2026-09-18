@@ -90,6 +90,56 @@ def _compressor_reset_sprite(path: Path) -> None:
     _write_png(path, width, height, pixels, (width // 2, height - 2))
 
 
+def _surge_isolation_sprite(path: Path) -> None:
+    width, height = 52, 60
+    transparent = (0, 0, 0, 0)
+    shadow = (2, 5, 10, 220)
+    panel = (5, 15, 26, 255)
+    steel = (24, 48, 64, 255)
+    cyan = (98, 229, 255, 255)
+    blue = (0, 136, 255, 255)
+    ice = (218, 248, 255, 255)
+    green = (84, 214, 130, 255)
+    pixels = [transparent] * (width * height)
+
+    _rect(pixels, width, height, 8, 7, 47, 57, shadow)
+    _rect(pixels, width, height, 5, 4, 44, 54, panel)
+    _rect(pixels, width, height, 5, 4, 44, 7, cyan)
+    _rect(pixels, width, height, 5, 51, 44, 54, blue)
+    _rect(pixels, width, height, 5, 4, 8, 54, blue)
+    _rect(pixels, width, height, 41, 4, 44, 54, cyan)
+    _rect(pixels, width, height, 12, 12, 37, 20, steel)
+    _rect(pixels, width, height, 15, 14, 20, 18, ice)
+    _rect(pixels, width, height, 23, 14, 28, 18, green)
+    _rect(pixels, width, height, 31, 14, 34, 18, cyan)
+    _rect(pixels, width, height, 14, 26, 35, 44, steel)
+    _rect(pixels, width, height, 18, 29, 31, 33, ice)
+    _rect(pixels, width, height, 23, 32, 28, 41, green)
+    _rect(pixels, width, height, 16, 46, 34, 47, cyan)
+    _rect(pixels, width, height, 19, 49, 31, 50, green)
+    _write_png(path, width, height, pixels, (width // 2, height - 2))
+
+
+def _freezer_vent_sprite(path: Path, phase: int) -> None:
+    width, height = 64, 48
+    transparent = (0, 0, 0, 0)
+    frost = (218, 248, 255, 185)
+    cyan = (98, 229, 255, 150)
+    blue = (0, 136, 255, 110)
+    pixels = [transparent] * (width * height)
+
+    if phase == 0:
+        blocks = ((25, 26, 38, 36, frost), (18, 30, 45, 40, cyan), (28, 18, 35, 28, frost))
+    elif phase == 1:
+        blocks = ((18, 20, 45, 38, frost), (10, 27, 53, 43, cyan), (24, 12, 39, 27, blue))
+    else:
+        blocks = ((12, 15, 51, 38, frost), (5, 24, 58, 45, cyan), (20, 7, 43, 27, blue))
+
+    for x1, y1, x2, y2, color in blocks:
+        _rect(pixels, width, height, x1, y1, x2, y2, color)
+    _write_png(path, width, height, pixels, (width // 2, height - 4))
+
+
 def _memo_sound(path: Path) -> None:
     rate = 22050
     duration = 0.34
@@ -118,6 +168,9 @@ def _memo_sound(path: Path) -> None:
 def generate_presentation_assets(game_dir: Path) -> None:
     _memo_sprite(game_dir / "sprites" / "CMEMA0.png")
     _compressor_reset_sprite(game_dir / "sprites" / "FCRSA0.png")
+    _surge_isolation_sprite(game_dir / "sprites" / "FSISA0.png")
+    for phase, frame in enumerate("ABC"):
+        _freezer_vent_sprite(game_dir / "sprites" / f"FVEN{frame}0.png", phase)
     _memo_sound(game_dir / "sounds" / "memo.wav")
 
 

@@ -100,9 +100,12 @@ Current prototype includes:
 - a deterministic management-response anchor after full power,
 - a full-power recovery cache before the supervisor fight,
 - four telegraphed environmental Overtime hazard anchors kept away from the entry/clock-out approach,
-- paired project-owned `FROZEN FOODS` signs, a generated compressor-control pickup, safe restock/cone clutter, slow-failing lights and optional Emergency Break Snacks,
+- one full-power compressor-surge anchor on the right service flank that activates only once Overtime is live, waits 18 seconds before its first burst, telegraphs for two seconds and repeats at deterministic `34 / 26 / 20` second spacing as pressure rises,
+- one optional opposite-side `Compressor Surge Isolation` control that suppresses only future refrigeration bursts while hostile Overtime and management remain active,
+- paired project-owned `FROZEN FOODS` signs, generated compressor-reset/isolation/burst sprites, safe restock/cone clutter, slow-failing lights and optional Emergency Break Snacks,
 - three department-local Corporate Compliance Memos as an optional exploration route,
 - a map-local initializer that clears only memo progress carried from the previous department and then destroys itself so normal save/restore inside MAP03 preserves newly collected memos,
+- a save-aware surge-state handler that clears isolation only on fresh transitions so a saved safety choice remains stable,
 - an original deterministic department track, **Frozen Foods — Compressor Choir**,
 - a post-clear `CLOCK OUT` guide and the existing physical front completion rule.
 
@@ -115,19 +118,26 @@ work task changes route language without forking core progression state.
 
 The first two breaker repairs trigger a readable side-lane answer only after a three-second warning.
 The final compressor action deliberately does not spawn another instant side enemy; full power instead
-hands pressure to the Night Manager and existing management-response sequence. Overtime side-lane
-electrical arcs still turn a long shift into a routing hazard, but their telegraphs and placement keep
-the central completion route readable.
+hands pressure to the Night Manager and existing management-response sequence. If Overtime is already
+active, the powered compressor can begin a separate right-flank refrigeration surge only after an
+18-second grace period. Every burst uses the same visible/audio warning language for two full seconds,
+and the authored spacing tightens with Overtime stage rather than randomizing the player's safe route.
+
+The opposite-side isolation station is a deliberate optional work task rather than a combat-off switch.
+Taking it retires future compressor bursts only. Ambient Overtime enemies, standard electrical hazard
+anchors, management waves and the Night Manager remain active. Supervisor clearance also cancels any
+armed compressor burst so the post-boss return remains readable. This creates a real workplace choice:
+spend movement/time on safety or accept a predictable side-lane hazard while fighting management.
 
 This is playable vertical-slice content, not a claim that Frozen Foods is a polished final campaign
-level. Future passes can add refrigeration-specific mechanics only after the current route survives
-real gameplay validation; slippery movement or freezer-door traps must never become random punishment.
+level. Future passes should deepen secrets and cold-storage encounter variety only after the current
+route survives real gameplay validation; additional refrigeration gimmicks must never become random
+punishment or obscure the central service lane.
 
 Remaining Frozen Foods polish:
-- target-machine balance/readability playtesting across all three difficulty modes,
+- target-machine balance/readability playtesting across all three difficulty modes, including surge spacing and isolation-station placement,
 - stronger cold-storage-specific secrets and encounter variation without obscuring the two breaker routes or compressor task,
-- refrigeration/frost interactions only if they remain readable and deterministic,
-- final lighting/geometry polish after the objective route is validated in play.
+- final lighting/geometry polish after the objective route and refrigeration pressure survive real play.
 
 ## Later departments
 
