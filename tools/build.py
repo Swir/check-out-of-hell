@@ -89,9 +89,10 @@ def decorate_payload() -> bytes:
 
 
 def zscript_payload() -> bytes:
-    """Compose shift logic, post-boss polish and opt-in accessibility into one ZSCRIPT lump."""
+    """Compose shift logic, department pacing, post-boss polish and accessibility into one ZSCRIPT lump."""
     chunks = [
         (GAME / "ZSCRIPT").read_text(encoding="utf-8").rstrip(),
+        (GAME / "ZSCRIPT_WAREHOUSE").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ACCESSIBILITY").read_text(encoding="utf-8").rstrip(),
     ]
