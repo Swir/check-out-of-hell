@@ -22,7 +22,7 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.32.4-dev` |
+| Version | `0.32.8-dev` |
 | Implemented/testable progress | **86.8%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
@@ -49,11 +49,11 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | --- | --- |
 | ⚡ Fast readable combat | Clear attacks, uncluttered lanes and classic-FPS movement pressure. |
 | 🛠️ Real shift objectives | Breakers, powered routes, shutters, freight-lift controls, supervisor gates and a physical clock-out finish. |
-| ⏱️ Overtime | Deterministic escalation adds alarms, enemy pressure and telegraphed electrical hazards, then retires fresh pressure after supervisor clearance for a readable escape leg. |
+| ⏱️ Overtime | Deterministic escalation adds alarms, enemy pressure and telegraphed electrical hazards, with useful store systems able to change the physical risk without becoming a combat-off switch. |
 | 🧰 Retail arsenal | Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher use original presentation and audio. |
 | 👹 Store hazards | Angry Self-Checkout, Cart of Doom, Security Price Scanner and Possessed Pallet Jack fill distinct combat roles. |
 | 👔 Corporate bosses | Night Manager and the two-phase Regional Manager turn management into literal boss fights. |
-| 🔎 Optional discoveries | Staff Only rewards, Corporate Compliance Memos and useful workplace-comedy resource stashes reward exploration. |
+| 🔎 Optional discoveries | Staff Only rewards, Corporate Compliance Memos, damaged-goods supplies and workplace-comedy side tasks reward exploration. |
 | ☠️ Authored difficulty | Closing Crew, Graveyard Shift and Corporate Hell tune resources and damage without hiding faster scripted hazards. |
 | ♿ Readability options | Optional focus HUD and large textual warnings reinforce objectives, pressure and critical-health states without changing combat rules. |
 | 🎮 Controller setup | A dedicated menu exposes core remaps, engine device/stick setup and restrained signature-weapon haptics without overwriting player bindings. |
@@ -76,7 +76,7 @@ Every department is designed around a useful workplace task rather than pure are
 
 `MAP01 — Closing Time` currently implements the most complete version of this loop. Three Breaker Fuses pull the player through left, right and rear routes. At `2/3` power, a Staff Only side room opens. At `3/3`, a Full-Power Emergency Cache becomes available and the Night Manager enters the floor. Two management-response anchors then feed a readable Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack sequence at `15 / 34 / 54 / 76` seconds after full power. Once the supervisor is dead, fresh reinforcements and newly spawned Overtime floor hazards stop, an original `CLOCK OUT` guide appears near the front lanes, and the player must physically return to the existing checkout trigger to finish the shift.
 
-`MAP02 — Warehouse 13.5` now has its own two-step work objective instead of sharing MAP01's boss gate verbatim. The player restores three loading-bay circuits, then a project-owned Freight Lift Override powers up at the rear bay. The Regional Manager remains off-floor until that control is deliberately engaged; after the boss response, the HUD sends the player back to the warehouse entry. Breaker, warehouse and supervisor-clearance tokens are department-local: a normal map transition clears them before the next department objective begins, while loading a save preserves serialized shift state.
+`MAP02 — Warehouse 13.5` now has its own department loop instead of sharing MAP01's boss gate verbatim. The player restores three loading-bay circuits, then chooses whether to detour for optional full-power recovery and Lockout/Tagout safety tasks before engaging the project-owned Freight Lift Override at the rear bay. The safety permit retires future Warehouse electrical floor arcs only; ambient hostile Overtime remains active. Engaging the lift starts a rear-flank Security Price Scanner → Possessed Pallet Jack → Cart of Doom management response at `12 / 30 / 52` seconds and allows The Regional Manager to enter. After supervisor clearance, the HUD and project-owned `CLOCK OUT` guide send the player back to the warehouse entry. Breaker, warehouse, lift, safety and supervisor-clearance state is department-local on fresh transitions while savegame restores preserve current shift state.
 
 ## ⏱️ Overtime
 
@@ -89,7 +89,9 @@ Overtime is deterministic enough to learn while still raising pressure:
 | `3:00–4:29` | OVERTIME | Cart of Doom pressure + active electrical floor hazards |
 | `4:30+` | HELL RUSH | Possessed Pallet Jack pressure + faster hazard cadence |
 
-Closing Time uses authored reinforcement and hazard anchors instead of random spawning on top of the player. Electrical hazards telegraph before dealing damage, and the front clock-out lane is protected from trap anchors. The authored warning/arc schedule remains unchanged, but the hazard anchors now retire when supervisor clearance is earned so no fresh electrical trap appears during the deliberate return-to-checkout leg; enemies already alive remain part of the escape pressure.
+Closing Time uses authored reinforcement and hazard anchors instead of random spawning on top of the player. Electrical hazards telegraph before dealing damage, and the front clock-out lane is protected from trap anchors. The authored warning/arc schedule remains unchanged, but the hazard anchors retire when supervisor clearance is earned so no fresh electrical trap appears during the deliberate return-to-checkout leg; enemies already alive remain part of the escape pressure.
+
+Warehouse 13.5 reuses the same readable warning/arc schedule at two outer side-lane anchors. Once all three warehouse circuits are live, an optional project-owned `LOCKOUT / TAG OUT` station appears on the rear-left side lane. Collecting its permit removes those future electrical floor-arc anchors for that department only; it deliberately does **not** stop ambient Overtime enemies, management-response waves, the freight-lift objective or The Regional Manager.
 
 ## ☠️ Difficulty modes
 
@@ -121,7 +123,7 @@ The secret pass keeps progression readable: the Unclaimed Receipt Roll, Damaged-
 
 ### MAP02 — Warehouse 13.5
 
-The warehouse slice uses project-owned retail surfaces, freight/loading-bay signage and an original soundtrack. Restoring all three breakers now powers a visible Freight Lift Override at the rear bay; The Regional Manager cannot enter until the player activates that control. Warehouse-specific HUD and Focus HUD text track breakers, lift state, Regional Management and the return-to-entry leg. The new dressing is deliberately non-blocking and kept off the central objective/combat lane. Warehouse 13.5 remains playable development content, not a polished final level.
+The warehouse slice uses project-owned retail surfaces, freight/loading-bay signage and an original soundtrack. Restoring all three breakers now powers a visible Freight Lift Override at the rear bay, an optional recovery cache and a dedicated `LOCKOUT / TAG OUT` safety sign on the opposite side lane. The right-side Damaged Goods cage lets the player spend ammunition breaking project-owned stock piles for optional supplies. Taking the safety permit stops future warehouse electrical floor arcs without disabling enemy Overtime, and engaging the lift starts the authored `12 / 30 / 52` management response before The Regional Manager can enter. Warehouse-specific HUD and Focus HUD text track breakers, lift state, Regional Management and the return-to-entry leg; a post-clear `CLOCK OUT` guide improves the final return route. Warehouse 13.5 remains playable development content, not a polished final level.
 
 Planned departments — **Frozen Foods**, **Electronics**, **Customer Service** and **Management Floor** — remain intentionally unexpanded until they have real playable content.
 
@@ -138,7 +140,7 @@ The tracks are deterministic Standard MIDI files produced by `tools/generate_mus
 
 ## 💾 Save/load safety
 
-The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear only department-local Breaker Fuse, supervisor-clearance and Warehouse 13.5 lift/objective tokens; save restores keep serialized shift state intact.
+The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear department-local Breaker Fuse, supervisor-clearance and Warehouse 13.5 lift/objective state, while the Warehouse safety handler separately clears its Lockout/Tagout permit only on fresh transitions. Save restores keep serialized shift state intact.
 
 The repository now runs a real **save → process exit → load** regression against the exact pinned GZDoom `g4.14.2`: CI boots the official Linux package under Xvfb/Mesa software rendering, authors unmistakable `CheckoutFuse 2/3` plus `CorporateMemo 2/3` state in live MAP01, writes a real `.zds`, starts a second engine process, reloads that save and verifies both objective counters survived. The same runtime lock and official Freedoom release are used, with the Freedoom archive SHA-256 verified against its official checksum file.
 
@@ -208,13 +210,13 @@ Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher firing cues 
 
 ## ⚙️ Performance hardening
 
-Objective and encounter watcher actors now avoid unnecessary 35-Hz inventory/stage polling. Most slow-changing gates sample every **7 tics** (worst-case response below 0.2 seconds), while the authored Night Manager response sequence samples every **4 tics**. One-shot manager/cache/shutter/clock-out-guide watchers remove themselves after completing their job, reinforcement watchers retire after supervisor clearance, and Overtime hazard anchors now use sparse clearance checks while preserving their authored schedule.
+Objective and encounter watcher actors now avoid unnecessary 35-Hz inventory/stage polling. Most slow-changing gates sample every **7 tics** (worst-case response below 0.2 seconds), while the authored Night Manager response sequence samples every **4 tics**. One-shot manager/cache/shutter/clock-out-guide/safety watchers remove themselves after completing their job, reinforcement watchers retire after supervisor clearance, and Overtime hazard anchors use sparse clearance/safety checks while preserving their authored schedule.
 
 The `55 / 38 / 25` second Overtime reinforcement cadence, `15 / 34 / 54 / 76` second Night Manager wave thresholds and `90 / 135 / 180 / 212 / 244 / 270` second initial environmental-hazard events are unchanged. CI protects these invariants and the pinned-engine parser still validates the resulting ZScript. This is script-overhead and lifecycle hardening, **not** a fabricated FPS claim; real-hardware Windows performance sanity remains part of final demo sign-off. See [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
 
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts including the Warehouse 13.5 freight-lift gate, accessibility, controller and performance hardening, generated art/audio/music, the Closing Time secret pass and post-boss clock-out polish, verifies both Windows portable package channels plus the standalone legal-content RC, extracts and checks the player release candidate with Windows PowerShell, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. The Windows job additionally syntax-parses the target-machine sign-off harness; human gameplay evidence remains deliberately outside hosted CI. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts including the Warehouse 13.5 freight-lift, management-response, damaged-goods and Lockout/Tagout gates, accessibility, controller and performance hardening, generated art/audio/music, the Closing Time secret pass and post-boss clock-out polish, verifies both Windows portable package channels plus the standalone legal-content RC, extracts and checks the player release candidate with Windows PowerShell, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. The Windows job additionally syntax-parses the target-machine sign-off harness; human gameplay evidence remains deliberately outside hosted CI. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
 
 Useful developer commands:
 
@@ -284,8 +286,8 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md), [`docs/THIRD_PARTY.md`](docs
 ## ⚠️ Current limitations
 
 - `Closing Time` has its authored post-boss clock-out polish and a complete first secrets/joke-interaction pass, but is not yet signed off as the first fully polished level.
-- `Warehouse 13.5` now has a distinct breaker → freight-lift override → Regional Manager → return objective and project-owned loading-bay identity, but still needs vertical routes, department-specific encounter polish and interactive balance/readability sign-off before it is called polished.
-- The cross-process save/load serialization gate is green on the exact pinned engine; the new Windows sign-off kit repeats that round-trip against the exact extracted RC, but the required human save/quit/load confirmation remains open until a target-Windows run records PASS evidence.
+- `Warehouse 13.5` now has breakers → optional recovery/Lockout safety choices → freight-lift override → management-response → Regional Manager → return progression, plus the Damaged Goods side route and dedicated Overtime side-lane hazards, but still needs stronger vertical routes, more authored department-specific encounter polish and interactive balance/readability sign-off before it is called polished.
+- The cross-process save/load serialization gate is green on the exact pinned engine; the Windows sign-off kit repeats that round-trip against the exact extracted RC, but the required human save/quit/load confirmation remains open until a target-Windows run records PASS evidence.
 - Controller setup/haptics and the script-overhead performance pass are implemented and contract-tested, but physical controller and real-hardware performance confirmation remain part of the target-Windows demo sign-off.
 - The Windows player RC and standalone legal-content RC are integrity/provenance checked in CI but are not a public demo; release notes and the final interactive Windows sign-off remain open release gates.
 - Later departments remain planned until they have real playable content.
