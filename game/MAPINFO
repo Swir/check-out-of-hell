@@ -18,6 +18,7 @@ DoomEdNums
     17133 = "WarehouseLiftControlSpawner"
     17135 = "WarehouseManagementWaveSpawner"
     17137 = "WarehouseSafetyLockoutSpawner"
+    17139 = "FrozenDepartmentInitSpawner"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
@@ -75,8 +76,17 @@ map MAP01 "Closing Time"
 map MAP02 "Warehouse 13.5"
 {
     levelnum = 2
-    next = "MAP01"
+    next = "MAP03"
     sky1 = "SKY1"
     music = "D_COH02"
+    nointermission
+}
+
+map MAP03 "Frozen Foods"
+{
+    levelnum = 3
+    next = "MAP01"
+    sky1 = "SKY1"
+    music = "D_COH03"
     nointermission
 }
