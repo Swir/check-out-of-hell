@@ -22,7 +22,7 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.33.0-dev` |
+| Version | `0.33.2-dev` |
 | Implemented/testable progress | **86.8%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5`, `MAP03 — Frozen Foods` |
 | Public demo | **Not published yet** |
@@ -48,7 +48,7 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | Feature | What it adds |
 | --- | --- |
 | ⚡ Fast readable combat | Clear attacks, uncluttered lanes and classic-FPS movement pressure. |
-| 🛠️ Real shift objectives | Breakers, powered routes, shutters, freight-lift controls, supervisor gates and a physical clock-out finish. |
+| 🛠️ Real shift objectives | Breakers, compressor resets, powered routes, shutters, freight-lift controls, supervisor gates and a physical clock-out finish. |
 | ⏱️ Overtime | Deterministic escalation adds alarms, enemy pressure and telegraphed electrical hazards, with useful store systems able to change the physical risk without becoming a combat-off switch. |
 | 🧰 Retail arsenal | Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher use original presentation and audio. |
 | 👹 Store hazards | Angry Self-Checkout, Cart of Doom, Security Price Scanner and Possessed Pallet Jack fill distinct combat roles. |
@@ -78,7 +78,7 @@ Every department is designed around a useful workplace task rather than pure are
 
 `MAP02 — Warehouse 13.5` has its own department loop instead of sharing MAP01's boss gate verbatim. The player restores three loading-bay circuits, then chooses whether to detour for optional full-power recovery and Lockout/Tagout safety tasks before engaging the project-owned Freight Lift Override at the rear bay. The safety permit retires future Warehouse electrical floor arcs only; ambient hostile Overtime remains active. Engaging the lift starts a rear-flank Security Price Scanner → Possessed Pallet Jack → Cart of Doom management response at `12 / 30 / 52` seconds and allows The Regional Manager to enter. After supervisor clearance, the HUD and project-owned `CLOCK OUT` guide send the player back to the warehouse entry. Breaker, warehouse, lift, safety and supervisor-clearance state is department-local on fresh transitions while savegame restores preserve current shift state.
 
-`MAP03 — Frozen Foods` is now a real playable department rather than a roadmap placeholder. Four freezer-aisle barriers keep a readable central service lane while the three cold-chain breakers pull the player through side and rear routes. Full power exposes a recovery cache and a power-gated Night Manager response with the existing deterministic management-wave system. Four side-lane Overtime hazard anchors make long freezer shifts physically more dangerous without trapping the entry/clock-out route. Three optional Corporate Compliance Memos, project-owned Frozen Foods signage, cold-storage clutter and the original `Compressor Choir` theme give the department its own identity. After supervisor clearance, the existing physical clock-out rule sends the player back to the entry.
+`MAP03 — Frozen Foods` is now a real playable department rather than a roadmap placeholder. Four freezer-aisle barriers keep a readable central service lane while two cold-chain breaker repairs pull the player through opposite side routes. Each repair telegraphs a dedicated right-flank response; after the second breaker, a project-owned **Cold-Chain Compressor Reset** appears at the rear service position and physically supplies the final `3/3` power step. Full power then exposes the recovery cache and existing Night Manager/management-wave response without stacking another instant side-lane enemy. Four side-lane Overtime hazard anchors make long freezer shifts physically more dangerous without trapping the entry/clock-out route. Three optional Corporate Compliance Memos, project-owned Frozen Foods signage, cold-storage clutter and the original `Compressor Choir` theme give the department its own identity. After supervisor clearance, the existing physical clock-out rule sends the player back to the entry.
 
 ## ⏱️ Overtime
 
@@ -131,9 +131,9 @@ The warehouse slice uses project-owned retail surfaces, freight/loading-bay sign
 
 ### MAP03 — Frozen Foods
 
-Frozen Foods now ships as playable development content. The map uses four freezer-aisle barriers to create alternating cold-storage routes around a readable central lane, three mandatory breaker circuits, a full-power recovery cache, a power-gated Night Manager, a staged management-response anchor, four environmental Overtime hazard points and a post-clear return guide. Initial enemy pressure is kept off the entry centerline, while three optional Corporate Compliance Memos and two Emergency Break Snacks reward side exploration. The map-local memo initializer clears only progress carried into a fresh MAP03 and destroys itself, so saves made after entering Frozen Foods keep memo progress normally.
+Frozen Foods now ships as playable development content. The map uses four freezer-aisle barriers to create alternating cold-storage routes around a readable central lane, two mandatory breaker circuits, a two-breaker-gated rear **Cold-Chain Compressor Reset** that supplies the final power token, a full-power recovery cache, a power-gated Night Manager, a staged management-response anchor, four environmental Overtime hazard points and a post-clear return guide. Each breaker repair first telegraphs the right freezer flank for three seconds, then answers with a Security Price Scanner and a Cart of Doom respectively; the compressor transition deliberately adds no third instant side-lane enemy. Initial pressure stays off the entry centerline, while three optional Corporate Compliance Memos and two Emergency Break Snacks reward side exploration. The map-local memo initializer clears only progress carried into a fresh MAP03 and destroys itself, so saves made after entering Frozen Foods keep memo progress normally.
 
-The department uses paired project-owned `FROZEN FOODS` signs, safe restock/cone clutter, slow-failing lights and the original **Frozen Foods — Compressor Choir** MIDI track. This is a first playable vertical-slice implementation, not a claim that the level is fully polished.
+The compressor reset uses its own deterministic project-owned control sprite generated during the normal build. The department also uses paired project-owned `FROZEN FOODS` signs, safe restock/cone clutter, slow-failing lights and the original **Frozen Foods — Compressor Choir** MIDI track. This is a first playable vertical-slice implementation, not a claim that the level is fully polished.
 
 Planned later departments — **Electronics**, **Customer Service** and **Management Floor** — remain intentionally unexpanded until they have real playable content.
 
@@ -151,7 +151,7 @@ The tracks are deterministic Standard MIDI files produced by `tools/generate_mus
 
 ## 💾 Save/load safety
 
-The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear department-local Breaker Fuse, supervisor-clearance and Warehouse 13.5 lift/objective state, while the Warehouse safety handler separately clears its Lockout/Tagout permit only on fresh transitions. Frozen Foods adds a map-local one-shot initializer for optional Corporate Memo carryover; after it clears stale memo progress on entry and destroys itself, ordinary save/restore inside MAP03 preserves newly collected memos. Save restores keep serialized shift state intact.
+The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear department-local Breaker Fuse, supervisor-clearance and Warehouse 13.5 lift/objective state, while the Warehouse safety handler separately clears its Lockout/Tagout permit only on fresh transitions. Frozen Foods adds a map-local one-shot initializer for optional Corporate Memo carryover; after it clears stale memo progress on entry and destroys itself, ordinary save/restore inside MAP03 preserves newly collected memos. The rear compressor-control spawner also self-retires after creating its pickup, so normal saves preserve the actual objective pickup/state instead of respawning it repeatedly. Save restores keep serialized shift state intact.
 
 The repository runs a real **save → process exit → load** regression against the exact pinned GZDoom `g4.14.2`: CI boots the official Linux package under Xvfb/Mesa software rendering, authors unmistakable `CheckoutFuse 2/3` plus `CorporateMemo 2/3` state in live MAP01, writes a real `.zds`, starts a second engine process, reloads that save and verifies both objective counters survived. The same runtime lock and official Freedoom release are used, with the Freedoom archive SHA-256 verified against its official checksum file.
 
@@ -299,7 +299,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md), [`docs/THIRD_PARTY.md`](docs
 
 - `Closing Time` has its authored post-boss clock-out polish and a complete first secrets/joke-interaction pass, but is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` now has breakers → optional recovery/Lockout safety choices → freight-lift override → management-response → Regional Manager → return progression, plus the Damaged Goods side route and dedicated Overtime side-lane hazards, but still needs stronger vertical routes, more authored department-specific encounter polish and interactive balance/readability sign-off before it is called polished.
-- `Frozen Foods` is now playable with freezer-aisle routing, three breakers, full-power recovery, Night Manager pressure, Overtime hazards, optional memos, department dressing and its own music, but it remains first-pass vertical-slice content rather than a polished final level.
+- `Frozen Foods` is now playable with freezer-aisle routing, two breaker repairs → rear compressor reset → full-power Night Manager pressure, Overtime hazards, optional memos, department dressing and its own music, but it remains first-pass vertical-slice content rather than a polished final level.
 - The cross-process save/load serialization gate is green on the exact pinned engine; the Windows sign-off kit repeats that round-trip against the exact extracted RC, but the required human save/quit/load confirmation remains open until a target-Windows run records PASS evidence.
 - Controller setup/haptics and the script-overhead performance pass are implemented and contract-tested, but physical controller and real-hardware performance confirmation remain part of the target-Windows demo sign-off.
 - The Windows player RC and standalone legal-content RC are integrity/provenance checked in CI but are not a public demo; release notes and the final interactive Windows sign-off remain open release gates.
