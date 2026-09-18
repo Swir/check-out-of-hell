@@ -57,8 +57,8 @@ thing
     single = true; coop = true; dm = true;
 }
 
-// One-shot fresh-entry cleanup keeps optional memo/kill-switch state department-local while normal
-// save/restore inside Electronics preserves everything collected after the initializer destroys itself.
+// One-shot fresh-entry cleanup keeps optional memo/kill-switch/reboot state department-local while
+// normal save/restore inside Electronics preserves everything collected after the initializer exits.
 thing { x = 0.0; y = -418.0; angle = 0; type = 17144; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 thing { x = -190.0; y = -350.0; angle = 0; type = 2001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
@@ -72,10 +72,14 @@ thing { x = -545.0; y =  180.0; angle = 315; type = 17002; skill1 = true; skill2
 thing { x =  545.0; y =  195.0; angle = 225; type = 17005; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Two UPS/breaker repairs pull the player through opposite display aisles. After both are live, the
-// project-owned rear Store Network Reboot appears and supplies the final authoritative 3/3 power step.
+// project-owned rear Store Network Reboot appears and starts a short hold-the-department sequence.
 thing { x = -650.0; y =   85.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  650.0; y =  300.0; angle = 180; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = 0.0; y = 445.0; angle = 180; type = 17146; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Reboot pressure comes from one authored outer-right lane anchor so the central interaction/escape
+// route stays readable. The sequence itself owns the final authoritative 3/3 power token.
+thing { x = 575.0; y = 250.0; angle = 180; type = 17149; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Each breaker repair receives a three-second telegraph before a themed right-flank response.
 thing { x = 615.0; y = 130.0; angle = 180; type = 17145; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
