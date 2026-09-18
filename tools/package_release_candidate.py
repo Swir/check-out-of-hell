@@ -43,6 +43,10 @@ Player path
 You do NOT need to search for GZDoom, Freedoom, Python, WAD files, or any other
 required runtime file manually.
 
+Release-sign-off testers can run PLAYTEST-WINDOWS.bat. It uses the same verified
+package/runtime path, launches separate manual play/load sessions and records a
+local evidence report. It never publishes a release or auto-approves the demo.
+
 The candidate deliberately redistributes only third-party content whose bundled
 license obligations are handled here. GZDoom remains an official-source first-
 run download instead of being copied into this package. Network or verification
@@ -168,9 +172,6 @@ def build_freedoom_bundle(lock: dict) -> dict[str, bytes]:
     except zipfile.BadZipFile as exc:
         raise SystemExit("Official Freedoom release asset is not a valid ZIP archive") from exc
 
-    # The v0.13.0 binary release ZIP does not carry COPYING.adoc, so obtain the
-    # exact notice from the same pinned upstream repository tag. This remains an
-    # official, immutable-source path and is recorded in the provenance file.
     license_text = download_bytes(license_url, accept="text/plain")
 
     if len(wad) < 1024 * 1024:
@@ -218,17 +219,47 @@ def build_entry_map() -> dict[str, bytes]:
     lock = json.loads(lock_bytes.decode("utf-8"))
     entries = {
         "PLAY.bat": read_required(ROOT / "packaging" / "PLAY-RC.bat"),
+        "PLAYTEST-WINDOWS.bat": read_required(ROOT / "PLAYTEST-WINDOWS.bat"),
         "README-FIRST.txt": README_FIRST.encode("utf-8"),
         "runtime-lock.json": lock_bytes,
         "tools/bootstrap_runtime.ps1": read_required(ROOT / "tools" / "bootstrap_runtime.ps1"),
         "tools/verify_player_package.ps1": read_required(ROOT / "tools" / "verify_player_package.ps1"),
+        "tools/windows_playtest_assistant.ps1": read_required(ROOT / "tools" / "windows_playtest_assistant.ps1"),
         "docs/THIRD_PARTY.md": read_required(ROOT / "docs" / "THIRD_PARTY.md"),
+        "docs/WINDOWS_PLAYTEST.md": read_required(ROOT / "docs" / "WINDOWS_PLAYTEST.md"),
         "branding/icon.svg": read_required(ROOT / "branding" / "icon.svg"),
         "LICENSE": read_required(ROOT / "LICENSE"),
         PACKAGED_PK3: read_required(SOURCE_PK3),
     }
     entries.update(build_freedoom_bundle(lock))
     return entries
+
+
+def resolve_source_identity() -> dict[str, str]:
+    commit = os.environ.get("GITHUB_SHA", "").strip()
+    branch = (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME") or "").strip()
+
+    def git_value(*args: str) -> str:
+        try:
+            result = subprocess.run(
+                ["git", "-C", str(ROOT), *args],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        except OSError:
+            return ""
+        return result.stdout.strip() if result.returncode == 0 else ""
+
+    if not commit:
+        commit = git_value("rev-parse", "HEAD")
+    if not branch:
+        branch = git_value("rev-parse", "--abbrev-ref", "HEAD")
+
+    return {
+        "commit": commit or "unknown",
+        "branch": branch or "unknown",
+    }
 
 
 def build_manifest(entries: dict[str, bytes]) -> bytes:
@@ -238,6 +269,7 @@ def build_manifest(entries: dict[str, bytes]) -> bytes:
         "package_kind": "windows-portable-release-candidate",
         "public_release": False,
         "game_entry": PACKAGED_PK3,
+        "source": resolve_source_identity(),
         "runtime": {
             "gzdoom_tag": lock["gzdoom"]["tag"],
             "gzdoom_delivery": "official-source-bootstrap",
@@ -284,6 +316,7 @@ def main() -> None:
     print("Freedoom came from the pinned official release and passed its official checksum.")
     print("The exact BSD notice came from the same pinned upstream repository tag and is provenance-recorded.")
     print("GZDoom remains an official-source first-run download; no manual dependency hunting is required.")
+    print("Target-Windows sign-off testers also get the non-authorizing PLAYTEST-WINDOWS evidence helper.")
     print("This CI artifact is not a public demo release.")
 
 
