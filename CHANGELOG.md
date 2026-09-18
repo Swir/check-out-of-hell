@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.32.2-dev — 2026-09-18
+
+### Added
+- `tools/test_windows_offline_runtime_cache.ps1`, a Windows release-candidate gate that verifies the extracted package, primes the pinned runtime once from official upstream, removes downloaded archive/cache material, blocks outbound HTTP(S), reruns the packaged bootstrap and requires unchanged GZDoom/Freedoom hashes.
+- `tools/test_windows_offline_runtime_cache_contract.py`, protecting the cache-removal, blocked-network, hash/identity and GitHub Actions wiring without replacing the real target-Windows gameplay sign-off.
+
+### Changed
+- Windows CI now proves the documented later-launch behavior against the exact extracted RC: after the first verified runtime preparation, the second bootstrap must succeed with outbound networking blocked and without repopulating the runtime archive cache.
+- The offline reuse pass requires the rewritten runtime manifest to keep the exact pinned GZDoom tag/asset name/asset ID/archive byte count and `bundled-verified-content` Freedoom delivery, with installed runtime hashes unchanged.
+- Project progress remains **84.8%** and Demo Release readiness remains **60.0%**. This packaging resilience evidence does not mark Closing Time polished, complete the interactive target-Windows controller/balance/performance sign-off, finish the standalone legal-content decision, write release notes or create a GitHub Release.
+
+### Validation
+- The Ubuntu build job statically protects the offline-runtime harness and documentation, while the Windows runtime-resolution job syntax-parses the PowerShell harness and executes the real extracted-RC online-prime → archive-cache removal → blocked-network reuse sequence.
+- Existing package integrity, official-source runtime resolution, pinned-GZDoom parser, real two-process save/load, README PRO v2 and Progress SVG PRO gates remain in force; no public demo or GitHub Release was created.
+
 ## 0.32.1-dev — 2026-09-18
 
 ### Added
@@ -217,7 +232,7 @@
 - GitHub Actions execution of the original soundtrack contract.
 
 ### Changed
-- MAP01 and MAP02 now use project-owned `D_COH01` / `D_COH02` music instead of inherited compatible-IWAD music lumps.
+- MAP01 and MAP02 now use project-owned `D_COH01` / `D_COH02` music instead of inherited base-game music lumps.
 - The build pipeline now generates and packages the `music/` namespace alongside visual and sound assets.
 - README/ROADMAP progress raised to 72% and Vertical Slice progress to 88% for the implemented/testable soundtrack milestone.
 
