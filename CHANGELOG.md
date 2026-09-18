@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.32.7-dev — 2026-09-18
+
+### Added
+- Warehouse 13.5 now has a dedicated `MAP02_OVERTIME.udmf` layer with two authored side-lane Overtime hazard anchors. They reuse the project-owned warning/arc presentation and the existing deterministic `90 / 135 / 180 / 212 / 244 / 270` second schedule.
+
+### Changed
+- The new warehouse hazard anchors stay at the outer side lanes, away from the freight-lift/clock-out centerline and outside the optional Damaged Goods cage, so prolonged shifts gain physical pressure without obscuring mandatory progression.
+- The shared clearance-aware hazard spawner retires both Warehouse anchors when Regional Management is cleared, preserving the readable return-to-entry leg.
+- `tools/test_overtime_hazard_contract.py` now verifies both MAP01 and MAP02 source layers plus packaged WAD payloads and protects the warehouse side-lane placement. Project progress remains **86.8%** and Demo Release readiness remains **70.0%** because this gameplay polish does not complete a weighted phase or the target-Windows human sign-off.
+
+### Validation
+- The full repository CI remains the merge gate, including the expanded Overtime contract, Warehouse objective contract, pinned-GZDoom parser/runtime checks, real two-process save/load, RC packaging, README PRO v2 and Progress SVG PRO.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.32.6-dev — 2026-09-18
 
 ### Added

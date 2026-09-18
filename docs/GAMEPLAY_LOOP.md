@@ -71,7 +71,7 @@ Overtime is a deterministic pressure director driven by elapsed map time.
 | 3:00–4:29 | OVERTIME | Cart of Doom reinforcement pressure + active electrical floor hazards |
 | 4:30+ | HELL RUSH | Frequent Possessed Pallet Jack pressure + faster hazard cadence |
 
-Map designers place invisible `CheckoutOvertimeSpawner` and hazard anchors at authored locations. Reinforcements never appear directly on top of the player, and electrical hazards use a visible warning phase before damage. Scripted Overtime timings are intentionally shared by all difficulty modes so the player can learn the escalation language instead of fighting hidden random rules. In Closing Time, the environmental hazard schedule remains `90 / 135 / 180 / 212 / 244 / 270` seconds before entering a 20-second Hell Rush cadence; supervisor clearance retires any remaining anchors so the final route is pressured by survivors rather than newly created traps.
+Map designers place invisible `CheckoutOvertimeSpawner` and hazard anchors at authored locations. Reinforcements never appear directly on top of the player, and electrical hazards use a visible warning phase before damage. Scripted Overtime timings are intentionally shared by all difficulty modes so the player can learn the escalation language instead of fighting hidden random rules. In Closing Time, the environmental hazard schedule remains `90 / 135 / 180 / 212 / 244 / 270` seconds before entering a 20-second Hell Rush cadence; supervisor clearance retires any remaining anchors so the final route is pressured by survivors rather than newly created traps. Warehouse 13.5 now uses the same readable schedule at two authored side-lane anchors, deliberately kept off the freight-lift/clock-out centerline and outside the Damaged Goods cage; those anchors retire on Regional Manager clearance through the same token gate.
 
 ## Difficulty modes
 
@@ -129,11 +129,12 @@ MAP02 now has a separate testable route contract:
 - the control and boss anchors remain separated by a safe readable gap,
 - one right-side optional cage is sealed by exactly four breakable project-owned stock piles,
 - the cage contains useful label/health rewards but no breaker, lift control or boss anchor,
+- two authored Overtime hazard anchors remain on side lanes, outside the objective centerline and optional cage, and retire after supervisor clearance,
 - HUD and Focus HUD states stay synchronized with the warehouse marker and lift token,
 - generated lift/freight signage and the MAP02 environment layer are present in the packaged PK3,
 - direct Regional Manager pre-placement remains forbidden.
 
-`tools/test_warehouse_lift_objective_contract.py` protects these rules in CI alongside the existing Regional Manager asset/behavior contract.
+`tools/test_warehouse_lift_objective_contract.py` and the shared Overtime hazard contract protect these rules in CI alongside the existing Regional Manager asset/behavior contract.
 
 ## Next gameplay step
 

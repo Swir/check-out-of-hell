@@ -21,14 +21,14 @@ def png_chunks(data: bytes):
 def read_textmap(wad: bytes) -> str:
     ident, numlumps, directory_offset = struct.unpack("<4sII", wad[:12])
     if ident != b"PWAD" or numlumps < 1:
-        raise SystemExit("MAP01 WAD header is invalid")
+        raise SystemExit("Map WAD header is invalid")
     for index in range(numlumps):
         entry = directory_offset + index * 16
         offset, size, raw_name = struct.unpack("<II8s", wad[entry : entry + 16])
         name = raw_name.rstrip(b"\0").decode("ascii")
         if name == "TEXTMAP":
             return wad[offset : offset + size].decode("utf-8")
-    raise SystemExit("MAP01 WAD has no TEXTMAP lump")
+    raise SystemExit("Map WAD has no TEXTMAP lump")
 
 
 if not PK3.exists():
@@ -109,6 +109,20 @@ if map_extension.count("type = 17106") != 4:
 if "y = -430.0" in map_extension or "y = -365.0" in map_extension:
     raise SystemExit("Overtime hazards must not occupy the player start/clock-out zone")
 
+warehouse_extension = (GAME / "MAP02_OVERTIME.udmf").read_text(encoding="utf-8")
+if warehouse_extension.count("type = 17106") != 2:
+    raise SystemExit("Warehouse 13.5 must contain exactly two authored Overtime hazard anchors")
+for marker in (
+    "x = -500.0; y = -40.0; angle = 0; type = 17106",
+    "x =  500.0; y = -40.0; angle = 0; type = 17106",
+):
+    if marker not in warehouse_extension:
+        raise SystemExit(f"Warehouse Overtime hazard anchor left its readable side-lane position: {marker}")
+if "x = 0.0" in warehouse_extension:
+    raise SystemExit("Warehouse Overtime hazards must stay off the lift/clock-out centerline")
+if "y = 116.0" in warehouse_extension or "y = 170.0" in warehouse_extension:
+    raise SystemExit("Warehouse Overtime hazards must not enter the optional Damaged Goods cage")
+
 sndinfo = (GAME / "SNDINFO").read_text(encoding="utf-8")
 for marker in (
     "coh/overtimealarm   sounds/overtime_alarm",
@@ -154,5 +168,15 @@ with zipfile.ZipFile(PK3, "r") as archive:
     if textmap.count("type = 17106") != 4:
         raise SystemExit("Packaged MAP01 does not contain all four Overtime hazard anchors")
 
+    warehouse_textmap = read_textmap(archive.read("maps/MAP02.wad"))
+    if warehouse_textmap.count("type = 17106") != 2:
+        raise SystemExit("Packaged MAP02 does not contain both Warehouse Overtime hazard anchors")
+    for marker in (
+        "x = -500.0; y = -40.0; angle = 0; type = 17106",
+        "x =  500.0; y = -40.0; angle = 0; type = 17106",
+    ):
+        if marker not in warehouse_textmap:
+            raise SystemExit(f"Packaged MAP02 lost Warehouse Overtime side-lane placement: {marker}")
+
 print("Overtime environmental hazard contract: PASS")
-print("Closing Time preserves the authored Overtime schedule while hazard anchors retire after supervisor clearance.")
+print("Closing Time preserves the authored schedule, and Warehouse 13.5 now adds two side-lane arcs that retire after supervisor clearance.")

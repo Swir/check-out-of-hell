@@ -1,0 +1,7 @@
+// Warehouse 13.5 Overtime environmental hazard anchors.
+// Both side-lane anchors stay away from the entry/clock-out centerline, freight-lift control,
+// Regional Manager spawn and Damaged Goods cage. The shared spawner escalates from warnings to
+// readable floor arcs and retires as soon as supervisor clearance is recorded.
+
+thing { x = -500.0; y = -40.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  500.0; y = -40.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
