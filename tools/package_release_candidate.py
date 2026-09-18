@@ -18,8 +18,11 @@ DIST = ROOT / "dist"
 SOURCE_PK3 = DIST / "checkout-of-hell-prototype.pk3"
 OUTPUT = DIST / "CHECKOUT-OF-HELL-Windows-Portable-rc.zip"
 CHECKSUM = OUTPUT.with_suffix(OUTPUT.suffix + ".sha256")
+LEGAL_OUTPUT = DIST / "CHECKOUT-OF-HELL-Legal-Content-rc.zip"
+LEGAL_CHECKSUM = LEGAL_OUTPUT.with_suffix(LEGAL_OUTPUT.suffix + ".sha256")
 PACKAGED_PK3 = "game/CHECKOUT-OF-HELL.pk3"
 MANIFEST_NAME = "package-manifest.json"
+LEGAL_MANIFEST_NAME = "content-manifest.json"
 BUNDLED_FREEDOOM = "external/freedoom2.wad"
 FREEDOOM_LICENSE = "licenses/FREEDOOM-COPYING.adoc"
 FREEDOOM_PROVENANCE = "third_party/FREEDOOM-PROVENANCE.json"
@@ -47,6 +50,30 @@ The candidate deliberately redistributes only third-party content whose bundled
 license obligations are handled here. GZDoom remains an official-source first-
 run download instead of being copied into this package. Network or verification
 failures stop with a clear error and never fall back to unofficial mirrors.
+
+Project: https://github.com/Swir/check-out-of-hell
+by Swir
+"""
+
+LEGAL_README = """CHECKOUT OF HELL — Legal Content Release Candidate
+
+THIS IS A CONTENT-ONLY CI ARTIFACT, NOT A PUBLIC PLAYER PACKAGE OR DEMO RELEASE.
+
+Purpose
+=======
+This ZIP is the deterministic, independently verifiable content layer used by
+CHECKOUT OF HELL Windows release-candidate packaging. It contains the project
+PK3, the pinned checksum-verified Freedoom base-content WAD, project/Freedoom
+license notices, provenance metadata and the runtime lock that names the engine
+expected by the one-click player package.
+
+It intentionally does NOT redistribute a GZDoom executable. Normal players must
+use the Windows player package and double-click PLAY.bat; that launcher obtains
+missing GZDoom files automatically from the pinned official upstream release.
+No player is expected to hunt for an engine, WAD, Python runtime or mirror.
+
+The content manifest records SHA-256 and byte counts for every payload file and
+binds the bundle to the exact Git source snapshot used to build it.
 
 Project: https://github.com/Swir/check-out-of-hell
 by Swir
@@ -314,13 +341,66 @@ def build_manifest(entries: dict[str, bytes], source_snapshot: dict[str, str | b
     return (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
 
-def write_zip(entries: dict[str, bytes], manifest: bytes) -> None:
-    if OUTPUT.exists():
-        OUTPUT.unlink()
-    with zipfile.ZipFile(OUTPUT, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+def build_legal_content_entries(entries: dict[str, bytes]) -> dict[str, bytes]:
+    names = (
+        "runtime-lock.json",
+        "docs/THIRD_PARTY.md",
+        "LICENSE",
+        PACKAGED_PK3,
+        BUNDLED_FREEDOOM,
+        FREEDOOM_LICENSE,
+        FREEDOOM_PROVENANCE,
+    )
+    legal_entries = {name: entries[name] for name in names}
+    legal_entries["README-CONTENT.txt"] = LEGAL_README.encode("utf-8")
+    return legal_entries
+
+
+def build_legal_manifest(entries: dict[str, bytes], source_snapshot: dict[str, str | bool | None]) -> bytes:
+    lock = json.loads(entries["runtime-lock.json"].decode("utf-8"))
+    manifest = {
+        "schema": 1,
+        "package_kind": "legal-content-release-candidate",
+        "public_release": False,
+        "content_only": True,
+        "game_entry": PACKAGED_PK3,
+        "base_content_entry": BUNDLED_FREEDOOM,
+        "source": source_snapshot,
+        "licenses": {
+            "project": "MIT",
+            "freedoom": "BSD-3-Clause",
+        },
+        "runtime": {
+            "gzdoom_tag": lock["gzdoom"]["tag"],
+            "gzdoom_included": False,
+            "gzdoom_delivery": "official-source-bootstrap-via-player-package",
+            "freedoom_tag": lock["freedoom"]["tag"],
+            "freedoom_delivery": "bundled-verified-content",
+        },
+        "entries": {
+            name: {
+                "bytes": len(data),
+                "sha256": digest(data),
+            }
+            for name, data in sorted(entries.items())
+        },
+    }
+    return (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
+
+
+def write_archive(output: Path, entries: dict[str, bytes], manifest_name: str, manifest: bytes) -> None:
+    if output.exists():
+        output.unlink()
+    with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for name, data in sorted(entries.items()):
             archive.writestr(deterministic_info(name), data)
-        archive.writestr(deterministic_info(MANIFEST_NAME), manifest)
+        archive.writestr(deterministic_info(manifest_name), manifest)
+
+
+def write_checksum(path: Path, checksum_path: Path) -> str:
+    archive_digest = digest(path.read_bytes())
+    checksum_path.write_text(f"{archive_digest}  {path.name}\n", encoding="ascii")
+    return archive_digest
 
 
 def main() -> None:
@@ -336,23 +416,30 @@ def main() -> None:
         raise SystemExit("PK3 build did not produce the expected package")
 
     entries = build_entry_map()
-    manifest = build_manifest(entries, source_snapshot)
-    write_zip(entries, manifest)
 
-    archive_digest = digest(OUTPUT.read_bytes())
-    CHECKSUM.write_text(f"{archive_digest}  {OUTPUT.name}\n", encoding="ascii")
+    legal_entries = build_legal_content_entries(entries)
+    legal_manifest = build_legal_manifest(legal_entries, source_snapshot)
+    write_archive(LEGAL_OUTPUT, legal_entries, LEGAL_MANIFEST_NAME, legal_manifest)
+    legal_archive_digest = write_checksum(LEGAL_OUTPUT, LEGAL_CHECKSUM)
+
+    manifest = build_manifest(entries, source_snapshot)
+    write_archive(OUTPUT, entries, MANIFEST_NAME, manifest)
+    archive_digest = write_checksum(OUTPUT, CHECKSUM)
 
     print(f"Release-candidate package: {OUTPUT}")
     print(f"SHA-256:                  {archive_digest}")
+    print(f"Legal content bundle:     {LEGAL_OUTPUT}")
+    print(f"Content SHA-256:          {legal_archive_digest}")
     print(
         "Source snapshot:           "
         f"{source_snapshot['commit']} / {source_snapshot['branch']} / clean={source_snapshot['clean']}"
     )
     print("Bundled project + Freedoom content files have an internal SHA-256 manifest.")
+    print("The standalone content RC is a deterministic subset of the same verified player payload.")
     print("Freedoom came from the pinned official release and passed its official checksum.")
     print("The exact BSD notice came from the same pinned upstream repository tag and is provenance-recorded.")
     print("GZDoom remains an official-source first-run download; no manual dependency hunting is required.")
-    print("This CI artifact is not a public demo release.")
+    print("These CI artifacts are not public demo releases.")
 
 
 if __name__ == "__main__":
