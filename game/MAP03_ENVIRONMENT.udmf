@@ -1,0 +1,18 @@
+// Frozen Foods environment layer — project-owned department identity and safe retail clutter.
+// Props stay out of the central objective/clock-out lane and never gate mandatory progression.
+
+thing { x = -250.0; y = -410.0; angle = 0; type = 17121; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  250.0; y = -410.0; angle = 180; type = 17121; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -610.0; y = -250.0; angle = 0; type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  600.0; y =  220.0; angle = 180; type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -500.0; y =  300.0; angle = 0; type = 17124; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  520.0; y = -300.0; angle = 0; type = 17124; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -560.0; y = 430.0; angle = 0; type = 17126; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  560.0; y = 420.0; angle = 0; type = 17126; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -500.0; y =  40.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  500.0; y =  40.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -240.0; y = 330.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  240.0; y = 330.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

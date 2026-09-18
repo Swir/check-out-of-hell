@@ -1,0 +1,54 @@
+// CHECKOUT OF HELL - Frozen Foods department-local state helpers.
+
+// MAP03 places exactly one initializer near the player start. It clears optional Corporate Memo
+// progress carried from a previous department, then destroys itself. Because destroyed map actors
+// stay destroyed in savegames, normal save/restore inside Frozen Foods preserves newly found memos.
+class FrozenDepartmentInitSpawner : Actor
+{
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        nextCheck = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        p.A_TakeInventory("CorporateMemo", 3);
+        Destroy();
+    }
+}

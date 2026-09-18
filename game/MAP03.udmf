@@ -1,0 +1,99 @@
+namespace = "ZDoom";
+
+vertex { x = -720.0; y = -480.0; }
+vertex { x =  720.0; y = -480.0; }
+vertex { x =  720.0; y =  480.0; }
+vertex { x = -720.0; y =  480.0; }
+
+// Freezer aisles deliberately leave a readable central service lane while creating cold-storage
+// side routes for breakers, optional compliance memos and Overtime pressure.
+vertex { x = -360.0; y = -250.0; }
+vertex { x = -360.0; y =  230.0; }
+vertex { x = -120.0; y =  -40.0; }
+vertex { x = -120.0; y =  300.0; }
+vertex { x =  120.0; y = -300.0; }
+vertex { x =  120.0; y =   40.0; }
+vertex { x =  360.0; y = -230.0; }
+vertex { x =  360.0; y =  250.0; }
+
+sector
+{
+    heightfloor = 0;
+    heightceiling = 176;
+    texturefloor = "CHKFLR";
+    textureceiling = "CHKCEIL";
+    lightlevel = 150;
+}
+
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+
+linedef { v1 = 0; v2 = 1; sidefront = 0; blocking = true; }
+linedef { v1 = 1; v2 = 2; sidefront = 1; blocking = true; }
+linedef { v1 = 2; v2 = 3; sidefront = 2; blocking = true; }
+linedef { v1 = 3; v2 = 0; sidefront = 3; blocking = true; }
+
+// Two-sided same-sector freezer shelving creates lanes without adding fragile sector logic.
+linedef { v1 = 4; v2 = 5; sidefront = 4; sideback = 5; blocking = true; }
+linedef { v1 = 6; v2 = 7; sidefront = 6; sideback = 7; blocking = true; }
+linedef { v1 = 8; v2 = 9; sidefront = 8; sideback = 9; blocking = true; }
+linedef { v1 = 10; v2 = 11; sidefront = 10; sideback = 11; blocking = true; }
+
+thing
+{
+    x = 0.0; y = -400.0; angle = 90; type = 1;
+    skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true;
+    single = true; coop = true; dm = true;
+}
+
+// Fresh-entry initializer clears only carried optional memo progress; it destroys itself after one
+// successful player poll, so normal save/restore inside Frozen Foods preserves collected memos.
+thing { x = 0.0; y = -390.0; angle = 0; type = 17139; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -180.0; y = -330.0; angle = 0; type = 2001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  180.0; y = -330.0; angle = 180; type = 2002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =    0.0; y = -240.0; angle = 0; type = 17010; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Initial pressure stays in freezer side lanes so the central objective route remains readable.
+thing { x = -560.0; y = -180.0; angle = 0; type = 17001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  560.0; y = -150.0; angle = 180; type = 17004; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -520.0; y =  170.0; angle = 315; type = 17002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  520.0; y =  180.0; angle = 225; type = 17005; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Three cold-chain circuits force a full loop of the freezer aisles before management arrives.
+thing { x = -620.0; y =   80.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  620.0; y =  310.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =    0.0; y =  420.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Existing power-gated Night Manager and deterministic response wave systems are reused here so
+// Frozen Foods is a real objective/combat department without inventing an unvalidated boss system.
+thing { x = 0.0; y = 350.0; angle = 270; type = 17101; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -470.0; y = 330.0; angle = 315; type = 17103; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Full power grants one useful recovery point before the supervisor fight.
+thing { x = 470.0; y = 300.0; angle = 180; type = 17128; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Clearance reveals a non-blocking return guide near the entry; the physical clock-out trigger stays
+// in CheckoutShiftDirector and therefore still requires the player to return to the front lane.
+thing { x = 0.0; y = -350.0; angle = 90; type = 17132; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Optional cold-chain compliance route: useful exploration text, never a progression requirement.
+thing { x = -650.0; y = -310.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  650.0; y =   70.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -520.0; y =  405.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Ambient Overtime pressure stays off the entry/clock-out centerline.
+thing { x = -660.0; y = 360.0; angle = 315; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  660.0; y = 390.0; angle = 225; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  520.0; y = -260.0; angle = 180; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

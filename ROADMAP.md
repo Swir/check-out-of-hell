@@ -113,7 +113,7 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (70 ×
 - [x] Closing Time post-supervisor escape polish retires fresh Overtime floor hazards and reveals an original front-lane CLOCK OUT guide without moving the physical completion trigger
 - [ ] Level 01: Closing Time — polished
 - [ ] Level 02: Warehouse 13.5 — polished
-- [ ] Level 03: Frozen Foods
+- [x] Level 03: Frozen Foods
 - [x] Boss: The Regional Manager — original behavior/art
 - [x] Secrets and joke interactions — full Closing Time level pass
 - [x] Difficulty modes

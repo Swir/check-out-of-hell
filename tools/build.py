@@ -20,7 +20,7 @@ GAME = ROOT / "game"
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
 
-MAPS = ["MAP01", "MAP02"]
+MAPS = ["MAP01", "MAP02", "MAP03"]
 ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO", "CVARINFO", "MENUDEF"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds", "music"]
 MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]
@@ -89,10 +89,11 @@ def decorate_payload() -> bytes:
 
 
 def zscript_payload() -> bytes:
-    """Compose shift logic, post-boss polish and opt-in accessibility into one ZSCRIPT lump."""
+    """Compose shift logic, department helpers, post-boss polish and opt-in accessibility."""
     chunks = [
         (GAME / "ZSCRIPT").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8").rstrip(),
+        (GAME / "ZSCRIPT_FROZEN").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ACCESSIBILITY").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")

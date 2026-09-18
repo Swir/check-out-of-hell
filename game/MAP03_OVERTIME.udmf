@@ -1,0 +1,8 @@
+// Frozen Foods Overtime environmental hazard anchors.
+// Side-aisle placement keeps the entry/clock-out centerline readable while prolonged shifts become
+// physically more dangerous through the existing warning → electrical-arc cadence.
+
+thing { x = -620.0; y = -40.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  620.0; y = -20.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -250.0; y = 360.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  250.0; y = 360.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

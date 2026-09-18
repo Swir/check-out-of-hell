@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.33.0-dev — 2026-09-18
+
+### Added
+- `MAP03 — Frozen Foods` as a real playable third department with four authored freezer-aisle barriers, three cold-chain breaker routes, a power-gated Night Manager encounter, a deterministic management-response anchor, full-power recovery, four telegraphed Overtime hazard anchors, three optional Corporate Compliance Memos and a post-clear return guide.
+- Project-owned Frozen Foods presentation using the existing generated `FROZEN FOODS` signs, safe restock/cone clutter, slow-failing lights and optional Emergency Break Snacks, plus the new deterministic original `D_COH03.mid` theme **Frozen Foods — Compressor Choir**.
+- `FrozenDepartmentInitSpawner`, a map-local one-shot initializer that clears optional memo progress carried into a fresh MAP03 and then destroys itself so ordinary save/restore inside the department preserves newly collected memos.
+- `tools/test_frozen_foods_contract.py`, covering source layout, objective counts, entry/rear placement, generated presentation, MAPINFO/build wiring, packaged MAP03 WAD structure, composed ZScript and the new music payload.
+
+### Changed
+- The playable department chain is now `Closing Time -> Warehouse 13.5 -> Frozen Foods -> Closing Time`; the build, smoke test, soundtrack contract, CI workflow, README, roadmap and design/gameplay/music documentation all recognize the third playable department.
+- Frozen Foods deliberately reuses hardened breaker, Overtime, Night Manager response and physical clock-out systems instead of claiming an unvalidated new boss or random slippery-floor gimmick. Its department identity comes from route geometry, cold-storage dressing, optional exploration and original music while preserving fast readable combat.
+- Project progress remains **86.8%** and Demo Release readiness remains **70.0%**. Completing the first playable MAP03 implementation checks the existing Frozen Foods roadmap milestone but does not retroactively invent a new phase percentage, mark any level polished, complete the target-Windows human sign-off, write release notes or create a public release.
+
+### Validation
+- The full repository CI is the merge gate, including the new Frozen Foods contract, expanded smoke/music checks, SWIR README PRO v2 and Progress SVG PRO, pinned-GZDoom parser/runtime validation, real two-process save/load, Windows RC packaging and legal-content checks.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.32.8-dev — 2026-09-18
 
 ### Added
@@ -338,7 +355,7 @@
 ### Fixed
 - `CheckoutShiftDirector.WorldLoaded` no longer resets serialized shift state when GZDoom is restoring a savegame.
 - Breaker Fuses and `SupervisorClearanceToken` are now cleared only on genuinely fresh department loads, preventing MAP01 completion state from making the MAP02 Regional Manager objective auto-complete or spawn early.
-- Supervisor clearance is written to player inventory on the same tic as a Night Manager/Regional Manager death and can be used to recover cleared state from older development saves.
+- Supervisor clearance is written to player inventory on the same tic as a Night Manager/RegionalManager death and can be used to recover cleared state from older development saves.
 
 ### Changed
 - README/ROADMAP progress raised to 70% and Vertical Slice progress to 85% for the implemented/testable save-state hardening milestone. Full interactive Windows save → quit → load validation remains intentionally open before demo readiness.
@@ -364,7 +381,7 @@
 ### Changed
 - Night Manager reinforcements widened to `15 / 34 / 54 / 76` seconds for clearer combat spacing.
 - Ambient Overtime and unfinished supervisor waves stop creating new threats after the supervisor dies; enemies already alive remain active.
-- Project progress reached 66%, Vertical Slice 78%.
+- Project progress reached 66%.
 
 ## 0.17.0-dev — 2026-09-17
 
