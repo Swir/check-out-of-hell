@@ -24,6 +24,12 @@ workflow = WORKFLOW.read_text(encoding="utf-8")
 roadmap = ROADMAP.read_text(encoding="utf-8")
 readme = README.read_text(encoding="utf-8")
 
+# Normalize Windows separators only for static path matching. The implementation
+# still uses native Windows paths; this just keeps the contract from depending on
+# Python literal escaping details.
+harness_paths = harness.replace("\\", "/")
+workflow_paths = workflow.replace("\\", "/")
+
 # The helper must still work in its original standalone mode while accepting an
 # already prepared RC payload so the sign-off does not secretly rebuild/swap it.
 helper_markers = (
@@ -51,11 +57,11 @@ harness_markers = (
     "package_release_candidate.py",
     "CHECKOUT-OF-HELL-Windows-Portable-rc.zip",
     "Expand-Archive -LiteralPath $RcZip -DestinationPath $PackageDir -Force",
-    r'"tools\verify_player_package.ps1"',
-    r'"tools\bootstrap_runtime.ps1"',
-    r'"external\gzdoom\gzdoom.exe"',
-    r'"external\freedoom2.wad"',
-    r'"game\CHECKOUT-OF-HELL.pk3"',
+    '"tools/verify_player_package.ps1"',
+    '"tools/bootstrap_runtime.ps1"',
+    '"external/gzdoom/gzdoom.exe"',
+    '"external/freedoom2.wad"',
+    '"game/CHECKOUT-OF-HELL.pk3"',
     "gzdoom_save_load_smoke.ps1",
     "-PreparedRuntime",
     '"Closing Crew"',
@@ -75,14 +81,19 @@ harness_markers = (
     "No release should be published from this result.",
 )
 for marker in harness_markers:
-    if marker not in harness:
+    if marker not in harness_paths:
         raise SystemExit(f"Windows demo sign-off harness is missing required marker: {marker}")
 
-verify_call = r'& (Join-Path $PackageDir "tools\verify_player_package.ps1")'
-bootstrap_call = r'& (Join-Path $PackageDir "tools\bootstrap_runtime.ps1")'
+verify_call = '& (Join-Path $PackageDir "tools/verify_player_package.ps1")'
+bootstrap_call = '& (Join-Path $PackageDir "tools/bootstrap_runtime.ps1")'
 save_load_call = "& $SaveLoadHelper `"
-if not (harness.index(verify_call) < harness.index(bootstrap_call) < harness.index(save_load_call)):
+if not (
+    harness_paths.index(verify_call)
+    < harness_paths.index(bootstrap_call)
+    < harness_paths.index(save_load_call)
+):
     raise SystemExit("Required execution order is RC integrity -> pinned runtime bootstrap -> exact-RC save/load")
+
 if "-PrepareOnly" not in doc or "INCOMPLETE" not in doc:
     raise SystemExit("Windows playtest documentation must make automated-only preparation explicitly incomplete")
 if "does not publish" not in doc.lower() or "remaining" not in doc.lower():
@@ -123,18 +134,18 @@ for path, text in ((README, readme), (ROADMAP, roadmap)):
 workflow_markers = (
     "python tools/test_windows_demo_signoff_contract.py",
     "Parse Windows demo sign-off scripts",
-    r".\tools\windows_demo_signoff.ps1",
-    r".\tools\gzdoom_save_load_smoke.ps1",
+    "./tools/windows_demo_signoff.ps1",
+    "./tools/gzdoom_save_load_smoke.ps1",
     "System.Management.Automation.Language.Parser",
     "powershell-signoff-parse-report",
 )
 for marker in workflow_markers:
-    if marker not in workflow:
+    if marker not in workflow_paths:
         raise SystemExit(f"CI is not protecting the Windows sign-off kit: {marker}")
 
 # The interactive harness must never be executed by hosted CI as if it were real
-# target-machine evidence; only syntax/static contracts belong there.
-if re.search(r"run:\s*\.\\tools\\windows_demo_signoff\.ps1(?:\s|$)", workflow):
+# target-machine evidence; only parser/static contracts belong there.
+if re.search(r"run:\s*\./tools/windows_demo_signoff\.ps1(?:\s|$)", workflow_paths):
     raise SystemExit("Hosted CI must not execute the interactive Windows sign-off harness")
 
 print("Target Windows demo sign-off contract: PASS")
