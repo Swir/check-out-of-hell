@@ -19,6 +19,7 @@ required_entries = {
     "ZSCRIPT",
     "maps/MAP01.wad",
     "maps/MAP02.wad",
+    "maps/MAP03.wad",
 }
 
 with zipfile.ZipFile(PK3, "r") as archive:
@@ -27,7 +28,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
     if missing:
         raise SystemExit(f"Missing PK3 entries: {sorted(missing)}")
 
-    for map_name in ("MAP01", "MAP02"):
+    for map_name in ("MAP01", "MAP02", "MAP03"):
         wad = archive.read(f"maps/{map_name}.wad")
         ident, numlumps, dir_offset = struct.unpack("<4sII", wad[:12])
         assert ident == b"PWAD", (map_name, ident)
@@ -62,7 +63,7 @@ for actor in required_actors:
         raise SystemExit(f"Actor missing from DECORATE: {actor}")
 
 mapinfo = MAPINFO.read_text(encoding="utf-8")
-for map_name in ("MAP01", "MAP02"):
+for map_name in ("MAP01", "MAP02", "MAP03"):
     if f"map {map_name} " not in mapinfo:
         raise SystemExit(f"MAPINFO entry missing: {map_name}")
 
@@ -72,6 +73,8 @@ if '17100 = "CheckoutOvertimeSpawner"' not in mapinfo:
     raise SystemExit("Overtime spawner DoomEdNum is missing")
 if '17101 = "CheckoutManagerSpawner"' not in mapinfo:
     raise SystemExit("Gated supervisor spawner DoomEdNum is missing")
+if '17139 = "FrozenDepartmentInitSpawner"' not in mapinfo:
+    raise SystemExit("Frozen Foods department initializer DoomEdNum is missing")
 
 zscript = ZSCRIPT.read_text(encoding="utf-8")
 for required in (
@@ -84,7 +87,7 @@ for required in (
     if required not in zscript:
         raise SystemExit(f"ZScript gameplay contract missing: {required}")
 
-for map_name in ("MAP01", "MAP02"):
+for map_name in ("MAP01", "MAP02", "MAP03"):
     source_map = (ROOT / "game" / f"{map_name}.udmf").read_text(encoding="utf-8")
     if source_map.count("type = 17111") < 3:
         raise SystemExit(f"{map_name} must contain at least three breaker fuses")
@@ -97,5 +100,11 @@ if map01.count("type = 17101") != 1:
 if "type = 17003" in map01:
     raise SystemExit("MAP01 must not pre-place Night Manager before power restoration")
 
+map03 = (ROOT / "game" / "MAP03.udmf").read_text(encoding="utf-8")
+if map03.count("type = 17101") != 1 or map03.count("type = 17139") != 1:
+    raise SystemExit("MAP03 must contain one gated supervisor and one fresh-entry initializer")
+if "type = 17003" in map03:
+    raise SystemExit("MAP03 must not pre-place Night Manager before freezer power restoration")
+
 print("Smoke test: PASS")
-print("PK3 structure, canonical UDMF map markers, staged MAP01 objective loop and Overtime contract look valid.")
+print("PK3 structure, canonical UDMF markers and staged objective loops for MAP01/MAP02/MAP03 look valid.")
