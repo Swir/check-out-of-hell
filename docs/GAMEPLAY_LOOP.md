@@ -67,7 +67,7 @@ Overtime is a deterministic pressure director driven by elapsed map time.
 | 0:00–1:29 | SHIFT ACTIVE | Base encounter |
 | 1:30–2:59 | STORE UNSTABLE | Angry Self-Checkout reinforcement pressure + warning layer |
 | 3:00–4:29 | OVERTIME | Cart of Doom reinforcement pressure + active electrical floor hazards |
-| 4:30+` | HELL RUSH | Frequent Possessed Pallet Jack pressure + faster hazard cadence |
+| 4:30+ | HELL RUSH | Frequent Possessed Pallet Jack pressure + faster hazard cadence |
 
 Map designers place invisible `CheckoutOvertimeSpawner` and hazard anchors at authored locations. Reinforcements never appear directly on top of the player, and electrical hazards use a visible warning phase before damage. Scripted Overtime timings are intentionally shared by all difficulty modes so the player can learn the escalation language instead of fighting hidden random rules. In Closing Time, the environmental hazard schedule remains `90 / 135 / 180 / 212 / 244 / 270` seconds before entering a 20-second Hell Rush cadence; supervisor clearance retires any remaining anchors so the final route is pressured by survivors rather than newly created traps.
 
