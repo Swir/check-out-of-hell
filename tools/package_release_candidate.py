@@ -70,6 +70,64 @@ def read_required(path: Path) -> bytes:
     return path.read_bytes()
 
 
+def get_source_snapshot() -> dict[str, str | bool | None]:
+    """Return commit/branch/clean metadata without making Git a player dependency.
+
+    Release-candidate builds run from a Git checkout in CI and in the target-Windows
+    sign-off harness. Recording the source snapshot in the package manifest lets an
+    extracted ZIP be tied back to the exact repository commit that produced it.
+    The package still remains buildable from a source archive: unavailable Git
+    metadata is recorded explicitly instead of being fabricated.
+    """
+
+    snapshot: dict[str, str | bool | None] = {
+        "commit": "UNAVAILABLE",
+        "branch": "UNAVAILABLE",
+        "clean": None,
+    }
+
+    try:
+        commit_result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        commit = commit_result.stdout.strip().lower()
+        if not re.fullmatch(r"[0-9a-f]{40}", commit):
+            raise ValueError(f"Unexpected Git commit id: {commit!r}")
+        snapshot["commit"] = commit
+
+        branch = os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME") or ""
+        branch = branch.strip()
+        if not branch:
+            branch_result = subprocess.run(
+                ["git", "symbolic-ref", "--quiet", "--short", "HEAD"],
+                cwd=ROOT,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            branch = branch_result.stdout.strip()
+        snapshot["branch"] = branch or "DETACHED"
+
+        status_result = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        snapshot["clean"] = not bool(status_result.stdout.strip())
+    except (OSError, subprocess.CalledProcessError, ValueError):
+        # Source archives may not carry .git metadata. Keep the explicit
+        # UNAVAILABLE/None markers instead of inventing provenance.
+        pass
+
+    return snapshot
+
+
 def github_headers(url: str) -> dict[str, str]:
     headers = {
         "User-Agent": "checkout-of-hell-release-packager",
@@ -231,13 +289,14 @@ def build_entry_map() -> dict[str, bytes]:
     return entries
 
 
-def build_manifest(entries: dict[str, bytes]) -> bytes:
+def build_manifest(entries: dict[str, bytes], source_snapshot: dict[str, str | bool | None]) -> bytes:
     lock = json.loads(entries["runtime-lock.json"].decode("utf-8"))
     manifest = {
         "schema": 1,
         "package_kind": "windows-portable-release-candidate",
         "public_release": False,
         "game_entry": PACKAGED_PK3,
+        "source": source_snapshot,
         "runtime": {
             "gzdoom_tag": lock["gzdoom"]["tag"],
             "gzdoom_delivery": "official-source-bootstrap",
@@ -267,12 +326,17 @@ def write_zip(entries: dict[str, bytes], manifest: bytes) -> None:
 def main() -> None:
     DIST.mkdir(exist_ok=True)
 
+    # Capture source identity before build outputs are generated. Tracked changes
+    # are recorded, while untracked dist/cache files do not make a clean checkout
+    # look dirty after repeated local packaging attempts.
+    source_snapshot = get_source_snapshot()
+
     subprocess.run([sys.executable, str(ROOT / "tools" / "build.py")], cwd=ROOT, check=True)
     if not SOURCE_PK3.is_file():
         raise SystemExit("PK3 build did not produce the expected package")
 
     entries = build_entry_map()
-    manifest = build_manifest(entries)
+    manifest = build_manifest(entries, source_snapshot)
     write_zip(entries, manifest)
 
     archive_digest = digest(OUTPUT.read_bytes())
@@ -280,6 +344,10 @@ def main() -> None:
 
     print(f"Release-candidate package: {OUTPUT}")
     print(f"SHA-256:                  {archive_digest}")
+    print(
+        "Source snapshot:           "
+        f"{source_snapshot['commit']} / {source_snapshot['branch']} / clean={source_snapshot['clean']}"
+    )
     print("Bundled project + Freedoom content files have an internal SHA-256 manifest.")
     print("Freedoom came from the pinned official release and passed its official checksum.")
     print("The exact BSD notice came from the same pinned upstream repository tag and is provenance-recorded.")

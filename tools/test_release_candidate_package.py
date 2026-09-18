@@ -4,6 +4,7 @@ from hashlib import sha256
 import json
 from pathlib import Path
 import re
+import subprocess
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -100,6 +101,35 @@ with zipfile.ZipFile(PACKAGE, "r") as archive:
     if manifest.get("game_entry") != "game/CHECKOUT-OF-HELL.pk3":
         raise SystemExit("Release-candidate manifest names the wrong game payload")
 
+    source = manifest.get("source")
+    if not isinstance(source, dict):
+        raise SystemExit("Release-candidate manifest is missing source provenance")
+    source_commit = source.get("commit")
+    source_branch = source.get("branch")
+    source_clean = source.get("clean")
+    if not isinstance(source_commit, str) or not re.fullmatch(r"[0-9a-f]{40}", source_commit):
+        raise SystemExit("Release-candidate manifest source commit is not a full Git SHA")
+    if not isinstance(source_branch, str) or not source_branch.strip() or source_branch == "UNAVAILABLE":
+        raise SystemExit("Release-candidate manifest source branch/ref is unavailable")
+    if source_clean is not True:
+        raise SystemExit("CI release-candidate package must be produced from a clean tracked source snapshot")
+
+    try:
+        current_commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip().lower()
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise SystemExit(f"Could not resolve checkout commit for RC provenance verification: {exc}") from exc
+    if source_commit != current_commit:
+        raise SystemExit(
+            "Release-candidate manifest source commit does not match the checkout that is validating it: "
+            f"manifest={source_commit} checkout={current_commit}"
+        )
+
     entries = manifest.get("entries")
     if not isinstance(entries, dict) or not entries:
         raise SystemExit("Release-candidate manifest has no integrity entries")
@@ -185,4 +215,4 @@ if sha256(PACKAGE.read_bytes()).hexdigest() != match.group(1):
     raise SystemExit("Release-candidate package SHA-256 sidecar does not match the ZIP")
 
 print("Windows portable release-candidate package contract: PASS")
-print("Artifact is Python-free, locally integrity-checked, bundles verified BSD-licensed Freedoom content, uses official-source GZDoom bootstrap, and is not public-released.")
+print("Artifact is commit-bound, Python-free, locally integrity-checked, bundles verified BSD-licensed Freedoom content, uses official-source GZDoom bootstrap, and is not public-released.")
