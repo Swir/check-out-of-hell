@@ -5,6 +5,12 @@ vertex { x =  640.0; y = -448.0; }
 vertex { x =  640.0; y =  448.0; }
 vertex { x = -640.0; y =  448.0; }
 
+// Optional damaged-goods cage on the right-side warehouse lane. The outer east wall closes the
+// third side; the south opening is sealed only by shootable stock piles, never by an objective key.
+vertex { x = 360.0; y = 40.0; }
+vertex { x = 360.0; y = 220.0; }
+vertex { x = 640.0; y = 220.0; }
+
 sector
 {
     heightfloor = 0;
@@ -19,10 +25,18 @@ sidedef { sector = 0; texturemiddle = "CHKWALL"; }
 sidedef { sector = 0; texturemiddle = "CHKWALL"; }
 sidedef { sector = 0; texturemiddle = "CHKWALL"; }
 
+// Two-sided same-sector walls keep the optional cage readable without creating another floor zone.
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+
 linedef { v1 = 0; v2 = 1; sidefront = 0; blocking = true; }
 linedef { v1 = 1; v2 = 2; sidefront = 1; blocking = true; }
 linedef { v1 = 2; v2 = 3; sidefront = 2; blocking = true; }
 linedef { v1 = 3; v2 = 0; sidefront = 3; blocking = true; }
+linedef { v1 = 4; v2 = 5; sidefront = 4; sideback = 5; blocking = true; }
+linedef { v1 = 5; v2 = 6; sidefront = 6; sideback = 7; blocking = true; }
 
 thing
 {
@@ -56,6 +70,16 @@ thing { x = 430.0; y = 250.0; angle = 180; type = 17128; skill1 = true; skill2 =
 // After Regional Management is cleared, a non-blocking project-owned CLOCK OUT guide appears near
 // the warehouse entry so the final return leg reads immediately without changing the exit trigger.
 thing { x = 0.0; y = -300.0; angle = 90; type = 17132; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Optional Damaged Goods cage: four project-owned shootable stock piles seal a side-lane nook.
+// The player can spend ammunition to open a gap and recover supplies; no breaker or lift control
+// is hidden here, so the joke remains a tactical choice rather than disguised mandatory progress.
+thing { x = 400.0; y = 56.0; angle = 0; type = 17136; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 466.0; y = 56.0; angle = 0; type = 17136; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 532.0; y = 56.0; angle = 0; type = 17136; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 598.0; y = 56.0; angle = 0; type = 17136; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 470.0; y = 142.0; angle = 180; type = 17130; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 560.0; y = 142.0; angle = 180; type = 17126; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 thing { x = -100.0; y = -210.0; angle = 0; type = 2011; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  100.0; y = -210.0; angle = 0; type = 2011; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
