@@ -22,7 +22,7 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.29-dev` |
+| Version | `0.31-dev` |
 | Implemented/testable progress | **84.8%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
@@ -59,7 +59,7 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | 🎮 Controller setup | A dedicated menu exposes core remaps, engine device/stick setup and restrained signature-weapon haptics without overwriting player bindings. |
 | ⚙️ Performance hardening | Sparse objective/wave polling and self-retiring one-shot watchers reduce script overhead without retiming authored encounters. |
 | 🔊 Original presentation | Project-owned generated art, combat audio and department music; no ripped commercial game assets. |
-| 📦 Verified Windows candidate | CI builds a prebuilt Python-free portable candidate with local SHA-256 manifest verification before the official-source runtime bootstrap. |
+| 📦 Verified Windows candidate | CI builds a prebuilt Python-free portable candidate with local SHA-256 manifest verification, verified bundled Freedoom content and official-source GZDoom bootstrap. |
 | 🔗 One-click runtime setup | Missing redistributable runtime files are resolved from official upstream sources instead of making players hunt for them. |
 
 ## 🎮 Core shift loop
@@ -141,7 +141,7 @@ The shift director distinguishes a fresh department from a savegame restore usin
 
 The repository now runs a real **save → process exit → load** regression against the exact pinned GZDoom `g4.14.2`: CI boots the official Linux package under Xvfb/Mesa software rendering, authors unmistakable `CheckoutFuse 2/3` plus `CorporateMemo 2/3` state in live MAP01, writes a real `.zds`, starts a second engine process, reloads that save and verifies both objective counters survived. The same runtime lock and official Freedoom release are used, with the Freedoom archive SHA-256 verified against its official checksum file.
 
-A hardened Windows desktop helper is retained for target-machine confirmation. GitHub's hosted Windows runner remains parser/startup validation only because it does not expose a suitable live GZDoom graphics context; final demo sign-off still requires an interactive Windows playtest including a save/load confirmation.
+For the remaining target-machine gate, [`WINDOWS-DEMO-SIGNOFF.bat`](WINDOWS-DEMO-SIGNOFF.bat) now builds and extracts the exact Windows RC, verifies its manifest, prepares the pinned official runtime, runs the same real two-process save/load check against the extracted player payload, and only then guides the human Closing Crew / Graveyard Shift / Corporate Hell play/controller/performance checks. GitHub's hosted Windows runner syntax-checks this harness but never pretends that automation is the interactive sign-off. See [`docs/WINDOWS_PLAYTEST.md`](docs/WINDOWS_PLAYTEST.md).
 
 ## 🚀 Quick Start — Windows
 
@@ -171,7 +171,7 @@ CI now builds two different Windows ZIPs, neither of which is a public demo rele
 
 The development artifact, `CHECKOUT-OF-HELL-Windows-Portable-dev.zip`, contains the prebuilt prototype PK3, dedicated `PLAY.bat`, runtime lock, official-source bootstrap and license notices. It remains useful for development validation.
 
-The release-candidate artifact, `CHECKOUT-OF-HELL-Windows-Portable-rc.zip`, uses a stable player-facing `game/CHECKOUT-OF-HELL.pk3` payload and adds `package-manifest.json` plus `tools/verify_player_package.ps1`. Its one-click launcher verifies every bundled project file by SHA-256 and byte count **before** preparing the pinned runtime, then obtains missing GZDoom/Freedoom files only from official upstream releases. No Python or source build toolchain is required on the player's PC.
+The release-candidate artifact, `CHECKOUT-OF-HELL-Windows-Portable-rc.zip`, uses a stable player-facing `game/CHECKOUT-OF-HELL.pk3` payload and adds `package-manifest.json` plus `tools/verify_player_package.ps1`. Its one-click launcher verifies every bundled project/content file by SHA-256 and byte count **before** preparing the engine. Freedoom `v0.13.0` is already bundled from its pinned official release after verification against the official upstream checksum and ships with its BSD 3-Clause notice plus provenance record. GZDoom remains a pinned official-source first-run download; its exact release asset name, GitHub asset ID and byte size are locked and checked before extraction. No Python or source build toolchain is required on the player's PC.
 
 The release-candidate ZIP is additionally extracted and integrity-checked by Windows CI. It is a packaging milestone only: the project still does **not** publish a demo until the interactive Windows gameplay/hardware sign-off, release notes and remaining legal-content packaging gate are complete.
 
@@ -211,7 +211,7 @@ The `55 / 38 / 25` second Overtime reinforcement cadence, `15 / 34 / 54 / 76` se
 
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, accessibility, controller and performance hardening, generated art/audio/music, the Closing Time secret pass and post-boss clock-out polish, verifies both Windows portable package channels, extracts and checks the release candidate with Windows PowerShell, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, accessibility, controller and performance hardening, generated art/audio/music, the Closing Time secret pass and post-boss clock-out polish, verifies both Windows portable package channels, extracts and checks the release candidate with Windows PowerShell, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. The Windows job additionally syntax-parses the target-machine sign-off harness; human gameplay evidence remains deliberately outside hosted CI. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
 
 Useful developer commands:
 
@@ -221,6 +221,7 @@ python tools/smoke_test.py
 python tools/test_gameplay_contract.py
 python tools/test_save_load_state_contract.py
 python tools/test_gzdoom_save_load_smoke_contract.py
+python tools/test_windows_demo_signoff_contract.py
 python tools/test_readme_standard_contract.py
 python tools/generate_progress_svgs.py --check
 python tools/test_closing_time_pacing_contract.py
@@ -241,9 +242,10 @@ python tools/package_release_candidate.py
 python tools/test_release_candidate_package.py
 .\tools\gzdoom_runtime_smoke.ps1
 .\tools\gzdoom_save_load_smoke.ps1
+.\WINDOWS-DEMO-SIGNOFF.bat
 ```
 
-The automated headless round-trip additionally uses `tools/bootstrap_linux_runtime.py` and `tools/gzdoom_save_load_smoke_linux.py` inside the Linux CI job.
+The automated headless round-trip additionally uses `tools/bootstrap_linux_runtime.py` and `tools/gzdoom_save_load_smoke_linux.py` inside the Linux CI job. The target-Windows evidence procedure is documented in [`docs/WINDOWS_PLAYTEST.md`](docs/WINDOWS_PLAYTEST.md).
 
 ## 🧱 Technology & architecture
 
@@ -253,20 +255,21 @@ The automated headless round-trip additionally uses `tools/bootstrap_linux_runti
 | **UDMF** | Department geometry and gameplay layers |
 | **PK3** | Game package format |
 | **Python 3** | Deterministic original asset/music generation, builds and regression contracts |
-| **PowerShell / Batch** | Windows bootstrap, pinned runtime validation, package integrity verification and one-click launch flow |
+| **PowerShell / Batch** | Windows bootstrap, pinned runtime validation, package integrity verification, target-machine sign-off evidence and one-click launch flow |
 | **GitHub Actions** | Build/package contracts plus pinned-engine parser and two-process save/load validation |
 
 ## ⚖️ Asset & distribution policy
 
-No proprietary Doom, Star Wars or other commercial game assets are committed. Current runtime art, audio and MIDI music are generated from original repository source. Compatible legal engine/base-game data is obtained from official upstream sources at setup time rather than copied into the project.
+No proprietary Doom, Star Wars or other commercial game assets are committed. Current game art, audio and MIDI music are generated from original repository source. Freedoom is legally redistributable under its documented BSD 3-Clause terms and the current Windows RC bundles the pinned `v0.13.0` WAD only after checking the official release checksum, together with the exact upstream license notice and provenance metadata. GZDoom is not silently copied into the RC: the pinned engine remains an automatic first-run download from its official GitHub Release and its locked release-asset identity is checked before extraction.
 
-For a public demo, the preferred package is fully self-contained where licenses permit redistribution. Otherwise first run must automatically obtain every missing redistributable dependency from official upstream sources so a normal Windows player never has to search for files manually. The current release-candidate ZIP follows that automatic official-source path and does not silently bundle third-party runtime EXE/WAD files.
+For a public demo, the preferred package is fully self-contained where licenses permit redistribution. Otherwise first run must automatically obtain every missing redistributable dependency from official upstream sources so a normal Windows player never has to search for files manually. No proprietary Doom IWAD or unofficial runtime mirror is introduced.
 
 See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md), [`docs/THIRD_PARTY.md`](docs/THIRD_PARTY.md) and [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
 ## 🧭 Roadmap & releases
 
 - Authoritative roadmap: [`ROADMAP.md`](ROADMAP.md)
+- Target-Windows sign-off: [`docs/WINDOWS_PLAYTEST.md`](docs/WINDOWS_PLAYTEST.md)
 - Changelog: [`CHANGELOG.md`](CHANGELOG.md)
 - GitHub Releases: [releases](https://github.com/Swir/check-out-of-hell/releases)
 
@@ -276,7 +279,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md), [`docs/THIRD_PARTY.md`](docs
 
 - `Closing Time` has its authored post-boss clock-out polish and a complete first secrets/joke-interaction pass, but is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` is playable but not yet fully polished.
-- The cross-process save/load serialization gate is green on the exact pinned engine, but a final target-Windows interactive save/load confirmation is still required before demo sign-off.
+- The cross-process save/load serialization gate is green on the exact pinned engine; the new Windows sign-off kit repeats that round-trip against the exact extracted RC, but the required human save/quit/load confirmation remains open until a target-Windows run records PASS evidence.
 - Controller setup/haptics and the script-overhead performance pass are implemented and contract-tested, but physical controller and real-hardware performance confirmation remain part of the target-Windows demo sign-off.
 - The Windows portable release candidate is integrity-checked in CI but is not a public demo; standalone legal-content packaging, release notes and the final interactive Windows sign-off remain open release gates.
 - Later departments remain planned until they have real playable content.
