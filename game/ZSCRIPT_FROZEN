@@ -55,9 +55,8 @@ class FrozenDepartmentInitSpawner : Actor
 
 // Frozen Foods turns the first two cold-chain repairs into readable combat beats instead of
 // spawning extra pressure directly on the objective. Each newly restored breaker first flashes a
-// three-second warning on the right freezer flank, then calls one themed retail hazard. The third
-// breaker deliberately hands control to the existing full-power Night Manager and response-wave
-// systems so reaching full power stays tense without becoming an unreadable spawn pile.
+// three-second warning on the right freezer flank, then calls one themed retail hazard. The final
+// power step is a physical compressor reset at the rear rather than a third loose breaker pickup.
 class FrozenBreakerResponseSpawner : Actor
 {
     int observedFuseCount;
@@ -154,6 +153,77 @@ class FrozenBreakerResponseSpawner : Actor
             pendingFuse = observedFuseCount + 1;
             responseTic = Level.maptime + 35 * 3;
             Actor.Spawn("OvertimeWarningFlash", Pos);
+        }
+    }
+}
+
+// After the two freezer breaker circuits are restored, the rear compressor control materializes as
+// the department's final useful work task. Picking the project-owned control grants the third power
+// token, so the hardened Night Manager/cache/wave gates still use the same authoritative 3/3 state.
+class FrozenCompressorResetSpawner : Actor
+{
+    bool spawned;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (spawned || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        int fuses = p.CountInv("CheckoutFuse");
+        if (p.CountInv("SupervisorClearanceToken") > 0 || fuses >= 3)
+        {
+            Destroy();
+            return;
+        }
+        if (fuses < 2)
+        {
+            return;
+        }
+
+        Actor.Spawn("OvertimeWarningFlash", Pos);
+        Actor reset = Actor.Spawn("FrozenCompressorReset", Pos);
+        if (reset)
+        {
+            spawned = true;
+            Destroy();
         }
     }
 }

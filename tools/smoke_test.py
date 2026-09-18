@@ -75,6 +75,8 @@ if '17101 = "CheckoutManagerSpawner"' not in mapinfo:
     raise SystemExit("Gated supervisor spawner DoomEdNum is missing")
 if '17139 = "FrozenDepartmentInitSpawner"' not in mapinfo:
     raise SystemExit("Frozen Foods department initializer DoomEdNum is missing")
+if '17141 = "FrozenCompressorResetSpawner"' not in mapinfo:
+    raise SystemExit("Frozen Foods compressor reset DoomEdNum is missing")
 
 zscript = ZSCRIPT.read_text(encoding="utf-8")
 for required in (
@@ -87,7 +89,7 @@ for required in (
     if required not in zscript:
         raise SystemExit(f"ZScript gameplay contract missing: {required}")
 
-for map_name in ("MAP01", "MAP02", "MAP03"):
+for map_name in ("MAP01", "MAP02"):
     source_map = (ROOT / "game" / f"{map_name}.udmf").read_text(encoding="utf-8")
     if source_map.count("type = 17111") < 3:
         raise SystemExit(f"{map_name} must contain at least three breaker fuses")
@@ -101,6 +103,10 @@ if "type = 17003" in map01:
     raise SystemExit("MAP01 must not pre-place Night Manager before power restoration")
 
 map03 = (ROOT / "game" / "MAP03.udmf").read_text(encoding="utf-8")
+if map03.count("type = 17111") != 2 or map03.count("type = 17141") != 1:
+    raise SystemExit("MAP03 must use two breaker fuses plus one rear compressor reset power step")
+if "type = 17100" not in map03:
+    raise SystemExit("MAP03 must contain at least one Overtime spawner")
 if map03.count("type = 17101") != 1 or map03.count("type = 17139") != 1:
     raise SystemExit("MAP03 must contain one gated supervisor and one fresh-entry initializer")
 if "type = 17003" in map03:

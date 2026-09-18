@@ -71,14 +71,15 @@ thing { x =  560.0; y = -150.0; angle = 180; type = 17004; skill1 = true; skill2
 thing { x = -520.0; y =  170.0; angle = 315; type = 17002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  520.0; y =  180.0; angle = 225; type = 17005; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
-// Three cold-chain circuits force a full loop of the freezer aisles before management arrives.
+// Two cold-chain breaker circuits pull the player through both freezer side lanes. After both are
+// restored, a project-owned rear compressor reset appears and supplies the final 3/3 power step.
 thing { x = -620.0; y =   80.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  620.0; y =  310.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =    0.0; y =  420.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 0.0; y = 420.0; angle = 180; type = 17141; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // The first two restored cold-chain circuits trigger a three-second warning before a themed flank
-// response from the right freezer aisle. Full power deliberately hands off to the existing boss
-// and management-wave systems rather than stacking a third immediate response on top of them.
+// response from the right freezer aisle. The compressor reset then hands full power to the existing
+// boss and management-wave systems rather than stacking another instant spawn on top of them.
 thing { x = 610.0; y = 140.0; angle = 180; type = 17140; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Existing power-gated Night Manager and deterministic response wave systems are reused here so

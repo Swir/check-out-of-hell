@@ -7,8 +7,8 @@ CHECKOUT OF HELL is not an endless arena shooter. Every department combines a cl
 The current three-map prototype implements the core shift loop:
 
 1. **Enter the department** and read the immediate workplace problem.
-2. **Restore three breaker circuits** by finding three Breaker Fuse pickups.
-3. **Activate the department-specific system** that full power makes useful when the level calls for one.
+2. **Restore department power** through authored breaker routes and any department-specific final control.
+3. **Activate the department-specific system** that power makes useful when the level calls for one.
 4. **Survive hostile store equipment** while Overtime raises enemy and environmental pressure.
 5. **Exploit optional powered side routes** when partial power brings store systems back online.
 6. **Defeat the supervisor** while management escalates its response.
@@ -18,11 +18,11 @@ The maps intentionally use different staging:
 
 - `MAP01 — Closing Time` spreads the breakers across left, right and rear store routes. The **Night Manager does not enter the floor until all three breakers are restored**. At `2/3`, the rear-left **Staff Only** security barrier powers down and opens an optional employee room containing an Employee of the Month Stash and one Corporate Compliance Memo. No mandatory breaker is hidden there.
 - `MAP02 — Warehouse 13.5` restores three loading-bay circuits first. Full power then reveals a project-owned **Freight Lift Override** at the rear bay. **The Regional Manager remains off-floor until the player deliberately engages that control**, so MAP02 has a separate work action between power restoration and its boss response.
-- `MAP03 — Frozen Foods` sends the player through alternating freezer aisles for three cold-chain breakers. Full power exposes a recovery cache and the existing power-gated **Night Manager** response. Four authored Overtime floor-hazard anchors pressure side/rear lanes, while the entry/clock-out approach stays clear enough to read during the final return.
+- `MAP03 — Frozen Foods` sends the player through alternating freezer aisles for two cold-chain breaker repairs. After the second repair, a project-owned **Cold-Chain Compressor Reset** appears at the rear service position; physically taking that control supplies the final `3/3` power step and hands off to the existing recovery/Night Manager response. Four authored Overtime floor-hazard anchors pressure side/rear lanes, while the entry/clock-out approach stays clear enough to read during the final return.
 
 ## Breaker feedback
 
-Each restored breaker produces immediate feedback instead of silently changing an inventory counter. The HUD reports the current power count while short power-restoration messages explain which route or system has changed. In Closing Time, `2/3` explicitly calls out Staff Only access and `3/3` unlocks a guaranteed Full-Power Emergency Cache on the approach to the arena. In Warehouse 13.5, the messages describe loading-bay power and the lift relay; `3/3` announces that the Freight Lift Override is available instead of pretending the boss itself has already arrived. Frozen Foods currently reuses the clear non-warehouse breaker language while its map geometry, department signs, cold-storage route and dedicated soundtrack carry the department identity.
+Each restored power step produces immediate feedback instead of silently changing an inventory counter. The HUD reports the current power count while short power-restoration messages explain which route or system has changed. In Closing Time, `2/3` explicitly calls out Staff Only access and `3/3` unlocks a guaranteed Full-Power Emergency Cache on the approach to the arena. In Warehouse 13.5, the messages describe loading-bay power and the lift relay; `3/3` announces that the Freight Lift Override is available instead of pretending the boss itself has already arrived. Frozen Foods uses two physical breaker repairs for the first two steps, then the rear Cold-Chain Compressor Reset grants the final power token so the hardened `3/3` recovery, Night Manager and management-wave gates remain authoritative.
 
 ## Warehouse 13.5 freight-lift sequence
 
@@ -45,19 +45,22 @@ A right-side **Damaged Goods** cage adds a separate optional tactical decision w
 MAP03 is a complete first-pass playable department rather than a placeholder:
 
 1. enter through the front cold-storage approach,
-2. restore three cold-chain circuits distributed across freezer side/rear routes,
-3. use the optional full-power recovery cache if needed,
-4. survive the power-gated Night Manager plus the existing deterministic management-response sequence,
-5. keep moving as side-lane Overtime hazards activate during a long shift,
-6. return to the front entry after supervisor clearance and clock out.
+2. restore the two cold-chain breaker circuits on opposite freezer routes,
+3. cross to the rear service position and perform the project-owned Cold-Chain Compressor Reset to bring power to `3/3`,
+4. use the optional full-power recovery cache if needed,
+5. survive the power-gated Night Manager plus the existing deterministic management-response sequence,
+6. keep moving as side-lane Overtime hazards activate during a long shift,
+7. return to the front entry after supervisor clearance and clock out.
 
-Four shelf barriers create freezer lanes without closing the central service route. Initial enemies, management response and Overtime anchors are kept away from the entry centerline, while paired project-owned `FROZEN FOODS` signs, safe retail clutter and the original **Compressor Choir** MIDI theme make the department visually/audibly distinct. Three optional Corporate Compliance Memos add a small exploration route.
+The first two repairs also drive a readable right-flank reaction: each repair flashes a three-second warning before answering with a Security Price Scanner and then a Cart of Doom. The compressor reset deliberately supplies the final power step without adding a third instant side-lane enemy, leaving the full-power Night Manager transition readable.
 
-A one-shot `FrozenDepartmentInitSpawner` clears only Corporate Memo progress carried into a fresh MAP03, then destroys itself. That makes the optional memo route department-local without adding a global event handler that could wipe progress after loading a save made inside Frozen Foods.
+Four shelf barriers create freezer lanes without closing the central service route. Initial enemies, management response and Overtime anchors are kept away from the entry centerline, while paired project-owned `FROZEN FOODS` signs, the generated compressor-reset control, safe retail clutter and the original **Compressor Choir** MIDI theme make the department visually/audibly distinct. Three optional Corporate Compliance Memos add a small exploration route.
+
+A one-shot `FrozenDepartmentInitSpawner` clears only Corporate Memo progress carried into a fresh MAP03, then destroys itself. That makes the optional memo route department-local without adding a global event handler that could wipe progress after loading a save made inside Frozen Foods. The compressor-control spawner is also map-local and self-retires after creating its pickup, so a save made after it appears preserves the actual pickup/state instead of rebuilding the objective every tick.
 
 ## Night Manager response sequence
 
-Full power starts a staged rear-arena encounter in maps that use `CheckoutBossWaveSpawner`. The authored sequence is deterministic once all three breakers are restored:
+Full power starts a staged rear-arena encounter in maps that use `CheckoutBossWaveSpawner`. The authored sequence is deterministic once the authoritative power count reaches `3/3` — by three normal breakers in Closing Time or by two breakers plus the compressor reset in Frozen Foods:
 
 | Time after full power | Reinforcement at each anchor |
 | --- | --- |
@@ -70,7 +73,7 @@ The wider cadence gives every threat enough readable combat space. The sequence 
 
 ## Clock-out escape
 
-Killing the supervisor does not complete the map automatically. Once all three breakers are restored and management is down, the department objective changes to its return leg. Closing Time shows `RETURN TO FRONT CHECKOUT`; fresh Overtime floor-hazard anchors retire at the same clearance point as reinforcement spawners, while a project-owned `CLOCK OUT` guide appears on the front-lane approach. The player still has to travel back into the existing checkout/timecard zone; the guide does not move, enlarge or bypass the completion trigger. Entering the zone confirms `TIMECARD ACCEPTED` and exits after a short completion beat.
+Killing the supervisor does not complete the map automatically. Once power is at `3/3` and management is down, the department objective changes to its return leg. Closing Time shows `RETURN TO FRONT CHECKOUT`; fresh Overtime floor-hazard anchors retire at the same clearance point as reinforcement spawners, while a project-owned `CLOCK OUT` guide appears on the front-lane approach. The player still has to travel back into the existing checkout/timecard zone; the guide does not move, enlarge or bypass the completion trigger. Entering the zone confirms `TIMECARD ACCEPTED` and exits after a short completion beat.
 
 Warehouse 13.5 uses the same physical front/entry completion region after its Regional Manager fight, but its HUD names the route as the warehouse entry so the level does not present supermarket-checkout wording during the loading-bay objective. Frozen Foods returns to the same front completion rule and reveals the existing non-blocking clock-out guide near its entry after supervisor clearance.
 
@@ -110,7 +113,7 @@ Closing Time includes three optional Corporate Compliance Memos, a powered Staff
 The final-layout prototype HUD keeps critical information separated into readable zones:
 
 - current department-aware objective and route hint,
-- restored breakers (`0/3` through `3/3`),
+- authoritative power progress (`0/3` through `3/3`),
 - optional Corporate Memo progress in Closing Time/Frozen Foods or Freight Lift state in Warehouse 13.5,
 - elapsed shift timer and `06:00` clock-out target,
 - current Overtime state, patterned pressure meter and next escalation countdown,
@@ -156,12 +159,14 @@ MAP02 has a separate testable route contract:
 
 MAP03 has its own packaged gameplay contract:
 
-- exactly three breaker fuses remain mandatory,
+- exactly two physical breaker fuses remain mandatory before the rear compressor task,
+- exactly one rear Cold-Chain Compressor Reset spawner appears only at `2/3`, creates one project-owned pickup and supplies the final `CheckoutFuse` power token when collected,
 - exactly one fresh-entry memo initializer clears carried optional memo progress and then self-retires,
+- exactly one breaker-linked right-flank response anchor telegraphs the first two repairs and never adds a third instant enemy at full power,
 - exactly one power-gated Night Manager spawner, one management-response anchor, one full-power recovery cache and one post-clear clock-out guide remain authored,
 - three optional Corporate Compliance Memos stay outside mandatory progression,
 - freezer shelving keeps a central readable service lane instead of regressing to a flat empty arena,
-- paired project-owned Frozen Foods signs and safe environment props remain in the map layer,
+- paired project-owned Frozen Foods signs, the generated compressor-reset control and safe environment props remain in the packaged content,
 - exactly four authored environmental Overtime anchors stay away from the entry/clock-out lane,
 - `D_COH03` is generated deterministically, wired through MAPINFO and packaged with MAP03,
 - direct Night Manager pre-placement remains forbidden.

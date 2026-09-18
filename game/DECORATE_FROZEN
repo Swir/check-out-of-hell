@@ -1,0 +1,20 @@
+// CHECKOUT OF HELL - Frozen Foods department-local pickups.
+// Visible art is generated deterministically by tools/generate_presentation_assets.py.
+
+actor FrozenCompressorReset : CustomInventory
+{
+    Tag "Cold-Chain Compressor Reset"
+    Inventory.PickupMessage "Cold-chain compressor reset. Management heard that."
+    Inventory.PickupSound "coh/fuse"
+    Inventory.MaxAmount 1
+
+    States
+    {
+    Spawn:
+        FCRS A -1 Bright
+        Stop
+    Pickup:
+        TNT1 A 0 A_GiveInventory("CheckoutFuse", 1)
+        Stop
+    }
+}

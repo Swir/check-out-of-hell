@@ -84,6 +84,7 @@ def decorate_payload() -> bytes:
         (GAME / "DECORATE").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_OVERTIME").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_ENVIRONMENT").read_text(encoding="utf-8").rstrip(),
+        (GAME / "DECORATE_FROZEN").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
 

@@ -13,6 +13,7 @@ if not PK3.exists():
 build = (ROOT / "tools" / "build.py").read_text(encoding="utf-8")
 for marker in (
     'MAPS = ["MAP01", "MAP02", "MAP03"]',
+    '(GAME / "DECORATE_FROZEN").read_text(encoding="utf-8").rstrip()',
     '(GAME / "ZSCRIPT_FROZEN").read_text(encoding="utf-8").rstrip()',
 ):
     if marker not in build:
@@ -22,6 +23,7 @@ mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
 for marker in (
     '17139 = "FrozenDepartmentInitSpawner"',
     '17140 = "FrozenBreakerResponseSpawner"',
+    '17141 = "FrozenCompressorResetSpawner"',
     'map MAP03 "Frozen Foods"',
     'music = "D_COH03"',
 ):
@@ -33,6 +35,16 @@ map02_block = mapinfo.split('map MAP02 "Warehouse 13.5"', 1)[1].split('map MAP03
 map03_block = mapinfo.split('map MAP03 "Frozen Foods"', 1)[1]
 if 'next = "MAP02"' not in map01_block or 'next = "MAP03"' not in map02_block or 'next = "MAP01"' not in map03_block:
     raise SystemExit("Playable department progression must remain Closing Time -> Warehouse 13.5 -> Frozen Foods -> Closing Time")
+
+frozen_pickup = (GAME / "DECORATE_FROZEN").read_text(encoding="utf-8")
+for marker in (
+    "actor FrozenCompressorReset : CustomInventory",
+    'Tag "Cold-Chain Compressor Reset"',
+    "FCRS A -1 Bright",
+    'A_GiveInventory("CheckoutFuse", 1)',
+):
+    if marker not in frozen_pickup:
+        raise SystemExit(f"Frozen Foods compressor reset pickup contract is incomplete: {marker}")
 
 frozen_logic = (GAME / "ZSCRIPT_FROZEN").read_text(encoding="utf-8")
 for marker in (
@@ -51,7 +63,7 @@ if "EventHandler" in frozen_logic:
 
 if "class FrozenBreakerResponseSpawner : Actor" not in frozen_logic:
     raise SystemExit("Frozen Foods is missing its breaker-linked cold-chain response spawner")
-response_logic = frozen_logic.split("class FrozenBreakerResponseSpawner : Actor", 1)[1]
+response_logic = frozen_logic.split("class FrozenBreakerResponseSpawner : Actor", 1)[1].split("class FrozenCompressorResetSpawner : Actor", 1)[0]
 for marker in (
     "nextCheck = Level.maptime + 7;",
     'p.CountInv("SupervisorClearanceToken") > 0',
@@ -69,11 +81,28 @@ for marker in (
 if 'Actor.Spawn("PalletJack", Pos);' in response_logic:
     raise SystemExit("Frozen Foods breaker response must hand full-power pressure to the boss systems, not add a third instant enemy")
 
+if "class FrozenCompressorResetSpawner : Actor" not in frozen_logic:
+    raise SystemExit("Frozen Foods is missing its rear compressor reset spawner")
+compressor_logic = frozen_logic.split("class FrozenCompressorResetSpawner : Actor", 1)[1]
+for marker in (
+    "nextCheck = Level.maptime + 7;",
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    "fuses >= 3",
+    "fuses < 2",
+    'Actor.Spawn("OvertimeWarningFlash", Pos);',
+    'Actor reset = Actor.Spawn("FrozenCompressorReset", Pos);',
+    "spawned = true;",
+    "Destroy();",
+):
+    if marker not in compressor_logic:
+        raise SystemExit(f"Frozen Foods compressor reset lost a gating/lifecycle contract: {marker}")
+
 map03 = (GAME / "MAP03.udmf").read_text(encoding="utf-8")
 required_counts = {
     17139: 1,  # fresh-entry optional-state initializer
     17140: 1,  # breaker-linked cold-chain flank response
-    17111: 3,  # breaker fuses
+    17141: 1,  # two-breaker-gated rear compressor reset
+    17111: 2,  # physical breaker fuses; compressor reset supplies the third power token
     17101: 1,  # power-gated Night Manager spawner
     17103: 1,  # deterministic management response
     17128: 1,  # full-power recovery cache
@@ -94,6 +123,7 @@ start = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 90; type = 1", map
 manager = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 270; type = 17101", map03)
 guide = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 90; type = 17132", map03)
 response_anchor = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 180; type = 17140", map03)
+compressor_anchor = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 180; type = 17141", map03)
 if not start or abs(float(start.group(1))) > 80.0 or float(start.group(2)) > -350.0:
     raise SystemExit("Frozen Foods player start must stay on the front clock-out approach")
 if not manager or abs(float(manager.group(1))) > 100.0 or float(manager.group(2)) < 300.0:
@@ -102,6 +132,8 @@ if not guide or abs(float(guide.group(1))) > 100.0 or float(guide.group(2)) > -3
     raise SystemExit("Frozen Foods post-clear guide must remain near the entry/clock-out route")
 if not response_anchor or float(response_anchor.group(1)) < 500.0 or not -80.0 <= float(response_anchor.group(2)) <= 220.0:
     raise SystemExit("Frozen Foods breaker response must remain on the right-side freezer flank")
+if not compressor_anchor or abs(float(compressor_anchor.group(1))) > 100.0 or float(compressor_anchor.group(2)) < 380.0:
+    raise SystemExit("Frozen Foods compressor reset must remain at the rear cold-chain service position")
 
 # Four authored shelf lines are the minimum department geometry: MAP03 must not regress into a flat
 # box arena while still leaving a central service lane between the inner shelving runs.
@@ -133,12 +165,14 @@ for x_text, y_text in re.findall(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 0; 
         raise SystemExit("Frozen Foods Overtime hazard moved into the player entry/clock-out lane")
 
 sign = GAME / "sprites" / "FSGNA0.png"
+compressor_sprite = GAME / "sprites" / "FCRSA0.png"
 track = GAME / "music" / "D_COH03.mid"
-for path in (sign, track):
+for path in (sign, compressor_sprite, track):
     if not path.exists():
         raise SystemExit(f"Frozen Foods generated presentation asset is missing: {path.relative_to(ROOT)}")
-if not sign.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
-    raise SystemExit("Frozen Foods department sign is not a valid generated PNG")
+for path in (sign, compressor_sprite):
+    if not path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
+        raise SystemExit(f"Frozen Foods generated sprite is not a valid PNG: {path.relative_to(ROOT)}")
 if b"Frozen Foods - Compressor Choir" not in track.read_bytes():
     raise SystemExit("Frozen Foods soundtrack lost its authored track-name marker")
 
@@ -147,23 +181,34 @@ with zipfile.ZipFile(PK3, "r") as archive:
     for entry in (
         "maps/MAP03.wad",
         "sprites/FSGNA0.png",
+        "sprites/FCRSA0.png",
         "music/D_COH03.mid",
         "MAPINFO",
+        "DECORATE",
         "ZSCRIPT",
     ):
         if entry not in names:
             raise SystemExit(f"Packaged PK3 is missing Frozen Foods payload: {entry}")
 
     packaged_mapinfo = archive.read("MAPINFO").decode("utf-8")
+    packaged_decorate = archive.read("DECORATE").decode("utf-8")
     packaged_zscript = archive.read("ZSCRIPT").decode("utf-8")
     if 'map MAP03 "Frozen Foods"' not in packaged_mapinfo or 'music = "D_COH03"' not in packaged_mapinfo:
         raise SystemExit("Packaged MAPINFO lost Frozen Foods registration")
-    if '17140 = "FrozenBreakerResponseSpawner"' not in packaged_mapinfo:
-        raise SystemExit("Packaged MAPINFO lost the Frozen Foods breaker-response registration")
+    for marker in (
+        '17140 = "FrozenBreakerResponseSpawner"',
+        '17141 = "FrozenCompressorResetSpawner"',
+    ):
+        if marker not in packaged_mapinfo:
+            raise SystemExit(f"Packaged MAPINFO lost Frozen Foods registration: {marker}")
+    if "actor FrozenCompressorReset : CustomInventory" not in packaged_decorate:
+        raise SystemExit("Packaged DECORATE lost the Frozen Foods compressor reset pickup")
     if "class FrozenDepartmentInitSpawner : Actor" not in packaged_zscript:
         raise SystemExit("Packaged ZSCRIPT lost the Frozen Foods initializer")
     if "class FrozenBreakerResponseSpawner : Actor" not in packaged_zscript:
         raise SystemExit("Packaged ZSCRIPT lost the Frozen Foods breaker-response logic")
+    if "class FrozenCompressorResetSpawner : Actor" not in packaged_zscript:
+        raise SystemExit("Packaged ZSCRIPT lost the Frozen Foods compressor-reset logic")
 
     wad = archive.read("maps/MAP03.wad")
     ident, numlumps, dir_offset = struct.unpack("<4sII", wad[:12])
@@ -178,7 +223,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
         raise SystemExit("Packaged MAP03 lost canonical MAP03 -> TEXTMAP -> ENDMAP ordering")
     text_offset, text_size, _ = entries[1]
     textmap = wad[text_offset : text_offset + text_size].decode("utf-8")
-    for marker in ("type = 17139", "type = 17140", "type = 17101", "type = 17106", "type = 17121"):
+    for marker in ("type = 17139", "type = 17140", "type = 17141", "type = 17101", "type = 17106", "type = 17121"):
         if marker not in textmap:
             raise SystemExit(f"Packaged MAP03 TEXTMAP is missing playable Frozen Foods marker {marker}")
 
