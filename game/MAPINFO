@@ -16,6 +16,7 @@ DoomEdNums
     17128 = "CheckoutFullPowerCacheSpawner"
     17132 = "CheckoutClockOutGuideSpawner"
     17133 = "WarehouseLiftControlSpawner"
+    17135 = "WarehouseManagementWaveSpawner"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
