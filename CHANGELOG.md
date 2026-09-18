@@ -163,7 +163,7 @@
 ### Added
 - Player-local `Focus HUD` accessibility option with redundant text for objective, breaker/memo progress and Overtime pressure.
 - Player-local `Large warnings` accessibility option for critical health, Overtime and Hell Rush states.
-- Dedicated **CHECKOUT OF HELL Accessibility** entries in both full and simple GZDoom options menus.
+- Dedicated **CHECKOUT OF HELL Accessibility** entries in both full and simple GZDoom option menus.
 - `docs/ACCESSIBILITY.md` and `tools/test_accessibility_contract.py`, including packaged-PK3 regression coverage and CI execution.
 
 ### Changed
