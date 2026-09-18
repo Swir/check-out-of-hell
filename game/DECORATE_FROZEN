@@ -49,7 +49,7 @@ actor FrozenRefrigerantBurst
     States
     {
     Spawn:
-        FVEN A 7 Bright A_PlaySound("coh/freezervent", CHAN_BODY)
+        FVEN A 7 Bright A_PlaySound("coh/overtimearc", CHAN_BODY)
         FVEN B 6 Bright
         FVEN C 0 Bright A_Explode(8, 80)
         FVEN C 6 Bright
