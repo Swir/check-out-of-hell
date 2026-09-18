@@ -1,0 +1,146 @@
+// CHECKOUT OF HELL - post-boss escape polish and Overtime hazard lifecycle.
+
+class CheckoutOvertimeHazardSpawner : Actor
+{
+    int nextHazardTic;
+    int hazardStep;
+    int nextClearanceCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        nextHazardTic = Level.maptime + 35 * 90;
+        hazardStep = 0;
+        nextClearanceCheck = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        bool hazardDue = Level.maptime >= nextHazardTic;
+        if (hazardDue || Level.maptime >= nextClearanceCheck)
+        {
+            nextClearanceCheck = Level.maptime + 7;
+
+            if (players[0].mo)
+            {
+                PlayerPawn p = PlayerPawn(players[0].mo);
+                if (p && p.CountInv("SupervisorClearanceToken") > 0)
+                {
+                    Destroy();
+                    return;
+                }
+            }
+        }
+
+        if (!hazardDue)
+        {
+            return;
+        }
+
+        if (hazardStep == 0)
+        {
+            Actor.Spawn("OvertimeWarningFlash", Pos);
+            nextHazardTic += 35 * 45;
+            hazardStep = 1;
+            return;
+        }
+        if (hazardStep == 1)
+        {
+            Actor.Spawn("OvertimeWarningFlash", Pos);
+            nextHazardTic += 35 * 45;
+            hazardStep = 2;
+            return;
+        }
+        if (hazardStep == 2)
+        {
+            Actor.Spawn("OvertimeFloorArc", Pos);
+            nextHazardTic += 35 * 32;
+            hazardStep = 3;
+            return;
+        }
+        if (hazardStep == 3)
+        {
+            Actor.Spawn("OvertimeFloorArc", Pos);
+            nextHazardTic += 35 * 32;
+            hazardStep = 4;
+            return;
+        }
+        if (hazardStep == 4)
+        {
+            Actor.Spawn("OvertimeFloorArc", Pos);
+            nextHazardTic += 35 * 26;
+            hazardStep = 5;
+            return;
+        }
+
+        Actor.Spawn("OvertimeFloorArc", Pos);
+        nextHazardTic += 35 * 20;
+        hazardStep = 6;
+    }
+}
+
+class CheckoutClockOutGuideSpawner : Actor
+{
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        nextCheck = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p || p.CountInv("SupervisorClearanceToken") == 0)
+        {
+            return;
+        }
+
+        Actor.Spawn("CheckoutClockOutGuide", Pos);
+        Destroy();
+    }
+}
