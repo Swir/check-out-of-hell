@@ -21,7 +21,7 @@ def png_chunks(data: bytes):
 if not PK3.exists():
     raise SystemExit("PK3 missing. Run: python tools/build.py")
 
-for rel in ("sprites/WCTLA0.png", "sprites/WSGNA0.png"):
+for rel in ("sprites/WCTLA0.png", "sprites/WSGNA0.png", "sprites/WLOKA0.png"):
     path = GAME / rel
     if not path.exists():
         raise SystemExit(f"Warehouse generated sprite missing: {rel}")
@@ -75,13 +75,15 @@ for marker in (
 
 mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
 for marker in (
+    'AddEventHandlers = "CheckoutShiftDirector", "CheckoutAccessibilityHandler", "WarehouseSafetyStateHandler"',
     '17128 = "CheckoutFullPowerCacheSpawner"',
     '17132 = "CheckoutClockOutGuideSpawner"',
     '17133 = "WarehouseLiftControlSpawner"',
     '17135 = "WarehouseManagementWaveSpawner"',
+    '17137 = "WarehouseSafetyLockoutSpawner"',
 ):
     if marker not in mapinfo:
-        raise SystemExit(f"Warehouse DoomEdNum registration is missing: {marker}")
+        raise SystemExit(f"Warehouse DoomEdNum/state registration is missing: {marker}")
 
 zscript = (GAME / "ZSCRIPT").read_text(encoding="utf-8")
 for marker in (
@@ -99,8 +101,42 @@ for marker in (
         raise SystemExit(f"Warehouse objective logic is incomplete: {marker}")
 
 clockout_zscript = (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8")
-if "class CheckoutClockOutGuideSpawner : Actor" not in clockout_zscript:
-    raise SystemExit("Warehouse return guidance requires the existing clearance-aware clock-out guide spawner")
+for marker in (
+    "class CheckoutClockOutGuideSpawner : Actor",
+    "class WarehouseSafetyLockout : Inventory",
+    'Tag "Lockout/Tagout Permit"',
+    "WLOK A -1 Bright;",
+    "class WarehouseSafetyStateHandler : EventHandler",
+    "if (e.IsSaveGame)",
+    'p.A_TakeInventory("WarehouseSafetyLockout", 1)',
+    "class WarehouseSafetyLockoutSpawner : Actor",
+    'p.CountInv("WarehouseDepartmentToken") < 1',
+    'p.CountInv("CheckoutFuse") < 3',
+    'Actor.Spawn("WarehouseSafetyLockout", Pos)',
+):
+    if marker not in clockout_zscript:
+        raise SystemExit(f"Warehouse safety lockout logic is incomplete: {marker}")
+
+hazard_block = clockout_zscript.split("class CheckoutOvertimeHazardSpawner : Actor", 1)[1].split(
+    "class CheckoutClockOutGuideSpawner : Actor", 1
+)[0]
+for marker in (
+    "nextClearanceCheck = Level.maptime + 7;",
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    'p.CountInv("WarehouseDepartmentToken") > 0',
+    'p.CountInv("WarehouseSafetyLockout") > 0',
+    "Destroy();",
+):
+    if marker not in hazard_block:
+        raise SystemExit(f"Warehouse lockout must retire only fresh environmental floor hazards: {marker}")
+
+# The optional permit is a physical-safety choice, not an Overtime off switch. Ambient enemy
+# pressure must keep its existing stage cadence after the player isolates the electrical arcs.
+overtime_enemy_block = zscript.split("class CheckoutOvertimeSpawner : Actor", 1)[1].split(
+    "class CheckoutManagerSpawner : Actor", 1
+)[0]
+if "WarehouseSafetyLockout" in overtime_enemy_block:
+    raise SystemExit("Warehouse safety lockout must not disable hostile Overtime reinforcements")
 
 regional_block = zscript.split("class CheckoutRegionalManagerSpawner : Actor", 1)[1].split(
     "class WarehouseLiftControlSpawner : Actor", 1
@@ -112,6 +148,8 @@ for marker in (
 ):
     if marker not in regional_block:
         raise SystemExit(f"Regional Manager must remain behind breakers + freight-lift activation: {marker}")
+if "WarehouseSafetyLockout" in regional_block:
+    raise SystemExit("Warehouse safety lockout must not bypass or suppress the Regional Manager")
 
 cache_block = zscript.split("class CheckoutFullPowerCacheSpawner : Actor", 1)[1].split(
     "class CheckoutRegionalManagerSpawner : Actor", 1
@@ -142,6 +180,8 @@ for marker in (
         raise SystemExit(f"Warehouse management-response cadence is incomplete: {marker}")
 if wave_block.count("Destroy();") < 2:
     raise SystemExit("Warehouse management-response spawner must retire after clearance or its final wave")
+if "WarehouseSafetyLockout" in wave_block:
+    raise SystemExit("Warehouse safety lockout must not suppress management-response waves")
 
 accessibility = (GAME / "ZSCRIPT_ACCESSIBILITY").read_text(encoding="utf-8")
 for marker in (
@@ -162,6 +202,8 @@ if map02.count("type = 17135") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one authored management-response anchor")
 if map02.count("type = 17128") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one full-power recovery-cache anchor")
+if map02.count("type = 17137") != 1:
+    raise SystemExit("Warehouse 13.5 needs exactly one optional full-power safety-lockout anchor")
 if map02.count("type = 17132") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one post-clear return-guide anchor")
 if map02.count("type = 17136") != 4:
@@ -175,6 +217,7 @@ control_match = re.search(r"x = 0\.0; y = ([0-9.]+); angle = 270; type = 17133",
 boss_match = re.search(r"x = 0\.0; y = ([0-9.]+); angle = 270; type = 17104", map02)
 wave_match = re.search(r"x = (-?[0-9.]+); y = ([0-9.]+); angle = 315; type = 17135", map02)
 cache_match = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 180; type = 17128", map02)
+safety_match = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 0; type = 17137", map02)
 guide_match = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 90; type = 17132", map02)
 if not control_match or not boss_match:
     raise SystemExit("Warehouse rear-bay objective anchors are not at the expected readable centerline")
@@ -186,6 +229,10 @@ if float(wave_match.group(2)) < 240.0:
     raise SystemExit("Warehouse management-response anchor must remain in the rear loading-bay combat zone")
 if not cache_match or abs(float(cache_match.group(1))) < 320.0 or float(cache_match.group(2)) < 220.0:
     raise SystemExit("Warehouse full-power recovery cache must stay in the rear side lane, clear of the lift centerline")
+if not safety_match or float(safety_match.group(1)) > -320.0 or float(safety_match.group(2)) < 220.0:
+    raise SystemExit("Warehouse optional safety lockout must stay on the opposite rear side lane")
+if abs(float(safety_match.group(1))) < 320.0:
+    raise SystemExit("Warehouse safety lockout must stay clear of the freight-lift centerline")
 if not guide_match or abs(float(guide_match.group(1))) > 100.0 or float(guide_match.group(2)) > -280.0:
     raise SystemExit("Warehouse post-clear guide must remain on the front entry/clock-out approach")
 
@@ -204,15 +251,15 @@ if 'x = 470.0; y = 170.0; angle = 180; type = 17130' not in map02:
 if 'x = 560.0; y = 170.0; angle = 180; type = 17126' not in map02:
     raise SystemExit("Warehouse break-snack reward left the optional cage")
 
-# The cage is an optional ammo-for-supplies decision: no breaker, lift control or boss anchor may
-# move into its authored x>=360, y>=100 side nook.
-for mandatory_type in (17111, 17133, 17104):
+# The cage is an optional ammo-for-supplies decision: no breaker, lift control, boss or safety
+# station may move into its authored x>=360, y>=100 side nook.
+for mandatory_type in (17111, 17133, 17104, 17137):
     pattern = re.compile(
         rf"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = [0-9]+; type = {mandatory_type}"
     )
     for x_text, y_text in pattern.findall(map02):
         if float(x_text) >= 360.0 and 100.0 <= float(y_text) <= 220.0:
-            raise SystemExit(f"Mandatory Warehouse objective type {mandatory_type} moved into the optional stock cage")
+            raise SystemExit(f"Warehouse objective/safety type {mandatory_type} moved into the optional stock cage")
 
 
 environment = (GAME / "MAP02_ENVIRONMENT.udmf").read_text(encoding="utf-8")
@@ -224,7 +271,7 @@ for prop_type in ("17125", "17127", "17124"):
 
 with zipfile.ZipFile(PK3, "r") as archive:
     names = set(archive.namelist())
-    for rel in ("sprites/WCTLA0.png", "sprites/WSGNA0.png", "maps/MAP02.wad"):
+    for rel in ("sprites/WCTLA0.png", "sprites/WSGNA0.png", "sprites/WLOKA0.png", "maps/MAP02.wad"):
         if rel not in names:
             raise SystemExit(f"Warehouse runtime payload missing from PK3: {rel}")
     runtime_zscript = archive.read("ZSCRIPT").decode("utf-8")
@@ -235,9 +282,14 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "class WarehouseLiftControlSpawner : Actor",
         "class WarehouseManagementWaveSpawner : Actor",
         "class CheckoutClockOutGuideSpawner : Actor",
+        "class WarehouseSafetyLockout : Inventory",
+        "class WarehouseSafetyStateHandler : EventHandler",
+        "class WarehouseSafetyLockoutSpawner : Actor",
+        'p.CountInv("WarehouseSafetyLockout") > 0',
+        "WLOK A -1 Bright;",
     ):
         if marker not in runtime_zscript:
-            raise SystemExit(f"Packaged ZSCRIPT lost Warehouse readability logic: {marker}")
+            raise SystemExit(f"Packaged ZSCRIPT lost Warehouse readability/safety logic: {marker}")
     for marker in (
         "actor WarehouseLiftOverride : Inventory",
         "actor CheckoutPowerCache : Backpack",
@@ -254,6 +306,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
         b"type = 17133",
         b"type = 17104",
         b"type = 17135",
+        b"type = 17137",
         b"type = 17134",
         b"type = 17136",
         b"type = 17130",
@@ -262,5 +315,5 @@ with zipfile.ZipFile(PK3, "r") as archive:
         if marker not in runtime_map:
             raise SystemExit(f"Packaged MAP02 lost warehouse objective/environment marker: {marker!r}")
 
-print("Warehouse 13.5 freight-lift objective + management-response + optional stock-cage + return-readability contract: PASS")
-print("Three breakers feed the lift objective; a side damaged-goods cage trades ammo for optional supplies, and clearance still preserves a readable clock-out return.")
+print("Warehouse 13.5 freight-lift objective + management-response + optional stock-cage/lockout + return-readability contract: PASS")
+print("Full power now offers a distinct side-lane electrical lockout without disabling hostile Overtime, lift progression, Regional Management or the clock-out return.")

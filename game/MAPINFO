@@ -1,7 +1,7 @@
 gameinfo
 {
     PlayerClasses = "DoomPlayer"
-    AddEventHandlers = "CheckoutShiftDirector", "CheckoutAccessibilityHandler"
+    AddEventHandlers = "CheckoutShiftDirector", "CheckoutAccessibilityHandler", "WarehouseSafetyStateHandler"
 }
 
 DoomEdNums
@@ -17,6 +17,7 @@ DoomEdNums
     17132 = "CheckoutClockOutGuideSpawner"
     17133 = "WarehouseLiftControlSpawner"
     17135 = "WarehouseManagementWaveSpawner"
+    17137 = "WarehouseSafetyLockoutSpawner"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.

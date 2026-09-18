@@ -10,6 +10,7 @@ def generate_warehouse_assets(game_dir: Path) -> None:
     sprites = game_dir / "sprites"
     _standing_sign(sprites / "WCTLA0.png", "LIFT", "OVERRIDE", (98, 205, 218, 255))
     _standing_sign(sprites / "WSGNA0.png", "FREIGHT", "ONLY", (218, 166, 64, 255))
+    _standing_sign(sprites / "WLOKA0.png", "LOCKOUT", "TAG OUT", (98, 205, 218, 255))
 
 
 if __name__ == "__main__":

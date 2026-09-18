@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.32.8-dev — 2026-09-18
+
+### Added
+- Warehouse 13.5 now exposes one optional full-power `Lockout/Tagout Permit` on the rear-left side lane, opposite the existing recovery cache. The permit reuses the project-owned freight-control presentation and is never required for progression.
+- `WarehouseSafetyStateHandler` keeps the permit department-local on fresh map transitions while preserving the token across savegame restores.
+
+### Changed
+- Taking the permit retires future Warehouse electrical Overtime floor arcs only; ambient Overtime enemy reinforcements, freight-lift progression, the `12 / 30 / 52` management-response waves and The Regional Manager remain active.
+- The shared Overtime hazard anchor delays its first inventory poll by seven tics so fresh-map department-token cleanup happens before a carried Warehouse permit can affect another department.
+- `tools/test_warehouse_lift_objective_contract.py` now protects the safety-station registration, full-power/department gates, fresh-map/save behavior, side-lane placement, packaged PK3/MAP02 payload and the rule that the permit cannot disable hostile Overtime or management. Project progress remains **86.8%** and Demo Release readiness remains **70.0%** because this playable polish does not complete a weighted phase or the target-Windows human sign-off.
+
+### Validation
+- The full repository CI remains the merge gate, including the expanded Warehouse contract, Overtime contract, pinned-GZDoom parser/runtime checks, real two-process save/load, RC packaging, README PRO v2 and Progress SVG PRO.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.32.7-dev — 2026-09-18
 
 ### Added
