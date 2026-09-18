@@ -183,8 +183,36 @@ def generate_music_assets(game_dir: Path) -> None:
         ],
     )
 
+    frozen_foods = _make_track(
+        "Frozen Foods - Compressor Choir",
+        tempo_bpm=52,
+        bars=24,
+        chords=[
+            (42, 49, 54),
+            (40, 47, 52),
+            (38, 45, 50),
+            (37, 44, 49),
+        ],
+        melody=[
+            (0, 3.0, 73, 0.5, 26),
+            (2, 0.5, 70, 1.0, 24),
+            (3, 3.0, 68, 0.75, 20),
+            (5, 1.5, 75, 0.5, 28),
+            (7, 0.5, 66, 1.5, 22),
+        ],
+        chimes=[
+            (1, 3.25, (80, 87), 34),
+            (5, 3.25, (78, 85), 30),
+        ],
+        drums=[
+            (0.0, 36, 11),
+            (3.0, 41, 9),
+        ],
+    )
+
     (music_dir / "D_COH01.mid").write_bytes(closing_time)
     (music_dir / "D_COH02.mid").write_bytes(warehouse)
+    (music_dir / "D_COH03.mid").write_bytes(frozen_foods)
 
 
 if __name__ == "__main__":
