@@ -56,7 +56,7 @@ with zipfile.ZipFile(PACKAGE, "r") as archive:
     ordered_markers = [
         "verify_player_package.ps1",
         "bootstrap_runtime.ps1",
-        "game\checkout-of-hell.pk3",
+        r"game\checkout-of-hell.pk3",
     ]
     positions = [launcher.find(marker) for marker in ordered_markers]
     if any(position < 0 for position in positions):
