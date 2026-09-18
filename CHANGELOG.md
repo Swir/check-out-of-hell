@@ -6,14 +6,19 @@
 - `CHECKOUT-OF-HELL-Legal-Content-rc.zip`, a deterministic content-only release-candidate artifact built from the exact verified bytes used by the Windows player RC: project PK3, pinned Freedoom WAD, project/Freedoom notices, provenance, third-party notes and runtime lock.
 - `content-manifest.json`, binding the standalone content bundle to the exact Git source snapshot and covering every payload file with SHA-256 plus byte count while explicitly recording that GZDoom is not redistributed.
 - `tools/test_legal_content_bundle.py`, which rejects executable/bootstrap leakage, verifies source/license/runtime/provenance metadata, checks the outer SHA-256 sidecar and requires byte-for-byte equality with the corresponding Windows RC content.
+- A Warehouse 13.5-only management-response spawner that starts only after the player engages the Freight Lift Override, then feeds a readable rear-flank Security Price Scanner → Possessed Pallet Jack → Cart of Doom sequence at `12 / 30 / 52` seconds.
 
 ### Changed
 - GitHub Actions now verifies the standalone legal-content RC on both Ubuntu and Windows and uploads it as a dedicated non-public CI artifact alongside the existing Windows player RC.
 - `docs/PACKAGING.md` now documents the reusable legal-content layer separately from the player package. Normal Windows players still use `PLAY.bat`; missing pinned GZDoom files are obtained automatically from official upstream, so this content-only artifact never creates a manual engine-hunting requirement.
 - The implemented/testable standalone legal-content milestone raises Demo Release readiness from **60.0%** to **70.0%**. With the documented phase weights, project progress moves from exact **84.75%** to **86.75%**, displayed as **86.8%**. The milestone does not replace the interactive target-Windows sign-off, release notes or GitHub Release gate.
+- Warehouse 13.5 now gets a deterministic department-specific combat response after lift activation instead of relying only on the Regional Manager plus ambient Overtime. The response uses one off-center authored anchor, sparse seven-tic polling and retires immediately on supervisor clearance or after its final wave so the return-to-entry leg remains readable.
+- The existing Warehouse freight-lift contract now verifies the new DoomEdNum registration, lift/department/clearance gates, exact response timings, flank placement and packaged MAP02/ZScript content.
 
 ### Validation
 - The full repository CI remains the merge gate. It must build both RC artifacts, verify their manifest/provenance relationship, keep README PRO v2 and Progress SVG PRO checks green, and preserve the existing pinned-GZDoom parser, offline-runtime reuse and real two-process save/load gates.
+- The Warehouse 13.5 objective contract now also protects the `12 / 30 / 52` second management-response cadence and requires the spawner to retire after supervisor clearance or its final wave.
+- Project progress remains **86.8%** and Demo Release readiness remains **70.0%** for this encounter-polish pass; it does not mark Warehouse 13.5 polished or complete the target-Windows human sign-off.
 - No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
 
 ## 0.32.3-dev — 2026-09-18

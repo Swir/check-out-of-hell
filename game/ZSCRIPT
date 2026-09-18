@@ -981,3 +981,97 @@ class WarehouseLiftControlSpawner : Actor
         }
     }
 }
+
+// Warehouse 13.5 gets a separate, readable management-response cadence after the player
+// deliberately engages the freight-lift override. The sequence is deterministic and stops
+// immediately once Regional Management is cleared so the return-to-entry leg stays readable.
+class WarehouseManagementWaveSpawner : Actor
+{
+    int startTic;
+    int nextWave;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        startTic = -1;
+        nextWave = 0;
+        nextCheck = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p || p.CountInv("WarehouseDepartmentToken") < 1 || p.CountInv("WarehouseLiftOverride") < 1)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            Destroy();
+            return;
+        }
+
+        if (startTic < 0)
+        {
+            startTic = Level.maptime;
+            nextWave = 1;
+            Actor.Spawn("TeleportFog", Pos);
+            p.A_StartSound("coh/regionalphase", CHAN_AUTO);
+            return;
+        }
+
+        int elapsed = (Level.maptime - startTic) / 35;
+
+        if (nextWave == 1 && elapsed >= 12)
+        {
+            Actor.Spawn("TeleportFog", Pos);
+            Actor.Spawn("ScannerTurret", Pos);
+            nextWave = 2;
+            return;
+        }
+
+        if (nextWave == 2 && elapsed >= 30)
+        {
+            Actor.Spawn("TeleportFog", Pos);
+            Actor.Spawn("PalletJack", Pos);
+            nextWave = 3;
+            return;
+        }
+
+        if (nextWave == 3 && elapsed >= 52)
+        {
+            Actor.Spawn("TeleportFog", Pos);
+            Actor.Spawn("CartOfDoom", Pos);
+            nextWave = 4;
+            Destroy();
+        }
+    }
+}
