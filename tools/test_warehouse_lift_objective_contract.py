@@ -21,7 +21,7 @@ def png_chunks(data: bytes):
 if not PK3.exists():
     raise SystemExit("PK3 missing. Run: python tools/build.py")
 
-for rel in ("sprites/WCTLA0.png", "sprites/WSGNA0.png"):
+for rel in ("sprites/WCTLA0.png", "sprites/WSGNA0.png", "sprites/WLOKA0.png"):
     path = GAME / rel
     if not path.exists():
         raise SystemExit(f"Warehouse generated sprite missing: {rel}")
@@ -105,7 +105,7 @@ for marker in (
     "class CheckoutClockOutGuideSpawner : Actor",
     "class WarehouseSafetyLockout : Inventory",
     'Tag "Lockout/Tagout Permit"',
-    "WCTL A -1 Bright;",
+    "WLOK A -1 Bright;",
     "class WarehouseSafetyStateHandler : EventHandler",
     "if (e.IsSaveGame)",
     'p.A_TakeInventory("WarehouseSafetyLockout", 1)',
@@ -271,7 +271,7 @@ for prop_type in ("17125", "17127", "17124"):
 
 with zipfile.ZipFile(PK3, "r") as archive:
     names = set(archive.namelist())
-    for rel in ("sprites/WCTLA0.png", "sprites/WSGNA0.png", "maps/MAP02.wad"):
+    for rel in ("sprites/WCTLA0.png", "sprites/WSGNA0.png", "sprites/WLOKA0.png", "maps/MAP02.wad"):
         if rel not in names:
             raise SystemExit(f"Warehouse runtime payload missing from PK3: {rel}")
     runtime_zscript = archive.read("ZSCRIPT").decode("utf-8")
@@ -286,6 +286,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "class WarehouseSafetyStateHandler : EventHandler",
         "class WarehouseSafetyLockoutSpawner : Actor",
         'p.CountInv("WarehouseSafetyLockout") > 0',
+        "WLOK A -1 Bright;",
     ):
         if marker not in runtime_zscript:
             raise SystemExit(f"Packaged ZSCRIPT lost Warehouse readability/safety logic: {marker}")
@@ -315,4 +316,4 @@ with zipfile.ZipFile(PK3, "r") as archive:
             raise SystemExit(f"Packaged MAP02 lost warehouse objective/environment marker: {marker!r}")
 
 print("Warehouse 13.5 freight-lift objective + management-response + optional stock-cage/lockout + return-readability contract: PASS")
-print("Full power now offers a side-lane electrical lockout without disabling hostile Overtime, lift progression, Regional Management or the clock-out return.")
+print("Full power now offers a distinct side-lane electrical lockout without disabling hostile Overtime, lift progression, Regional Management or the clock-out return.")
