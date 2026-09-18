@@ -52,6 +52,25 @@ function Select-ReleaseAsset($Release, [string]$Regex, [string]$Description) {
     return $asset
 }
 
+function Assert-PinnedReleaseAsset($Asset, $Config, [string]$Description) {
+    $expectedName = [string]$Config.asset_name
+    $expectedId = [Int64]$Config.asset_id
+    $expectedBytes = [Int64]$Config.asset_bytes
+
+    if ([string]::IsNullOrWhiteSpace($expectedName) -or $expectedId -le 0 -or $expectedBytes -le 0) {
+        throw "$Description identity is incomplete in runtime-lock.json. Expected asset_name, asset_id and asset_bytes."
+    }
+    if ([string]$Asset.name -ne $expectedName) {
+        throw "$Description name drifted from runtime-lock.json. Expected '$expectedName' but official release metadata returned '$($Asset.name)'."
+    }
+    if ([Int64]$Asset.id -ne $expectedId) {
+        throw "$Description GitHub asset ID drifted from runtime-lock.json. Expected $expectedId but official release metadata returned $($Asset.id). Refusing a silent re-upload/replacement."
+    }
+    if ([Int64]$Asset.size -ne $expectedBytes) {
+        throw "$Description byte size drifted from runtime-lock.json. Expected $expectedBytes but official release metadata returned $($Asset.size)."
+    }
+}
+
 function Download-WithRetry([string]$Url, [string]$Destination) {
     $lastError = $null
     for ($attempt = 1; $attempt -le 3; $attempt++) {
@@ -102,12 +121,13 @@ $BundledFreedoomProvenance = Read-JsonFile $BundledFreedoomProvenancePath
 if ($DryRun) {
     $gzRelease = Get-PinnedRelease -Repo $Lock.gzdoom.repo -Tag $Lock.gzdoom.tag
     $gzAsset = Select-ReleaseAsset -Release $gzRelease -Regex $Lock.gzdoom.asset_regex -Description "GZDoom Windows ZIP"
+    Assert-PinnedReleaseAsset -Asset $gzAsset -Config $Lock.gzdoom -Description "GZDoom Windows release asset"
     $fdRelease = Get-PinnedRelease -Repo $Lock.freedoom.repo -Tag $Lock.freedoom.tag
     $fdAsset = Select-ReleaseAsset -Release $fdRelease -Regex $Lock.freedoom.asset_regex -Description "Freedoom ZIP"
     $fdChecksumAsset = Select-ReleaseAsset -Release $fdRelease -Regex $Lock.freedoom.checksum_regex -Description "Freedoom checksum"
 
     Write-Host "Runtime lock resolved successfully."
-    Write-Host "GZDoom : $($gzRelease.tag_name) / $($gzAsset.name)"
+    Write-Host "GZDoom : $($gzRelease.tag_name) / $($gzAsset.name) / asset $($gzAsset.id) / $($gzAsset.size) bytes"
     Write-Host "Freedoom: $($fdRelease.tag_name) / $($fdAsset.name)"
     Write-Host "Checksum: $($fdChecksumAsset.name)"
     exit 0
@@ -118,16 +138,25 @@ Ensure-Directory $CacheDir
 
 $gzInstalled = $false
 $gzManifestAsset = $null
+$gzManifestAssetId = $null
+$gzManifestArchiveBytes = $null
 $gzManifestSource = $null
 if (-not $Force -and (Test-Path -LiteralPath $GZDoomExe -PathType Leaf) -and $ExistingManifest -and $ExistingManifest.gzdoom) {
-    if ($ExistingManifest.gzdoom.tag -eq $Lock.gzdoom.tag -and (Test-HashMatch -Path $GZDoomExe -ExpectedHash ([string]$ExistingManifest.gzdoom.local_sha256))) {
+    $identityMatches = (
+        [string]$ExistingManifest.gzdoom.asset -eq [string]$Lock.gzdoom.asset_name -and
+        [Int64]$ExistingManifest.gzdoom.asset_id -eq [Int64]$Lock.gzdoom.asset_id -and
+        [Int64]$ExistingManifest.gzdoom.archive_bytes -eq [Int64]$Lock.gzdoom.asset_bytes
+    )
+    if ($ExistingManifest.gzdoom.tag -eq $Lock.gzdoom.tag -and $identityMatches -and (Test-HashMatch -Path $GZDoomExe -ExpectedHash ([string]$ExistingManifest.gzdoom.local_sha256))) {
         $gzInstalled = $true
         $gzManifestAsset = [string]$ExistingManifest.gzdoom.asset
+        $gzManifestAssetId = [Int64]$ExistingManifest.gzdoom.asset_id
+        $gzManifestArchiveBytes = [Int64]$ExistingManifest.gzdoom.archive_bytes
         $gzManifestSource = [string]$ExistingManifest.gzdoom.source
-        Write-Host "Using verified cached GZDoom $($Lock.gzdoom.tag)."
+        Write-Host "Using verified cached GZDoom $($Lock.gzdoom.tag) with pinned release-asset identity."
     }
     else {
-        Write-Warning "Cached GZDoom does not match the pinned verified runtime record; it will be refreshed."
+        Write-Warning "Cached GZDoom does not match the pinned verified runtime/asset identity record; it will be refreshed."
     }
 }
 
@@ -159,12 +188,29 @@ if (-not $Force -and (Test-Path -LiteralPath $FreedoomWad -PathType Leaf)) {
 if (-not $gzInstalled) {
     $gzRelease = Get-PinnedRelease -Repo $Lock.gzdoom.repo -Tag $Lock.gzdoom.tag
     $gzAsset = Select-ReleaseAsset -Release $gzRelease -Regex $Lock.gzdoom.asset_regex -Description "GZDoom Windows ZIP"
+    Assert-PinnedReleaseAsset -Asset $gzAsset -Config $Lock.gzdoom -Description "GZDoom Windows release asset"
     $gzZip = Join-Path $CacheDir $gzAsset.name
     $gzStage = Join-Path $CacheDir "gzdoom-stage"
 
     if (Test-Path -LiteralPath $gzStage) { Remove-Item -LiteralPath $gzStage -Recurse -Force }
-    if ($Force -or -not (Test-Path -LiteralPath $gzZip)) {
+
+    $downloadGZDoom = $Force -or -not (Test-Path -LiteralPath $gzZip -PathType Leaf)
+    if (-not $downloadGZDoom) {
+        $cachedBytes = (Get-Item -LiteralPath $gzZip).Length
+        if ([Int64]$cachedBytes -ne [Int64]$Lock.gzdoom.asset_bytes) {
+            Write-Warning "Cached GZDoom archive has the wrong byte count; discarding it before an official-source refresh."
+            Remove-Item -LiteralPath $gzZip -Force
+            $downloadGZDoom = $true
+        }
+    }
+    if ($downloadGZDoom) {
         Download-WithRetry -Url $gzAsset.browser_download_url -Destination $gzZip
+    }
+
+    $gzArchiveBytes = (Get-Item -LiteralPath $gzZip).Length
+    if ([Int64]$gzArchiveBytes -ne [Int64]$Lock.gzdoom.asset_bytes) {
+        Remove-Item -LiteralPath $gzZip -Force -ErrorAction SilentlyContinue
+        throw "GZDoom archive byte count mismatch after download. Expected $($Lock.gzdoom.asset_bytes) but got $gzArchiveBytes. Refusing to extract unpinned content."
     }
 
     Ensure-Directory $gzStage
@@ -181,6 +227,8 @@ if (-not $gzInstalled) {
     Remove-Item -LiteralPath $gzStage -Recurse -Force
 
     $gzManifestAsset = [string]$gzAsset.name
+    $gzManifestAssetId = [Int64]$gzAsset.id
+    $gzManifestArchiveBytes = [Int64]$gzArchiveBytes
     $gzManifestSource = [string]$gzAsset.browser_download_url
 }
 
@@ -237,6 +285,8 @@ $manifest = [ordered]@{
         repo = $Lock.gzdoom.repo
         tag = $Lock.gzdoom.tag
         asset = $gzManifestAsset
+        asset_id = $gzManifestAssetId
+        archive_bytes = $gzManifestArchiveBytes
         source = $gzManifestSource
         local_sha256 = (Get-FileHash -LiteralPath $GZDoomExe -Algorithm SHA256).Hash
     }
