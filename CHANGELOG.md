@@ -163,7 +163,7 @@
 ### Added
 - Player-local `Focus HUD` accessibility option with redundant text for objective, breaker/memo progress and Overtime pressure.
 - Player-local `Large warnings` accessibility option for critical health, Overtime and Hell Rush states.
-- Dedicated **CHECKOUT OF HELL Accessibility** entries in both full and simple GZDoom option menus.
+- Dedicated **CHECKOUT OF HELL Accessibility** entries in both full and simple GZDoom options menus.
 - `docs/ACCESSIBILITY.md` and `tools/test_accessibility_contract.py`, including packaged-PK3 regression coverage and CI execution.
 
 ### Changed
@@ -232,7 +232,7 @@
 - GitHub Actions execution of the original soundtrack contract.
 
 ### Changed
-- MAP01 and MAP02 now use project-owned `D_COH01` / `D_COH02` music instead of inherited base-game music lumps.
+- MAP01 and MAP02 now use project-owned `D_COH01` / `D_COH02` music instead of inherited compatible-IWAD music lumps.
 - The build pipeline now generates and packages the `music/` namespace alongside visual and sound assets.
 - README/ROADMAP progress raised to 72% and Vertical Slice progress to 88% for the implemented/testable soundtrack milestone.
 
