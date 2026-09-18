@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased — 2026-09-18
+
+### Added
+- `tools/test_closing_time_combat_readability_contract.py`, protecting the authored center navigation strip, flanked Night Manager response anchors, off-center Overtime reinforcement anchors, mirrored non-blocking Lane 06 wayfinding, the existing physical clock-out trigger and the built MAP01/PK3 output.
+- GitHub Actions execution of the Closing Time combat-readability contract.
+
+### Changed
+- Closing Time's two inner Angry Self-Checkouts moved from the center strip to mirrored side positions, keeping initial pressure while preserving a cleaner front-to-rear navigation/sightline axis.
+- The front sales-floor Overtime reinforcement anchor moved out of the physical center/clock-out approach; all three ambient reinforcement anchors now remain off that axis while preserving the existing Overtime cadence.
+- Night Manager response anchors moved to the rear flanks so the authored `15 / 34 / 54 / 76` second reinforcement sequence no longer materializes on the central supervisor approach.
+- Front Lane 06 wayfinding is now mirrored with a second project-owned non-blocking sign. No solid geometry, breaker route, objective trigger, Overtime timing or boss-wave timing changed.
+- Project progress remains **82.75%**, displayed as **82.8%**, and Demo Release readiness remains **50.0%**. This readability pass improves the testable map layout but does not substitute for the remaining target-Windows interactive polish/sign-off gate.
+
+### Validation
+- The new contract validates source placement, packaged actor behavior and the generated MAP01 `TEXTMAP`, while existing layout, pacing, Overtime, performance, progress-SVG and pinned-GZDoom runtime/parser gates remain in force.
+
 ## 0.28.0-dev — 2026-09-18
 
 ### Added
