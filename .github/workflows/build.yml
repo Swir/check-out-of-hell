@@ -46,6 +46,9 @@ jobs:
       - name: Target Windows demo sign-off contract test
         run: python tools/test_windows_demo_signoff_contract.py
 
+      - name: Windows sign-off evidence verifier contract test
+        run: python tools/test_windows_signoff_evidence_verifier.py
+
       - name: SWIR README PRO v2 contract test
         run: python tools/test_readme_standard_contract.py
 
