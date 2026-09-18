@@ -43,6 +43,9 @@ jobs:
       - name: GZDoom save/load runtime validation contract test
         run: python tools/test_gzdoom_save_load_smoke_contract.py
 
+      - name: Windows target-playtest evidence contract test
+        run: python tools/test_windows_playtest_contract.py
+
       - name: SWIR README PRO v2 contract test
         run: python tools/test_readme_standard_contract.py
 
@@ -171,6 +174,10 @@ jobs:
       - name: Validate portable Python source
         shell: powershell
         run: .\tools\bootstrap_python.ps1 -DryRun
+
+      - name: Validate Windows playtest assistant on target shell
+        shell: powershell
+        run: .\tools\windows_playtest_assistant.ps1 -DryRun
 
       - name: Build Windows release-candidate package
         env:
