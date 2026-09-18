@@ -23,9 +23,10 @@ if (-not $Manifest.entries) {
     throw "Package manifest has no integrity entries."
 }
 
+$Separator = [IO.Path]::DirectorySeparatorChar.ToString()
 $RootFull = [IO.Path]::GetFullPath($ProjectRoot)
-if (-not $RootFull.EndsWith([IO.Path]::DirectorySeparatorChar)) {
-    $RootFull += [IO.Path]::DirectorySeparatorChar
+if (-not $RootFull.EndsWith($Separator)) {
+    $RootFull += $Separator
 }
 
 $checked = 0
