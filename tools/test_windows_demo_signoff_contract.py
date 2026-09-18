@@ -47,8 +47,8 @@ for marker in (
 
 # The Windows harness must build and verify the real RC, resolve the pinned legal
 # runtime in that extracted package, run the automated round-trip, then require
-# explicit human evidence before PASS. Paths are checked by stable basenames to
-# avoid making the contract depend on slash escaping.
+# explicit human evidence before PASS. Paths and difficulty labels are checked by
+# stable text rather than fragile source-literal quoting.
 for marker in (
     "package_release_candidate.py",
     "CHECKOUT-OF-HELL-Windows-Portable-rc.zip",
@@ -60,9 +60,9 @@ for marker in (
     "CHECKOUT-OF-HELL.pk3",
     "gzdoom_save_load_smoke.ps1",
     "-PreparedRuntime",
-    '"Closing Crew"',
-    '"Graveyard Shift"',
-    '"Corporate Hell"',
+    "Closing Crew",
+    "Graveyard Shift",
+    "Corporate Hell",
     "save_quit_load",
     "controller_core_actions",
     "controller_haptics",
