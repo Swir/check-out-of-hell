@@ -87,11 +87,40 @@ Remaining Warehouse 13.5 polish:
 - department-specific encounter pacing around the lift activation and Regional Manager phases,
 - full interactive balance/readability sign-off before the level is called polished.
 
-## Future departments
+## MAP03 — Frozen Foods
+Purpose: first playable cold-storage department with readable aisle routing, refrigeration atmosphere and a complete breaker → management → clock-out loop.
 
-### MAP03 — Frozen Foods
-Cold-storage combat where slippery routes, failing refrigeration and freezer-door timing
-become readable hazards instead of random punishment.
+Current prototype includes:
+- four authored freezer-aisle blockers that create side routes while leaving a readable central service lane,
+- three cold-chain breaker circuits distributed across front/side/rear routes,
+- Angry Self-Checkout, Security Price Scanner, Cart of Doom and Possessed Pallet Jack pressure placed off the entry centerline,
+- the existing power-gated Night Manager as the current department supervisor rather than inventing an unvalidated new boss,
+- a deterministic management-response anchor after full power,
+- a full-power recovery cache before the supervisor fight,
+- four telegraphed environmental Overtime hazard anchors kept away from the entry/clock-out approach,
+- paired project-owned `FROZEN FOODS` signs, safe restock/cone clutter, slow-failing lights and optional Emergency Break Snacks,
+- three department-local Corporate Compliance Memos as an optional exploration route,
+- a map-local initializer that clears only memo progress carried from the previous department and then destroys itself so normal save/restore inside MAP03 preserves newly collected memos,
+- an original deterministic department track, **Frozen Foods — Compressor Choir**,
+- a post-clear `CLOCK OUT` guide and the existing physical front completion rule.
+
+The first Frozen Foods loop deliberately reuses hardened core systems instead of adding a gimmick just
+for novelty: explore the freezer aisles, restore all three cold-chain circuits, use the full-power
+recovery option if needed, survive the Night Manager plus authored response pressure, then return to
+the entry and clock out. Overtime side-lane electrical arcs turn a long shift into a routing hazard,
+but their telegraphs and placement keep the central completion route readable.
+
+This is playable vertical-slice content, not a claim that Frozen Foods is a polished final campaign
+level. Future passes can add refrigeration-specific mechanics only after the current route survives
+real gameplay validation; slippery movement or freezer-door traps must never become random punishment.
+
+Remaining Frozen Foods polish:
+- target-machine balance/readability playtesting across all three difficulty modes,
+- stronger cold-storage-specific encounters and secrets without obscuring breaker routes,
+- refrigeration/frost interactions only if they remain readable and deterministic,
+- final lighting/geometry polish after the objective route is validated in play.
+
+## Later departments
 
 ### Electronics
 Security systems, display walls and hostile demo hardware create sightline and alarm puzzles.
