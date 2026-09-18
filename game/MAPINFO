@@ -12,7 +12,9 @@ DoomEdNums
     17103 = "CheckoutBossWaveSpawner"
     17104 = "CheckoutRegionalManagerSpawner"
     17105 = "CorporateMemo"
+    17106 = "CheckoutOvertimeHazardSpawner"
     17128 = "CheckoutFullPowerCacheSpawner"
+    17132 = "CheckoutClockOutGuideSpawner"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
