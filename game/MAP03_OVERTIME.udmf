@@ -6,3 +6,11 @@ thing { x = -620.0; y = -40.0; angle = 0; type = 17106; skill1 = true; skill2 = 
 thing { x =  620.0; y = -20.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -250.0; y = 360.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  250.0; y = 360.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Full power arms one department-specific compressor vent on the right service flank. Overtime must
+// already be active, every burst receives a two-second warning, and the centerline stays untouched.
+thing { x = 430.0; y = 120.0; angle = 180; type = 17142; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// An optional opposite-side safety station appears at full power. Taking it suppresses only the
+// compressor surge above; enemy Overtime, management waves and the Night Manager remain active.
+thing { x = -560.0; y = 260.0; angle = 0; type = 17143; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
