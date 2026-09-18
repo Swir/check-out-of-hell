@@ -66,18 +66,42 @@ extension = (GAME / "DECORATE_OVERTIME").read_text(encoding="utf-8")
 for marker in (
     "actor OvertimeWarningFlash",
     "actor OvertimeFloorArc",
-    "actor CheckoutOvertimeHazardSpawner 17106",
     'A_PlaySound("coh/overtimealarm"',
     'A_PlaySound("coh/overtimearc"',
     "A_Explode(10, 72)",
-    "TNT1 A 3150",
-    "TNT1 A 1575",
-    "TNT1 A 1120",
-    "TNT1 A 910",
-    "TNT1 A 700",
 ):
     if marker not in extension:
-        raise SystemExit(f"Overtime hazard actor contract missing: {marker}")
+        raise SystemExit(f"Overtime hazard presentation contract missing: {marker}")
+if "actor CheckoutOvertimeHazardSpawner" in extension:
+    raise SystemExit("Timed Overtime hazard anchor must live in ZSCRIPT_CLOCKOUT for clearance-aware retirement")
+
+zscript_clockout = (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8")
+for marker in (
+    "class CheckoutOvertimeHazardSpawner : Actor",
+    "nextHazardTic = Level.maptime + 35 * 90",
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    'Actor.Spawn("OvertimeWarningFlash", Pos)',
+    'Actor.Spawn("OvertimeFloorArc", Pos)',
+    "nextHazardTic += 35 * 45",
+    "nextHazardTic += 35 * 32",
+    "nextHazardTic += 35 * 26",
+    "nextHazardTic += 35 * 20",
+    "Destroy();",
+):
+    if marker not in zscript_clockout:
+        raise SystemExit(f"Clearance-aware Overtime hazard contract missing: {marker}")
+
+# The migrated state machine must preserve the authored schedule exactly:
+# 90s warning, 135s warning, 180/212/244/270s arcs, then every 20s.
+schedule = [90]
+for delay in (45, 45, 32, 32, 26, 20, 20):
+    schedule.append(schedule[-1] + delay)
+if schedule != [90, 135, 180, 212, 244, 270, 290, 310]:
+    raise SystemExit(f"Unexpected Overtime hazard schedule model: {schedule}")
+
+mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
+if '17106 = "CheckoutOvertimeHazardSpawner"' not in mapinfo:
+    raise SystemExit("Overtime hazard DoomEdNum 17106 is not mapped to the ZScript anchor")
 
 map_extension = (GAME / "MAP01_OVERTIME.udmf").read_text(encoding="utf-8")
 if map_extension.count("type = 17106") != 4:
@@ -98,6 +122,7 @@ for marker in (
     "from generate_overtime_assets import generate_overtime_assets",
     "generate_overtime_assets(GAME)",
     'GAME / "DECORATE_OVERTIME"',
+    'GAME / "ZSCRIPT_CLOCKOUT"',
     'MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]',
     'extension = GAME / f"{map_name}_{suffix}.udmf"',
 ):
@@ -119,12 +144,15 @@ with zipfile.ZipFile(PK3, "r") as archive:
             raise SystemExit(f"Overtime asset missing from PK3: {rel}")
 
     decorate = archive.read("DECORATE").decode("utf-8")
-    if "actor CheckoutOvertimeHazardSpawner 17106" not in decorate:
-        raise SystemExit("Packaged DECORATE does not include the Overtime hazard subsystem")
+    zscript = archive.read("ZSCRIPT").decode("utf-8")
+    if "actor OvertimeFloorArc" not in decorate:
+        raise SystemExit("Packaged DECORATE does not include Overtime hazard presentation")
+    if "class CheckoutOvertimeHazardSpawner : Actor" not in zscript:
+        raise SystemExit("Packaged ZSCRIPT does not include the clearance-aware Overtime hazard anchor")
 
     textmap = read_textmap(archive.read("maps/MAP01.wad"))
     if textmap.count("type = 17106") != 4:
         raise SystemExit("Packaged MAP01 does not contain all four Overtime hazard anchors")
 
 print("Overtime environmental hazard contract: PASS")
-print("Closing Time now escalates from warning alarms to readable floor arcs and faster Hell Rush traps.")
+print("Closing Time preserves the authored Overtime schedule while hazard anchors retire after supervisor clearance.")
