@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.33.3-dev — 2026-09-18
+
+### Added
+- Frozen Foods now gains a department-specific full-power compressor surge once Overtime begins. The authored right-side vent waits 18 seconds after Overtime is active, telegraphs every burst for two seconds, then uses deterministic `34 / 26 / 20` second stage-scaled spacing instead of random traps.
+- One optional opposite-side **Compressor Surge Isolation** control appears at full power. Taking it suppresses only future refrigeration bursts while hostile Overtime reinforcements, management pressure and the Night Manager remain active.
+- Project-owned `FSIS` isolation-panel and `FVEN` refrigerant-burst sprites are generated deterministically by the existing standard-library presentation pipeline.
+
+### Changed
+- `FrozenSurgeStateHandler` keeps the optional isolation department-local on fresh transitions while preserving the token across normal save/restore; supervisor clearance also retires an armed surge before the clock-out leg.
+- `tools/test_frozen_foods_contract.py` now protects surge/isolation registration, save behavior, sparse polling, full-power and Overtime gates, two-second warning, stage cadence, off-center placement, generated assets and packaged MAP03/ZScript/DECORATE payload. It also rejects any attempt to make the isolation token disable global enemy Overtime.
+- Project progress remains **86.8%** and Demo Release readiness remains **70.0%**. This is playable Frozen Foods systems polish and does not complete a weighted phase, the target-Windows human sign-off, release notes or a public release.
+
+### Validation
+- The full repository CI remains the merge gate, including the expanded Frozen Foods contract, README PRO v2, Progress SVG PRO, pinned-GZDoom parser/runtime validation, real two-process save/load and Windows/legal-content RC checks.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.33.2-dev — 2026-09-18
 
 ### Added
@@ -199,7 +215,7 @@
 - `tools/gzdoom_save_load_smoke.ps1` can now validate caller-supplied GZDoom/Freedoom/PK3 paths and evidence locations with `-PreparedRuntime`, while preserving its original standalone build/bootstrap behavior. This lets the Windows sign-off exercise the already verified RC payload instead of silently rebuilding or swapping it.
 - Windows CI now syntax-parses the interactive sign-off and save/load PowerShell scripts but deliberately does not execute or claim the human playtest. The Ubuntu contract verifies required gates, privacy limits, roadmap honesty and SVG-only progress presentation.
 - `ROADMAP.md` now links the reproducible target-Windows sign-off procedure and keeps the human play/controller/balance/performance gate explicit.
-- Project progress remains **84.8%** and Demo Release readiness remains **60.0%**. Evidence tooling reduces ambiguity in the remaining gate but does not complete it, mark Closing Time polished, finish legal packaging/release notes or create a release.
+- Project progress remains **84.8%** and Demo Release readiness remains **60.0%**. Evidence tooling reduces ambiguity in the remaining gate but does not complete it, mark Closing Time polished, finish legal packaging/release notes or create a GitHub Release.
 
 ### Validation
 - The new contract requires exact RC integrity verification before runtime bootstrap and the prepared runtime before the exact-RC save/load pass; final `PASS` requires every automated result, every manual result and a clean commit-addressable source snapshot.
