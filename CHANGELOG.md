@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.34.0-dev — 2026-09-18
+
+### Added
+- `MAP04 — Electronics` as a real playable fourth department with alternating display-wall aisles, two opposite-side power repairs, a project-owned rear **Store Network Reboot** that supplies the final `3/3` power step, a power-gated Night Manager encounter, full-power recovery, optional Corporate Compliance Memos and a post-clear return guide.
+- Electronics-specific combat pressure: each of the first two repairs receives a three-second warning before a Security Price Scanner / Angry Self-Checkout flank response, while full power plus Overtime can arm a separate outer-lane demo-wall surge with a 16-second grace period, two-second warning and deterministic `32 / 24 / 18` second stage-scaled cadence.
+- An optional opposite-lane **Demo Wall Kill Switch** that suppresses only future Electronics display surges without stopping hostile Overtime reinforcements, standard electrical hazards, management waves or the Night Manager.
+- Deterministic project-owned `ENRB`, `EKIL` and `ESUR` presentation assets plus the original `D_COH04.mid` theme **Electronics — Dead Pixel Choir**.
+- `tools/test_electronics_contract.py`, covering the authored MAP04 objective/hazard layout, state cleanup, warning/cadence rules, generated assets, packaged MAP04/ZScript/DECORATE payload and soundtrack wiring.
+
+### Changed
+- The playable department chain is now `Closing Time -> Warehouse 13.5 -> Frozen Foods -> Electronics -> Closing Time`; build, smoke, soundtrack and CI contracts now include MAP04.
+- README/design/music documentation now treats Electronics as playable development content rather than a roadmap-only placeholder.
+- Project progress remains **86.8%** and Demo Release readiness remains **70.0%**. A new playable department is meaningful Full Game work, but it does not complete the plural Full Game department milestone, mark a level polished, complete the target-Windows human sign-off, write release notes or authorize a public release.
+
+### Validation
+- The full repository CI remains the merge gate, including the new Electronics contract, README PRO v2, Progress SVG PRO, pinned-GZDoom parser/runtime validation, real two-process save/load and Windows/legal-content RC checks.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.33.3-dev — 2026-09-18
 
 ### Added
