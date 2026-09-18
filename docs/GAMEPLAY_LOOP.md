@@ -37,7 +37,7 @@ The wider cadence gives every threat enough readable combat space. The sequence 
 
 ## Clock-out escape
 
-Killing the supervisor does not complete the map automatically. Once all three breakers are restored and management is down, the HUD changes to `RETURN TO FRONT CHECKOUT`. The player must travel back to the front checkout/timecard zone. Entering it confirms `TIMECARD ACCEPTED` and exits after a short completion beat.
+Killing the supervisor does not complete the map automatically. Once all three breakers are restored and management is down, the HUD changes to `RETURN TO FRONT CHECKOUT`. Fresh Overtime floor-hazard anchors retire at the same clearance point as reinforcement spawners, while a project-owned `CLOCK OUT` guide appears on the front-lane approach. The player still has to travel back into the existing checkout/timecard zone; the guide does not move, enlarge or bypass the completion trigger. Entering the zone confirms `TIMECARD ACCEPTED` and exits after a short completion beat.
 
 This creates a final movement objective and reinforces the core joke: even after defeating supernatural management, the employee still has to clock out correctly.
 
@@ -52,7 +52,7 @@ Overtime is a deterministic pressure director driven by elapsed map time.
 | 3:00–4:29 | OVERTIME | Cart of Doom reinforcement pressure + active electrical floor hazards |
 | 4:30+ | HELL RUSH | Frequent Possessed Pallet Jack pressure + faster hazard cadence |
 
-Map designers place invisible `CheckoutOvertimeSpawner` and hazard anchors at authored locations. Reinforcements never appear directly on top of the player, and electrical hazards use a visible warning phase before damage. Scripted Overtime timings are intentionally shared by all difficulty modes so the player can learn the escalation language instead of fighting hidden random rules.
+Map designers place invisible `CheckoutOvertimeSpawner` and hazard anchors at authored locations. Reinforcements never appear directly on top of the player, and electrical hazards use a visible warning phase before damage. Scripted Overtime timings are intentionally shared by all difficulty modes so the player can learn the escalation language instead of fighting hidden random rules. In Closing Time, the environmental hazard schedule remains `90 / 135 / 180 / 212 / 244 / 270` seconds before entering a 20-second Hell Rush cadence; supervisor clearance retires any remaining anchors so the final route is pressured by survivors rather than newly created traps.
 
 ## Difficulty modes
 
@@ -95,11 +95,11 @@ MAP01 has a deliberately testable route contract:
 - the optional room contains rewards but no mandatory breaker,
 - after `3/3`, the Full-Power Emergency Cache and Night Manager encounter become available,
 - two rear boss-wave anchors feed the authored reinforcement sequence,
-- supervisor defeat stops new reinforcement creation and changes the objective to returning to the front checkout,
-- entering the front timecard zone completes the shift.
+- supervisor defeat stops new reinforcement and floor-hazard creation, reveals the front-lane `CLOCK OUT` guide and changes the objective to returning to the front checkout,
+- entering the unchanged front timecard zone completes the shift.
 
-Static contracts protect the layout, optional route, pacing, HUD, Overtime hazards and boss/escape rules. Windows CI additionally asks the pinned GZDoom runtime to parse the packaged prototype.
+Static contracts protect the layout, optional route, pacing, HUD, Overtime hazards, post-boss guide and boss/escape rules. Windows CI additionally asks the pinned GZDoom runtime to parse the packaged prototype.
 
 ## Next gameplay step
 
-Closing Time still needs a genuine end-to-end Windows playtest before it can be called fully polished. The next major validation pass should focus on practical save/load behavior, balance across all three difficulties, controller/accessibility behavior and any remaining encounter or route friction found during real play.
+Closing Time still needs a genuine end-to-end Windows playtest before it can be called fully polished. The next major validation pass should focus on practical save/load behavior, balance across all three difficulties, controller/accessibility behavior, real-hardware performance and any remaining encounter or route friction found during real play.
