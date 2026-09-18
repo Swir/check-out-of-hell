@@ -1,7 +1,7 @@
 # ROADMAP — CHECKOUT OF HELL
 <!-- SWIR-PROGRESS-SVG-PRO:v1 -->
 
-**Overall progress:** ` 84.8%`
+**Overall progress:** **84.8%**
 
 **Measured scope:** Implemented/testable project milestones  
 **Progress status:** HARDENING
@@ -132,7 +132,7 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (60 ×
 
 **Release rule:** a normal Windows player must not need to search for dependencies manually. A demo release must either contain every legally redistributable required runtime file or automatically obtain missing redistributable dependencies from official upstream sources on first run.
 
-**Current demo-readiness gate:** finish an interactive target-Windows playtest of Closing Time, including save/load confirmation, real-controller confirmation, final balance/polish sign-off and a real-hardware performance sanity check before any public demo is published. The verified CI release-candidate package does not replace this manual sign-off, release notes or the remaining legal-content packaging decision.
+**Current demo-readiness gate:** complete the interactive target-Windows sign-off documented in [`docs/WINDOWS_PLAYTEST.md`](docs/WINDOWS_PLAYTEST.md): full Closing Time runs on all three authored difficulties, manual save/quit/load confirmation, physical-controller confirmation, final balance/polish judgment and a real-hardware Overtime/boss performance sanity check before any public demo is published. The harness first validates the exact extracted RC package/runtime/save-load chain and records evidence, but it cannot replace the human gameplay confirmations. The verified CI release-candidate package also does not replace release notes or the remaining legal-content packaging decision.
 
 ## Phase 4 — Full Game — 0%
 - [ ] Full campaign
