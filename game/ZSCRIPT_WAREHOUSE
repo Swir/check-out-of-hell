@@ -1,0 +1,107 @@
+// CHECKOUT OF HELL - Warehouse 13.5 encounter pacing
+// Telegraphed one-shot side-lane pressure after the player deliberately engages the freight lift.
+// The warning uses existing project-owned Overtime presentation; the spawned threat is the
+// project-owned Possessed Pallet Jack. No proprietary runtime assets are required.
+
+class WarehousePalletLaneSpawner : Actor
+{
+    int releaseTic;
+    int nextCheck;
+    bool warned;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        releaseTic = -1;
+        nextCheck = 0;
+        warned = false;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        // This is a slow objective watcher, not a per-tic combat thinker. Four-tic polling keeps
+        // the one-second warning window tight while avoiding needless inventory checks.
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 4;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        // These anchors belong only to Warehouse 13.5 and retire once Regional Management is down.
+        if (p.CountInv("WarehouseDepartmentToken") == 0)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            Destroy();
+            return;
+        }
+
+        // The lane pressure is a consequence of the deliberate freight-lift action, never a random
+        // early punishment during circuit restoration.
+        if (p.CountInv("WarehouseLiftOverride") == 0)
+        {
+            return;
+        }
+
+        if (releaseTic < 0)
+        {
+            // Left loading lane moves first; the mirrored right lane follows later so the player can
+            // read and reposition instead of receiving two simultaneous flank spawns.
+            int delay = 35 * 3;
+            if (Pos.X > 0)
+            {
+                delay = 35 * 12;
+            }
+            releaseTic = Level.maptime + delay;
+        }
+
+        // One full second of bright/audio warning at the exact authored lane anchor.
+        if (!warned && Level.maptime >= releaseTic - 35)
+        {
+            Actor.Spawn("OvertimeWarningFlash", Pos);
+            warned = true;
+        }
+
+        if (Level.maptime < releaseTic)
+        {
+            return;
+        }
+
+        Actor.Spawn("TeleportFog", Pos);
+        Actor pallet = Actor.Spawn("PalletJack", Pos);
+        if (pallet)
+        {
+            pallet.A_StartSound("coh/palletcharge", CHAN_BODY);
+        }
+        Destroy();
+    }
+}
