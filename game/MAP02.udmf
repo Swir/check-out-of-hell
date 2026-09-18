@@ -45,6 +45,10 @@ thing { x =  260.0; y = 210.0; angle = 225; type = 17005; skill1 = true; skill2 
 thing { x = 0.0; y = 280.0; angle = 270; type = 17133; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = 0.0; y = 390.0; angle = 270; type = 17104; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
+// A single rear-left management-response anchor starts only after the lift override. Keeping it
+// off the centerline preserves the lift/boss sightline while feeding three readable timed waves.
+thing { x = -480.0; y = 300.0; angle = 315; type = 17135; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
 thing { x = -100.0; y = -210.0; angle = 0; type = 2011; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  100.0; y = -210.0; angle = 0; type = 2011; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
