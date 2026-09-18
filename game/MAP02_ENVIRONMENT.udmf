@@ -1,0 +1,16 @@
+// Warehouse 13.5 loading-bay identity pass. Every prop is project-owned, non-blocking and kept
+// off the central breaker/lift/boss lane so decoration cannot turn into accidental cover clutter.
+
+thing { x = -500.0; y = 300.0; angle = 45; type = 17134; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  500.0; y = 300.0; angle = 135; type = 17134; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -520.0; y = -40.0; angle = 0; type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  520.0; y = -40.0; angle = 180; type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -500.0; y = 170.0; angle = 0; type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  500.0; y = 170.0; angle = 180; type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -330.0; y = 300.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  330.0; y = 300.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+thing { x = -430.0; y = -310.0; angle = 0; type = 17124; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  430.0; y = -310.0; angle = 0; type = 17124; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
