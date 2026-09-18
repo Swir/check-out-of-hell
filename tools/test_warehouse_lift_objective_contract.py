@@ -51,12 +51,16 @@ for marker in (
     "WCTL A -1 Bright",
     "actor WarehouseFreightSign 17134",
     "WSGN A -1",
+    "actor CheckoutPowerCache : Backpack",
+    "actor CheckoutClockOutGuide",
 ):
     if marker not in decorate_env:
         raise SystemExit(f"Warehouse objective presentation is incomplete: {marker}")
 
 mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
 for marker in (
+    '17128 = "CheckoutFullPowerCacheSpawner"',
+    '17132 = "CheckoutClockOutGuideSpawner"',
     '17133 = "WarehouseLiftControlSpawner"',
     '17135 = "WarehouseManagementWaveSpawner"',
 ):
@@ -67,6 +71,7 @@ zscript = (GAME / "ZSCRIPT").read_text(encoding="utf-8")
 for marker in (
     'p.A_TakeInventory("WarehouseDepartmentToken", 1)',
     'p.A_TakeInventory("WarehouseLiftOverride", 1)',
+    "class CheckoutFullPowerCacheSpawner : Actor",
     "class WarehouseLiftControlSpawner : Actor",
     'p.A_GiveInventory("WarehouseDepartmentToken", 1)',
     'Actor.Spawn("WarehouseLiftOverride", Pos)',
@@ -76,6 +81,10 @@ for marker in (
 ):
     if marker not in zscript:
         raise SystemExit(f"Warehouse objective logic is incomplete: {marker}")
+
+clockout_zscript = (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8")
+if "class CheckoutClockOutGuideSpawner : Actor" not in clockout_zscript:
+    raise SystemExit("Warehouse return guidance requires the existing clearance-aware clock-out guide spawner")
 
 regional_block = zscript.split("class CheckoutRegionalManagerSpawner : Actor", 1)[1].split(
     "class WarehouseLiftControlSpawner : Actor", 1
@@ -87,6 +96,18 @@ for marker in (
 ):
     if marker not in regional_block:
         raise SystemExit(f"Regional Manager must remain behind breakers + freight-lift activation: {marker}")
+
+cache_block = zscript.split("class CheckoutFullPowerCacheSpawner : Actor", 1)[1].split(
+    "class CheckoutRegionalManagerSpawner : Actor", 1
+)[0]
+for marker in (
+    'p.CountInv("CheckoutFuse") < 3',
+    'Actor.Spawn("CheckoutPowerCache", Pos)',
+    "nextCheck = Level.maptime + 7;",
+    "Destroy();",
+):
+    if marker not in cache_block:
+        raise SystemExit(f"Warehouse full-power recovery cache lifecycle is incomplete: {marker}")
 
 wave_block = zscript.split("class WarehouseManagementWaveSpawner : Actor", 1)[1]
 for marker in (
@@ -123,12 +144,18 @@ if map02.count("type = 17133") != 1 or map02.count("type = 17104") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one lift-control anchor and one Regional Manager anchor")
 if map02.count("type = 17135") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one authored management-response anchor")
+if map02.count("type = 17128") != 1:
+    raise SystemExit("Warehouse 13.5 needs exactly one full-power recovery-cache anchor")
+if map02.count("type = 17132") != 1:
+    raise SystemExit("Warehouse 13.5 needs exactly one post-clear return-guide anchor")
 if "type = 17006" in map02:
     raise SystemExit("Warehouse 13.5 must not pre-place the Regional Manager")
 
 control_match = re.search(r"x = 0\.0; y = ([0-9.]+); angle = 270; type = 17133", map02)
 boss_match = re.search(r"x = 0\.0; y = ([0-9.]+); angle = 270; type = 17104", map02)
 wave_match = re.search(r"x = (-?[0-9.]+); y = ([0-9.]+); angle = 315; type = 17135", map02)
+cache_match = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 180; type = 17128", map02)
+guide_match = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 90; type = 17132", map02)
 if not control_match or not boss_match:
     raise SystemExit("Warehouse rear-bay objective anchors are not at the expected readable centerline")
 if float(boss_match.group(1)) - float(control_match.group(1)) < 96.0:
@@ -137,6 +164,11 @@ if not wave_match or abs(float(wave_match.group(1))) < 350.0:
     raise SystemExit("Warehouse management-response anchor must stay on a rear flank, not the objective centerline")
 if float(wave_match.group(2)) < 240.0:
     raise SystemExit("Warehouse management-response anchor must remain in the rear loading-bay combat zone")
+if not cache_match or abs(float(cache_match.group(1))) < 320.0 or float(cache_match.group(2)) < 220.0:
+    raise SystemExit("Warehouse full-power recovery cache must stay in the rear side lane, clear of the lift centerline")
+if not guide_match or abs(float(guide_match.group(1))) > 100.0 or float(guide_match.group(2)) > -280.0:
+    raise SystemExit("Warehouse post-clear guide must remain on the front entry/clock-out approach")
+
 
 environment = (GAME / "MAP02_ENVIRONMENT.udmf").read_text(encoding="utf-8")
 if environment.count("type = 17134") < 2:
@@ -153,15 +185,31 @@ with zipfile.ZipFile(PK3, "r") as archive:
     runtime_zscript = archive.read("ZSCRIPT").decode("utf-8")
     runtime_decorate = archive.read("DECORATE").decode("utf-8")
     runtime_map = archive.read("maps/MAP02.wad")
-    if "class WarehouseLiftControlSpawner : Actor" not in runtime_zscript:
-        raise SystemExit("Packaged ZSCRIPT lost the warehouse lift-control spawner")
-    if "class WarehouseManagementWaveSpawner : Actor" not in runtime_zscript:
-        raise SystemExit("Packaged ZSCRIPT lost the warehouse management-response spawner")
-    if "actor WarehouseLiftOverride : Inventory" not in runtime_decorate:
-        raise SystemExit("Packaged DECORATE lost the warehouse lift override")
-    for marker in (b"type = 17133", b"type = 17104", b"type = 17135", b"type = 17134"):
+    for marker in (
+        "class CheckoutFullPowerCacheSpawner : Actor",
+        "class WarehouseLiftControlSpawner : Actor",
+        "class WarehouseManagementWaveSpawner : Actor",
+        "class CheckoutClockOutGuideSpawner : Actor",
+    ):
+        if marker not in runtime_zscript:
+            raise SystemExit(f"Packaged ZSCRIPT lost Warehouse readability logic: {marker}")
+    for marker in (
+        "actor WarehouseLiftOverride : Inventory",
+        "actor CheckoutPowerCache : Backpack",
+        "actor CheckoutClockOutGuide",
+    ):
+        if marker not in runtime_decorate:
+            raise SystemExit(f"Packaged DECORATE lost Warehouse readability actor: {marker}")
+    for marker in (
+        b"type = 17128",
+        b"type = 17132",
+        b"type = 17133",
+        b"type = 17104",
+        b"type = 17135",
+        b"type = 17134",
+    ):
         if marker not in runtime_map:
             raise SystemExit(f"Packaged MAP02 lost warehouse objective/environment marker: {marker!r}")
 
-print("Warehouse 13.5 freight-lift objective + management-response contract: PASS")
-print("Three breakers power the lift override; Regional Management then gets a deterministic flank response at 12/30/52 seconds that retires on supervisor clearance.")
+print("Warehouse 13.5 freight-lift objective + management-response + return-readability contract: PASS")
+print("Three breakers now also reveal one side recovery cache; lift activation gates Regional Management, and supervisor clearance reveals one non-blocking entry guide for the clock-out return.")
