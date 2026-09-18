@@ -23,12 +23,9 @@ GZDoom is not authored by the CHECKOUT OF HELL project. Its upstream copyright a
 
 `tools/package_release_candidate.py` resolves the exact pinned Freedoom release from the official GitHub API, downloads the official release ZIP and checksum asset, requires a parsable SHA-256 entry for that archive, and refuses to continue if the downloaded archive does not match.
 
-Only after that verification does the builder extract:
+After that verification the builder extracts `freedoom2.wad` from the checksum-verified release ZIP. The Freedoom `v0.13.0` binary release ZIP does not contain `COPYING.adoc`, so the builder obtains the exact notice separately from the **same pinned upstream repository tag** (`freedoom/freedoom` at `v0.13.0`) and writes it to `licenses/FREEDOOM-COPYING.adoc`. This keeps both the content and its legal notice tied to immutable official upstream sources without weakening the archive checksum gate.
 
-- `freedoom2.wad` into `external/freedoom2.wad`,
-- the upstream `COPYING.adoc` into `licenses/FREEDOOM-COPYING.adoc`.
-
-The generated package also contains `third_party/FREEDOOM-PROVENANCE.json` with the pinned repo/tag, official archive/checksum URLs, archive SHA-256, WAD SHA-256, license SHA-256 and package paths. `package-manifest.json` independently covers those bundled files with the package-wide integrity manifest.
+The generated package also contains `third_party/FREEDOOM-PROVENANCE.json` with the pinned repo/tag, official archive/checksum URLs, pinned-tag license URL, archive SHA-256, WAD SHA-256, license SHA-256 and package paths. `package-manifest.json` independently covers those bundled files with the package-wide integrity manifest.
 
 The BSD 3-Clause license permits redistribution in binary form when its copyright notice, conditions and disclaimer are reproduced in the documentation and/or other materials provided with the distribution. The release-candidate package therefore carries the exact upstream `COPYING.adoc` alongside the redistributed WAD. The package does not use the Freedoom project or contributor names as an endorsement.
 

@@ -55,8 +55,8 @@ Compared with the development ZIP, the release candidate uses a stable player-fa
 - `PLAY.bat` — dedicated one-click release-candidate launcher,
 - `game/CHECKOUT-OF-HELL.pk3` — prebuilt player-facing game payload,
 - `external/freedoom2.wad` — pinned Freedoom base content obtained from the official upstream release during packaging,
-- `licenses/FREEDOOM-COPYING.adoc` — exact BSD 3-Clause notice copied from that upstream release,
-- `third_party/FREEDOOM-PROVENANCE.json` — official release/checksum URLs plus archive/WAD/license SHA-256 provenance,
+- `licenses/FREEDOOM-COPYING.adoc` — exact BSD 3-Clause notice obtained from the same pinned upstream repository tag,
+- `third_party/FREEDOOM-PROVENANCE.json` — official release/checksum URLs, pinned-tag license URL and archive/WAD/license SHA-256 provenance,
 - `package-manifest.json` — deterministic SHA-256 + byte-count manifest for every bundled project/content file,
 - `tools/verify_player_package.ps1` — local integrity and bundled-license/provenance verifier run before any engine download,
 - `runtime-lock.json` — the authoritative pinned upstream runtime/content versions,
@@ -68,9 +68,9 @@ Compared with the development ZIP, the release candidate uses a stable player-fa
 
 The RC builder does not copy an arbitrary local WAD. It resolves the exact pinned `freedoom/freedoom` release from the official GitHub API, downloads the matching official release ZIP and `freedoom-*-CHECKSUM` asset, parses the archive SHA-256 and refuses to package the WAD unless the downloaded archive matches it.
 
-The builder then extracts `freedoom2.wad` and the upstream `COPYING.adoc`, records their SHA-256 values in deterministic provenance metadata, and includes both in the package-wide manifest. The Windows verifier independently re-hashes the WAD and notice and checks that the provenance tag/path/license information matches the package runtime pin.
+The builder then extracts `freedoom2.wad` from that checksum-verified release ZIP. The `v0.13.0` binary release ZIP does not contain `COPYING.adoc`, so the exact BSD notice is fetched from the same immutable `freedoom/freedoom` tag instead. Both official source URLs and the archive/WAD/license hashes are recorded in deterministic provenance metadata and covered again by the package-wide manifest.
 
-This closes the standalone **legal base-content** packaging gate without pretending the engine is bundled: GZDoom remains on the official-source bootstrap path in the current RC.
+This closes the verified Freedoom **legal base-content** bundling step without pretending the engine is bundled: GZDoom remains on the official-source bootstrap path in the current RC.
 
 ### First launch and later launches
 
@@ -102,7 +102,7 @@ GitHub Actions builds and validates the PK3, the development portable ZIP and th
 - every `package-manifest.json` SHA-256 and byte count matches the ZIP contents,
 - runtime/content pins and delivery modes match `runtime-lock.json`,
 - bundled Freedoom is plausibly sized and accompanied by the exact BSD notice/provenance paths,
-- provenance WAD/license hashes match the packaged bytes and official URLs point to the pinned upstream release,
+- provenance WAD/license hashes match the packaged bytes and official URLs point to the pinned upstream release/tag sources,
 - the artifact is explicitly marked as non-public-release metadata,
 - the generated outer SHA-256 sidecar matches the ZIP.
 
@@ -110,7 +110,7 @@ GitHub Actions builds and validates the PK3, the development portable ZIP and th
 
 ## Public demo gate
 
-The verified portable release-candidate artifact does **not** authorize a public demo release by itself. Standalone legal base-content packaging is now implemented/testable, but a public demo still requires the interactive target-Windows Closing Time playtest, manual save/load confirmation, real-controller confirmation, final balance/polish sign-off, real-hardware performance sanity, release notes and an explicit GitHub Release decision.
+The verified portable release-candidate artifact does **not** authorize a public demo release by itself. Verified Freedoom legal base-content bundling is implemented/testable, but a public demo still requires the interactive target-Windows Closing Time playtest, manual save/load confirmation, real-controller confirmation, final balance/polish sign-off, real-hardware performance sanity, release notes and an explicit GitHub Release decision. The broader standalone-content milestone is not promoted solely by bundling Freedoom while GZDoom remains an official-source first-run dependency.
 
 No GitHub Release should be created until those gates are genuinely complete.
 
