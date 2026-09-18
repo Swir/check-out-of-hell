@@ -40,26 +40,23 @@ function Ensure-File([string]$Path, [string]$Description) {
 }
 
 function Read-JsonFile([string]$Path) {
-    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
-        return $null
-    }
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $null }
     return Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
 }
 
-function Get-RelativePath([string]$Path) {
-    try {
-        return [IO.Path]::GetRelativePath($ProjectRoot, $Path).Replace("\", "/")
+function Get-ProjectPath([string]$Path) {
+    $root = $ProjectRoot.TrimEnd("\") + "\"
+    if ($Path.StartsWith($root, [StringComparison]::OrdinalIgnoreCase)) {
+        return $Path.Substring($root.Length).Replace("\", "/")
     }
-    catch {
-        return $Path
-    }
+    return $Path
 }
 
 function Get-FileRecord([string]$Path) {
     Ensure-File -Path $Path -Description "Evidence input"
     $item = Get-Item -LiteralPath $Path
     return [ordered]@{
-        path = Get-RelativePath -Path $Path
+        path = Get-ProjectPath -Path $Path
         bytes = [Int64]$item.Length
         sha256 = (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
     }
@@ -84,7 +81,6 @@ function Get-SourceIdentity {
         }
         catch { }
     }
-
     return [ordered]@{ commit = $commit; branch = $branch }
 }
 
@@ -96,7 +92,6 @@ function Get-HardwareSnapshot {
         memory_gb = $null
         controller_candidates = @()
     }
-
     try {
         $os = Get-CimInstance Win32_OperatingSystem | Select-Object -First 1
         if ($os) {
@@ -107,48 +102,29 @@ function Get-HardwareSnapshot {
         }
     }
     catch { }
-
     try {
         $cpu = Get-CimInstance Win32_Processor | Select-Object -First 1
         if ($cpu -and $cpu.Name) { $snapshot.cpu = ([string]$cpu.Name).Trim() }
     }
     catch { }
-
     try {
-        $snapshot.gpu = @(
-            Get-CimInstance Win32_VideoController |
-                Where-Object { $_.Name } |
-                ForEach-Object { ([string]$_.Name).Trim() } |
-                Sort-Object -Unique
-        )
+        $snapshot.gpu = @(Get-CimInstance Win32_VideoController | Where-Object { $_.Name } | ForEach-Object { ([string]$_.Name).Trim() } | Sort-Object -Unique)
     }
     catch { }
-
     try {
-        $controllerPattern = "Xbox|XInput|Controller|Gamepad|DualSense|DualShock|8BitDo|Wireless Controller"
-        $snapshot.controller_candidates = @(
-            Get-CimInstance Win32_PnPEntity |
-                Where-Object { $_.Name -and ([string]$_.Name -match $controllerPattern) } |
-                ForEach-Object { ([string]$_.Name).Trim() } |
-                Sort-Object -Unique
-        )
+        $pattern = "Xbox|XInput|Controller|Gamepad|DualSense|DualShock|8BitDo|Wireless Controller"
+        $snapshot.controller_candidates = @(Get-CimInstance Win32_PnPEntity | Where-Object { $_.Name -and ([string]$_.Name -match $pattern) } | ForEach-Object { ([string]$_.Name).Trim() } | Sort-Object -Unique)
     }
     catch { }
-
     return $snapshot
 }
 
 function Resolve-GamePackage {
-    if (Test-Path -LiteralPath $PackagedPk3 -PathType Leaf) {
-        return $PackagedPk3
-    }
-    if (Test-Path -LiteralPath $SourcePk3 -PathType Leaf) {
-        return $SourcePk3
-    }
+    if (Test-Path -LiteralPath $PackagedPk3 -PathType Leaf) { return $PackagedPk3 }
+    if (Test-Path -LiteralPath $SourcePk3 -PathType Leaf) { return $SourcePk3 }
 
     Ensure-File -Path $BuildScript -Description "Build script"
     Ensure-File -Path $SmokeTest -Description "Smoke test"
-
     $python = Get-Command python -ErrorAction SilentlyContinue
     $pythonExe = $null
     if ($python) {
@@ -160,7 +136,6 @@ function Resolve-GamePackage {
         if ($LASTEXITCODE -ne 0) { throw "Portable Python bootstrap failed with exit code $LASTEXITCODE." }
         $pythonExe = Join-Path $ProjectRoot "tools\runtime\python\python.exe"
     }
-
     Ensure-File -Path $pythonExe -Description "Python runtime"
     & $pythonExe $BuildScript
     if ($LASTEXITCODE -ne 0) { throw "Game build failed with exit code $LASTEXITCODE." }
@@ -180,11 +155,10 @@ function Read-GateResult($Definition) {
         if ($answer -in @("s", "skip", "not tested")) { $status = "NOT_TESTED"; break }
         Write-Host "Please enter Y, N or S."
     }
-    $note = (Read-Host "Optional note").Trim()
     return [ordered]@{
         label = $Definition.label
         status = $status
-        note = $note
+        note = (Read-Host "Optional note").Trim()
     }
 }
 
@@ -192,7 +166,7 @@ function Write-MarkdownReport($Evidence, [string]$Path) {
     $lines = @(
         "# CHECKOUT OF HELL — Windows playtest evidence",
         "",
-        "This file records manual target-Windows evidence for the named Closing Time sign-off scope. It does not authorize a public release by itself.",
+        "This records manual target-Windows evidence for the named Closing Time sign-off scope. It does not authorize a public release by itself.",
         "",
         "- Generated UTC: ``$($Evidence.generated_at_utc)``",
         "- Scope: **$($Evidence.scope)**",
@@ -241,18 +215,18 @@ if (-not $lock -or -not $lock.gzdoom -or -not $lock.freedoom) {
 }
 
 if ($DryRun) {
-    if (-not (Test-Path -LiteralPath $PackagedPk3 -PathType Leaf) -and -not (Test-Path -LiteralPath $BuildScript -PathType Leaf)) {
+    if ((-not (Test-Path -LiteralPath $PackagedPk3 -PathType Leaf)) -and (-not (Test-Path -LiteralPath $BuildScript -PathType Leaf))) {
         throw "Dry-run cannot find either the packaged game or the source build path."
     }
     Write-Host "Windows playtest assistant dry-run: PASS"
     Write-Host "GZDoom pin : $($lock.gzdoom.tag)"
     Write-Host "Freedoom pin: $($lock.freedoom.tag)"
     Write-Host "Manual gates : $($GateDefinitions.Count)"
-    Write-Host "Dry-run does not launch the game, prompt for results, or mark demo readiness complete."
+    Write-Host "Dry-run does not download runtime files, launch the game, prompt for results, or mark demo readiness complete."
     exit 0
 }
 
-if (Test-Path -LiteralPath $PackageManifestPath -PathType Leaf -and Test-Path -LiteralPath $PackageVerifier -PathType Leaf) {
+if ((Test-Path -LiteralPath $PackageManifestPath -PathType Leaf) -and (Test-Path -LiteralPath $PackageVerifier -PathType Leaf)) {
     Write-Host "Verifying release-candidate package before playtest..."
     & $PackageVerifier
     if ($LASTEXITCODE -ne 0) { throw "Release-candidate integrity verification failed with exit code $LASTEXITCODE." }
@@ -267,9 +241,7 @@ foreach ($required in @($GZDoomExe, $FreedoomWad, $gamePk3, $RuntimeManifestPath
     Ensure-File -Path $required -Description "Playtest prerequisite"
 }
 
-if ([string]::IsNullOrWhiteSpace($EvidenceRoot)) {
-    $EvidenceRoot = Join-Path $ProjectRoot "playtest-evidence"
-}
+if ([string]::IsNullOrWhiteSpace($EvidenceRoot)) { $EvidenceRoot = Join-Path $ProjectRoot "playtest-evidence" }
 $stamp = (Get-Date).ToUniversalTime().ToString("yyyyMMdd-HHmmssZ")
 $sessionDir = Join-Path $EvidenceRoot $stamp
 New-Item -ItemType Directory -Path $sessionDir -Force | Out-Null
@@ -293,28 +265,15 @@ $hardware = Get-HardwareSnapshot
 if (-not $NoLaunch) {
     Write-Host ""
     Write-Host "Manual target-Windows session is ready." -ForegroundColor Green
-    Write-Host "Use this session to evaluate Closing Time, including Overtime, Night Manager, clock-out routing, controller feel and performance."
-    Write-Host "Create a normal in-game save before quitting. After the process closes, the assistant will launch GZDoom a second time so you can manually load that save."
-    Write-Host ""
+    Write-Host "Evaluate Closing Time, Overtime, Night Manager, the clock-out route, controller feel and performance."
+    Write-Host "Create a normal in-game save before quitting. A second process will then start so you can manually load that save."
 
-    $args1 = @(
-        "-config", "`"$engineConfig`"",
-        "-iwad", "`"$FreedoomWad`"",
-        "-file", "`"$gamePk3`"",
-        "+logfile", "`"$engineLog`"",
-        "+map", "MAP01"
-    )
+    $args1 = @("-config", "`"$engineConfig`"", "-iwad", "`"$FreedoomWad`"", "-file", "`"$gamePk3`"", "+logfile", "`"$engineLog`"", "+map", "MAP01")
     $first = Start-Process -FilePath $GZDoomExe -ArgumentList $args1 -WorkingDirectory $ProjectRoot -Wait -PassThru
     Write-Host "First GZDoom session exited with code $($first.ExitCode)."
 
-    Write-Host ""
-    Write-Host "Second session: load the save you created in the first session and confirm it resumes correctly, then exit GZDoom." -ForegroundColor Cyan
-    $args2 = @(
-        "-config", "`"$engineConfig`"",
-        "-iwad", "`"$FreedoomWad`"",
-        "-file", "`"$gamePk3`"",
-        "+logfile", "`"$engineLog`""
-    )
+    Write-Host "Second session: load the save from the first session, confirm it resumes correctly, then exit GZDoom." -ForegroundColor Cyan
+    $args2 = @("-config", "`"$engineConfig`"", "-iwad", "`"$FreedoomWad`"", "-file", "`"$gamePk3`"", "+logfile", "`"$engineLog`"")
     $second = Start-Process -FilePath $GZDoomExe -ArgumentList $args2 -WorkingDirectory $ProjectRoot -Wait -PassThru
     Write-Host "Second GZDoom session exited with code $($second.ExitCode)."
 }
@@ -325,11 +284,7 @@ else {
 $gateResults = [ordered]@{}
 foreach ($definition in $GateDefinitions) {
     if ($NoLaunch) {
-        $gateResults[$definition.key] = [ordered]@{
-            label = $definition.label
-            status = "NOT_TESTED"
-            note = "NoLaunch mode"
-        }
+        $gateResults[$definition.key] = [ordered]@{ label = $definition.label; status = "NOT_TESTED"; note = "NoLaunch mode" }
     }
     else {
         $gateResults[$definition.key] = Read-GateResult -Definition $definition
@@ -367,11 +322,10 @@ $evidence = [ordered]@{
 $evidence | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $evidenceJson -Encoding UTF8
 Write-MarkdownReport -Evidence $evidence -Path $evidenceMarkdown
 
+$resultColor = if ($allPassed) { "Green" } else { "Yellow" }
 Write-Host ""
-Write-Host "Windows playtest evidence result: $result" -ForegroundColor $(if ($allPassed) { "Green" } else { "Yellow" })
+Write-Host "Windows playtest evidence result: $result" -ForegroundColor $resultColor
 Write-Host "JSON: $evidenceJson"
 Write-Host "Report: $evidenceMarkdown"
-if (-not $allPassed) {
-    Write-Host "The demo sign-off remains open until every named manual gate is PASS."
-}
+if (-not $allPassed) { Write-Host "The demo sign-off remains open until every named manual gate is PASS." }
 Write-Host "This helper never publishes a GitHub Release or changes ROADMAP progress automatically."
