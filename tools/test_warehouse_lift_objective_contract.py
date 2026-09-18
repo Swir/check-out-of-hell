@@ -53,9 +53,25 @@ for marker in (
     "WSGN A -1",
     "actor CheckoutPowerCache : Backpack",
     "actor CheckoutClockOutGuide",
+    "actor WarehouseStockPile 17136",
+    'Tag "Damaged-Goods Stock Pile"',
 ):
     if marker not in decorate_env:
         raise SystemExit(f"Warehouse objective presentation is incomplete: {marker}")
+
+stock_block = decorate_env.split("actor WarehouseStockPile 17136", 1)[1]
+for marker in (
+    "Health 75",
+    "Radius 26",
+    "+SOLID",
+    "+SHOOTABLE",
+    "+NOBLOOD",
+    "BOXE A -1",
+    'A_PlaySound("coh/palletdown", CHAN_BODY)',
+    "A_NoBlocking",
+):
+    if marker not in stock_block:
+        raise SystemExit(f"Warehouse breakable stock-pile behavior is incomplete: {marker}")
 
 mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
 for marker in (
@@ -148,6 +164,10 @@ if map02.count("type = 17128") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one full-power recovery-cache anchor")
 if map02.count("type = 17132") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one post-clear return-guide anchor")
+if map02.count("type = 17136") != 4:
+    raise SystemExit("Warehouse 13.5 damaged-goods nook must be sealed by exactly four breakable stock piles")
+if map02.count("type = 17130") != 1 or map02.count("type = 17126") != 1:
+    raise SystemExit("Warehouse damaged-goods nook must contain exactly one label stash and one break snack")
 if "type = 17006" in map02:
     raise SystemExit("Warehouse 13.5 must not pre-place the Regional Manager")
 
@@ -168,6 +188,31 @@ if not cache_match or abs(float(cache_match.group(1))) < 320.0 or float(cache_ma
     raise SystemExit("Warehouse full-power recovery cache must stay in the rear side lane, clear of the lift centerline")
 if not guide_match or abs(float(guide_match.group(1))) > 100.0 or float(guide_match.group(2)) > -280.0:
     raise SystemExit("Warehouse post-clear guide must remain on the front entry/clock-out approach")
+
+stock_matches = re.findall(r"x = ([0-9.]+); y = 56\.0; angle = 0; type = 17136", map02)
+if len(stock_matches) != 4:
+    raise SystemExit("Warehouse stock piles must form the authored four-pile damaged-goods barrier at y=56")
+stock_x = [float(value) for value in stock_matches]
+if min(stock_x) < 390.0 or max(stock_x) > 610.0 or any(
+    (right - left) > 70.0 for left, right in zip(stock_x, stock_x[1:])
+):
+    raise SystemExit("Warehouse stock-pile barrier has an unintended player-sized gap or left its side lane")
+if 'vertex { x = 360.0; y = 40.0; }' not in map02 or 'vertex { x = 360.0; y = 220.0; }' not in map02:
+    raise SystemExit("Warehouse damaged-goods nook is missing its authored side-wall geometry")
+if 'x = 470.0; y = 142.0; angle = 180; type = 17130' not in map02:
+    raise SystemExit("Warehouse damaged-goods label reward left the optional cage")
+if 'x = 560.0; y = 142.0; angle = 180; type = 17126' not in map02:
+    raise SystemExit("Warehouse break-snack reward left the optional cage")
+
+# The cage is an optional ammo-for-supplies decision: no breaker, lift control or boss anchor may
+# move into its authored x>=360, y>=40 side nook.
+for mandatory_type in (17111, 17133, 17104):
+    pattern = re.compile(
+        rf"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = [0-9]+; type = {mandatory_type}"
+    )
+    for x_text, y_text in pattern.findall(map02):
+        if float(x_text) >= 360.0 and float(y_text) >= 40.0:
+            raise SystemExit(f"Mandatory Warehouse objective type {mandatory_type} moved into the optional stock cage")
 
 
 environment = (GAME / "MAP02_ENVIRONMENT.udmf").read_text(encoding="utf-8")
@@ -197,9 +242,12 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "actor WarehouseLiftOverride : Inventory",
         "actor CheckoutPowerCache : Backpack",
         "actor CheckoutClockOutGuide",
+        "actor WarehouseStockPile 17136",
+        "+SHOOTABLE",
+        "A_NoBlocking",
     ):
         if marker not in runtime_decorate:
-            raise SystemExit(f"Packaged DECORATE lost Warehouse readability actor: {marker}")
+            raise SystemExit(f"Packaged DECORATE lost Warehouse readability/tactical actor: {marker}")
     for marker in (
         b"type = 17128",
         b"type = 17132",
@@ -207,9 +255,12 @@ with zipfile.ZipFile(PK3, "r") as archive:
         b"type = 17104",
         b"type = 17135",
         b"type = 17134",
+        b"type = 17136",
+        b"type = 17130",
+        b"type = 17126",
     ):
         if marker not in runtime_map:
             raise SystemExit(f"Packaged MAP02 lost warehouse objective/environment marker: {marker!r}")
 
-print("Warehouse 13.5 freight-lift objective + management-response + return-readability contract: PASS")
-print("Three breakers now also reveal one side recovery cache; lift activation gates Regional Management, and supervisor clearance reveals one non-blocking entry guide for the clock-out return.")
+print("Warehouse 13.5 freight-lift objective + management-response + optional stock-cage + return-readability contract: PASS")
+print("Three breakers feed the lift objective; a side damaged-goods cage trades ammo for optional supplies, and clearance still preserves a readable clock-out return.")
