@@ -6,6 +6,8 @@ README = ROOT / "README.md"
 ROADMAP = ROOT / "ROADMAP.md"
 HERO = ROOT / "assets" / "readme" / "hero.svg"
 
+LEGACY_PROGRESS_METER = re.compile(r"(?:[█▓▒░]{2,})|(?:\[(?:[#=\-]{4,})\])")
+
 
 def require(text: str, needle: str, source: Path) -> None:
     if needle not in text:
@@ -51,6 +53,16 @@ def main() -> None:
             f"README progress {readme_progress.group(1)}% != ROADMAP progress {roadmap_progress.group(1)}%"
         )
 
+    for source, text in ((README, readme), (ROADMAP, roadmap)):
+        match = LEGACY_PROGRESS_METER.search(text)
+        if match:
+            raise AssertionError(
+                f"{source}: legacy character progress meter remains ({match.group(0)!r}); "
+                "SWIR README PRO v2 requires SVG progress plus ordinary numeric fallback only"
+            )
+
+    require(roadmap, 'src="assets/readme/progress-mini.svg"', ROADMAP)
+
     for marker in (
         'width="1200"',
         'height="320"',
@@ -68,7 +80,7 @@ def main() -> None:
 
     print(
         f"SWIR README PRO v2 contract: PASS ({len(keywords)} search phrases, "
-        f"progress {readme_progress.group(1)}%)"
+        f"progress {readme_progress.group(1)}%; legacy progress meter absent)"
     )
 
 
