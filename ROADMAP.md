@@ -1,7 +1,7 @@
 # ROADMAP — CHECKOUT OF HELL
 <!-- SWIR-PROGRESS-SVG-PRO:v1 -->
 
-**Overall progress:** **84.8%**
+**Overall progress:** ` 84.8%`
 
 **Measured scope:** Implemented/testable project milestones  
 **Progress status:** HARDENING
