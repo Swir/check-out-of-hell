@@ -40,14 +40,16 @@ def positions(text: str, type_id: int) -> list[tuple[float, float]]:
     return [(float(x), float(y)) for x, y in pattern.findall(text)]
 
 
-# MAP04 is a real objective department: two repairs, a physical final reboot, management, optional
-# exploration and a return guide. The reboot deliberately owns the final authoritative 3/3 token.
+# MAP04 is a real objective department: two repairs, a physical network reboot, a timed reboot
+# defence, management, optional exploration and a return guide. Only the timed sequence owns the
+# final authoritative 3/3 token after physical reboot interaction.
 if source_map.count("type = 17111") != 2:
     raise SystemExit("MAP04 must contain exactly two physical electronics breaker pickups")
 for type_id, expected, label in (
     (17144, 1, "fresh-entry initializer"),
     (17145, 1, "breaker-response anchor"),
-    (17146, 1, "network-reboot anchor"),
+    (17146, 1, "network-reboot pickup anchor"),
+    (17149, 1, "network-reboot defence anchor"),
     (17147, 1, "demo-wall surge anchor"),
     (17148, 1, "demo-wall kill-switch anchor"),
     (17101, 1, "gated Night Manager"),
@@ -69,10 +71,13 @@ if "type = 17003" in source_map:
     raise SystemExit("MAP04 must not pre-place Night Manager before electronics power restoration")
 
 reboot_positions = positions(source_map, 17146)
+defence_positions = positions(source_map, 17149)
 surge_positions = positions(source_map, 17147)
 kill_positions = positions(source_map, 17148)
 if len(reboot_positions) != 1 or reboot_positions[0][1] < 400:
     raise SystemExit(f"Store Network Reboot must live at the rear service position: {reboot_positions}")
+if len(defence_positions) != 1 or abs(defence_positions[0][0]) < 500:
+    raise SystemExit(f"Network reboot defence must stay on an outer side lane: {defence_positions}")
 if len(surge_positions) != 1 or abs(surge_positions[0][0]) < 500:
     raise SystemExit(f"Demo-wall surge must stay on an outer side lane: {surge_positions}")
 if len(kill_positions) != 1 or abs(kill_positions[0][0]) < 500:
@@ -89,6 +94,7 @@ for marker in (
     '17146 = "ElectronicsNetworkRebootSpawner"',
     '17147 = "ElectronicsDemoSurgeSpawner"',
     '17148 = "ElectronicsKillSwitchSpawner"',
+    '17149 = "ElectronicsNetworkRebootSequence"',
     'map MAP04 "Electronics"',
     'music = "D_COH04"',
 ):
@@ -105,14 +111,23 @@ for marker in (
     "class ElectronicsDepartmentInitSpawner : Actor",
     "class ElectronicsBreakerResponseSpawner : Actor",
     "class ElectronicsNetworkRebootSpawner : Actor",
+    "class ElectronicsNetworkRebootSequence : Actor",
     "class ElectronicsKillSwitchSpawner : Actor",
     "class ElectronicsDemoSurgeSpawner : Actor",
     'p.A_TakeInventory("CorporateMemo", 3);',
     'p.A_TakeInventory("ElectronicsDisplayKillSwitch", 1);',
+    'p.A_TakeInventory("ElectronicsRebootPending", 1);',
     "responseTic = Level.maptime + 35 * 3;",
     'Actor.Spawn("ScannerTurret", Pos);',
     'Actor.Spawn("AngrySelfCheckout", Pos);',
     'Actor.Spawn("ElectronicsNetworkReboot", Pos);',
+    'p.CountInv("ElectronicsRebootPending") <= 0',
+    "elapsed >= 35 * 2",
+    "elapsed >= 35 * 5",
+    "elapsed >= 35 * 7",
+    "elapsed >= 35 * 10",
+    'Actor.Spawn("CartOfDoom", Pos);',
+    'p.A_GiveInventory("CheckoutFuse", 1);',
     'p.CountInv("CheckoutFuse") < 3',
     'p.CountInv("ElectronicsDisplayKillSwitch") > 0',
     "nextSurgeTic = Level.maptime + 35 * 16;",
@@ -125,8 +140,9 @@ for marker in (
     require(zscript, marker, "Electronics ZScript behavior")
 
 for marker in (
+    "actor ElectronicsRebootPending : Inventory",
     "actor ElectronicsNetworkReboot : CustomInventory",
-    'A_GiveInventory("CheckoutFuse", 1)',
+    'A_GiveInventory("ElectronicsRebootPending", 1)',
     "actor ElectronicsDisplayKillSwitch : Inventory",
     "actor ElectronicsDisplayBurst",
     "ENRB A -1 Bright",
@@ -134,6 +150,8 @@ for marker in (
     "ESUR A 7 Bright",
 ):
     require(decorate, marker, "Electronics actor behavior")
+if 'A_GiveInventory("CheckoutFuse", 1)' in decorate:
+    raise SystemExit("Electronics reboot pickup must not grant the final power token directly")
 
 for marker in (
     "def _electronics_reboot_sprite",
@@ -166,12 +184,18 @@ with zipfile.ZipFile(PK3, "r") as archive:
     packaged_mapinfo = archive.read("MAPINFO").decode("utf-8")
     for marker in (
         "class ElectronicsNetworkRebootSpawner : Actor",
+        "class ElectronicsNetworkRebootSequence : Actor",
         "class ElectronicsDemoSurgeSpawner : Actor",
     ):
         require(packaged_zscript, marker, "packaged Electronics ZScript")
-    for marker in ("actor ElectronicsNetworkReboot", "actor ElectronicsDisplayBurst"):
+    for marker in (
+        "actor ElectronicsRebootPending",
+        "actor ElectronicsNetworkReboot",
+        "actor ElectronicsDisplayBurst",
+    ):
         require(packaged_decorate, marker, "packaged Electronics DECORATE")
     require(packaged_mapinfo, 'map MAP04 "Electronics"', "packaged MAPINFO")
+    require(packaged_mapinfo, '17149 = "ElectronicsNetworkRebootSequence"', "packaged MAPINFO")
 
     wad = archive.read("maps/MAP04.wad")
     ident, numlumps, dir_offset = struct.unpack("<4sII", wad[:12])
@@ -186,7 +210,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
         raise SystemExit(f"Packaged MAP04 has invalid UDMF markers: {entries}")
     text_offset, text_size, _ = entries[1]
     textmap = wad[text_offset : text_offset + text_size].decode("utf-8")
-    for marker in ("type = 17146", "type = 17147", "type = 17148", "type = 17106"):
+    for marker in ("type = 17146", "type = 17149", "type = 17147", "type = 17148", "type = 17106"):
         require(textmap, marker, "packaged MAP04 objective/hazard payload")
 
 print("Electronics playable department contract: PASS")

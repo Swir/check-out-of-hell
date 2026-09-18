@@ -1,10 +1,25 @@
 // CHECKOUT OF HELL - Electronics department-local controls and display hazards.
 // Visible art is generated deterministically by tools/generate_presentation_assets.py.
 
+// Hidden hand-off token for the timed Store Network Reboot sequence. The map-local sequence actor
+// owns the actual final CheckoutFuse grant so the pickup cannot instantly skip the authored defence.
+actor ElectronicsRebootPending : Inventory
+{
+    Tag "Store Network Reboot Pending"
+    Inventory.MaxAmount 1
+
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+}
+
 actor ElectronicsNetworkReboot : CustomInventory
 {
     Tag "Store Network Reboot"
-    Inventory.PickupMessage "Store network reboot accepted. Every demo screen is now somebody's problem."
+    Inventory.PickupMessage "Store network reboot accepted. Hold the department while the network cycles."
     Inventory.PickupSound "coh/fuse"
     Inventory.MaxAmount 1
 
@@ -14,7 +29,7 @@ actor ElectronicsNetworkReboot : CustomInventory
         ENRB A -1 Bright
         Stop
     Pickup:
-        TNT1 A 0 A_GiveInventory("CheckoutFuse", 1)
+        TNT1 A 0 A_GiveInventory("ElectronicsRebootPending", 1)
         Stop
     }
 }

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.34.1-dev — 2026-09-19
+
+### Changed
+- The Electronics **Store Network Reboot** is now a ten-second hold-the-department objective instead of an instant final power token: physical interaction starts a hidden pending state, a Security Price Scanner answers after 2 seconds, a second warning lands at 5 seconds, a Cart of Doom arrives at 7 seconds, and only the completed 10-second cycle grants the existing final `CheckoutFuse` token.
+- The reboot defence uses one authored outer-right lane anchor so the central service/clock-out route stays readable, preserves sequence state across normal save/restore, and clears stale pending state only on a genuinely fresh Electronics entry.
+- `tools/test_electronics_contract.py` now protects the side-lane anchor, pending-token hand-off, exact timing/wave sequence, no-direct-fuse pickup rule and packaged PK3/MAP04 payload.
+- Project progress remains **86.8%** and Demo Release readiness remains **70.0%** because this is playable MAP04 objective polish, not a completed weighted phase or target-Windows release-signoff gate.
+
+### Validation
+- Full repository CI remains the merge gate, including the Electronics contract, pinned-GZDoom parser/runtime, real two-process save/load, Windows/legal-content RC, README PRO v2 and Progress SVG PRO checks.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.34.0-dev — 2026-09-18
 
 ### Added
