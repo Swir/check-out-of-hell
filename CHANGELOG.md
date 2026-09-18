@@ -6,16 +6,22 @@
 - Windows release-candidate bundling for pinned Freedoom `v0.13.0` base content: `external/freedoom2.wad`, the exact upstream BSD 3-Clause `COPYING.adoc` from the same immutable tag, and deterministic `FREEDOOM-PROVENANCE.json` metadata.
 - `tools/test_legal_content_package_contract.py`, protecting the official-source release/checksum path, bundled-license/provenance policy, verified runtime cache reuse and Windows-package verifier wiring.
 - Package-manifest and PowerShell verification of the bundled Freedoom WAD/license hashes and provenance before GZDoom is prepared.
+- Exact official GZDoom `g4.14.2` Windows release-asset identity in `runtime-lock.json`: asset name, GitHub asset ID and byte size, so the bootstrap can reject silent replacement/re-upload drift even though that upstream release does not publish an asset digest.
+- README PRO regression coverage that rejects retired block/shade and bracket-style character progress meters from active README/ROADMAP dashboards.
 
 ### Changed
 - `tools/package_release_candidate.py` now resolves the pinned official Freedoom release, requires the matching official SHA-256 checksum, verifies the archive before extracting `freedoom2.wad`, and records the exact upstream license notice from the same repository tag.
 - The release-candidate bootstrap accepts bundled Freedoom only when its provenance SHA-256 matches, otherwise falls back to the pinned official upstream recovery path. Verified cached GZDoom is also hash-checked and reused on later launches.
 - GZDoom intentionally remains an automatic official-source first-run dependency rather than being copied into the candidate package; no proprietary Doom IWAD or unofficial mirror is introduced.
+- Windows GZDoom bootstrap now verifies the official release metadata against the locked asset name/ID/byte count before download, validates the archive byte count before extraction, records that identity in the runtime manifest and requires it for cached-runtime reuse. This strengthens provenance without claiming an upstream SHA-256 that GZDoom `g4.14.2` does not provide.
+- `ROADMAP.md` retired the duplicated legacy character progress meter while preserving the verified **84.8%** numeric fallback, SVG mini card, weighted calculation, milestone checklist and separate **60.0%** Demo Release readiness gate.
 - Packaging and third-party documentation now describe the bundled legal base-content layer separately from the still-unbundled GZDoom engine.
-- README/ROADMAP/project progress remain **84.8%** and Demo Release readiness remains **60.0%** in this iteration: this hardening pass is testable, but the roadmap's broader standalone-content/demo gate is not promoted solely by bundling Freedoom.
+- README/ROADMAP/project progress remain **84.8%** and Demo Release readiness remains **60.0%** in this iteration: this hardening/presentation pass is testable, but it does not complete a new gameplay or release-readiness milestone.
 
 ### Validation
 - The first CI attempt correctly rejected an assumption that the Freedoom binary release ZIP contained `COPYING.adoc`; the implementation was corrected to obtain the exact notice from the same pinned upstream tag instead of weakening the gate.
+- Bootstrap contract coverage now locks the official GZDoom Windows asset identity and Windows `-DryRun` must resolve that exact upstream asset before the runtime/package jobs proceed.
+- SWIR README PRO v2 coverage now fails if an active README/ROADMAP reintroduces the retired character progress meter while preserving SVG + numeric fallback checks.
 - Final CI validates the release-candidate build/package contract, bundled WAD/license/provenance on Windows, the pinned GZDoom parser, and the real two-process pinned-GZDoom save → exit → load runtime test.
 - No public demo or GitHub Release was created.
 
