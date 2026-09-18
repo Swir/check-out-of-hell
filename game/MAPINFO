@@ -29,6 +29,7 @@ DoomEdNums
     17147 = "ElectronicsDemoSurgeSpawner"
     17148 = "ElectronicsKillSwitchSpawner"
     17149 = "ElectronicsNetworkRebootSequence"
+    17150 = "ElectronicsLockdownSpawner"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
