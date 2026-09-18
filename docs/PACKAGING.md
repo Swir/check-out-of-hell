@@ -38,6 +38,7 @@ Run:
 ```powershell
 python tools/package_release_candidate.py
 python tools/test_release_candidate_package.py
+python tools/test_legal_content_bundle.py
 python tools/test_legal_content_package_contract.py
 python tools/test_windows_offline_runtime_cache_contract.py
 ```
@@ -47,9 +48,11 @@ The release-candidate builder creates:
 ```text
 dist/CHECKOUT-OF-HELL-Windows-Portable-rc.zip
 dist/CHECKOUT-OF-HELL-Windows-Portable-rc.zip.sha256
+dist/CHECKOUT-OF-HELL-Legal-Content-rc.zip
+dist/CHECKOUT-OF-HELL-Legal-Content-rc.zip.sha256
 ```
 
-This artifact is the verified packaging path intended to become the public Windows portable demo package after the remaining manual demo gates pass. It is still **not a public demo release** and is only published as a CI artifact.
+The Windows portable artifact is the verified packaging path intended to become the public Windows portable demo package after the remaining manual demo gates pass. It is still **not a public demo release** and is only published as a CI artifact.
 
 Compared with the development ZIP, the release candidate uses a stable player-facing payload layout, a local integrity gate and a bundled legal base-content layer:
 
@@ -72,6 +75,26 @@ The RC builder does not copy an arbitrary local WAD. It resolves the exact pinne
 The builder then extracts `freedoom2.wad` from that checksum-verified release ZIP. The `v0.13.0` binary release ZIP does not contain `COPYING.adoc`, so the exact BSD notice is fetched from the same immutable `freedoom/freedoom` tag instead. Both official source URLs and the archive/WAD/license hashes are recorded in deterministic provenance metadata and covered again by the package-wide manifest.
 
 This closes the verified Freedoom **legal base-content** bundling step without pretending the engine is bundled: GZDoom remains on the official-source bootstrap path in the current RC.
+
+### Standalone legal-content release candidate
+
+The same packaging run now emits `CHECKOUT-OF-HELL-Legal-Content-rc.zip` as a deterministic content-only artifact. It is not assembled from a second download path: it is built from the exact already-verified bytes used by the Windows player RC. The bundle contains only:
+
+- `game/CHECKOUT-OF-HELL.pk3`,
+- `external/freedoom2.wad`,
+- `licenses/FREEDOOM-COPYING.adoc`,
+- `third_party/FREEDOOM-PROVENANCE.json`,
+- project `LICENSE`,
+- `docs/THIRD_PARTY.md`,
+- `runtime-lock.json`,
+- `README-CONTENT.txt`,
+- `content-manifest.json`.
+
+`content-manifest.json` binds the bundle to the exact source commit/ref, records MIT + BSD-3-Clause license identities, names the pinned GZDoom tag without claiming the engine is included, and covers every payload entry with SHA-256 plus byte count. The outer ZIP also receives its own `.sha256` sidecar.
+
+The content bundle intentionally contains **no executable, DLL, batch file, PowerShell bootstrap or GZDoom binary**. It is a reusable legal-content layer for packaging/testing, not a player-facing shortcut that would force users to find an engine manually. Normal Windows players still use the portable package and `PLAY.bat`, which obtains a missing pinned GZDoom runtime automatically from official upstream.
+
+`tools/test_legal_content_bundle.py` proves that the bundle contains exactly the audited content set, that its manifest/source provenance/hashes are valid, that Freedoom notice/provenance matches the pinned official release, and that every shared payload byte is identical to the corresponding file in the Windows RC. CI runs this contract on Ubuntu and again after packaging on Windows.
 
 ### First launch and later launches
 
@@ -100,7 +123,7 @@ For the release-candidate path the launcher first checks bundled-file SHA-256 va
 
 ## CI contract
 
-GitHub Actions builds and validates the PK3, the development portable ZIP and the release-candidate ZIP.
+GitHub Actions builds and validates the PK3, the development portable ZIP, the standalone legal-content RC and the Windows release-candidate ZIP.
 
 `tools/test_portable_package.py` verifies the development artifact. `tools/test_release_candidate_package.py` additionally verifies that:
 
@@ -115,11 +138,15 @@ GitHub Actions builds and validates the PK3, the development portable ZIP and th
 - the artifact is explicitly marked as non-public-release metadata,
 - the generated outer SHA-256 sidecar matches the ZIP.
 
-`tools/test_legal_content_package_contract.py` protects the official-source/checksum/notice/provenance design at source level. `tools/test_windows_offline_runtime_cache_contract.py` protects the extracted-RC offline reuse harness and CI wiring. The Windows CI job additionally extracts the candidate, executes `tools/verify_player_package.ps1`, primes the pinned runtime once and then proves verified runtime reuse after archive-cache removal with outbound networking blocked. The existing runtime job separately resolves the pinned official engine and asks GZDoom to parse the current PK3.
+`tools/test_legal_content_bundle.py` independently verifies the content-only artifact, its exact source binding and entry hashes, absence of executable/bootstrap files, license/provenance completeness and byte-for-byte equality with the same content in the Windows RC.
+
+`tools/test_legal_content_package_contract.py` protects the official-source/checksum/notice/provenance design at source level. `tools/test_windows_offline_runtime_cache_contract.py` protects the extracted-RC offline reuse harness and CI wiring. The Windows CI job additionally rebuilds/verifies the standalone legal-content artifact, extracts the candidate, executes `tools/verify_player_package.ps1`, primes the pinned runtime once and then proves verified runtime reuse after archive-cache removal with outbound networking blocked. The existing runtime job separately resolves the pinned official engine and asks GZDoom to parse the current PK3.
 
 ## Public demo gate
 
-The verified portable release-candidate artifact does **not** authorize a public demo release by itself. Verified Freedoom legal base-content bundling and verified offline reuse of an already prepared runtime are implemented/testable, but a public demo still requires the interactive target-Windows Closing Time playtest, manual save/load confirmation, real-controller confirmation, final balance/polish sign-off, real-hardware performance sanity, release notes and an explicit GitHub Release decision. The broader standalone-content milestone is not promoted solely by bundling Freedoom while GZDoom remains an official-source first-run dependency.
+The verified portable release-candidate artifact and standalone legal-content artifact do **not** authorize a public demo release by themselves. The standalone legal-content packaging milestone is now implemented/testable, while the player package intentionally keeps GZDoom on the pinned official-source first-run bootstrap because no engine redistribution claim is being made.
+
+A public demo still requires the interactive target-Windows Closing Time playtest, manual save/load confirmation, real-controller confirmation, final balance/polish sign-off, real-hardware performance sanity, release notes and an explicit GitHub Release decision.
 
 No GitHub Release should be created until those gates are genuinely complete.
 
