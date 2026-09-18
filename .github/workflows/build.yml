@@ -109,11 +109,17 @@ jobs:
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 
-      - name: Build portable Windows package
+      - name: Build portable Windows development package
         run: python tools/package_portable.py
 
-      - name: Portable package contract test
+      - name: Portable development package contract test
         run: python tools/test_portable_package.py
+
+      - name: Build portable Windows release-candidate package
+        run: python tools/package_release_candidate.py
+
+      - name: Release-candidate package contract test
+        run: python tools/test_release_candidate_package.py
 
       - name: Upload prototype artifact
         uses: actions/upload-artifact@v4
@@ -129,6 +135,15 @@ jobs:
           path: |
             dist/CHECKOUT-OF-HELL-Windows-Portable-dev.zip
             dist/CHECKOUT-OF-HELL-Windows-Portable-dev.zip.sha256
+          if-no-files-found: error
+
+      - name: Upload portable Windows release-candidate artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkout-of-hell-windows-portable-rc
+          path: |
+            dist/CHECKOUT-OF-HELL-Windows-Portable-rc.zip
+            dist/CHECKOUT-OF-HELL-Windows-Portable-rc.zip.sha256
           if-no-files-found: error
 
   runtime-resolution:
@@ -151,6 +166,17 @@ jobs:
       - name: Validate portable Python source
         shell: powershell
         run: .\tools\bootstrap_python.ps1 -DryRun
+
+      - name: Build Windows release-candidate package
+        run: python tools/package_release_candidate.py
+
+      - name: Verify extracted release-candidate package on Windows
+        shell: powershell
+        run: |
+          $stage = Join-Path $PWD "dist\rc-integrity-check"
+          if (Test-Path -LiteralPath $stage) { Remove-Item -LiteralPath $stage -Recurse -Force }
+          Expand-Archive -LiteralPath "dist\CHECKOUT-OF-HELL-Windows-Portable-rc.zip" -DestinationPath $stage -Force
+          & (Join-Path $stage "tools\verify_player_package.ps1")
 
       - name: Parse prototype with pinned GZDoom
         shell: powershell
