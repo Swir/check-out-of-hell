@@ -44,8 +44,11 @@ for marker in (
     "CRITICAL HEALTH",
     "HELL RUSH // MAXIMUM OVERTIME",
     "OVERTIME ACTIVE",
-    "CheckoutShiftDirector.GetObjectiveText",
+    "CheckoutShiftDirector.GetDepartmentObjectiveText",
     "CheckoutShiftDirector.GetPressureMeter",
+    'CountInv("WarehouseDepartmentToken")',
+    'CountInv("WarehouseLiftOverride")',
+    '"POWER %d/3  //  LIFT %s"',
 ):
     if marker not in access:
         raise SystemExit(f"Accessibility overlay marker missing: {marker}")
@@ -86,8 +89,15 @@ with zipfile.ZipFile(PK3, "r") as archive:
             raise SystemExit(f"Packaged accessibility setting is incomplete: {marker}")
     if "CheckoutAccessibilityHandler" not in packed_mapinfo or "CheckoutAccessibilityHandler" not in packed_zscript:
         raise SystemExit("Packaged accessibility handler is not wired")
+    for marker in (
+        "CheckoutShiftDirector.GetDepartmentObjectiveText",
+        'CountInv("WarehouseDepartmentToken")',
+        'CountInv("WarehouseLiftOverride")',
+    ):
+        if marker not in packed_zscript:
+            raise SystemExit(f"Packaged accessibility HUD lost department-aware objective support: {marker}")
     if "FLIT B 2" in packed_decorate or "FLIT D 2" in packed_decorate:
         raise SystemExit("Built PK3 still contains rapid fluorescent flash cadence")
 
 print("Accessibility contract: PASS")
-print("Optional focus HUD and large textual warnings are packaged, shift logic is preserved, and the fluorescent effect uses a slower default cadence.")
+print("Optional focus HUD and large textual warnings are packaged, department-aware objectives are preserved, and the fluorescent effect uses a slower default cadence.")
