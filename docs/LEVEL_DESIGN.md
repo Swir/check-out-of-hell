@@ -58,6 +58,7 @@ Current prototype includes:
 - warehouse-specific HUD/Focus HUD objective states for breakers, lift activation, Regional Management and the return-to-entry leg,
 - project-owned freight signage, restock clutter, readable slow-failing lights and loading-bay dressing placed off the central objective/combat lane,
 - an optional damaged-goods cage whose four project-owned shootable stock piles trade ammunition for a label stash and break snack without hiding mandatory progression,
+- an optional full-power `Lockout/Tagout Permit` on the opposite rear side lane that isolates future Warehouse electrical floor arcs without disabling hostile Overtime reinforcements or management pressure,
 - project-owned retail surfaces and an original department soundtrack.
 
 The first Warehouse 13.5 objective sequence is now explicit: restore all three circuits, cross to the
@@ -72,6 +73,12 @@ stock piles seal the opening; breaking any useful gap costs ammunition but opens
 labels and health. The existing Security Price Scanner remains outside the cage approach, and no
 breaker, lift control or boss anchor is inside the nook. The joke therefore changes resource routing
 without becoming a key hunt or muddying the central lift/Regional Manager sightline.
+
+The left-side Lockout/Tagout station adds a second workplace choice after full power. Taking the permit
+retires only future Warehouse electrical floor arcs, representing a useful system repair rather than a
+magic combat-off button. Ambient Overtime enemy reinforcements, the freight-lift objective, management
+response waves and The Regional Manager all remain active, so the player trades a short detour for a
+safer floor while preserving the department's combat pressure.
 
 Remaining Warehouse 13.5 polish:
 - authored moving pallet hazards that communicate their lane before becoming dangerous,
