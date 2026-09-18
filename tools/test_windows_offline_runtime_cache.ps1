@@ -66,7 +66,7 @@ $OriginalGitHubToken = $env:GITHUB_TOKEN
 try {
     # Make accidental outbound HTTP(S) access fail immediately. The verified
     # second launch must succeed exclusively from installed files + provenance.
-    $BlockedProxy = New-Object System.Net.WebProxy("http://127.0.0.1:9", $false)
+    $BlockedProxy = New-Object -TypeName System.Net.WebProxy -ArgumentList @("http://127.0.0.1:9", $false)
     [System.Net.WebRequest]::DefaultWebProxy = $BlockedProxy
     $env:HTTP_PROXY = "http://127.0.0.1:9"
     $env:HTTPS_PROXY = "http://127.0.0.1:9"
