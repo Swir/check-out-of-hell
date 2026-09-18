@@ -163,7 +163,7 @@ class WarehouseSafetyLockout : Inventory
     States
     {
     Spawn:
-        WCTL A -1 Bright;
+        WLOK A -1 Bright;
         Stop;
     }
 }
