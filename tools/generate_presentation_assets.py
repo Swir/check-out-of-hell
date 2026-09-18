@@ -165,34 +165,6 @@ def _memo_sound(path: Path) -> None:
         stream.writeframes(frames)
 
 
-def _freezer_vent_sound(path: Path) -> None:
-    rate = 22050
-    duration = 0.48
-    total = int(rate * duration)
-    frames = bytearray()
-    for index in range(total):
-        t = index / rate
-        attack = min(1.0, t / 0.025)
-        release = min(1.0, max(0.0, (duration - t) / 0.11))
-        envelope = attack * release
-        hiss = (
-            math.sin(2.0 * math.pi * 1730.0 * t)
-            + math.sin(2.0 * math.pi * 2410.0 * t) * 0.65
-            + math.sin(2.0 * math.pi * 3190.0 * t) * 0.38
-        ) * 0.10
-        pulse = math.sin(2.0 * math.pi * 18.0 * t) * 0.035
-        value = (hiss + pulse) * envelope
-        sample = int(max(-1.0, min(1.0, value)) * 32767)
-        frames.extend(struct.pack("<h", sample))
-
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with wave.open(str(path), "wb") as stream:
-        stream.setnchannels(1)
-        stream.setsampwidth(2)
-        stream.setframerate(rate)
-        stream.writeframes(frames)
-
-
 def generate_presentation_assets(game_dir: Path) -> None:
     _memo_sprite(game_dir / "sprites" / "CMEMA0.png")
     _compressor_reset_sprite(game_dir / "sprites" / "FCRSA0.png")
@@ -200,7 +172,6 @@ def generate_presentation_assets(game_dir: Path) -> None:
     for phase, frame in enumerate("ABC"):
         _freezer_vent_sprite(game_dir / "sprites" / f"FVEN{frame}0.png", phase)
     _memo_sound(game_dir / "sounds" / "memo.wav")
-    _freezer_vent_sound(game_dir / "sounds" / "freezervent.wav")
 
 
 if __name__ == "__main__":
