@@ -14,13 +14,14 @@ BUILD = ROOT / "tools" / "build.py"
 TRACKS = {
     "D_COH01.mid": b"Closing Time - Empty Aisles",
     "D_COH02.mid": b"Warehouse 13.5 - Forklift Graveyard",
+    "D_COH03.mid": b"Frozen Foods - Compressor Choir",
 }
 
 if not PK3.exists():
     raise SystemExit("Build output missing. Run: python tools/build.py")
 
 mapinfo = MAPINFO.read_text(encoding="utf-8")
-for lump_name in ("D_COH01", "D_COH02"):
+for lump_name in ("D_COH01", "D_COH02", "D_COH03"):
     if f'music = "{lump_name}"' not in mapinfo:
         raise SystemExit(f"MAPINFO is not wired to original soundtrack lump {lump_name}")
 
@@ -96,7 +97,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
         if packaged != expected:
             raise SystemExit(f"Packaged {archive_name} differs from deterministic generated source")
 
-    for lump_name in ("D_COH01", "D_COH02"):
+    for lump_name in ("D_COH01", "D_COH02", "D_COH03"):
         if f'music = "{lump_name}"' not in packaged_mapinfo:
             raise SystemExit(f"Packaged MAPINFO lost soundtrack mapping for {lump_name}")
 
