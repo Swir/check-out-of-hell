@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.32.4-dev — 2026-09-18
+
+### Added
+- `CHECKOUT-OF-HELL-Legal-Content-rc.zip`, a deterministic content-only release-candidate artifact built from the exact verified bytes used by the Windows player RC: project PK3, pinned Freedoom WAD, project/Freedoom notices, provenance, third-party notes and runtime lock.
+- `content-manifest.json`, binding the standalone content bundle to the exact Git source snapshot and covering every payload file with SHA-256 plus byte count while explicitly recording that GZDoom is not redistributed.
+- `tools/test_legal_content_bundle.py`, which rejects executable/bootstrap leakage, verifies source/license/runtime/provenance metadata, checks the outer SHA-256 sidecar and requires byte-for-byte equality with the corresponding Windows RC content.
+
+### Changed
+- GitHub Actions now verifies the standalone legal-content RC on both Ubuntu and Windows and uploads it as a dedicated non-public CI artifact alongside the existing Windows player RC.
+- `docs/PACKAGING.md` now documents the reusable legal-content layer separately from the player package. Normal Windows players still use `PLAY.bat`; missing pinned GZDoom files are obtained automatically from official upstream, so this content-only artifact never creates a manual engine-hunting requirement.
+- The Demo Release roadmap now marks the standalone legal-content package implemented/testable, while project progress remains **84.8%** and Demo Release readiness remains **60.0%**. The milestone does not replace the interactive target-Windows sign-off, release notes or GitHub Release gate.
+
+### Validation
+- The full repository CI remains the merge gate. It must build both RC artifacts, verify their manifest/provenance relationship, keep README PRO v2 and Progress SVG PRO checks green, and preserve the existing pinned-GZDoom parser, offline-runtime reuse and real two-process save/load gates.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.32.3-dev — 2026-09-18
 
 ### Added
