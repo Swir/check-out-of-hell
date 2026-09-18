@@ -70,20 +70,20 @@ def read_required(path: Path) -> bytes:
     return path.read_bytes()
 
 
-def github_headers() -> dict[str, str]:
+def github_headers(url: str) -> dict[str, str]:
     headers = {
         "User-Agent": "checkout-of-hell-release-packager",
         "Accept": "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
     }
     token = os.environ.get("GITHUB_TOKEN")
-    if token:
+    if token and url.startswith("https://api.github.com/"):
         headers["Authorization"] = f"Bearer {token}"
     return headers
 
 
 def download_bytes(url: str, *, accept: str | None = None) -> bytes:
-    headers = github_headers()
+    headers = github_headers(url)
     if accept:
         headers["Accept"] = accept
     last_error: Exception | None = None
@@ -140,6 +140,7 @@ def build_freedoom_bundle(lock: dict) -> dict[str, bytes]:
     repo = config["repo"]
     tag = config["tag"]
     release_url = f"https://api.github.com/repos/{repo}/releases/tags/{tag}"
+    license_url = f"https://raw.githubusercontent.com/{repo}/{tag}/COPYING.adoc"
     release = download_json(release_url)
     if release.get("tag_name") != tag:
         raise SystemExit(f"Freedoom release tag mismatch: expected {tag}, got {release.get('tag_name')}")
@@ -163,11 +164,14 @@ def build_freedoom_bundle(lock: dict) -> dict[str, bytes]:
     try:
         with zipfile.ZipFile(BytesIO(archive_bytes), "r") as archive:
             wad_member = find_zip_member(archive, "freedoom2.wad")
-            license_member = find_zip_member(archive, "COPYING.adoc")
             wad = archive.read(wad_member)
-            license_text = archive.read(license_member)
     except zipfile.BadZipFile as exc:
         raise SystemExit("Official Freedoom release asset is not a valid ZIP archive") from exc
+
+    # The v0.13.0 binary release ZIP does not carry COPYING.adoc, so obtain the
+    # exact notice from the same pinned upstream repository tag. This remains an
+    # official, immutable-source path and is recorded in the provenance file.
+    license_text = download_bytes(license_url, accept="text/plain")
 
     if len(wad) < 1024 * 1024:
         raise SystemExit("Bundled Freedoom WAD looks unexpectedly small")
@@ -196,6 +200,7 @@ def build_freedoom_bundle(lock: dict) -> dict[str, bytes]:
         "wad_path": BUNDLED_FREEDOOM,
         "wad_sha256": digest(wad),
         "license_path": FREEDOOM_LICENSE,
+        "license_url": license_url,
         "license_sha256": digest(license_text),
         "license": "BSD-3-Clause",
     }
@@ -277,6 +282,7 @@ def main() -> None:
     print(f"SHA-256:                  {archive_digest}")
     print("Bundled project + Freedoom content files have an internal SHA-256 manifest.")
     print("Freedoom came from the pinned official release and passed its official checksum.")
+    print("The exact BSD notice came from the same pinned upstream repository tag and is provenance-recorded.")
     print("GZDoom remains an official-source first-run download; no manual dependency hunting is required.")
     print("This CI artifact is not a public demo release.")
 
