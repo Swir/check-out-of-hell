@@ -199,3 +199,48 @@ actor CheckoutClockOutGuide
         Loop
     }
 }
+
+// Warehouse 13.5 department marker. The lift-control spawner grants this locally so the HUD can
+// describe warehouse objectives without relying on map-name string checks. Fresh-map logic strips
+// it before the next department while savegame restores keep it serialized.
+actor WarehouseDepartmentToken : Inventory
+{
+    Inventory.MaxAmount 1
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+}
+
+// The freight-lift override appears only after all three warehouse breakers are restored. Picking
+// it up is the deliberate final work task that authorizes Regional Management to enter the floor.
+actor WarehouseLiftOverride : Inventory
+{
+    Tag "Freight Lift Override"
+    Inventory.PickupMessage "Freight lift override engaged. Regional Management has been notified."
+    Inventory.PickupSound "coh/shutter"
+    Inventory.MaxAmount 1
+    States
+    {
+    Spawn:
+        WCTL A -1 Bright
+        Stop
+    }
+}
+
+// Project-owned non-blocking department signage for the warehouse loading-bay identity pass.
+actor WarehouseFreightSign 17134
+{
+    Radius 8
+    Height 100
+    +NOBLOCKMAP
+    +NOGRAVITY
+    States
+    {
+    Spawn:
+        WSGN A -1
+        Stop
+    }
+}

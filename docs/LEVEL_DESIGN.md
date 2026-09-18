@@ -45,23 +45,34 @@ Remaining Closing Time polish:
 - keep any additional lighting/geometry reactions subordinate to combat readability rather than adding decoration for its own sake.
 
 ## MAP02 — Warehouse 13.5
-Purpose: larger arena, heavier enemies and first boss-scale fight.
+Purpose: heavier equipment pressure, a real loading-bay work task and the first boss-scale corporate escalation.
 
 Current prototype includes:
 - Security Price Scanners,
 - Possessed Pallet Jacks,
 - The Regional Manager prototype boss,
 - access to Receipt Ripper, Price-Gun SMG and Turbo Can Launcher,
-- all three breakers required before The Regional Manager can enter the fight,
+- three warehouse breakers that restore the loading-bay circuits,
+- a project-owned `Freight Lift Override` that appears only after all three circuits are live,
+- The Regional Manager held off-floor until the player deliberately engages that powered lift control,
+- warehouse-specific HUD/Focus HUD objective states for breakers, lift activation, Regional Management and the return-to-entry leg,
+- project-owned freight signage, restock clutter, readable slow-failing lights and loading-bay dressing placed off the central objective/combat lane,
 - project-owned retail surfaces and an original department soundtrack.
 
-Planned polish:
-- moving pallet hazards,
-- flickering warehouse lights,
-- vertical shelf routes,
-- breakable stock piles,
-- hidden staff-room shortcut,
-- a dedicated objective sequence so MAP02 no longer shares MAP01's simple breaker contract verbatim.
+The first Warehouse 13.5 objective sequence is now explicit: restore all three circuits, cross to the
+rear loading bay, engage the freight-lift override, survive the Regional Manager response, then return
+to the warehouse entry to finish the department. The lift control is separated from the boss spawn
+anchor so interacting with the objective cannot immediately overlap the player with the boss. The
+extra loading-bay props are non-blocking and deliberately stay out of the central route so the level
+gains identity without sacrificing readable combat.
+
+Remaining Warehouse 13.5 polish:
+- authored moving pallet hazards that communicate their lane before becoming dangerous,
+- stronger vertical shelf routes instead of a mostly flat combat floor,
+- breakable stock piles that create tactical choices rather than visual noise,
+- a hidden staff-room shortcut/reward loop,
+- department-specific encounter pacing around the lift activation and Regional Manager phases,
+- full interactive balance/readability sign-off before the level is called polished.
 
 ## Future departments
 

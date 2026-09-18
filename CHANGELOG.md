@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.32.0-dev — 2026-09-18
+
+### Added
+- A deliberate Warehouse 13.5 freight-lift objective after the existing three-breaker restoration: full power now reveals a project-owned `Freight Lift Override`, and The Regional Manager cannot enter until the player physically engages it.
+- Warehouse-specific HUD and opt-in Focus HUD states for breaker restoration, lift activation, Regional Management pressure and the return-to-entry escape leg.
+- Deterministic project-owned Warehouse 13.5 lift/freight signage, plus a non-blocking loading-bay environment layer kept off the central objective/combat lane.
+- `tools/test_warehouse_lift_objective_contract.py`, covering source gating, generated PNG/grAb assets, map anchor spacing, accessibility synchronization and the built MAP02/PK3 payload.
+
+### Changed
+- Warehouse 13.5 is no longer only a three-breaker → automatic boss gate: the useful workplace task is now restore circuits → activate the freight lift → survive Regional Management → return to the warehouse entry.
+- Department-local warehouse/lift inventory state is cleared only on genuinely fresh map loads; savegame restores preserve it alongside the existing serialized shift state.
+- Project progress remains **84.8%** and Demo Release readiness remains **60.0%**. This is real playable MAP02 work, but it does not mark Warehouse 13.5 polished, complete the target-Windows Closing Time sign-off, finish legal packaging/release notes or create a release.
+
+### Validation
+- CI builds the generated warehouse assets and MAP02 layer, runs the dedicated freight-lift objective contract, then keeps the existing pinned-GZDoom parser/runtime, two-process save/load, packaging, README PRO v2 and Progress SVG PRO gates in force.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
+
 ## 0.31.0-dev — 2026-09-18
 
 ### Added

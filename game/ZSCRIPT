@@ -116,6 +116,52 @@ class CheckoutShiftDirector : EventHandler
         return "ROUTE: CLOCK OUT AT THE FRONT LANES";
     }
 
+    static ui String GetDepartmentObjectiveText(int fuses, bool cleared, bool clockingOut, bool warehouse, bool liftEngaged)
+    {
+        if (!warehouse)
+        {
+            return GetObjectiveText(fuses, cleared, clockingOut);
+        }
+        if (clockingOut)
+        {
+            return "OBJECTIVE  WAREHOUSE SHIFT COMPLETE";
+        }
+        if (fuses < 3)
+        {
+            return String.Format("OBJECTIVE  RESTORE WAREHOUSE BREAKERS  %d/3", fuses);
+        }
+        if (!liftEngaged)
+        {
+            return "OBJECTIVE  ENGAGE FREIGHT LIFT OVERRIDE";
+        }
+        if (!cleared)
+        {
+            return "OBJECTIVE  SURVIVE REGIONAL MANAGEMENT";
+        }
+        return "OBJECTIVE  RETURN TO WAREHOUSE ENTRY";
+    }
+
+    static ui String GetDepartmentObjectiveHint(int fuses, bool cleared, bool warehouse, bool liftEngaged)
+    {
+        if (!warehouse)
+        {
+            return GetObjectiveHint(fuses, cleared);
+        }
+        if (fuses < 3)
+        {
+            return "ROUTE: RESTORE ALL THREE LOADING-BAY CIRCUITS";
+        }
+        if (!liftEngaged)
+        {
+            return "ROUTE: POWERED LIFT CONTROL IS AT THE REAR BAY";
+        }
+        if (!cleared)
+        {
+            return "ROUTE: REGIONAL MANAGEMENT HAS ENTERED THE FLOOR";
+        }
+        return "ROUTE: CLOCK OUT AT THE WAREHOUSE ENTRY";
+    }
+
     override void WorldLoaded(WorldEvent e)
     {
         // Event-handler fields are serialized by GZDoom. Do not overwrite them when a save
@@ -184,11 +230,14 @@ class CheckoutShiftDirector : EventHandler
         {
             p.A_TakeInventory("CheckoutFuse", 3);
             p.A_TakeInventory("SupervisorClearanceToken", 1);
+            p.A_TakeInventory("WarehouseDepartmentToken", 1);
+            p.A_TakeInventory("WarehouseLiftOverride", 1);
             freshWorldInitPending = false;
         }
 
         int fuses = p.CountInv("CheckoutFuse");
         int memos = p.CountInv("CorporateMemo");
+        bool warehouse = p.CountInv("WarehouseDepartmentToken") > 0;
 
         // A serialized clearance token is also a recovery marker for older/dev saves where
         // handler state may have changed between builds.
@@ -209,7 +258,22 @@ class CheckoutShiftDirector : EventHandler
             lastFuseCount = fuses;
             powerPulseUntil = Level.maptime + 35 * 3;
 
-            if (fuses == 1)
+            if (warehouse)
+            {
+                if (fuses == 1)
+                {
+                    powerPulseText = "WAREHOUSE POWER 1/3 - LOADING LIGHTS RESPOND";
+                }
+                else if (fuses == 2)
+                {
+                    powerPulseText = "WAREHOUSE POWER 2/3 - LIFT RELAY PRIMED";
+                }
+                else
+                {
+                    powerPulseText = "FULL POWER - FREIGHT LIFT OVERRIDE AVAILABLE";
+                }
+            }
+            else if (fuses == 1)
             {
                 powerPulseText = "POWER ROUTE 1/3 - CHECKOUT LIGHTS RESPOND";
             }
@@ -320,14 +384,16 @@ class CheckoutShiftDirector : EventHandler
         int labels = p.CountInv("Clip");
         int receipts = p.CountInv("Shell");
         int cans = p.CountInv("RocketAmmo");
+        bool warehouse = p.CountInv("WarehouseDepartmentToken") > 0;
+        bool liftEngaged = p.CountInv("WarehouseLiftOverride") > 0;
 
         String clockText = String.Format("SHIFT %02d:%02d  //  CLOCK-OUT TARGET 06:00", minutes, seconds);
         String stageText = String.Format("OVERTIME  %s", GetOvertimeLabel(stage));
         String pressureText = GetPressureMeter(stage);
-        String powerText = String.Format("POWER  %d/3", fuses);
-        String memoText = String.Format("MEMOS  %d/3", memos);
-        String taskText = GetObjectiveText(fuses, bossCleared, exitPending);
-        String hintText = GetObjectiveHint(fuses, bossCleared);
+        String powerText = warehouse ? String.Format("WAREHOUSE POWER  %d/3", fuses) : String.Format("POWER  %d/3", fuses);
+        String memoText = warehouse ? String.Format("LIFT  %s", liftEngaged ? "ONLINE" : "OFFLINE") : String.Format("MEMOS  %d/3", memos);
+        String taskText = GetDepartmentObjectiveText(fuses, bossCleared, exitPending, warehouse, liftEngaged);
+        String hintText = GetDepartmentObjectiveHint(fuses, bossCleared, warehouse, liftEngaged);
         String overtimeText = "MAXIMUM OVERTIME";
         String healthText = String.Format("WORKER HP  %03d", p.health);
         String ammoText = String.Format("RESERVES  LABELS %03d  RECEIPTS %02d  CANS %02d", labels, receipts, cans);
@@ -367,6 +433,8 @@ class CheckoutShiftDirector : EventHandler
             healthColor = Font.CR_RED;
         }
 
+        int secondaryProgressColor = warehouse ? (liftEngaged ? Font.CR_GREEN : Font.CR_GRAY) : (memos >= 3 ? Font.CR_GREEN : Font.CR_GRAY);
+
         // Objective card: one large readable task, one route hint, then optional progress.
         Screen.DrawText(smallfont, Font.CR_GOLD, 12, 10, "CHECKOUT OF HELL // NIGHT SHIFT",
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
@@ -376,7 +444,7 @@ class CheckoutShiftDirector : EventHandler
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
         Screen.DrawText(smallfont, Font.CR_GOLD, 12, 46, powerText,
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
-        Screen.DrawText(smallfont, memos >= 3 ? Font.CR_GREEN : Font.CR_GRAY, 92, 46, memoText,
+        Screen.DrawText(smallfont, secondaryProgressColor, 122, 46, memoText,
             DTA_VirtualWidth, 640, DTA_VirtualHeight, 480);
 
         // Overtime card: readable with text as well as color for accessibility.
@@ -825,7 +893,7 @@ class CheckoutRegionalManagerSpawner : Actor
         }
 
         PlayerPawn p = PlayerPawn(players[0].mo);
-        if (!p || p.CountInv("CheckoutFuse") < 3)
+        if (!p || p.CountInv("CheckoutFuse") < 3 || p.CountInv("WarehouseLiftOverride") < 1)
         {
             return;
         }
@@ -835,6 +903,79 @@ class CheckoutRegionalManagerSpawner : Actor
         if (manager)
         {
             manager.A_StartSound("coh/regionalphase", CHAN_BODY);
+            spawned = true;
+            Destroy();
+        }
+    }
+}
+
+class WarehouseLiftControlSpawner : Actor
+{
+    bool spawned;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+        nextCheck = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        if (p.CountInv("WarehouseDepartmentToken") == 0)
+        {
+            p.A_GiveInventory("WarehouseDepartmentToken", 1);
+        }
+
+        if (p.CountInv("WarehouseLiftOverride") > 0)
+        {
+            Destroy();
+            return;
+        }
+
+        if (spawned || p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        Actor.Spawn("TeleportFog", Pos);
+        Actor control = Actor.Spawn("WarehouseLiftOverride", Pos);
+        if (control)
+        {
             spawned = true;
             Destroy();
         }

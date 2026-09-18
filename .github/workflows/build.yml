@@ -109,6 +109,9 @@ jobs:
       - name: Regional Manager boss contract test
         run: python tools/test_regional_manager_contract.py
 
+      - name: Warehouse 13.5 freight-lift objective contract test
+        run: python tools/test_warehouse_lift_objective_contract.py
+
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 

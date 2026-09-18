@@ -22,7 +22,7 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.31-dev` |
+| Version | `0.32-dev` |
 | Implemented/testable progress | **84.8%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5` |
 | Public demo | **Not published yet** |
@@ -48,7 +48,7 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | Feature | What it adds |
 | --- | --- |
 | ⚡ Fast readable combat | Clear attacks, uncluttered lanes and classic-FPS movement pressure. |
-| 🛠️ Real shift objectives | Breakers, powered routes, shutters, supervisor gates and a physical clock-out finish. |
+| 🛠️ Real shift objectives | Breakers, powered routes, shutters, freight-lift controls, supervisor gates and a physical clock-out finish. |
 | ⏱️ Overtime | Deterministic escalation adds alarms, enemy pressure and telegraphed electrical hazards, then retires fresh pressure after supervisor clearance for a readable escape leg. |
 | 🧰 Retail arsenal | Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher use original presentation and audio. |
 | 👹 Store hazards | Angry Self-Checkout, Cart of Doom, Security Price Scanner and Possessed Pallet Jack fill distinct combat roles. |
@@ -75,7 +75,7 @@ Every department is designed around a useful workplace task rather than pure are
 
 `MAP01 — Closing Time` currently implements the most complete version of this loop. Three Breaker Fuses pull the player through left, right and rear routes. At `2/3` power, a Staff Only side room opens. At `3/3`, a Full-Power Emergency Cache becomes available and the Night Manager enters the floor. Two management-response anchors then feed a readable Angry Self-Checkout → Cart of Doom → Security Price Scanner → Possessed Pallet Jack sequence at `15 / 34 / 54 / 76` seconds after full power. Once the supervisor is dead, fresh reinforcements and newly spawned Overtime floor hazards stop, an original `CLOCK OUT` guide appears near the front lanes, and the player must physically return to the existing checkout trigger to finish the shift.
 
-`MAP02 — Warehouse 13.5` requires all three breakers before The Regional Manager arrives. Breaker and supervisor-clearance tokens are department-local: a normal map transition clears them before the next department objective begins, while loading a save preserves serialized shift state.
+`MAP02 — Warehouse 13.5` now has its own two-step work objective instead of sharing MAP01's boss gate verbatim. The player restores three loading-bay circuits, then a project-owned Freight Lift Override powers up at the rear bay. The Regional Manager remains off-floor until that control is deliberately engaged; after the boss response, the HUD sends the player back to the warehouse entry. Breaker, warehouse and supervisor-clearance tokens are department-local: a normal map transition clears them before the next department objective begins, while loading a save preserves serialized shift state.
 
 ## ⏱️ Overtime
 
@@ -120,7 +120,7 @@ The secret pass keeps progression readable: the Unclaimed Receipt Roll, Damaged-
 
 ### MAP02 — Warehouse 13.5
 
-The warehouse slice uses project-owned retail surfaces and an original soundtrack. Restoring all three breakers is required before the two-phase Regional Manager can enter the fight.
+The warehouse slice uses project-owned retail surfaces, freight/loading-bay signage and an original soundtrack. Restoring all three breakers now powers a visible Freight Lift Override at the rear bay; The Regional Manager cannot enter until the player activates that control. Warehouse-specific HUD and Focus HUD text track breakers, lift state, Regional Management and the return-to-entry leg. The new dressing is deliberately non-blocking and kept off the central objective/combat lane. Warehouse 13.5 remains playable development content, not a polished final level.
 
 Planned departments — **Frozen Foods**, **Electronics**, **Customer Service** and **Management Floor** — remain intentionally unexpanded until they have real playable content.
 
@@ -137,7 +137,7 @@ The tracks are deterministic Standard MIDI files produced by `tools/generate_mus
 
 ## 💾 Save/load safety
 
-The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear only department-local Breaker Fuse and supervisor-clearance tokens; save restores keep serialized shift state intact.
+The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear only department-local Breaker Fuse, supervisor-clearance and Warehouse 13.5 lift/objective tokens; save restores keep serialized shift state intact.
 
 The repository now runs a real **save → process exit → load** regression against the exact pinned GZDoom `g4.14.2`: CI boots the official Linux package under Xvfb/Mesa software rendering, authors unmistakable `CheckoutFuse 2/3` plus `CorporateMemo 2/3` state in live MAP01, writes a real `.zds`, starts a second engine process, reloads that save and verifies both objective counters survived. The same runtime lock and official Freedoom release are used, with the Freedoom archive SHA-256 verified against its official checksum file.
 
@@ -190,7 +190,7 @@ Runtime pins live in `runtime-lock.json` and change only after compatibility val
 
 Open **Options → CHECKOUT OF HELL Accessibility** to enable player-local comfort/readability aids:
 
-- **Focus HUD** adds a compact high-contrast text block with the current objective, breaker/memo counts and Overtime pressure.
+- **Focus HUD** adds a compact high-contrast text block with the current objective, department progress and Overtime pressure.
 - **Large warnings** adds larger textual warnings for critical health, Overtime and Hell Rush states.
 
 Both options are disabled by default and do not alter combat timing, difficulty or objective logic. Overtime remains communicated through words/patterns as well as color, while failing fluorescent props now use a slower light-change cadence instead of rapid two-tic flash cuts. See [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md).
@@ -211,7 +211,7 @@ The `55 / 38 / 25` second Overtime reinforcement cadence, `15 / 34 / 54 / 76` se
 
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts, accessibility, controller and performance hardening, generated art/audio/music, the Closing Time secret pass and post-boss clock-out polish, verifies both Windows portable package channels, extracts and checks the release candidate with Windows PowerShell, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. The Windows job additionally syntax-parses the target-machine sign-off harness; human gameplay evidence remains deliberately outside hosted CI. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts including the Warehouse 13.5 freight-lift gate, accessibility, controller and performance hardening, generated art/audio/music, the Closing Time secret pass and post-boss clock-out polish, verifies both Windows portable package channels, extracts and checks the release candidate with Windows PowerShell, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. The Windows job additionally syntax-parses the target-machine sign-off harness; human gameplay evidence remains deliberately outside hosted CI. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
 
 Useful developer commands:
 
@@ -235,6 +235,7 @@ python tools/test_overtime_hazard_contract.py
 python tools/test_original_assets.py
 python tools/test_combat_audio_polish.py
 python tools/test_music_contract.py
+python tools/test_warehouse_lift_objective_contract.py
 python tools/test_bootstrap_contract.py
 python tools/package_portable.py
 python tools/test_portable_package.py
@@ -278,7 +279,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md), [`docs/THIRD_PARTY.md`](docs
 ## ⚠️ Current limitations
 
 - `Closing Time` has its authored post-boss clock-out polish and a complete first secrets/joke-interaction pass, but is not yet signed off as the first fully polished level.
-- `Warehouse 13.5` is playable but not yet fully polished.
+- `Warehouse 13.5` now has a distinct breaker → freight-lift override → Regional Manager → return objective and project-owned loading-bay identity, but still needs vertical routes, department-specific encounter polish and interactive balance/readability sign-off before it is called polished.
 - The cross-process save/load serialization gate is green on the exact pinned engine; the new Windows sign-off kit repeats that round-trip against the exact extracted RC, but the required human save/quit/load confirmation remains open until a target-Windows run records PASS evidence.
 - Controller setup/haptics and the script-overhead performance pass are implemented and contract-tested, but physical controller and real-hardware performance confirmation remain part of the target-Windows demo sign-off.
 - The Windows portable release candidate is integrity-checked in CI but is not a public demo; standalone legal-content packaging, release notes and the final interactive Windows sign-off remain open release gates.
