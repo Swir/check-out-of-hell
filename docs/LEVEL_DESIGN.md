@@ -57,6 +57,7 @@ Current prototype includes:
 - The Regional Manager held off-floor until the player deliberately engages that powered lift control,
 - warehouse-specific HUD/Focus HUD objective states for breakers, lift activation, Regional Management and the return-to-entry leg,
 - project-owned freight signage, restock clutter, readable slow-failing lights and loading-bay dressing placed off the central objective/combat lane,
+- an optional damaged-goods cage whose four project-owned shootable stock piles trade ammunition for a label stash and break snack without hiding mandatory progression,
 - project-owned retail surfaces and an original department soundtrack.
 
 The first Warehouse 13.5 objective sequence is now explicit: restore all three circuits, cross to the
@@ -66,10 +67,15 @@ anchor so interacting with the objective cannot immediately overlap the player w
 extra loading-bay props are non-blocking and deliberately stay out of the central route so the level
 gains identity without sacrificing readable combat.
 
+A right-side damaged-goods nook adds the first breakable-stock tactical choice. Four solid, shootable
+stock piles seal the opening; breaking any useful gap costs ammunition but opens access to optional
+labels and health. The existing Security Price Scanner remains outside the cage approach, and no
+breaker, lift control or boss anchor is inside the nook. The joke therefore changes resource routing
+without becoming a key hunt or muddying the central lift/Regional Manager sightline.
+
 Remaining Warehouse 13.5 polish:
 - authored moving pallet hazards that communicate their lane before becoming dangerous,
 - stronger vertical shelf routes instead of a mostly flat combat floor,
-- breakable stock piles that create tactical choices rather than visual noise,
 - a hidden staff-room shortcut/reward loop,
 - department-specific encounter pacing around the lift activation and Regional Manager phases,
 - full interactive balance/readability sign-off before the level is called polished.

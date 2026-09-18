@@ -37,6 +37,8 @@ The lift-control spawner also supplies a department-local warehouse marker used 
 
 Project-owned `FREIGHT ONLY` signage, restock clutter, slow failing fluorescents and wet-floor cones reinforce the loading-bay identity. They are non-blocking and placed away from the central breaker/lift/boss lane, so this presentation pass does not turn decoration into accidental combat cover.
 
+A right-side **Damaged Goods** cage adds a separate optional tactical decision without changing that objective chain. Four solid, shootable stock piles built from project-owned box art seal a small reward nook. Breaking a useful gap costs ammunition but exposes a Damaged-Goods Label Crate and an Emergency Break Snack; no breaker, lift control or boss anchor is placed inside. The nearby Security Price Scanner remains outside the cage approach, so the route reads as an ammo-for-supplies choice rather than mandatory progression or accidental enemy containment.
+
 ## Night Manager response sequence
 
 Full power starts a staged rear-arena encounter in `MAP01`. Two `CheckoutBossWaveSpawner` anchors flank the supervisor area and begin a deterministic management-response sequence once all three breakers are restored:
@@ -85,7 +87,7 @@ Difficulty changes resource forgiveness and combat durability rather than silent
 
 ## Exploration and joke interactions
 
-Closing Time currently includes three optional Corporate Compliance Memos, a powered Staff Only side route, Employee of the Month reward stash, Emergency Break Snacks, department signage and safe environmental clutter. Optional rewards must stay useful or funny without becoming disguised mandatory progression.
+Closing Time currently includes three optional Corporate Compliance Memos, a powered Staff Only side route, Employee of the Month reward stash, Emergency Break Snacks, department signage and safe environmental clutter. Warehouse 13.5 adds the optional breakable Damaged Goods cage. Optional rewards must stay useful or funny without becoming disguised mandatory progression.
 
 ## HUD contract
 
@@ -125,6 +127,8 @@ MAP02 now has a separate testable route contract:
 - a single lift-control anchor becomes active only at full power,
 - the lift override must be collected before the existing Regional Manager spawner can fire,
 - the control and boss anchors remain separated by a safe readable gap,
+- one right-side optional cage is sealed by exactly four breakable project-owned stock piles,
+- the cage contains useful label/health rewards but no breaker, lift control or boss anchor,
 - HUD and Focus HUD states stay synchronized with the warehouse marker and lift token,
 - generated lift/freight signage and the MAP02 environment layer are present in the packaged PK3,
 - direct Regional Manager pre-placement remains forbidden.

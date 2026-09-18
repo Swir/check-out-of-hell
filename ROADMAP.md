@@ -102,6 +102,7 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (70 ×
 - [x] Cart of Doom + Possessed Pallet Jack original combat presentation implemented with dedicated CI contract
 - [x] Regional Manager original two-phase behavior/art/audio implemented with dedicated CI contract
 - [x] Warehouse 13.5 uses project-owned retail/loading-bay presentation and a contract-tested breakers → freight-lift override → Regional Manager objective gate
+- [x] Warehouse 13.5 optional damaged-goods cage uses breakable project-owned stock piles to trade ammunition for useful supplies without hiding mandatory progression
 - [x] Closing Time HUD readability + optional Corporate Memo joke route implemented with a dedicated CI contract
 - [x] Closing Time Overtime escalation now adds readable warning alarms and timed electrical floor hazards with a dedicated CI contract
 - [x] Final-layout night-shift HUD presents objective/route hierarchy, 06:00 target, Overtime pressure, health and weapon reserves without color-only state cues
