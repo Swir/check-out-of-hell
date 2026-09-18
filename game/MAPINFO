@@ -1,7 +1,7 @@
 gameinfo
 {
     PlayerClasses = "DoomPlayer"
-    AddEventHandlers = "CheckoutShiftDirector", "CheckoutAccessibilityHandler", "WarehouseSafetyStateHandler"
+    AddEventHandlers = "CheckoutShiftDirector", "CheckoutAccessibilityHandler", "WarehouseSafetyStateHandler", "FrozenSurgeStateHandler"
 }
 
 DoomEdNums
@@ -21,6 +21,8 @@ DoomEdNums
     17139 = "FrozenDepartmentInitSpawner"
     17140 = "FrozenBreakerResponseSpawner"
     17141 = "FrozenCompressorResetSpawner"
+    17142 = "FrozenCompressorSurgeSpawner"
+    17143 = "FrozenSurgeIsolationSpawner"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
