@@ -1,39 +1,56 @@
 # Third-party runtime components
 
-CHECKOUT OF HELL is developed so that players do not have to hunt for dependencies manually.
-The one-click launcher downloads required redistributable runtime components directly from their official upstream sources.
+CHECKOUT OF HELL is developed so players do not have to hunt for dependencies manually. The source checkout uses pinned official-source bootstrap logic, while the Windows release-candidate package now redistributes the compatible Freedoom base-content WAD with its upstream license notice and deterministic provenance record.
 
 ## GZDoom
 
 - Upstream: `ZDoom/gzdoom`
 - Pinned runtime tag: `g4.14.2`
 - Source code license: GNU GPL v3
-- Download source used by the bootstrap: the official GitHub Release API and its official release asset URL
+- Delivery in the Windows release candidate: **not redistributed**; obtained automatically from the official GitHub Release API/release asset on first launch when a verified cached copy is not already present
 
-GZDoom is not authored by the CHECKOUT OF HELL project. Its upstream copyright and license terms remain in force.
+GZDoom is not authored by the CHECKOUT OF HELL project. Its upstream copyright and license terms remain in force. The current player package deliberately keeps the engine on the official-source bootstrap path instead of copying a GZDoom binary into the ZIP.
 
 ## Freedoom
 
 - Upstream: `freedoom/freedoom`
 - Pinned runtime tag: `v0.13.0`
 - Content license: BSD 3-Clause
-- Download source used by the bootstrap: the official GitHub Release API and its official release asset URL
+- Official release asset: selected from the pinned upstream GitHub Release using `runtime-lock.json`
+- Integrity source: the matching official `freedoom-*-CHECKSUM` release asset
 
-The bootstrap downloads the official checksum file when available and verifies the selected Freedoom archive SHA-256 when the checksum entry can be parsed.
+### Windows release-candidate redistribution path
+
+`tools/package_release_candidate.py` resolves the exact pinned Freedoom release from the official GitHub API, downloads the official release ZIP and checksum asset, requires a parsable SHA-256 entry for that archive, and refuses to continue if the downloaded archive does not match.
+
+Only after that verification does the builder extract:
+
+- `freedoom2.wad` into `external/freedoom2.wad`,
+- the upstream `COPYING.adoc` into `licenses/FREEDOOM-COPYING.adoc`.
+
+The generated package also contains `third_party/FREEDOOM-PROVENANCE.json` with the pinned repo/tag, official archive/checksum URLs, archive SHA-256, WAD SHA-256, license SHA-256 and package paths. `package-manifest.json` independently covers those bundled files with the package-wide integrity manifest.
+
+The BSD 3-Clause license permits redistribution in binary form when its copyright notice, conditions and disclaimer are reproduced in the documentation and/or other materials provided with the distribution. The release-candidate package therefore carries the exact upstream `COPYING.adoc` alongside the redistributed WAD. The package does not use the Freedoom project or contributor names as an endorsement.
+
+For a source checkout or recovery case where the bundled WAD is absent, corrupt or does not match its verified provenance, `tools/bootstrap_runtime.ps1` can still obtain the pinned Freedoom archive from the official upstream release and requires the official checksum to verify it before extraction.
 
 ## Portable Python build runtime
 
-A source checkout may need Python to build the prototype PK3. If no system Python is available, the launcher downloads the pinned Windows embeddable package directly from `python.org`.
+A source checkout may need Python to build the prototype PK3. If no system Python is available, the source launcher downloads the pinned Windows embeddable package directly from `python.org`.
 
 - Pinned version: Python 3.12.10
 - Upstream: Python Software Foundation
 - Purpose: local source-build tooling only
 
-A packaged player release is expected to contain the already-built game PK3 and therefore should not require Python during normal play.
+The packaged player release candidate contains the already-built game PK3 and does not require Python during normal play.
 
 ## Project policy
 
-- No unofficial mirrors are used by the automatic bootstrap.
+- No unofficial mirrors are used by the automatic bootstrap or release-candidate content builder.
 - No proprietary Doom IWAD or commercial game assets are downloaded or bundled.
-- Runtime versions are pinned in `runtime-lock.json` for reproducibility.
+- Runtime/content versions are pinned in `runtime-lock.json` for reproducibility.
+- Freedoom redistribution includes its exact upstream BSD notice and a machine-verifiable provenance record.
+- GZDoom remains an automatic official-source first-run dependency in the current release-candidate package.
 - Runtime pins should only be changed after compatibility validation.
+
+This document describes the project distribution design and bundled notices; it is not a substitute for upstream license texts. The exact Freedoom license text carried by a generated player package is `licenses/FREEDOOM-COPYING.adoc`.
