@@ -1,4 +1,4 @@
-// CHECKOUT OF HELL - Frozen Foods department-local pickups.
+// CHECKOUT OF HELL - Frozen Foods department-local pickups and refrigeration hazards.
 // Visible art is generated deterministically by tools/generate_presentation_assets.py.
 
 actor FrozenCompressorReset : CustomInventory
@@ -15,6 +15,45 @@ actor FrozenCompressorReset : CustomInventory
         Stop
     Pickup:
         TNT1 A 0 A_GiveInventory("CheckoutFuse", 1)
+        Stop
+    }
+}
+
+// Optional full-power safety task. Taking this control suppresses only future Frozen Foods
+// compressor-surge vents; hostile Overtime reinforcements and management remain active.
+actor FrozenSurgeIsolation : Inventory
+{
+    Tag "Compressor Surge Isolation"
+    Inventory.PickupMessage "Compressor surge isolation engaged. Refrigerant vents suppressed; management remains active."
+    Inventory.PickupSound "coh/fuse"
+    Inventory.MaxAmount 1
+
+    States
+    {
+    Spawn:
+        FSIS A -1 Bright
+        Stop
+    }
+}
+
+// Readable, short-lived cold-storage hazard. The spawner always emits the normal Overtime warning
+// two seconds before this actor appears, so the frost burst is a routing decision rather than a trap.
+actor FrozenRefrigerantBurst
+{
+    Radius 10
+    Height 20
+    +NOBLOCKMAP
+    +NOGRAVITY
+    +NOCLIP
+
+    States
+    {
+    Spawn:
+        FVEN A 7 Bright A_PlaySound("coh/freezervent", CHAN_BODY)
+        FVEN B 6 Bright
+        FVEN C 0 Bright A_Explode(8, 80)
+        FVEN C 6 Bright
+        FVEN B 5
         Stop
     }
 }
