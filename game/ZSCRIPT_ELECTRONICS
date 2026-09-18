@@ -516,3 +516,108 @@ class ElectronicsDemoSurgeSpawner : Actor
         burstTic = Level.maptime + 35 * 2;
     }
 }
+
+// In deeper Overtime, Electronics begins changing navigation as well as dealing damage. One authored
+// inner-left aisle can receive a temporary security shutter after a two-second warning. The shutter
+// lasts five seconds, the central service lane remains open, and the optional display kill switch does
+// not disable this management lockdown. Supervisor clearance retires future locks before clock-out.
+class ElectronicsLockdownSpawner : Actor
+{
+    bool warningArmed;
+    int closeTic;
+    int nextCheck;
+    int nextLockTic;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        warningArmed = false;
+        closeTic = 0;
+        nextCheck = Level.maptime + 7;
+        nextLockTic = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        int overtimeStage = CheckoutShiftDirector.GetOvertimeStage();
+        if (overtimeStage < 2)
+        {
+            return;
+        }
+
+        if (warningArmed)
+        {
+            if (Level.maptime < closeTic)
+            {
+                return;
+            }
+
+            Actor.Spawn("ElectronicsLockdownShutter", Pos);
+            warningArmed = false;
+
+            int delaySeconds = 24;
+            if (overtimeStage >= 3)
+            {
+                delaySeconds = 18;
+            }
+            nextLockTic = Level.maptime + 35 * delaySeconds;
+            return;
+        }
+
+        if (nextLockTic == 0)
+        {
+            nextLockTic = Level.maptime + 35 * 12;
+            return;
+        }
+        if (Level.maptime < nextLockTic)
+        {
+            return;
+        }
+
+        Actor.Spawn("OvertimeWarningFlash", Pos);
+        warningArmed = true;
+        closeTic = Level.maptime + 35 * 2;
+    }
+}

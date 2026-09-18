@@ -41,8 +41,8 @@ def positions(text: str, type_id: int) -> list[tuple[float, float]]:
 
 
 # MAP04 is a real objective department: two repairs, a physical network reboot, a timed reboot
-# defence, management, optional exploration and a return guide. Only the timed sequence owns the
-# final authoritative 3/3 token after physical reboot interaction.
+# defence, management, escalating Overtime navigation pressure, optional exploration and a return
+# guide. Only the timed sequence owns the final authoritative 3/3 token after physical reboot use.
 if source_map.count("type = 17111") != 2:
     raise SystemExit("MAP04 must contain exactly two physical electronics breaker pickups")
 for type_id, expected, label in (
@@ -52,6 +52,7 @@ for type_id, expected, label in (
     (17149, 1, "network-reboot defence anchor"),
     (17147, 1, "demo-wall surge anchor"),
     (17148, 1, "demo-wall kill-switch anchor"),
+    (17150, 1, "Overtime security-lockdown anchor"),
     (17101, 1, "gated Night Manager"),
     (17103, 1, "management-response anchor"),
     (17128, 1, "full-power recovery cache"),
@@ -74,6 +75,7 @@ reboot_positions = positions(source_map, 17146)
 defence_positions = positions(source_map, 17149)
 surge_positions = positions(source_map, 17147)
 kill_positions = positions(source_map, 17148)
+lock_positions = positions(source_map, 17150)
 if len(reboot_positions) != 1 or reboot_positions[0][1] < 400:
     raise SystemExit(f"Store Network Reboot must live at the rear service position: {reboot_positions}")
 if len(defence_positions) != 1 or abs(defence_positions[0][0]) < 500:
@@ -84,6 +86,14 @@ if len(kill_positions) != 1 or abs(kill_positions[0][0]) < 500:
     raise SystemExit(f"Demo-wall kill switch must stay on an outer side lane: {kill_positions}")
 if surge_positions[0][0] * kill_positions[0][0] >= 0:
     raise SystemExit("Demo-wall surge and optional kill switch must occupy opposite side lanes")
+if len(lock_positions) != 1:
+    raise SystemExit(f"Electronics must keep exactly one authored security-lockdown anchor: {lock_positions}")
+lock_x, lock_y = lock_positions[0]
+if not (200 <= abs(lock_x) <= 350) or abs(lock_y) > 80:
+    raise SystemExit(
+        "Electronics lockdown must seal one inner display aisle without occupying the x=0 service lane: "
+        f"{lock_positions}"
+    )
 for x, _ in positions(overtime_map, 17106):
     if abs(x) < 500:
         raise SystemExit("Electronics standard Overtime hazards must stay off the central service lane")
@@ -95,6 +105,7 @@ for marker in (
     '17147 = "ElectronicsDemoSurgeSpawner"',
     '17148 = "ElectronicsKillSwitchSpawner"',
     '17149 = "ElectronicsNetworkRebootSequence"',
+    '17150 = "ElectronicsLockdownSpawner"',
     'map MAP04 "Electronics"',
     'music = "D_COH04"',
 ):
@@ -114,6 +125,7 @@ for marker in (
     "class ElectronicsNetworkRebootSequence : Actor",
     "class ElectronicsKillSwitchSpawner : Actor",
     "class ElectronicsDemoSurgeSpawner : Actor",
+    "class ElectronicsLockdownSpawner : Actor",
     'p.A_TakeInventory("CorporateMemo", 3);',
     'p.A_TakeInventory("ElectronicsDisplayKillSwitch", 1);',
     'p.A_TakeInventory("ElectronicsRebootPending", 1);',
@@ -136,8 +148,21 @@ for marker in (
     "delaySeconds = 24;",
     "delaySeconds = 18;",
     'Actor.Spawn("ElectronicsDisplayBurst", Pos);',
+    "overtimeStage < 2",
+    "nextLockTic = Level.maptime + 35 * 12;",
+    "closeTic = Level.maptime + 35 * 2;",
+    "int delaySeconds = 24;",
+    'Actor.Spawn("ElectronicsLockdownShutter", Pos);',
 ):
     require(zscript, marker, "Electronics ZScript behavior")
+
+lockdown_section = zscript.split("class ElectronicsLockdownSpawner : Actor", 1)[1]
+if 'CountInv("ElectronicsDisplayKillSwitch")' in lockdown_section:
+    raise SystemExit("Demo Wall Kill Switch must not disable the independent Overtime security lockdown")
+if 'CountInv("SupervisorClearanceToken") > 0' not in lockdown_section:
+    raise SystemExit("Electronics lockdown must retire on supervisor clearance")
+if "delaySeconds = 18;" not in lockdown_section:
+    raise SystemExit("HELL RUSH must tighten the Electronics lockdown recurrence")
 
 for marker in (
     "actor ElectronicsRebootPending : Inventory",
@@ -145,9 +170,14 @@ for marker in (
     'A_GiveInventory("ElectronicsRebootPending", 1)',
     "actor ElectronicsDisplayKillSwitch : Inventory",
     "actor ElectronicsDisplayBurst",
+    "actor ElectronicsLockdownShutter",
     "ENRB A -1 Bright",
     "EKIL A -1 Bright",
     "ESUR A 7 Bright",
+    "Radius 116",
+    "Scale 2.0",
+    "COSH A 175 Bright",
+    'A_PlaySound("coh/shutter", CHAN_BODY)',
 ):
     require(decorate, marker, "Electronics actor behavior")
 if 'A_GiveInventory("CheckoutFuse", 1)' in decorate:
@@ -186,16 +216,19 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "class ElectronicsNetworkRebootSpawner : Actor",
         "class ElectronicsNetworkRebootSequence : Actor",
         "class ElectronicsDemoSurgeSpawner : Actor",
+        "class ElectronicsLockdownSpawner : Actor",
     ):
         require(packaged_zscript, marker, "packaged Electronics ZScript")
     for marker in (
         "actor ElectronicsRebootPending",
         "actor ElectronicsNetworkReboot",
         "actor ElectronicsDisplayBurst",
+        "actor ElectronicsLockdownShutter",
     ):
         require(packaged_decorate, marker, "packaged Electronics DECORATE")
     require(packaged_mapinfo, 'map MAP04 "Electronics"', "packaged MAPINFO")
     require(packaged_mapinfo, '17149 = "ElectronicsNetworkRebootSequence"', "packaged MAPINFO")
+    require(packaged_mapinfo, '17150 = "ElectronicsLockdownSpawner"', "packaged MAPINFO")
 
     wad = archive.read("maps/MAP04.wad")
     ident, numlumps, dir_offset = struct.unpack("<4sII", wad[:12])
@@ -210,7 +243,14 @@ with zipfile.ZipFile(PK3, "r") as archive:
         raise SystemExit(f"Packaged MAP04 has invalid UDMF markers: {entries}")
     text_offset, text_size, _ = entries[1]
     textmap = wad[text_offset : text_offset + text_size].decode("utf-8")
-    for marker in ("type = 17146", "type = 17149", "type = 17147", "type = 17148", "type = 17106"):
+    for marker in (
+        "type = 17146",
+        "type = 17149",
+        "type = 17147",
+        "type = 17148",
+        "type = 17150",
+        "type = 17106",
+    ):
         require(textmap, marker, "packaged MAP04 objective/hazard payload")
 
 print("Electronics playable department contract: PASS")

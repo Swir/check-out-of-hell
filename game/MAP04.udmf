@@ -97,6 +97,11 @@ thing { x = -620.0; y = 170.0; angle = 0; type = 17148; skill1 = true; skill2 = 
 // power plus Overtime. The optional kill switch suppresses only this hazard, not hostile pressure.
 thing { x = 620.0; y = -70.0; angle = 180; type = 17147; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
+// Overtime stage 2+ can temporarily seal one inner-left display aisle after a two-second warning.
+// The central x=0 service lane remains open, the lock expires automatically, and supervisor
+// clearance retires the spawner before the return-to-clock-out leg.
+thing { x = -280.0; y = 0.0; angle = 0; type = 17150; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
 // Clearance reveals a non-blocking return guide near the entry; physical completion remains in the
 // shared shift director and still requires returning to the front service lane.
 thing { x = 0.0; y = -370.0; angle = 90; type = 17132; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

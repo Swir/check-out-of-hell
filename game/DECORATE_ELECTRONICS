@@ -72,3 +72,26 @@ actor ElectronicsDisplayBurst
         Stop
     }
 }
+
+// Overtime can temporarily close one authored Electronics aisle without blocking the central
+// service/clock-out lane. Reuse the project-owned staff-shutter art and interaction cue; the actor
+// is intentionally indestructible but self-retires after five seconds, so the lock is pressure, not
+// a progression trap.
+actor ElectronicsLockdownShutter
+{
+    Tag "Overtime Security Shutter"
+    Radius 116
+    Height 72
+    Scale 2.0
+    +SOLID
+    +NOGRAVITY
+
+    States
+    {
+    Spawn:
+        COSH A 1 Bright A_PlaySound("coh/shutter", CHAN_BODY)
+        COSH A 175 Bright
+        COSH A 1 Bright A_PlaySound("coh/shutter", CHAN_BODY)
+        Stop
+    }
+}
