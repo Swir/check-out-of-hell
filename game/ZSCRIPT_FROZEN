@@ -52,3 +52,108 @@ class FrozenDepartmentInitSpawner : Actor
         Destroy();
     }
 }
+
+// Frozen Foods turns the first two cold-chain repairs into readable combat beats instead of
+// spawning extra pressure directly on the objective. Each newly restored breaker first flashes a
+// three-second warning on the right freezer flank, then calls one themed retail hazard. The third
+// breaker deliberately hands control to the existing full-power Night Manager and response-wave
+// systems so reaching full power stays tense without becoming an unreadable spawn pile.
+class FrozenBreakerResponseSpawner : Actor
+{
+    int observedFuseCount;
+    int pendingFuse;
+    int responseTic;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        observedFuseCount = 0;
+        pendingFuse = 0;
+        responseTic = 0;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            Destroy();
+            return;
+        }
+
+        int fuses = p.CountInv("CheckoutFuse");
+
+        if (pendingFuse > 0)
+        {
+            if (Level.maptime < responseTic)
+            {
+                return;
+            }
+
+            Actor.Spawn("TeleportFog", Pos);
+            if (pendingFuse == 1)
+            {
+                Actor.Spawn("ScannerTurret", Pos);
+            }
+            else if (pendingFuse == 2)
+            {
+                Actor.Spawn("CartOfDoom", Pos);
+            }
+
+            observedFuseCount = pendingFuse;
+            pendingFuse = 0;
+
+            if (observedFuseCount >= 2 && fuses >= 3)
+            {
+                Destroy();
+            }
+            return;
+        }
+
+        if (fuses >= 3 && observedFuseCount >= 2)
+        {
+            Destroy();
+            return;
+        }
+
+        if (fuses > observedFuseCount && observedFuseCount < 2)
+        {
+            pendingFuse = observedFuseCount + 1;
+            responseTic = Level.maptime + 35 * 3;
+            Actor.Spawn("OvertimeWarningFlash", Pos);
+        }
+    }
+}

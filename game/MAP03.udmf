@@ -76,6 +76,11 @@ thing { x = -620.0; y =   80.0; angle = 0; type = 17111; skill1 = true; skill2 =
 thing { x =  620.0; y =  310.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =    0.0; y =  420.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
+// The first two restored cold-chain circuits trigger a three-second warning before a themed flank
+// response from the right freezer aisle. Full power deliberately hands off to the existing boss
+// and management-wave systems rather than stacking a third immediate response on top of them.
+thing { x = 610.0; y = 140.0; angle = 180; type = 17140; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
 // Existing power-gated Night Manager and deterministic response wave systems are reused here so
 // Frozen Foods is a real objective/combat department without inventing an unvalidated boss system.
 thing { x = 0.0; y = 350.0; angle = 270; type = 17101; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

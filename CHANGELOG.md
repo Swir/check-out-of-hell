@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.33.1-dev — 2026-09-18
+
+### Added
+- Frozen Foods now links the first two cold-chain repairs to a dedicated right-flank response: each newly restored breaker telegraphs the aisle for three seconds, then answers with a Security Price Scanner after breaker one and a Cart of Doom after breaker two.
+- `FrozenBreakerResponseSpawner` uses sparse seven-tic polling, preserves pending/observed response state across normal save restores, retires on supervisor clearance, and never places a third immediate enemy at full power.
+
+### Changed
+- The third breaker deliberately hands pressure to the existing full-power Night Manager and deterministic management-response systems instead of stacking another instant spawn on top of the boss transition, keeping the repair → combat escalation readable.
+- `tools/test_frozen_foods_contract.py` now protects DoomEdNum registration, exactly one side-lane response anchor, the three-second warning, first/second-breaker enemy sequence, clearance cleanup, full-power handoff and packaged MAP03/ZScript payload.
+- Project progress remains **86.8%** and Demo Release readiness remains **70.0%**. This is playable Frozen Foods encounter polish; it does not complete a weighted phase, the target-Windows human sign-off, release notes or a public release.
+
+### Validation
+- The full repository CI remains the merge gate, including the expanded Frozen Foods contract, existing gameplay/performance/save-load checks, Windows RC/legal-content packaging, SWIR README PRO v2 and Progress SVG PRO.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.33.0-dev — 2026-09-18
 
 ### Added
