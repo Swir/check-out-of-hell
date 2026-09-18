@@ -25,7 +25,9 @@ class CheckoutOvertimeHazardSpawner : Actor
         Super.PostBeginPlay();
         nextHazardTic = Level.maptime + 35 * 90;
         hazardStep = 0;
-        nextClearanceCheck = 0;
+        // Delay the first inventory poll so fresh-map handlers can retire department-local tokens
+        // before a carried Warehouse lockout can affect the next department.
+        nextClearanceCheck = Level.maptime + 7;
     }
 
     override void Tick()
@@ -40,7 +42,8 @@ class CheckoutOvertimeHazardSpawner : Actor
             if (players[0].mo)
             {
                 PlayerPawn p = PlayerPawn(players[0].mo);
-                if (p && p.CountInv("SupervisorClearanceToken") > 0)
+                if (p && (p.CountInv("SupervisorClearanceToken") > 0 ||
+                    (p.CountInv("WarehouseDepartmentToken") > 0 && p.CountInv("WarehouseSafetyLockout") > 0)))
                 {
                     Destroy();
                     return;
@@ -142,5 +145,127 @@ class CheckoutClockOutGuideSpawner : Actor
 
         Actor.Spawn("CheckoutClockOutGuide", Pos);
         Destroy();
+    }
+}
+
+// Optional Warehouse 13.5 work task. The permit is department-local and deliberately disables
+// only fresh electrical floor arcs: enemy Overtime pressure and Regional Management stay active.
+class WarehouseSafetyLockout : Inventory
+{
+    Default
+    {
+        Tag "Lockout/Tagout Permit";
+        Inventory.PickupMessage "Lockout/tagout accepted. Warehouse floor arcs isolated; hostile equipment remains active.";
+        Inventory.PickupSound "coh/shutter";
+        Inventory.MaxAmount 1;
+    }
+
+    States
+    {
+    Spawn:
+        WCTL A -1 Bright;
+        Stop;
+    }
+}
+
+// Keep the optional lockout local to Warehouse 13.5 without touching save-restored state. The
+// first fresh-world tick strips a token carried through the previous department transition.
+class WarehouseSafetyStateHandler : EventHandler
+{
+    bool freshWorldInitPending;
+
+    override void WorldLoaded(WorldEvent e)
+    {
+        if (e.IsSaveGame)
+        {
+            return;
+        }
+
+        freshWorldInitPending = true;
+    }
+
+    override void WorldTick()
+    {
+        if (!freshWorldInitPending || !players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        p.A_TakeInventory("WarehouseSafetyLockout", 1);
+        freshWorldInitPending = false;
+    }
+}
+
+// Full power reveals one optional safety station on a warehouse side lane. It is never required
+// for the freight-lift objective and destroys itself after spawning a single permit.
+class WarehouseSafetyLockoutSpawner : Actor
+{
+    bool spawned;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (spawned || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p || p.CountInv("WarehouseDepartmentToken") < 1)
+        {
+            return;
+        }
+        if (p.CountInv("WarehouseSafetyLockout") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        Actor.Spawn("TeleportFog", Pos);
+        Actor permit = Actor.Spawn("WarehouseSafetyLockout", Pos);
+        if (permit)
+        {
+            spawned = true;
+            Destroy();
+        }
     }
 }
