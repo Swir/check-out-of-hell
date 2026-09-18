@@ -134,6 +134,8 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (60 ×
 
 **Current demo-readiness gate:** finish an interactive target-Windows playtest of Closing Time, including save/load confirmation, real-controller confirmation, final balance/polish sign-off and a real-hardware performance sanity check before any public demo is published. The verified CI release-candidate package does not replace this manual sign-off, release notes or the remaining legal-content packaging decision.
 
+The repository includes `PLAYTEST-WINDOWS.bat` plus `tools/windows_playtest_assistant.ps1` to make that manual gate reproducible. The helper uses the same pinned legal runtime, launches separate play/load sessions with an isolated config, records source/runtime/file hashes and hardware/controller evidence, and can mark the named sign-off scope `PASS` only when every required manual gate is explicitly confirmed. It never changes roadmap percentages or authorizes a release automatically; see [`docs/WINDOWS_PLAYTEST.md`](docs/WINDOWS_PLAYTEST.md).
+
 ## Phase 4 — Full Game — 0%
 - [ ] Full campaign
 - [ ] More departments / biomes
