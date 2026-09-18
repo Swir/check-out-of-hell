@@ -139,10 +139,49 @@ Remaining Frozen Foods polish:
 - stronger cold-storage-specific secrets and encounter variation without obscuring the two breaker routes or compressor task,
 - final lighting/geometry polish after the objective route and refrigeration pressure survive real play.
 
-## Later departments
+## MAP04 — Electronics
+Purpose: first playable showroom department with alternating display-wall sightlines, a physical network-recovery task and readable powered-hardware hazards.
 
-### Electronics
-Security systems, display walls and hostile demo hardware create sightline and alarm puzzles.
+Current prototype includes:
+- four alternating solid display-wall rows that break long sightlines while preserving a clean central service lane,
+- two opposite-side UPS/breaker repairs,
+- a project-owned rear `Store Network Reboot` that appears only after both repairs and supplies the final authoritative `3/3` power step,
+- a three-second telegraphed side response after each repair: Security Price Scanner first, then Angry Self-Checkout,
+- initial Scanner, Self-Checkout, Cart and Pallet Jack pressure placed off the central entry/exit lane,
+- a power-gated Night Manager plus the shared deterministic management-response anchor,
+- a full-power recovery cache and three optional Corporate Compliance Memos,
+- three standard outer-lane Overtime electrical hazard anchors plus one department-specific right-side demo-wall surge,
+- a 16-second grace period before the first display surge, two-second warning before every burst and deterministic `32 / 24 / 18` second spacing as Overtime pressure rises,
+- one optional opposite-side `Demo Wall Kill Switch` that suppresses only future display surges while hostile Overtime and management remain active,
+- paired project-owned Electronics signs, generated network-reboot/kill-switch/surge sprites, safe clutter, slow-failing fixtures and optional Emergency Break Snacks,
+- a one-shot entry initializer that clears carried memo/kill-switch state and then destroys itself so saves made after entry preserve local progress,
+- the original deterministic **Electronics — Dead Pixel Choir** soundtrack,
+- the existing post-clear non-blocking `CLOCK OUT` guide and physical front completion rule.
+
+Electronics deliberately makes the useful workplace task the last power step rather than a cosmetic prop.
+The player restores two display/UPS circuits, crosses to the rear service position, physically performs the
+Store Network Reboot and only then reaches full power. That pickup grants the same `CheckoutFuse` token
+consumed by the hardened full-power cache, supervisor and clock-out systems, avoiding a parallel progression
+ledger. The final reboot itself does not spawn a third instant side-lane enemy; management becomes the next
+clear pressure beat.
+
+Once full power overlaps Overtime, one outer demo wall can begin faulting. Every burst is announced by the
+same project-owned warning language for two seconds, and the first fault cannot occur until a 16-second grace
+window has passed. The optional kill switch sits on the opposite side of the floor so choosing safety costs
+movement without becoming mandatory. Taking it removes only this Electronics-specific fault source; ambient
+Overtime enemies, shared electrical anchors and management continue normally.
+
+This is playable development content, not a polished final campaign level. Future work should deepen showroom
+secrets, add department-specific objective/HUD wording and diversify hardware encounters only after real play
+confirms that the alternating display walls stay readable during Overtime and the Night Manager sequence.
+
+Remaining Electronics polish:
+- target-machine balance/readability playtesting across all three difficulty modes,
+- department-specific HUD phrasing for the network reboot and final return leg,
+- stronger showroom secrets and useful joke interactions without hiding mandatory power work,
+- final lighting/geometry and encounter polish after the current route survives real play.
+
+## Later departments
 
 ### Customer Service
 Queue barriers, returns counters and escalating complaint-themed encounters create a tighter,

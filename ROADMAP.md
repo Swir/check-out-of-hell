@@ -142,3 +142,5 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (70 ×
 - [ ] Achievements
 - [ ] Co-op investigation
 - [ ] Localization
+
+**Implemented evidence without milestone closure:** `MAP04 — Electronics` now exists as a playable development department with its own objective/hazard/music contract. Phase 4 intentionally remains **0%** because one first-pass department does not complete the broader `More departments / biomes` milestone or any other Full Game checklist item.

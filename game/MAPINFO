@@ -23,6 +23,11 @@ DoomEdNums
     17141 = "FrozenCompressorResetSpawner"
     17142 = "FrozenCompressorSurgeSpawner"
     17143 = "FrozenSurgeIsolationSpawner"
+    17144 = "ElectronicsDepartmentInitSpawner"
+    17145 = "ElectronicsBreakerResponseSpawner"
+    17146 = "ElectronicsNetworkRebootSpawner"
+    17147 = "ElectronicsDemoSurgeSpawner"
+    17148 = "ElectronicsKillSwitchSpawner"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
@@ -89,8 +94,17 @@ map MAP02 "Warehouse 13.5"
 map MAP03 "Frozen Foods"
 {
     levelnum = 3
-    next = "MAP01"
+    next = "MAP04"
     sky1 = "SKY1"
     music = "D_COH03"
+    nointermission
+}
+
+map MAP04 "Electronics"
+{
+    levelnum = 4
+    next = "MAP01"
+    sky1 = "SKY1"
+    music = "D_COH04"
     nointermission
 }

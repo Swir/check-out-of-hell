@@ -12,7 +12,7 @@ if not PK3.exists():
 
 build = (ROOT / "tools" / "build.py").read_text(encoding="utf-8")
 for marker in (
-    'MAPS = ["MAP01", "MAP02", "MAP03"]',
+    'MAPS = ["MAP01", "MAP02", "MAP03", "MAP04"]',
     '(GAME / "DECORATE_FROZEN").read_text(encoding="utf-8").rstrip()',
     '(GAME / "ZSCRIPT_FROZEN").read_text(encoding="utf-8").rstrip()',
 ):
@@ -35,9 +35,15 @@ for marker in (
 
 map01_block = mapinfo.split('map MAP01 "Closing Time"', 1)[1].split('map MAP02 "Warehouse 13.5"', 1)[0]
 map02_block = mapinfo.split('map MAP02 "Warehouse 13.5"', 1)[1].split('map MAP03 "Frozen Foods"', 1)[0]
-map03_block = mapinfo.split('map MAP03 "Frozen Foods"', 1)[1]
-if 'next = "MAP02"' not in map01_block or 'next = "MAP03"' not in map02_block or 'next = "MAP01"' not in map03_block:
-    raise SystemExit("Playable department progression must remain Closing Time -> Warehouse 13.5 -> Frozen Foods -> Closing Time")
+map03_block = mapinfo.split('map MAP03 "Frozen Foods"', 1)[1].split('map MAP04 "Electronics"', 1)[0]
+map04_block = mapinfo.split('map MAP04 "Electronics"', 1)[1]
+if (
+    'next = "MAP02"' not in map01_block
+    or 'next = "MAP03"' not in map02_block
+    or 'next = "MAP04"' not in map03_block
+    or 'next = "MAP01"' not in map04_block
+):
+    raise SystemExit("Playable department progression must remain Closing Time -> Warehouse 13.5 -> Frozen Foods -> Electronics -> Closing Time")
 
 frozen_pickup = (GAME / "DECORATE_FROZEN").read_text(encoding="utf-8")
 for marker in (

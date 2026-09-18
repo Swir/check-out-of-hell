@@ -140,6 +140,81 @@ def _freezer_vent_sprite(path: Path, phase: int) -> None:
     _write_png(path, width, height, pixels, (width // 2, height - 4))
 
 
+def _electronics_reboot_sprite(path: Path) -> None:
+    width, height = 56, 60
+    transparent = (0, 0, 0, 0)
+    shadow = (2, 5, 10, 220)
+    panel = (6, 16, 28, 255)
+    steel = (27, 48, 62, 255)
+    cyan = (98, 229, 255, 255)
+    blue = (0, 136, 255, 255)
+    screen = (18, 73, 104, 255)
+    white = (224, 248, 255, 255)
+    amber = (240, 177, 48, 255)
+    pixels = [transparent] * (width * height)
+
+    _rect(pixels, width, height, 9, 7, 50, 57, shadow)
+    _rect(pixels, width, height, 5, 4, 46, 54, panel)
+    _rect(pixels, width, height, 5, 4, 46, 7, cyan)
+    _rect(pixels, width, height, 5, 51, 46, 54, blue)
+    _rect(pixels, width, height, 5, 4, 8, 54, blue)
+    _rect(pixels, width, height, 43, 4, 46, 54, cyan)
+    _rect(pixels, width, height, 12, 12, 39, 27, screen)
+    _rect(pixels, width, height, 15, 15, 36, 17, cyan)
+    _rect(pixels, width, height, 15, 21, 29, 23, white)
+    _rect(pixels, width, height, 14, 33, 38, 44, steel)
+    _rect(pixels, width, height, 19, 36, 33, 41, amber)
+    _rect(pixels, width, height, 24, 34, 28, 43, white)
+    _write_png(path, width, height, pixels, (width // 2, height - 2))
+
+
+def _electronics_kill_switch_sprite(path: Path) -> None:
+    width, height = 56, 60
+    transparent = (0, 0, 0, 0)
+    shadow = (2, 5, 10, 220)
+    panel = (6, 16, 28, 255)
+    steel = (27, 48, 62, 255)
+    cyan = (98, 229, 255, 255)
+    blue = (0, 136, 255, 255)
+    green = (84, 214, 130, 255)
+    white = (224, 248, 255, 255)
+    pixels = [transparent] * (width * height)
+
+    _rect(pixels, width, height, 9, 7, 50, 57, shadow)
+    _rect(pixels, width, height, 5, 4, 46, 54, panel)
+    _rect(pixels, width, height, 5, 4, 46, 7, cyan)
+    _rect(pixels, width, height, 5, 51, 46, 54, blue)
+    _rect(pixels, width, height, 5, 4, 8, 54, blue)
+    _rect(pixels, width, height, 43, 4, 46, 54, cyan)
+    _rect(pixels, width, height, 12, 12, 39, 21, steel)
+    _rect(pixels, width, height, 15, 15, 21, 18, white)
+    _rect(pixels, width, height, 25, 15, 35, 18, green)
+    _rect(pixels, width, height, 14, 28, 38, 44, steel)
+    _rect(pixels, width, height, 20, 31, 32, 35, green)
+    _rect(pixels, width, height, 24, 34, 28, 42, white)
+    _write_png(path, width, height, pixels, (width // 2, height - 2))
+
+
+def _electronics_surge_sprite(path: Path, phase: int) -> None:
+    width, height = 64, 48
+    transparent = (0, 0, 0, 0)
+    white = (224, 248, 255, 210)
+    cyan = (98, 229, 255, 195)
+    blue = (0, 136, 255, 155)
+    pixels = [transparent] * (width * height)
+
+    if phase == 0:
+        blocks = ((27, 9, 33, 37, white), (18, 19, 42, 24, cyan), (31, 22, 48, 28, blue))
+    elif phase == 1:
+        blocks = ((22, 6, 29, 41, white), (13, 17, 48, 23, cyan), (35, 11, 53, 18, blue))
+    else:
+        blocks = ((17, 4, 24, 43, white), (8, 14, 55, 21, cyan), (31, 25, 59, 33, blue))
+
+    for x1, y1, x2, y2, color in blocks:
+        _rect(pixels, width, height, x1, y1, x2, y2, color)
+    _write_png(path, width, height, pixels, (width // 2, height - 4))
+
+
 def _memo_sound(path: Path) -> None:
     rate = 22050
     duration = 0.34
@@ -171,6 +246,10 @@ def generate_presentation_assets(game_dir: Path) -> None:
     _surge_isolation_sprite(game_dir / "sprites" / "FSISA0.png")
     for phase, frame in enumerate("ABC"):
         _freezer_vent_sprite(game_dir / "sprites" / f"FVEN{frame}0.png", phase)
+    _electronics_reboot_sprite(game_dir / "sprites" / "ENRBA0.png")
+    _electronics_kill_switch_sprite(game_dir / "sprites" / "EKILA0.png")
+    for phase, frame in enumerate("ABC"):
+        _electronics_surge_sprite(game_dir / "sprites" / f"ESUR{frame}0.png", phase)
     _memo_sound(game_dir / "sounds" / "memo.wav")
 
 

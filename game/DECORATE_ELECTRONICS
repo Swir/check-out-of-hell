@@ -1,0 +1,59 @@
+// CHECKOUT OF HELL - Electronics department-local controls and display hazards.
+// Visible art is generated deterministically by tools/generate_presentation_assets.py.
+
+actor ElectronicsNetworkReboot : CustomInventory
+{
+    Tag "Store Network Reboot"
+    Inventory.PickupMessage "Store network reboot accepted. Every demo screen is now somebody's problem."
+    Inventory.PickupSound "coh/fuse"
+    Inventory.MaxAmount 1
+
+    States
+    {
+    Spawn:
+        ENRB A -1 Bright
+        Stop
+    Pickup:
+        TNT1 A 0 A_GiveInventory("CheckoutFuse", 1)
+        Stop
+    }
+}
+
+// Optional full-power safety task. Taking this control suppresses only future Electronics demo-wall
+// surges; hostile Overtime reinforcements and management remain active.
+actor ElectronicsDisplayKillSwitch : Inventory
+{
+    Tag "Demo Wall Kill Switch"
+    Inventory.PickupMessage "Demo wall isolated. Management still expects those screens upsold."
+    Inventory.PickupSound "coh/fuse"
+    Inventory.MaxAmount 1
+
+    States
+    {
+    Spawn:
+        EKIL A -1 Bright
+        Stop
+    }
+}
+
+// Short-lived project-owned display-bank fault. The spawner always emits a normal Overtime warning
+// two seconds before this actor appears, keeping the side-lane hazard readable rather than random.
+actor ElectronicsDisplayBurst
+{
+    Radius 10
+    Height 22
+    +NOBLOCKMAP
+    +NOGRAVITY
+    +NOCLIP
+
+    States
+    {
+    Spawn:
+        ESUR A 7 Bright A_PlaySound("coh/overtimearc", CHAN_BODY)
+        ESUR B 6 Bright
+        ESUR C 0 Bright A_Explode(9, 88)
+        ESUR C 6 Bright
+        ESUR B 5
+        Stop
+    }
+}

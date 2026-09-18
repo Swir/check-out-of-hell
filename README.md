@@ -22,9 +22,9 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.33.3-dev` |
+| Version | `0.34.0-dev` |
 | Implemented/testable progress | **86.8%** |
-| Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5`, `MAP03 — Frozen Foods` |
+| Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5`, `MAP03 — Frozen Foods`, `MAP04 — Electronics` |
 | Public demo | **Not published yet** |
 | Player packaging focus | Verified Windows RC + standalone legal-content RC + one-click official-source GZDoom bootstrap |
 | Pinned runtime | GZDoom `g4.14.2` + Freedoom `v0.13.0` |
@@ -48,8 +48,8 @@ The project creates its own setting, characters, weapons, jokes, levels, art, so
 | Feature | What it adds |
 | --- | --- |
 | ⚡ Fast readable combat | Clear attacks, uncluttered lanes and classic-FPS movement pressure. |
-| 🛠️ Real shift objectives | Breakers, compressor resets, powered routes, shutters, freight-lift controls, supervisor gates and a physical clock-out finish. |
-| ⏱️ Overtime | Deterministic escalation adds alarms, enemy pressure and telegraphed electrical/refrigeration hazards, with useful store systems able to change the physical risk without becoming a combat-off switch. |
+| 🛠️ Real shift objectives | Breakers, compressor resets, network reboots, powered routes, shutters, freight-lift controls, supervisor gates and a physical clock-out finish. |
+| ⏱️ Overtime | Deterministic escalation adds alarms, enemy pressure and telegraphed electrical/refrigeration/display-bank hazards, with useful store systems able to change the physical risk without becoming a combat-off switch. |
 | 🧰 Retail arsenal | Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher use original presentation and audio. |
 | 👹 Store hazards | Angry Self-Checkout, Cart of Doom, Security Price Scanner and Possessed Pallet Jack fill distinct combat roles. |
 | 👔 Corporate bosses | Night Manager and the two-phase Regional Manager turn management into literal boss fights. |
@@ -80,6 +80,8 @@ Every department is designed around a useful workplace task rather than pure are
 
 `MAP03 — Frozen Foods` is now a real playable department rather than a roadmap placeholder. Four freezer-aisle barriers keep a readable central service lane while two cold-chain breaker repairs pull the player through opposite side routes. Each repair telegraphs a dedicated right-flank response; after the second breaker, a project-owned **Cold-Chain Compressor Reset** appears at the rear service position and physically supplies the final `3/3` power step. Full power exposes the recovery cache and existing Night Manager/management-wave response without stacking another instant side-lane enemy. If Overtime is already active, the reset compressor can begin telegraphed right-flank refrigerant surges; an optional opposite-side **Compressor Surge Isolation** control suppresses those future bursts only, leaving hostile Overtime and management active. Four standard side-lane Overtime hazard anchors still make long freezer shifts physically more dangerous without trapping the entry/clock-out route. Three optional Corporate Compliance Memos, project-owned Frozen Foods signage, cold-storage clutter and the original `Compressor Choir` theme give the department its own identity. After supervisor clearance, surge pressure retires and the existing physical clock-out rule sends the player back to the entry.
 
+`MAP04 — Electronics` is a real playable fourth department. Alternating solid display-wall rows break up long showroom sightlines while preserving a clear central service lane. Two opposite-side UPS/breaker repairs each trigger a three-second flank warning before a Security Price Scanner and Angry Self-Checkout response. After both repairs, a project-owned **Store Network Reboot** appears at the rear service position and physically supplies the final `3/3` power step; the reboot itself deliberately adds no third instant side enemy so the Night Manager transition stays readable. Full power can also arm a telegraphed right-side demo-wall surge once Overtime is active, while an optional opposite-side **Demo Wall Kill Switch** suppresses only that display-bank hazard. Standard Overtime reinforcements, electrical floor hazards and management remain active. Three optional Corporate Compliance Memos, project-owned Electronics signage and the original `Dead Pixel Choir` theme round out the first-pass department identity before the post-clear return to the entry.
+
 ## ⏱️ Overtime
 
 Overtime is deterministic enough to learn while still raising pressure:
@@ -96,6 +98,8 @@ Closing Time uses authored reinforcement and hazard anchors instead of random sp
 Warehouse 13.5 reuses the same readable warning/arc schedule at two outer side-lane anchors. Once all three warehouse circuits are live, an optional project-owned `LOCKOUT / TAG OUT` station appears on the rear-left side lane. Collecting its permit removes those future electrical floor-arc anchors for that department only; it deliberately does **not** stop ambient Overtime enemies, management-response waves, the freight-lift objective or The Regional Manager.
 
 Frozen Foods keeps four authored electrical hazard anchors in the freezer side lanes and rear aisle, away from the entry/clock-out approach. Full power also arms one department-specific right-flank compressor vent once Overtime is active: the first surge waits 18 seconds, every burst receives a two-second warning, and repeat spacing tightens from `34` to `26` to `20` seconds as pressure rises. The optional full-power **Compressor Surge Isolation** control on the opposite side lane retires only this refrigeration hazard; enemy Overtime, management waves and the Night Manager continue normally. Supervisor clearance cancels any armed surge before the return-to-entry leg.
+
+Electronics keeps three standard electrical hazard anchors on outer showroom lanes and a separate full-power right-side demo-wall surge. Once Overtime is active, the first display fault waits 16 seconds, every burst receives a two-second warning, and repeat spacing tightens from `32` to `24` to `18` seconds as pressure rises. The optional full-power **Demo Wall Kill Switch** sits on the opposite side of the floor and retires only this Electronics-specific surge; hostile Overtime, standard floor arcs, management waves and the Night Manager remain active. Supervisor clearance retires the surge spawner before the final return.
 
 ## ☠️ Difficulty modes
 
@@ -135,7 +139,13 @@ Frozen Foods now ships as playable development content. The map uses four freeze
 
 The compressor reset, surge isolation panel and refrigerant burst frames use deterministic project-owned sprites generated during the normal build. The department also uses paired project-owned `FROZEN FOODS` signs, safe restock/cone clutter, slow-failing lights and the original **Frozen Foods — Compressor Choir** MIDI track. This is a first playable vertical-slice implementation, not a claim that the level is fully polished.
 
-Planned later departments — **Electronics**, **Customer Service** and **Management Floor** — remain intentionally unexpanded until they have real playable content.
+### MAP04 — Electronics
+
+Electronics now ships as playable development content. Four alternating solid display-wall rows create changing showroom sightlines around a clear central service lane. Two mandatory opposite-side circuit repairs feed a three-second telegraphed Scanner/Self-Checkout response; after both are live, the rear **Store Network Reboot** appears and supplies the final authoritative power token. Full power exposes the normal recovery cache and power-gated Night Manager/management response, plus one optional opposite-side **Demo Wall Kill Switch**. A separate right-side display surge activates only when full power and Overtime overlap, waits 16 seconds before the first possible fault, warns for two seconds and repeats on deterministic `32 / 24 / 18` second stage-scaled spacing. The kill switch suppresses only those future display faults, leaving hostile Overtime, standard electrical floor hazards and management active.
+
+Three optional Corporate Compliance Memos and two Emergency Break Snacks reward side exploration without hiding mandatory power work. The fresh-entry initializer clears carried memo/kill-switch state once and destroys itself, so ordinary saves made after entering MAP04 preserve local progress. The network-reboot, kill-switch and display-surge frames are deterministic project-owned sprites generated during the normal build, paired with existing project-owned Electronics signage and the original **Electronics — Dead Pixel Choir** MIDI track. Electronics is a first playable department implementation, not a polished final level.
+
+Planned later departments — **Customer Service** and **Management Floor** — remain intentionally unexpanded until they have real playable content.
 
 See [`docs/LEVEL_DESIGN.md`](docs/LEVEL_DESIGN.md) and [`docs/GAMEPLAY_LOOP.md`](docs/GAMEPLAY_LOOP.md).
 
@@ -146,12 +156,13 @@ Every currently playable department uses project-owned music instead of inherite
 - **Closing Time — Empty Aisles** — slow drones, sparse vibraphone phrases and checkout-like chimes that leave room for combat and Overtime telegraphs.
 - **Warehouse 13.5 — Forklift Graveyard** — colder low-register drones, restrained machinery-like percussion and a darker warehouse motif.
 - **Frozen Foods — Compressor Choir** — thin icy chimes over slow cold-storage drones and restrained compressor-like percussion.
+- **Electronics — Dead Pixel Choir** — sparse high chimes, uneasy pad movement and restrained machine accents that leave scanner and surge warnings readable.
 
 The tracks are deterministic Standard MIDI files produced by `tools/generate_music_assets.py` using only Python's standard library, regenerated during builds and protected by a dedicated regression contract. See [`docs/MUSIC.md`](docs/MUSIC.md).
 
 ## 💾 Save/load safety
 
-The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear department-local Breaker Fuse, supervisor-clearance and Warehouse 13.5 lift/objective state, while the Warehouse safety handler separately clears its Lockout/Tagout permit only on fresh transitions. Frozen Foods adds a map-local one-shot initializer for optional Corporate Memo carryover; after it clears stale memo progress on entry and destroys itself, ordinary save/restore inside MAP03 preserves newly collected memos. The rear compressor-control spawner also self-retires after creating its pickup. A dedicated Frozen Foods surge-state handler clears the optional isolation token only on fresh map transitions and deliberately leaves it intact on savegame restores, so a saved safety choice remains stable. Save restores keep serialized shift state intact.
+The shift director distinguishes a fresh department from a savegame restore using GZDoom's `WorldEvent.IsSaveGame` state. Fresh departments clear department-local Breaker Fuse, supervisor-clearance and Warehouse 13.5 lift/objective state, while the Warehouse safety handler separately clears its Lockout/Tagout permit only on fresh transitions. Frozen Foods adds a map-local one-shot initializer for optional Corporate Memo carryover; after it clears stale memo progress on entry and destroys itself, ordinary save/restore inside MAP03 preserves newly collected memos. The rear compressor-control spawner also self-retires after creating its pickup. A dedicated Frozen Foods surge-state handler clears the optional isolation token only on fresh map transitions and deliberately leaves it intact on savegame restores, so a saved safety choice remains stable. Electronics uses the same map-local one-shot pattern for carried Corporate Memo and Demo Wall Kill Switch state: the initializer clears them on fresh MAP04 entry and destroys itself, so the network reboot, optional safety choice and current surge state remain stable in saves made inside the department. Save restores keep serialized shift state intact.
 
 The repository runs a real **save → process exit → load** regression against the exact pinned GZDoom `g4.14.2`: CI boots the official Linux package under Xvfb/Mesa software rendering, authors unmistakable `CheckoutFuse 2/3` plus `CorporateMemo 2/3` state in live MAP01, writes a real `.zds`, starts a second engine process, reloads that save and verifies both objective counters survived. The same runtime lock and official Freedoom release are used, with the Freedoom archive SHA-256 verified against its official checksum file.
 
@@ -221,13 +232,13 @@ Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher firing cues 
 
 ## ⚙️ Performance hardening
 
-Objective and encounter watcher actors avoid unnecessary 35-Hz inventory/stage polling. Most slow-changing gates sample every **7 tics** (worst-case response below 0.2 seconds), while the authored Night Manager response sequence samples every **4 tics**. One-shot manager/cache/shutter/clock-out-guide/safety watchers remove themselves after completing their job, reinforcement watchers retire after supervisor clearance, and Overtime hazard anchors plus the Frozen Foods surge/isolation watchers use sparse checks while preserving their authored schedules.
+Objective and encounter watcher actors avoid unnecessary 35-Hz inventory/stage polling. Most slow-changing gates sample every **7 tics** (worst-case response below 0.2 seconds), while the authored Night Manager response sequence samples every **4 tics**. One-shot manager/cache/shutter/clock-out-guide/safety/network-control watchers remove themselves after completing their job, reinforcement watchers retire after supervisor clearance, and Overtime hazard anchors plus the Frozen Foods/Electronics department-specific surge/isolation watchers use sparse checks while preserving their authored schedules.
 
 The `55 / 38 / 25` second Overtime reinforcement cadence, `15 / 34 / 54 / 76` second Night Manager wave thresholds and `90 / 135 / 180 / 212 / 244 / 270` second initial environmental-hazard events are unchanged. CI protects these invariants and the pinned-engine parser still validates the resulting ZScript. This is script-overhead and lifecycle hardening, **not** a fabricated FPS claim; real-hardware Windows performance sanity remains part of final demo sign-off. See [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
 
 ## 🧪 Development & validation
 
-The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts including Closing Time, the Warehouse 13.5 freight-lift/management/damaged-goods/Lockout gates and the complete Frozen Foods map/packaging/surge-safety contract, checks accessibility, controller and performance hardening, generated art/audio/music, verifies both Windows portable package channels plus the standalone legal-content RC, extracts and checks the player release candidate with Windows PowerShell, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. The Windows job additionally syntax-parses the target-machine sign-off harness; human gameplay evidence remains deliberately outside hosted CI. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
+The project combines static contracts with real engine validation. CI builds the PK3, checks gameplay/objective contracts including Closing Time, the Warehouse 13.5 freight-lift/management/damaged-goods/Lockout gates, the complete Frozen Foods map/packaging/surge-safety contract and the Electronics network-reboot/demo-wall-surge contract, checks accessibility, controller and performance hardening, generated art/audio/music, verifies both Windows portable package channels plus the standalone legal-content RC, extracts and checks the player release candidate with Windows PowerShell, asks pinned GZDoom on Windows to parse the current package, and performs a true two-process save/load round-trip with the same pinned engine version under Xvfb/Mesa on Linux. The Windows job additionally syntax-parses the target-machine sign-off harness; human gameplay evidence remains deliberately outside hosted CI. Save/load runtime logs and official-source runtime manifests are retained as CI artifacts for diagnosis.
 
 Useful developer commands:
 
@@ -253,6 +264,7 @@ python tools/test_combat_audio_polish.py
 python tools/test_music_contract.py
 python tools/test_warehouse_lift_objective_contract.py
 python tools/test_frozen_foods_contract.py
+python tools/test_electronics_contract.py
 python tools/test_bootstrap_contract.py
 python tools/package_portable.py
 python tools/test_portable_package.py
@@ -300,14 +312,15 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md), [`docs/THIRD_PARTY.md`](docs
 - `Closing Time` has its authored post-boss clock-out polish and a complete first secrets/joke-interaction pass, but is not yet signed off as the first fully polished level.
 - `Warehouse 13.5` now has breakers → optional recovery/Lockout safety choices → freight-lift override → management-response → Regional Manager → return progression, plus the Damaged Goods side route and dedicated Overtime side-lane hazards, but still needs stronger vertical routes, more authored department-specific encounter polish and interactive balance/readability sign-off before it is called polished.
 - `Frozen Foods` is now playable with freezer-aisle routing, two breaker repairs → rear compressor reset → full-power Night Manager pressure, telegraphed compressor surges plus optional surge isolation, standard Overtime hazards, optional memos, department dressing and its own music, but it remains first-pass vertical-slice content rather than a polished final level.
+- `Electronics` is now playable with alternating showroom routes, two circuit repairs → rear network reboot → full-power Night Manager pressure, telegraphed demo-wall surges plus an optional kill switch, standard Overtime hazards, optional memos, department dressing and its own music; it still uses generic non-Warehouse HUD objective phrasing and remains first-pass development content rather than a polished final level.
 - The cross-process save/load serialization gate is green on the exact pinned engine; the Windows sign-off kit repeats that round-trip against the exact extracted RC, but the required human save/quit/load confirmation remains open until a target-Windows run records PASS evidence.
 - Controller setup/haptics and the script-overhead performance pass are implemented and contract-tested, but physical controller and real-hardware performance confirmation remain part of the target-Windows demo sign-off.
 - The Windows player RC and standalone legal-content RC are integrity/provenance checked in CI but are not a public demo; release notes and the final interactive Windows sign-off remain open release gates.
-- Electronics, Customer Service and Management Floor remain planned until they have real playable content.
+- Customer Service and Management Floor remain planned until they have real playable content.
 
 ## 🔎 Search Keywords
 
-`retro FPS` • `comedy horror FPS` • `supermarket horror game` • `workplace horror game` • `retail horror game` • `boomer shooter` • `GZDoom game` • `GZDoom ZScript` • `UDMF FPS` • `PK3 game` • `Windows retro shooter` • `controller retro FPS` • `Overtime mechanic` • `original GZDoom project` • `one-click Windows game bootstrap` • `Frozen Foods horror level` • `Freedoom runtime` • `night shift horror`
+`retro FPS` • `comedy horror FPS` • `supermarket horror game` • `workplace horror game` • `retail horror game` • `boomer shooter` • `GZDoom game` • `GZDoom ZScript` • `UDMF FPS` • `PK3 game` • `Windows retro shooter` • `controller retro FPS` • `Overtime mechanic` • `original GZDoom project` • `one-click Windows game bootstrap` • `Frozen Foods horror level` • `Electronics horror level` • `Freedoom runtime` • `night shift horror`
 
 <div align="center">
 
