@@ -20,6 +20,7 @@ required_entries = {
     "maps/MAP01.wad",
     "maps/MAP02.wad",
     "maps/MAP03.wad",
+    "maps/MAP04.wad",
 }
 
 with zipfile.ZipFile(PK3, "r") as archive:
@@ -28,7 +29,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
     if missing:
         raise SystemExit(f"Missing PK3 entries: {sorted(missing)}")
 
-    for map_name in ("MAP01", "MAP02", "MAP03"):
+    for map_name in ("MAP01", "MAP02", "MAP03", "MAP04"):
         wad = archive.read(f"maps/{map_name}.wad")
         ident, numlumps, dir_offset = struct.unpack("<4sII", wad[:12])
         assert ident == b"PWAD", (map_name, ident)
@@ -63,7 +64,7 @@ for actor in required_actors:
         raise SystemExit(f"Actor missing from DECORATE: {actor}")
 
 mapinfo = MAPINFO.read_text(encoding="utf-8")
-for map_name in ("MAP01", "MAP02", "MAP03"):
+for map_name in ("MAP01", "MAP02", "MAP03", "MAP04"):
     if f"map {map_name} " not in mapinfo:
         raise SystemExit(f"MAPINFO entry missing: {map_name}")
 
@@ -77,6 +78,10 @@ if '17139 = "FrozenDepartmentInitSpawner"' not in mapinfo:
     raise SystemExit("Frozen Foods department initializer DoomEdNum is missing")
 if '17141 = "FrozenCompressorResetSpawner"' not in mapinfo:
     raise SystemExit("Frozen Foods compressor reset DoomEdNum is missing")
+if '17144 = "ElectronicsDepartmentInitSpawner"' not in mapinfo:
+    raise SystemExit("Electronics department initializer DoomEdNum is missing")
+if '17146 = "ElectronicsNetworkRebootSpawner"' not in mapinfo:
+    raise SystemExit("Electronics network reboot DoomEdNum is missing")
 
 zscript = ZSCRIPT.read_text(encoding="utf-8")
 for required in (
@@ -112,5 +117,15 @@ if map03.count("type = 17101") != 1 or map03.count("type = 17139") != 1:
 if "type = 17003" in map03:
     raise SystemExit("MAP03 must not pre-place Night Manager before freezer power restoration")
 
+map04 = (ROOT / "game" / "MAP04.udmf").read_text(encoding="utf-8")
+if map04.count("type = 17111") != 2 or map04.count("type = 17146") != 1:
+    raise SystemExit("MAP04 must use two breaker fuses plus one rear Store Network Reboot power step")
+if "type = 17100" not in map04:
+    raise SystemExit("MAP04 must contain at least one Overtime spawner")
+if map04.count("type = 17101") != 1 or map04.count("type = 17144") != 1:
+    raise SystemExit("MAP04 must contain one gated supervisor and one fresh-entry initializer")
+if "type = 17003" in map04:
+    raise SystemExit("MAP04 must not pre-place Night Manager before electronics power restoration")
+
 print("Smoke test: PASS")
-print("PK3 structure, canonical UDMF markers and staged objective loops for MAP01/MAP02/MAP03 look valid.")
+print("PK3 structure, canonical UDMF markers and staged objective loops for MAP01/MAP02/MAP03/MAP04 look valid.")
