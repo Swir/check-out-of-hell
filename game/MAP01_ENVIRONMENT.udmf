@@ -1,11 +1,13 @@
 // Closing Time environment polish layer.
 // Kept separate from core objective geometry so the presentation pass stays easy to audit.
 
-// Department identity and front-lane wayfinding.
+// Department identity and front-lane wayfinding. The mirrored Lane 06 signs frame the safe
+// front approach without adding collision or changing the physical clock-out trigger.
 thing { x = -610.0; y = -365.0; angle = 90; type = 17120; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -665.0; y =  105.0; angle = 0;  type = 17121; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  665.0; y =  105.0; angle = 180; type = 17122; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -185.0; y = -430.0; angle = 90; type = 17123; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  185.0; y = -430.0; angle = 90; type = 17123; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Low-profile clutter deliberately sits off the main combat/clock-out lanes.
 thing { x = -350.0; y = -105.0; angle = 20;  type = 17124; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

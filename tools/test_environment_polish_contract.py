@@ -81,7 +81,7 @@ expected_counts = {
     17120: 1,
     17121: 1,
     17122: 1,
-    17123: 1,
+    17123: 2,
     17124: 2,
     17125: 2,
     17126: 2,
@@ -98,6 +98,8 @@ if "height = 154.0" not in layer:
     raise SystemExit("Closing Time fluorescent fixtures must stay ceiling-mounted")
 if "x = -710.0; y = -455.0" not in layer or "x = -700.0; y =  470.0" not in layer:
     raise SystemExit("Closing Time exploration snack rewards moved from their deliberate side-route positions")
+if "x = -185.0; y = -430.0" not in layer or "x =  185.0; y = -430.0" not in layer:
+    raise SystemExit("Closing Time mirrored Lane 06 signs moved from their front-lane positions")
 
 sndinfo = (GAME / "SNDINFO").read_text(encoding="utf-8")
 if "coh/breaksnack      sounds/breaksnack" not in sndinfo:
@@ -132,4 +134,4 @@ for doomednum in expected_counts:
         raise SystemExit(f"Built MAP01 does not contain environment DoomEdNum {doomednum}")
 
 print("Closing Time environment polish contract: PASS")
-print("Department signs, safe clutter, reduced-flash failing fixtures and optional joke-reward snacks are packaged and placed.")
+print("Department signs, mirrored Lane 06 wayfinding, safe clutter, reduced-flash failing fixtures and optional joke-reward snacks are packaged and placed.")

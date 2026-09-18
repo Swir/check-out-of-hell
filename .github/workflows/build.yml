@@ -52,6 +52,9 @@ jobs:
       - name: Closing Time layout contract test
         run: python tools/test_closing_time_layout.py
 
+      - name: Closing Time combat readability contract test
+        run: python tools/test_closing_time_combat_readability_contract.py
+
       - name: Staff Only route contract test
         run: python tools/test_staff_room_contract.py
 
