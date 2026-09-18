@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.32.5-dev — 2026-09-18
+
+### Added
+- Warehouse 13.5 now reveals one project-owned full-power recovery cache on a rear side lane after all three breakers are restored, before the player commits to the Freight Lift Override and Regional Management encounter.
+- Supervisor clearance now reveals one existing project-owned non-blocking `CLOCK OUT` guide near the warehouse entry, making the final return-to-clock-out leg immediately readable without moving or weakening the physical exit trigger.
+
+### Changed
+- `tools/test_warehouse_lift_objective_contract.py` now protects the recovery-cache and return-guide DoomEdNums, one-shot watcher lifecycles, authored side/front placement, packaged ZScript/DECORATE actors and built MAP02 markers in addition to the existing lift gate and `12 / 30 / 52` management response.
+- Project progress remains **86.8%** and Demo Release readiness remains **70.0%**. This is Warehouse encounter/return readability polish; it does not mark Warehouse 13.5 polished, complete the target-Windows Closing Time sign-off, write release notes or create a public release.
+
+### Validation
+- The full repository CI remains the merge gate, including the Warehouse objective contract, README PRO v2, Progress SVG PRO, RC packaging, pinned runtime checks and real two-process save/load validation.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.32.4-dev — 2026-09-18
 
 ### Added
@@ -112,7 +126,7 @@
 - README PRO regression coverage that rejects retired block/shade and bracket-style character progress meters from active README/ROADMAP dashboards.
 
 ### Changed
-- `tools/package_release_candidate.py` now resolves the pinned official Freedoom release, requires the matching official SHA-256 checksum, verifies the archive before extracting `freedoom2.wad`, and records the exact upstream license notice from the same repository tag.
+- `tools/package_release_candidate.py` now resolves the pinned official Freedoom release, requires the matching official SHA-256 checksum, verifies the archive before extracting `freedoom2.wad`, and records the exact upstream license notice from the same pinned upstream tag.
 - The release-candidate bootstrap accepts bundled Freedoom only when its provenance SHA-256 matches, otherwise falls back to the pinned official upstream recovery path. Verified cached GZDoom is also hash-checked and reused on later launches.
 - GZDoom intentionally remains an automatic official-source first-run dependency rather than being copied into the candidate package; no proprietary Doom IWAD or unofficial mirror is introduced.
 - Windows GZDoom bootstrap now verifies the official release metadata against the locked asset name/ID/byte count before download, validates the archive byte count before extraction, records that identity in the runtime manifest and requires it for cached-runtime reuse. This strengthens provenance without claiming an upstream SHA-256 that GZDoom `g4.14.2` does not provide.
