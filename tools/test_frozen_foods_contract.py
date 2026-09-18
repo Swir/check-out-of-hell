@@ -21,9 +21,12 @@ for marker in (
 
 mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
 for marker in (
+    '"FrozenSurgeStateHandler"',
     '17139 = "FrozenDepartmentInitSpawner"',
     '17140 = "FrozenBreakerResponseSpawner"',
     '17141 = "FrozenCompressorResetSpawner"',
+    '17142 = "FrozenCompressorSurgeSpawner"',
+    '17143 = "FrozenSurgeIsolationSpawner"',
     'map MAP03 "Frozen Foods"',
     'music = "D_COH03"',
 ):
@@ -42,9 +45,16 @@ for marker in (
     'Tag "Cold-Chain Compressor Reset"',
     "FCRS A -1 Bright",
     'A_GiveInventory("CheckoutFuse", 1)',
+    "actor FrozenSurgeIsolation : Inventory",
+    'Tag "Compressor Surge Isolation"',
+    "FSIS A -1 Bright",
+    "actor FrozenRefrigerantBurst",
+    "FVEN A 7 Bright",
+    'A_PlaySound("coh/overtimearc", CHAN_BODY)',
+    "A_Explode(8, 80)",
 ):
     if marker not in frozen_pickup:
-        raise SystemExit(f"Frozen Foods compressor reset pickup contract is incomplete: {marker}")
+        raise SystemExit(f"Frozen Foods pickup/hazard presentation contract is incomplete: {marker}")
 
 frozen_logic = (GAME / "ZSCRIPT_FROZEN").read_text(encoding="utf-8")
 for marker in (
@@ -56,9 +66,10 @@ for marker in (
     if marker not in frozen_logic:
         raise SystemExit(f"Frozen Foods department initializer is incomplete: {marker}")
 
-# The initializer is map-local rather than a global EventHandler. That keeps normal save restores
-# inside MAP03 from repeatedly erasing optional memo progress.
-if "EventHandler" in frozen_logic:
+# The memo initializer is map-local rather than a global EventHandler. The surge token gets its own
+# save-aware handler below; normal save restores must never rerun the memo reset.
+initializer_logic = frozen_logic.split("class FrozenDepartmentInitSpawner : Actor", 1)[1].split("class FrozenBreakerResponseSpawner : Actor", 1)[0]
+if "EventHandler" in initializer_logic:
     raise SystemExit("Frozen Foods memo initialization must stay map-local, not become a global save-state handler")
 
 if "class FrozenBreakerResponseSpawner : Actor" not in frozen_logic:
@@ -83,7 +94,7 @@ if 'Actor.Spawn("PalletJack", Pos);' in response_logic:
 
 if "class FrozenCompressorResetSpawner : Actor" not in frozen_logic:
     raise SystemExit("Frozen Foods is missing its rear compressor reset spawner")
-compressor_logic = frozen_logic.split("class FrozenCompressorResetSpawner : Actor", 1)[1]
+compressor_logic = frozen_logic.split("class FrozenCompressorResetSpawner : Actor", 1)[1].split("class FrozenSurgeStateHandler : EventHandler", 1)[0]
 for marker in (
     "nextCheck = Level.maptime + 7;",
     'p.CountInv("SupervisorClearanceToken") > 0',
@@ -96,6 +107,59 @@ for marker in (
 ):
     if marker not in compressor_logic:
         raise SystemExit(f"Frozen Foods compressor reset lost a gating/lifecycle contract: {marker}")
+
+if "class FrozenSurgeStateHandler : EventHandler" not in frozen_logic:
+    raise SystemExit("Frozen Foods is missing save-aware compressor-surge isolation state")
+surge_state = frozen_logic.split("class FrozenSurgeStateHandler : EventHandler", 1)[1].split("class FrozenSurgeIsolationSpawner : Actor", 1)[0]
+for marker in (
+    "if (e.IsSaveGame)",
+    "freshWorldInitPending = true;",
+    'p.A_TakeInventory("FrozenSurgeIsolation", 1);',
+):
+    if marker not in surge_state:
+        raise SystemExit(f"Frozen Foods surge isolation save-state contract is incomplete: {marker}")
+
+if "class FrozenSurgeIsolationSpawner : Actor" not in frozen_logic:
+    raise SystemExit("Frozen Foods is missing its optional full-power surge isolation station")
+isolation_logic = frozen_logic.split("class FrozenSurgeIsolationSpawner : Actor", 1)[1].split("class FrozenCompressorSurgeSpawner : Actor", 1)[0]
+for marker in (
+    "nextCheck = Level.maptime + 7;",
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    'p.CountInv("FrozenSurgeIsolation") > 0',
+    'p.CountInv("CheckoutFuse") < 3',
+    'Actor isolation = Actor.Spawn("FrozenSurgeIsolation", Pos);',
+    "spawned = true;",
+    "Destroy();",
+):
+    if marker not in isolation_logic:
+        raise SystemExit(f"Frozen Foods surge isolation station lost a gating/lifecycle contract: {marker}")
+
+if "class FrozenCompressorSurgeSpawner : Actor" not in frozen_logic:
+    raise SystemExit("Frozen Foods is missing its full-power Overtime compressor surge")
+surge_logic = frozen_logic.split("class FrozenCompressorSurgeSpawner : Actor", 1)[1]
+for marker in (
+    "nextCheck = Level.maptime + 7;",
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    'p.CountInv("FrozenSurgeIsolation") > 0',
+    'p.CountInv("CheckoutFuse") < 3',
+    "CheckoutShiftDirector.GetOvertimeStage()",
+    "nextSurgeTic = Level.maptime + 35 * 18;",
+    'Actor.Spawn("OvertimeWarningFlash", Pos);',
+    "burstTic = Level.maptime + 35 * 2;",
+    'Actor.Spawn("FrozenRefrigerantBurst", Pos);',
+    "int delaySeconds = 34;",
+    "delaySeconds = 26;",
+    "delaySeconds = 20;",
+):
+    if marker not in surge_logic:
+        raise SystemExit(f"Frozen Foods compressor surge lost a timing/readability contract: {marker}")
+
+# The optional surge-isolation control must never become a global combat-off switch. Ambient enemy
+# Overtime remains governed only by supervisor clearance, not by the Frozen Foods safety token.
+core_zscript = (GAME / "ZSCRIPT").read_text(encoding="utf-8")
+overtime_enemy_logic = core_zscript.split("class CheckoutOvertimeSpawner : Actor", 1)[1].split("class CheckoutManagerSpawner : Actor", 1)[0]
+if "FrozenSurgeIsolation" in overtime_enemy_logic:
+    raise SystemExit("Frozen Foods surge isolation must not disable hostile Overtime reinforcements")
 
 map03 = (GAME / "MAP03.udmf").read_text(encoding="utf-8")
 required_counts = {
@@ -164,13 +228,24 @@ for x_text, y_text in re.findall(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 0; 
     if abs(x) < 180.0 and y < -260.0:
         raise SystemExit("Frozen Foods Overtime hazard moved into the player entry/clock-out lane")
 
+if overtime.count("type = 17142") != 1 or overtime.count("type = 17143") != 1:
+    raise SystemExit("Frozen Foods needs exactly one compressor-surge anchor and one optional isolation station")
+surge_anchor = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 180; type = 17142", overtime)
+isolation_anchor = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 0; type = 17143", overtime)
+if not surge_anchor or float(surge_anchor.group(1)) < 350.0 or abs(float(surge_anchor.group(2))) > 250.0:
+    raise SystemExit("Frozen Foods compressor surge must stay on the authored right-side service flank")
+if not isolation_anchor or float(isolation_anchor.group(1)) > -450.0 or not 150.0 <= float(isolation_anchor.group(2)) <= 350.0:
+    raise SystemExit("Frozen Foods surge isolation station must stay on the optional opposite side lane")
+
 sign = GAME / "sprites" / "FSGNA0.png"
 compressor_sprite = GAME / "sprites" / "FCRSA0.png"
+isolation_sprite = GAME / "sprites" / "FSISA0.png"
+vent_sprites = [GAME / "sprites" / f"FVEN{frame}0.png" for frame in "ABC"]
 track = GAME / "music" / "D_COH03.mid"
-for path in (sign, compressor_sprite, track):
+for path in (sign, compressor_sprite, isolation_sprite, *vent_sprites, track):
     if not path.exists():
         raise SystemExit(f"Frozen Foods generated presentation asset is missing: {path.relative_to(ROOT)}")
-for path in (sign, compressor_sprite):
+for path in (sign, compressor_sprite, isolation_sprite, *vent_sprites):
     if not path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"):
         raise SystemExit(f"Frozen Foods generated sprite is not a valid PNG: {path.relative_to(ROOT)}")
 if b"Frozen Foods - Compressor Choir" not in track.read_bytes():
@@ -182,6 +257,10 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "maps/MAP03.wad",
         "sprites/FSGNA0.png",
         "sprites/FCRSA0.png",
+        "sprites/FSISA0.png",
+        "sprites/FVENA0.png",
+        "sprites/FVENB0.png",
+        "sprites/FVENC0.png",
         "music/D_COH03.mid",
         "MAPINFO",
         "DECORATE",
@@ -196,19 +275,31 @@ with zipfile.ZipFile(PK3, "r") as archive:
     if 'map MAP03 "Frozen Foods"' not in packaged_mapinfo or 'music = "D_COH03"' not in packaged_mapinfo:
         raise SystemExit("Packaged MAPINFO lost Frozen Foods registration")
     for marker in (
+        '"FrozenSurgeStateHandler"',
         '17140 = "FrozenBreakerResponseSpawner"',
         '17141 = "FrozenCompressorResetSpawner"',
+        '17142 = "FrozenCompressorSurgeSpawner"',
+        '17143 = "FrozenSurgeIsolationSpawner"',
     ):
         if marker not in packaged_mapinfo:
             raise SystemExit(f"Packaged MAPINFO lost Frozen Foods registration: {marker}")
-    if "actor FrozenCompressorReset : CustomInventory" not in packaged_decorate:
-        raise SystemExit("Packaged DECORATE lost the Frozen Foods compressor reset pickup")
-    if "class FrozenDepartmentInitSpawner : Actor" not in packaged_zscript:
-        raise SystemExit("Packaged ZSCRIPT lost the Frozen Foods initializer")
-    if "class FrozenBreakerResponseSpawner : Actor" not in packaged_zscript:
-        raise SystemExit("Packaged ZSCRIPT lost the Frozen Foods breaker-response logic")
-    if "class FrozenCompressorResetSpawner : Actor" not in packaged_zscript:
-        raise SystemExit("Packaged ZSCRIPT lost the Frozen Foods compressor-reset logic")
+    for marker in (
+        "actor FrozenCompressorReset : CustomInventory",
+        "actor FrozenSurgeIsolation : Inventory",
+        "actor FrozenRefrigerantBurst",
+    ):
+        if marker not in packaged_decorate:
+            raise SystemExit(f"Packaged DECORATE lost Frozen Foods content: {marker}")
+    for marker in (
+        "class FrozenDepartmentInitSpawner : Actor",
+        "class FrozenBreakerResponseSpawner : Actor",
+        "class FrozenCompressorResetSpawner : Actor",
+        "class FrozenSurgeStateHandler : EventHandler",
+        "class FrozenSurgeIsolationSpawner : Actor",
+        "class FrozenCompressorSurgeSpawner : Actor",
+    ):
+        if marker not in packaged_zscript:
+            raise SystemExit(f"Packaged ZSCRIPT lost Frozen Foods logic: {marker}")
 
     wad = archive.read("maps/MAP03.wad")
     ident, numlumps, dir_offset = struct.unpack("<4sII", wad[:12])
@@ -223,8 +314,18 @@ with zipfile.ZipFile(PK3, "r") as archive:
         raise SystemExit("Packaged MAP03 lost canonical MAP03 -> TEXTMAP -> ENDMAP ordering")
     text_offset, text_size, _ = entries[1]
     textmap = wad[text_offset : text_offset + text_size].decode("utf-8")
-    for marker in ("type = 17139", "type = 17140", "type = 17141", "type = 17101", "type = 17106", "type = 17121"):
+    for marker in (
+        "type = 17139",
+        "type = 17140",
+        "type = 17141",
+        "type = 17142",
+        "type = 17143",
+        "type = 17101",
+        "type = 17106",
+        "type = 17121",
+    ):
         if marker not in textmap:
             raise SystemExit(f"Packaged MAP03 TEXTMAP is missing playable Frozen Foods marker {marker}")
 
 print("Frozen Foods playable department contract: PASS")
+print("Breaker responses, compressor reset, telegraphed Overtime surge and optional surge isolation stay deterministic, save-safe and packaged.")
