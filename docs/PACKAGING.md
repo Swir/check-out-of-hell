@@ -39,6 +39,7 @@ Run:
 python tools/package_release_candidate.py
 python tools/test_release_candidate_package.py
 python tools/test_legal_content_package_contract.py
+python tools/test_windows_offline_runtime_cache_contract.py
 ```
 
 The release-candidate builder creates:
@@ -80,6 +81,14 @@ If bundled Freedoom is missing or fails provenance/hash validation, the bootstra
 
 A damaged or incomplete package stops before launch with an actionable message instead of silently substituting files from unofficial mirrors.
 
+### Offline reuse gate
+
+Windows CI now proves the later-launch path instead of treating it as documentation only. `tools/test_windows_offline_runtime_cache.ps1` works against the **extracted release-candidate package**: it first runs the package verifier, primes the pinned runtime once from official upstream, records the installed GZDoom/Freedoom SHA-256 values and validates the runtime manifest against `runtime-lock.json`.
+
+The test then removes the downloaded archive cache, blocks outbound networking in the PowerShell process using both the .NET default proxy and `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY`, clears the GitHub token, and executes the packaged bootstrap a second time. The second pass must succeed without creating any archive-cache files. GZDoom and Freedoom must retain unchanged hashes, and the rewritten runtime manifest must retain the exact pinned GZDoom asset name/ID/byte count plus the bundled-verified Freedoom delivery marker.
+
+This verifies a useful failure-resistant property: after one successful preparation, a valid extracted RC can reuse its verified installed runtime without another network round-trip. It does **not** turn the current package into a fully self-contained engine redistribution and does not complete the human demo sign-off.
+
 ## Player contract
 
 A normal Windows player should only need to:
@@ -106,11 +115,11 @@ GitHub Actions builds and validates the PK3, the development portable ZIP and th
 - the artifact is explicitly marked as non-public-release metadata,
 - the generated outer SHA-256 sidecar matches the ZIP.
 
-`tools/test_legal_content_package_contract.py` protects the official-source/checksum/notice/provenance design at source level. The Windows CI job additionally extracts the candidate and executes `tools/verify_player_package.ps1` with Windows PowerShell, while the existing runtime job separately resolves the pinned official engine and asks GZDoom to parse the current PK3.
+`tools/test_legal_content_package_contract.py` protects the official-source/checksum/notice/provenance design at source level. `tools/test_windows_offline_runtime_cache_contract.py` protects the extracted-RC offline reuse harness and CI wiring. The Windows CI job additionally extracts the candidate, executes `tools/verify_player_package.ps1`, primes the pinned runtime once and then proves verified runtime reuse after archive-cache removal with outbound networking blocked. The existing runtime job separately resolves the pinned official engine and asks GZDoom to parse the current PK3.
 
 ## Public demo gate
 
-The verified portable release-candidate artifact does **not** authorize a public demo release by itself. Verified Freedoom legal base-content bundling is implemented/testable, but a public demo still requires the interactive target-Windows Closing Time playtest, manual save/load confirmation, real-controller confirmation, final balance/polish sign-off, real-hardware performance sanity, release notes and an explicit GitHub Release decision. The broader standalone-content milestone is not promoted solely by bundling Freedoom while GZDoom remains an official-source first-run dependency.
+The verified portable release-candidate artifact does **not** authorize a public demo release by itself. Verified Freedoom legal base-content bundling and verified offline reuse of an already prepared runtime are implemented/testable, but a public demo still requires the interactive target-Windows Closing Time playtest, manual save/load confirmation, real-controller confirmation, final balance/polish sign-off, real-hardware performance sanity, release notes and an explicit GitHub Release decision. The broader standalone-content milestone is not promoted solely by bundling Freedoom while GZDoom remains an official-source first-run dependency.
 
 No GitHub Release should be created until those gates are genuinely complete.
 

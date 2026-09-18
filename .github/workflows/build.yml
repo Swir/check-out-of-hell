@@ -118,6 +118,9 @@ jobs:
       - name: Standalone legal base-content packaging contract test
         run: python tools/test_legal_content_package_contract.py
 
+      - name: Windows offline verified-runtime reuse contract test
+        run: python tools/test_windows_offline_runtime_cache_contract.py
+
       - name: Build portable Windows development package
         run: python tools/package_portable.py
 
@@ -176,7 +179,8 @@ jobs:
           $messages = New-Object System.Collections.Generic.List[string]
           $scripts = @(
             ".\tools\windows_demo_signoff.ps1",
-            ".\tools\gzdoom_save_load_smoke.ps1"
+            ".\tools\gzdoom_save_load_smoke.ps1",
+            ".\tools\test_windows_offline_runtime_cache.ps1"
           )
           foreach ($script in $scripts) {
             $tokens = $null
@@ -226,6 +230,12 @@ jobs:
           if (Test-Path -LiteralPath $stage) { Remove-Item -LiteralPath $stage -Recurse -Force }
           Expand-Archive -LiteralPath "dist\CHECKOUT-OF-HELL-Windows-Portable-rc.zip" -DestinationPath $stage -Force
           & (Join-Path $stage "tools\verify_player_package.ps1")
+
+      - name: Prove extracted RC verified-runtime reuse without network
+        shell: powershell
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: .\tools\test_windows_offline_runtime_cache.ps1 -PackageRoot (Join-Path $PWD "dist\rc-integrity-check")
 
       - name: Parse prototype with pinned GZDoom
         shell: powershell
