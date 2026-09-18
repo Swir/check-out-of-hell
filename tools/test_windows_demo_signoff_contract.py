@@ -78,10 +78,11 @@ for marker in harness_markers:
     if marker not in harness:
         raise SystemExit(f"Windows demo sign-off harness is missing required marker: {marker}")
 
-if harness.index("verify_player_package.ps1") > harness.index("bootstrap_runtime.ps1"):
-    raise SystemExit("RC package integrity must be verified before runtime bootstrap")
-if harness.index("bootstrap_runtime.ps1") > harness.index("gzdoom_save_load_smoke.ps1"):
-    raise SystemExit("Pinned runtime must be prepared before the exact-RC save/load round-trip")
+verify_call = '& (Join-Path $PackageDir "tools\\verify_player_package.ps1")'
+bootstrap_call = '& (Join-Path $PackageDir "tools\\bootstrap_runtime.ps1")'
+save_load_call = "& $SaveLoadHelper `"
+if not (harness.index(verify_call) < harness.index(bootstrap_call) < harness.index(save_load_call)):
+    raise SystemExit("Required execution order is RC integrity -> pinned runtime bootstrap -> exact-RC save/load")
 if "-PrepareOnly" not in doc or "INCOMPLETE" not in doc:
     raise SystemExit("Windows playtest documentation must make automated-only preparation explicitly incomplete")
 if "does not publish" not in doc.lower() or "remaining" not in doc.lower():
