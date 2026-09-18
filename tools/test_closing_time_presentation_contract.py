@@ -57,8 +57,10 @@ for marker in (
     'MEMO 2/3: PALLET JACKS ARE NOT EMOTIONAL SUPPORT VEHICLES',
     'MEMO 3/3: REGIONAL MANAGEMENT DENIES THE EXISTENCE OF HELL',
     'CHECKOUT OF HELL // NIGHT SHIFT',
-    'String powerText = String.Format("POWER  %d/3", fuses);',
-    'String memoText = String.Format("MEMOS  %d/3", memos);',
+    'String.Format("POWER  %d/3", fuses)',
+    'String.Format("MEMOS  %d/3", memos)',
+    'GetDepartmentObjectiveText(fuses, bossCleared, exitPending, warehouse, liftEngaged)',
+    'GetDepartmentObjectiveHint(fuses, bossCleared, warehouse, liftEngaged)',
     'ROUTE: STAFF ONLY ACCESS IS NOW POWERED',
 ):
     if marker not in zscript:
@@ -91,4 +93,4 @@ for marker in (
         raise SystemExit(f"Presentation generator is not wired into the build: {marker}")
 
 print("Closing Time presentation contract: PASS")
-print("Memo exploration route and final HUD-facing progress hooks are packaged and wired.")
+print("Memo exploration route and Closing Time HUD fallbacks remain packaged while department-aware objective routing is enabled.")
