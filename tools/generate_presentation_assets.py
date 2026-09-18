@@ -60,6 +60,36 @@ def _memo_sprite(path: Path) -> None:
     _write_png(path, width, height, pixels, (width // 2, height - 2))
 
 
+def _compressor_reset_sprite(path: Path) -> None:
+    width, height = 52, 60
+    transparent = (0, 0, 0, 0)
+    shadow = (2, 5, 10, 220)
+    panel = (7, 17, 28, 255)
+    steel = (24, 48, 64, 255)
+    cyan = (98, 229, 255, 255)
+    blue = (0, 136, 255, 255)
+    ice = (218, 248, 255, 255)
+    amber = (240, 177, 48, 255)
+    pixels = [transparent] * (width * height)
+
+    _rect(pixels, width, height, 8, 7, 47, 57, shadow)
+    _rect(pixels, width, height, 5, 4, 44, 54, panel)
+    _rect(pixels, width, height, 5, 4, 44, 7, cyan)
+    _rect(pixels, width, height, 5, 51, 44, 54, blue)
+    _rect(pixels, width, height, 5, 4, 8, 54, blue)
+    _rect(pixels, width, height, 41, 4, 44, 54, cyan)
+    _rect(pixels, width, height, 12, 12, 37, 20, steel)
+    _rect(pixels, width, height, 15, 14, 20, 18, ice)
+    _rect(pixels, width, height, 23, 14, 28, 18, cyan)
+    _rect(pixels, width, height, 31, 14, 34, 18, blue)
+    _rect(pixels, width, height, 13, 26, 36, 42, steel)
+    _rect(pixels, width, height, 18, 29, 31, 39, amber)
+    _rect(pixels, width, height, 21, 26, 28, 31, ice)
+    _rect(pixels, width, height, 13, 46, 36, 47, cyan)
+    _rect(pixels, width, height, 13, 49, 36, 50, blue)
+    _write_png(path, width, height, pixels, (width // 2, height - 2))
+
+
 def _memo_sound(path: Path) -> None:
     rate = 22050
     duration = 0.34
@@ -87,6 +117,7 @@ def _memo_sound(path: Path) -> None:
 
 def generate_presentation_assets(game_dir: Path) -> None:
     _memo_sprite(game_dir / "sprites" / "CMEMA0.png")
+    _compressor_reset_sprite(game_dir / "sprites" / "FCRSA0.png")
     _memo_sound(game_dir / "sounds" / "memo.wav")
 
 
