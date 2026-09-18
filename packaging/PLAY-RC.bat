@@ -13,12 +13,13 @@ echo.
 where powershell.exe >nul 2>&1
 if errorlevel 1 goto :missing_powershell
 
-echo [1/3] Verifying packaged game files...
+echo [1/3] Verifying packaged game files and bundled Freedoom content...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "tools\verify_player_package.ps1"
 if errorlevel 1 goto :integrity_failed
 
 echo.
-echo [2/3] Preparing pinned legal runtime dependencies...
+echo [2/3] Preparing pinned GZDoom runtime...
+echo Verified Freedoom base content is bundled; GZDoom comes only from its official upstream release.
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "tools\bootstrap_runtime.ps1"
 if errorlevel 1 goto :runtime_failed
 
@@ -28,7 +29,7 @@ set "FREEDOOM=%CD%\external\freedoom2.wad"
 
 if not exist "%GAME%" goto :integrity_failed
 if not exist "%GZDOOM%" goto :runtime_failed
-if not exist "%FREEDOOM%" goto :runtime_failed
+if not exist "%FREEDOOM%" goto :integrity_failed
 
 echo.
 echo [3/3] Clocking in...
@@ -56,10 +57,11 @@ exit /b 20
 
 :runtime_failed
 echo.
-echo The pinned runtime could not be prepared.
-echo CHECKOUT OF HELL only resolves GZDoom and Freedoom from their official upstream releases.
-echo Check your internet connection and the error above, then run PLAY.bat again.
-echo Existing verified runtime files are reused on later launches.
+echo The pinned GZDoom engine could not be prepared.
+echo CHECKOUT OF HELL resolves GZDoom only from its official upstream release.
+echo The bundled Freedoom content is verified before bootstrap and does not need a separate download.
+echo Check your internet connection on first launch and the error above, then run PLAY.bat again.
+echo Existing verified GZDoom files are reused on later launches.
 echo.
 pause
 exit /b 30

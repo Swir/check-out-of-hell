@@ -11,6 +11,10 @@ DIST = ROOT / "dist"
 PACKAGE = DIST / "CHECKOUT-OF-HELL-Windows-Portable-rc.zip"
 CHECKSUM = PACKAGE.with_suffix(PACKAGE.suffix + ".sha256")
 
+BUNDLED_FREEDOOM = "external/freedoom2.wad"
+FREEDOOM_LICENSE = "licenses/FREEDOOM-COPYING.adoc"
+FREEDOOM_PROVENANCE = "third_party/FREEDOOM-PROVENANCE.json"
+
 if not PACKAGE.is_file():
     raise SystemExit("Release-candidate package is missing. Run: python tools/package_release_candidate.py")
 if not CHECKSUM.is_file():
@@ -27,6 +31,9 @@ required = {
     "branding/icon.svg",
     "LICENSE",
     "game/CHECKOUT-OF-HELL.pk3",
+    BUNDLED_FREEDOOM,
+    FREEDOOM_LICENSE,
+    FREEDOOM_PROVENANCE,
 }
 
 with zipfile.ZipFile(PACKAGE, "r") as archive:
@@ -35,15 +42,16 @@ with zipfile.ZipFile(PACKAGE, "r") as archive:
     if missing:
         raise SystemExit(f"Release-candidate package entries missing: {sorted(missing)}")
 
-    forbidden_runtime = [
-        name for name in names
-        if name.lower().endswith((".exe", ".wad"))
-    ]
-    if forbidden_runtime:
+    forbidden_executables = [name for name in names if name.lower().endswith(".exe")]
+    if forbidden_executables:
         raise SystemExit(
-            "Release-candidate artifact must keep runtime EXE/WAD acquisition in the official-source bootstrap: "
-            f"{forbidden_runtime}"
+            "Release-candidate artifact must keep the GZDoom engine in the official-source bootstrap: "
+            f"{forbidden_executables}"
         )
+
+    unexpected_wads = [name for name in names if name.lower().endswith(".wad") and name != BUNDLED_FREEDOOM]
+    if unexpected_wads:
+        raise SystemExit(f"Release-candidate artifact contains unexpected WAD data: {unexpected_wads}")
 
     source_leaks = [
         name for name in names
@@ -66,15 +74,21 @@ with zipfile.ZipFile(PACKAGE, "r") as archive:
     if "python" in launcher or "build.py" in launcher or "bootstrap_python" in launcher:
         raise SystemExit("Release-candidate PLAY.bat must not require Python or a source build toolchain")
     if "official upstream" not in launcher:
-        raise SystemExit("Release-candidate launcher must explain the official-upstream runtime policy")
+        raise SystemExit("Release-candidate launcher must explain the official-upstream GZDoom policy")
+    if "freedoom base content is bundled" not in launcher:
+        raise SystemExit("Release-candidate launcher must explain that verified Freedoom content is bundled")
 
     readme = archive.read("README-FIRST.txt").decode("utf-8", errors="strict")
-    if "NOT A PUBLIC DEMO RELEASE" not in readme:
-        raise SystemExit("Release-candidate README must not imply that a public demo exists")
-    if "You do NOT need to search" not in readme:
-        raise SystemExit("Release-candidate README must preserve the no-manual-dependency-search contract")
-    if "SHA-256" not in readme:
-        raise SystemExit("Release-candidate README must explain local package integrity verification")
+    for phrase in (
+        "NOT A PUBLIC DEMO RELEASE",
+        "You do NOT need to search",
+        "SHA-256",
+        "Freedoom v0.13.0 base content is already bundled",
+        "GZDoom engine",
+        "official upstream",
+    ):
+        if phrase not in readme:
+            raise SystemExit(f"Release-candidate README is missing required player/legal wording: {phrase}")
 
     manifest = json.loads(archive.read("package-manifest.json").decode("utf-8"))
     if manifest.get("schema") != 1:
@@ -90,7 +104,7 @@ with zipfile.ZipFile(PACKAGE, "r") as archive:
     if not isinstance(entries, dict) or not entries:
         raise SystemExit("Release-candidate manifest has no integrity entries")
     if set(entries) != required - {"package-manifest.json"}:
-        raise SystemExit("Release-candidate manifest entries do not exactly cover packaged project files")
+        raise SystemExit("Release-candidate manifest entries do not exactly cover packaged files")
 
     for name, record in entries.items():
         data = archive.read(name)
@@ -106,14 +120,60 @@ with zipfile.ZipFile(PACKAGE, "r") as archive:
     lock = json.loads(archive.read("runtime-lock.json").decode("utf-8"))
     expected_runtime = {
         "gzdoom_tag": lock["gzdoom"]["tag"],
+        "gzdoom_delivery": "official-source-bootstrap",
         "freedoom_tag": lock["freedoom"]["tag"],
+        "freedoom_delivery": "bundled-verified-content",
     }
     if manifest.get("runtime") != expected_runtime:
-        raise SystemExit("Release-candidate manifest runtime pins do not match runtime-lock.json")
+        raise SystemExit("Release-candidate manifest runtime delivery/pins do not match the package policy")
 
     game_info = archive.getinfo("game/CHECKOUT-OF-HELL.pk3")
     if game_info.file_size < 1024:
         raise SystemExit("Release-candidate game PK3 looks unexpectedly small")
+
+    wad = archive.read(BUNDLED_FREEDOOM)
+    if len(wad) < 1024 * 1024:
+        raise SystemExit("Bundled Freedoom WAD looks unexpectedly small")
+
+    license_text = archive.read(FREEDOOM_LICENSE).decode("utf-8", errors="strict")
+    for phrase in (
+        "Contributors to the Freedoom project",
+        "Redistribution and use in source and binary forms",
+        "THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS",
+    ):
+        if phrase not in license_text:
+            raise SystemExit(f"Bundled Freedoom license notice is incomplete: {phrase}")
+
+    provenance = json.loads(archive.read(FREEDOOM_PROVENANCE).decode("utf-8"))
+    if provenance.get("schema") != 1 or provenance.get("component") != "Freedoom":
+        raise SystemExit("Bundled Freedoom provenance has an unexpected schema/component")
+    if provenance.get("repo") != lock["freedoom"]["repo"] or provenance.get("tag") != lock["freedoom"]["tag"]:
+        raise SystemExit("Bundled Freedoom provenance does not match runtime-lock.json")
+    if provenance.get("license") != "BSD-3-Clause":
+        raise SystemExit("Bundled Freedoom provenance must identify BSD-3-Clause")
+    if provenance.get("wad_path") != BUNDLED_FREEDOOM or provenance.get("license_path") != FREEDOOM_LICENSE:
+        raise SystemExit("Bundled Freedoom provenance points at unexpected package paths")
+
+    for key in ("archive_sha256", "wad_sha256", "license_sha256"):
+        value = provenance.get(key)
+        if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
+            raise SystemExit(f"Bundled Freedoom provenance has invalid {key}")
+    if provenance["wad_sha256"] != sha256(wad).hexdigest():
+        raise SystemExit("Bundled Freedoom provenance WAD SHA-256 does not match package content")
+    if provenance["license_sha256"] != sha256(archive.read(FREEDOOM_LICENSE)).hexdigest():
+        raise SystemExit("Bundled Freedoom provenance license SHA-256 does not match package content")
+
+    expected_download_prefix = (
+        f"https://github.com/{lock['freedoom']['repo']}/releases/download/{lock['freedoom']['tag']}/"
+    )
+    if not str(provenance.get("archive_url", "")).startswith(expected_download_prefix):
+        raise SystemExit("Bundled Freedoom archive provenance is not an official pinned release URL")
+    if not str(provenance.get("checksum_url", "")).startswith(expected_download_prefix):
+        raise SystemExit("Bundled Freedoom checksum provenance is not an official pinned release URL")
+    if not re.fullmatch(lock["freedoom"]["asset_regex"], str(provenance.get("archive_asset", ""))):
+        raise SystemExit("Bundled Freedoom archive asset does not match runtime-lock.json")
+    if not re.fullmatch(lock["freedoom"]["checksum_regex"], str(provenance.get("checksum_asset", ""))):
+        raise SystemExit("Bundled Freedoom checksum asset does not match runtime-lock.json")
 
 checksum_text = CHECKSUM.read_text(encoding="ascii").strip()
 match = re.fullmatch(r"([0-9a-f]{64})\s{2}(.+)", checksum_text)
@@ -125,4 +185,4 @@ if sha256(PACKAGE.read_bytes()).hexdigest() != match.group(1):
     raise SystemExit("Release-candidate package SHA-256 sidecar does not match the ZIP")
 
 print("Windows portable release-candidate package contract: PASS")
-print("Artifact is prebuilt, Python-free, locally integrity-checked, official-source runtime capable, and not public-released.")
+print("Artifact is Python-free, locally integrity-checked, bundles verified BSD-licensed Freedoom content, uses official-source GZDoom bootstrap, and is not public-released.")

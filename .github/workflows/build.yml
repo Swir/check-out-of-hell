@@ -109,6 +109,9 @@ jobs:
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 
+      - name: Standalone legal base-content packaging contract test
+        run: python tools/test_legal_content_package_contract.py
+
       - name: Build portable Windows development package
         run: python tools/package_portable.py
 
@@ -116,6 +119,8 @@ jobs:
         run: python tools/test_portable_package.py
 
       - name: Build portable Windows release-candidate package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python tools/package_release_candidate.py
 
       - name: Release-candidate package contract test
@@ -168,6 +173,8 @@ jobs:
         run: .\tools\bootstrap_python.ps1 -DryRun
 
       - name: Build Windows release-candidate package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python tools/package_release_candidate.py
 
       - name: Verify extracted release-candidate package on Windows
