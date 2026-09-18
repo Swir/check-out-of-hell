@@ -125,7 +125,8 @@ workflow_markers = (
     "Parse Windows demo sign-off scripts",
     ".\\tools\\windows_demo_signoff.ps1",
     ".\\tools\\gzdoom_save_load_smoke.ps1",
-    "[scriptblock]::Create",
+    "System.Management.Automation.Language.Parser",
+    "powershell-signoff-parse-report",
 )
 for marker in workflow_markers:
     if marker not in workflow:
