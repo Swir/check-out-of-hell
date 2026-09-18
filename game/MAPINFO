@@ -20,6 +20,7 @@ DoomEdNums
     17137 = "WarehouseSafetyLockoutSpawner"
     17139 = "FrozenDepartmentInitSpawner"
     17140 = "FrozenBreakerResponseSpawner"
+    17141 = "FrozenCompressorResetSpawner"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
