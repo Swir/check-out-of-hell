@@ -210,9 +210,38 @@ def generate_music_assets(game_dir: Path) -> None:
         ],
     )
 
+    electronics = _make_track(
+        "Electronics - Dead Pixel Choir",
+        tempo_bpm=58,
+        bars=24,
+        chords=[
+            (44, 51, 56),
+            (42, 49, 54),
+            (40, 47, 52),
+            (39, 46, 51),
+        ],
+        melody=[
+            (0, 1.0, 76, 0.5, 28),
+            (1, 3.0, 71, 0.5, 22),
+            (3, 0.5, 74, 1.0, 27),
+            (4, 3.25, 68, 0.5, 20),
+            (6, 1.5, 80, 0.5, 29),
+            (7, 3.0, 64, 0.75, 21),
+        ],
+        chimes=[
+            (2, 3.25, (83, 88, 95), 32),
+            (6, 3.25, (81, 86, 93), 28),
+        ],
+        drums=[
+            (1.0, 37, 10),
+            (3.0, 42, 8),
+        ],
+    )
+
     (music_dir / "D_COH01.mid").write_bytes(closing_time)
     (music_dir / "D_COH02.mid").write_bytes(warehouse)
     (music_dir / "D_COH03.mid").write_bytes(frozen_foods)
+    (music_dir / "D_COH04.mid").write_bytes(electronics)
 
 
 if __name__ == "__main__":
