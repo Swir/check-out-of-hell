@@ -99,7 +99,7 @@ for required_privacy_text in ("controller_names", "cpu_names", "gpu_names", "mem
         raise SystemExit(f"Windows sign-off evidence is missing bounded hardware context: {required_privacy_text}")
 
 # This iteration creates evidence tooling only. It must not promote roadmap gates.
-if "**Overall progress:** **84.8%**" not in roadmap:
+if "**Overall progress:** ` 84.8%`" not in roadmap:
     raise SystemExit("Windows sign-off tooling must not inflate overall project progress")
 if "**Demo Release readiness: 60.0%**" not in roadmap:
     raise SystemExit("Windows sign-off tooling must keep Demo Release readiness at the verified 60.0%")
