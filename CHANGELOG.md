@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.31.0-dev — 2026-09-18
+
+### Added
+- `WINDOWS-DEMO-SIGNOFF.bat` and `tools/windows_demo_signoff.ps1`, a target-Windows evidence harness that builds the exact non-public RC ZIP, verifies its manifest, prepares the pinned official runtime and runs the real two-process save/load check against the extracted player payload before any manual judgment begins.
+- Guided Closing Time sign-off for Closing Crew, Graveyard Shift and Corporate Hell, including an explicit manual Graveyard save → full process exit → load confirmation, physical-controller/core-action and haptics checks, real-hardware Overtime/boss performance sanity and final balance/presentation judgment.
+- Privacy-limited JSON/Markdown evidence containing source commit/branch/cleanliness, RC SHA-256, pinned runtime identity, OS/CPU/GPU/RAM and controller friendly names only; no account names, machine names, serial numbers or stable hardware/device IDs are collected or uploaded automatically.
+- `docs/WINDOWS_PLAYTEST.md` plus `tools/test_windows_demo_signoff_contract.py`, documenting and protecting the exact RC → runtime → automated save/load → human sign-off chain.
+
+### Changed
+- `tools/gzdoom_save_load_smoke.ps1` can now validate caller-supplied GZDoom/Freedoom/PK3 paths and evidence locations with `-PreparedRuntime`, while preserving its original standalone build/bootstrap behavior. This lets the Windows sign-off exercise the already verified RC payload instead of silently rebuilding or swapping it.
+- Windows CI now syntax-parses the interactive sign-off and save/load PowerShell scripts but deliberately does not execute or claim the human playtest. The Ubuntu contract verifies required gates, privacy limits, roadmap honesty and SVG-only progress presentation.
+- `ROADMAP.md` now links the reproducible target-Windows sign-off procedure and keeps the human play/controller/balance/performance gate explicit.
+- Project progress remains **84.8%** and Demo Release readiness remains **60.0%**. Evidence tooling reduces ambiguity in the remaining gate but does not complete it, mark Closing Time polished, finish legal packaging/release notes or create a release.
+
+### Validation
+- The new contract requires exact RC integrity verification before runtime bootstrap and the prepared runtime before the exact-RC save/load pass; final `PASS` requires every automated result, every manual result and a clean commit-addressable source snapshot.
+- Hosted CI is restricted to static contract checks and PowerShell syntax parsing for the interactive harness; no hosted runner is allowed to masquerade as the target-Windows human sign-off.
+- No public demo or GitHub Release was created.
+
 ## 0.30.0-dev — 2026-09-18
 
 ### Added

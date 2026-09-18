@@ -1,14 +1,23 @@
 [CmdletBinding()]
-param()
+param(
+    [string]$GZDoomExe,
+    [string]$FreedoomWad,
+    [string]$Pk3,
+    [string]$WorkDir,
+    [string]$CombinedLog,
+    [switch]$PreparedRuntime
+)
 
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
-$GZDoomExe = Join-Path $ProjectRoot "external\gzdoom\gzdoom.exe"
-$FreedoomWad = Join-Path $ProjectRoot "external\freedoom2.wad"
-$Pk3 = Join-Path $ProjectRoot "dist\checkout-of-hell-prototype.pk3"
-$WorkDir = Join-Path $ProjectRoot "dist\save-load-runtime"
+if ([string]::IsNullOrWhiteSpace($GZDoomExe)) { $GZDoomExe = Join-Path $ProjectRoot "external\gzdoom\gzdoom.exe" }
+if ([string]::IsNullOrWhiteSpace($FreedoomWad)) { $FreedoomWad = Join-Path $ProjectRoot "external\freedoom2.wad" }
+if ([string]::IsNullOrWhiteSpace($Pk3)) { $Pk3 = Join-Path $ProjectRoot "dist\checkout-of-hell-prototype.pk3" }
+if ([string]::IsNullOrWhiteSpace($WorkDir)) { $WorkDir = Join-Path $ProjectRoot "dist\save-load-runtime" }
+if ([string]::IsNullOrWhiteSpace($CombinedLog)) { $CombinedLog = Join-Path $ProjectRoot "dist\gzdoom-save-load-smoke.log" }
+
 $SaveDir = Join-Path $WorkDir "saves"
 $EngineConfig = Join-Path $WorkDir "gzdoom-ci.ini"
 $SaveConfig = Join-Path $WorkDir "save-roundtrip.cfg"
@@ -19,7 +28,6 @@ $SaveStdout = Join-Path $WorkDir "save.stdout.log"
 $SaveStderr = Join-Path $WorkDir "save.stderr.log"
 $LoadStdout = Join-Path $WorkDir "load.stdout.log"
 $LoadStderr = Join-Path $WorkDir "load.stderr.log"
-$CombinedLog = Join-Path $ProjectRoot "dist\gzdoom-save-load-smoke.log"
 $SaveStem = "coh-ci-roundtrip"
 $TimeoutSeconds = 55
 
@@ -100,7 +108,7 @@ function Invoke-RuntimePhase {
     $phaseArguments = $Arguments + @("+logfile", $EngineLog)
     $process = Start-Process -FilePath $GZDoomExe `
         -ArgumentList $phaseArguments `
-        -WorkingDirectory $ProjectRoot `
+        -WorkingDirectory (Split-Path -Parent $GZDoomExe) `
         -RedirectStandardOutput $StdoutPath `
         -RedirectStandardError $StderrPath `
         -PassThru
@@ -149,6 +157,10 @@ function Write-CombinedLog {
         [string]$Result = "INCOMPLETE"
     )
 
+    $logParent = Split-Path -Parent $CombinedLog
+    if ($logParent) {
+        New-Item -ItemType Directory -Path $logParent -Force | Out-Null
+    }
     @(
         "CHECKOUT OF HELL - pinned GZDoom save/load runtime smoke",
         "",
@@ -162,20 +174,25 @@ function Write-CombinedLog {
     ) -join "`n" | Set-Content -LiteralPath $CombinedLog -Encoding UTF8
 }
 
-Write-Host "Building current prototype..."
-python (Join-Path $PSScriptRoot "build.py")
-if ($LASTEXITCODE -ne 0) {
-    throw "Prototype build failed with exit code $LASTEXITCODE."
-}
+if (-not $PreparedRuntime) {
+    Write-Host "Building current prototype..."
+    python (Join-Path $PSScriptRoot "build.py")
+    if ($LASTEXITCODE -ne 0) {
+        throw "Prototype build failed with exit code $LASTEXITCODE."
+    }
 
-Write-Host "Resolving pinned official runtime..."
-& (Join-Path $PSScriptRoot "bootstrap_runtime.ps1")
-if ($LASTEXITCODE -ne 0) {
-    throw "Runtime bootstrap failed with exit code $LASTEXITCODE."
+    Write-Host "Resolving pinned official runtime..."
+    & (Join-Path $PSScriptRoot "bootstrap_runtime.ps1")
+    if ($LASTEXITCODE -ne 0) {
+        throw "Runtime bootstrap failed with exit code $LASTEXITCODE."
+    }
+}
+else {
+    Write-Host "Using caller-prepared GZDoom/Freedoom/game payload without rebuilding or replacing it."
 }
 
 foreach ($required in @($GZDoomExe, $FreedoomWad, $Pk3)) {
-    if (-not (Test-Path -LiteralPath $required)) {
+    if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
         throw "Runtime save/load prerequisite is missing: $required"
     }
 }

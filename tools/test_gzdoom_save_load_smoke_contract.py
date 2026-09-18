@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 WINDOWS_SCRIPT = ROOT / "tools" / "gzdoom_save_load_smoke.ps1"
@@ -110,7 +111,9 @@ for marker in required_workflow_markers:
     if marker not in workflow:
         raise SystemExit(f"CI is not wiring the save/load validation correctly: {marker}")
 
-if ".\\tools\\gzdoom_save_load_smoke.ps1" in workflow:
+# Syntax parsing the Windows helper is safe and useful, but hosted CI must never
+# execute it as if a hosted Windows graphics context proved the gameplay round-trip.
+if re.search(r"run:\s*\.\\tools\\gzdoom_save_load_smoke\.ps1(?:\s|$)", workflow):
     raise SystemExit(
         "Hosted Windows CI must not claim a gameplay round-trip while its runner exposes neither "
         "a compatible Vulkan device nor a modern OpenGL context"

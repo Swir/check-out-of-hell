@@ -1,0 +1,161 @@
+from __future__ import annotations
+
+from pathlib import Path
+import re
+
+ROOT = Path(__file__).resolve().parents[1]
+HARNESS = ROOT / "tools" / "windows_demo_signoff.ps1"
+SAVE_LOAD = ROOT / "tools" / "gzdoom_save_load_smoke.ps1"
+DOC = ROOT / "docs" / "WINDOWS_PLAYTEST.md"
+WRAPPER = ROOT / "WINDOWS-DEMO-SIGNOFF.bat"
+WORKFLOW = ROOT / ".github" / "workflows" / "build.yml"
+ROADMAP = ROOT / "ROADMAP.md"
+README = ROOT / "README.md"
+
+for required in (HARNESS, SAVE_LOAD, DOC, WRAPPER, WORKFLOW, ROADMAP, README):
+    if not required.is_file():
+        raise SystemExit(f"Windows demo sign-off contract is missing required file: {required.relative_to(ROOT)}")
+
+harness = HARNESS.read_text(encoding="utf-8")
+save_load = SAVE_LOAD.read_text(encoding="utf-8")
+doc = DOC.read_text(encoding="utf-8")
+wrapper = WRAPPER.read_text(encoding="utf-8")
+workflow = WORKFLOW.read_text(encoding="utf-8")
+roadmap = ROADMAP.read_text(encoding="utf-8")
+readme = README.read_text(encoding="utf-8")
+
+# The save/load helper must retain its normal standalone path while also accepting
+# an already verified release-candidate payload. This prevents the sign-off from
+# validating one build and silently exercising another.
+for marker in (
+    "[string]$GZDoomExe",
+    "[string]$FreedoomWad",
+    "[string]$Pk3",
+    "[string]$WorkDir",
+    "[string]$CombinedLog",
+    "[switch]$PreparedRuntime",
+    "if (-not $PreparedRuntime)",
+    "Using caller-prepared GZDoom/Freedoom/game payload without rebuilding or replacing it.",
+    "COH_RUNTIME_SAVE_WRITTEN",
+    "COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE",
+    "CheckoutFuse",
+    "CorporateMemo",
+    "-loadgame",
+):
+    if marker not in save_load:
+        raise SystemExit(f"Parameterized save/load helper lost required behavior: {marker}")
+
+# The Windows harness must build and verify the real RC, resolve the pinned legal
+# runtime in that extracted package, run the automated round-trip, then require
+# explicit human evidence before PASS. Paths and difficulty labels are checked by
+# stable text rather than fragile source-literal quoting.
+for marker in (
+    "package_release_candidate.py",
+    "CHECKOUT-OF-HELL-Windows-Portable-rc.zip",
+    "Expand-Archive",
+    "verify_player_package.ps1",
+    "bootstrap_runtime.ps1",
+    "gzdoom.exe",
+    "freedoom2.wad",
+    "CHECKOUT-OF-HELL.pk3",
+    "gzdoom_save_load_smoke.ps1",
+    "-PreparedRuntime",
+    "Closing Crew",
+    "Graveyard Shift",
+    "Corporate Hell",
+    "save_quit_load",
+    "controller_core_actions",
+    "controller_haptics",
+    "performance_sanity",
+    "final_polish_signoff",
+    "$allAutomated",
+    "$allManual",
+    "$sourceIsVerifiable",
+    'if ($allAutomated -and $allManual -and $sourceIsVerifiable)',
+    '$Evidence.status = "PASS"',
+    '$Evidence.status = "INCOMPLETE"',
+    "Get-FileHash",
+    "Get-GitSnapshot",
+    "Get-HardwareSummary",
+    "No release should be published from this result.",
+):
+    if marker not in harness:
+        raise SystemExit(f"Windows demo sign-off harness lost required behavior: {marker}")
+
+verify_pos = harness.index("verify_player_package.ps1")
+bootstrap_pos = harness.index("bootstrap_runtime.ps1")
+roundtrip_pos = harness.index("& $SaveLoadHelper")
+if not (verify_pos < bootstrap_pos < roundtrip_pos):
+    raise SystemExit("Required execution order is RC integrity -> pinned runtime bootstrap -> exact-RC save/load")
+
+# A PASS must remain impossible without a clean commit-addressable source snapshot.
+if "^[0-9a-f]{40}$" not in harness or "$Evidence.source.clean -eq $true" not in harness:
+    raise SystemExit("Final Windows PASS must remain bound to a clean commit-addressable source snapshot")
+
+# The harness is evidence tooling, never a publisher.
+for forbidden_publish in ("gh release create", "New-GitHubRelease", "Invoke-RestMethod -Method Post"):
+    if forbidden_publish.lower() in harness.lower():
+        raise SystemExit(f"Interactive sign-off harness must not publish releases: {forbidden_publish}")
+
+# Privacy: friendly hardware names are useful evidence, stable identifiers are not.
+for forbidden in ("SerialNumber", "PNPDeviceID", "DeviceID", "$env:USERNAME", "$env:COMPUTERNAME"):
+    if forbidden in harness:
+        raise SystemExit(f"Windows sign-off evidence must not collect sensitive/stable machine identifiers: {forbidden}")
+for required_privacy_text in ("controller_names", "cpu_names", "gpu_names", "memory_gb"):
+    if required_privacy_text not in harness:
+        raise SystemExit(f"Windows sign-off evidence is missing bounded hardware context: {required_privacy_text}")
+
+# Documentation must preserve the distinction between automated preparation and
+# real manual target-Windows evidence.
+for marker in (
+    "WINDOWS-DEMO-SIGNOFF.bat",
+    "windows_demo_signoff.ps1",
+    "-PrepareOnly",
+    "INCOMPLETE",
+    "physical controller",
+    "real-hardware",
+):
+    if marker.lower() not in doc.lower():
+        raise SystemExit(f"Windows playtest documentation lost required guidance: {marker}")
+if "does not publish" not in doc.lower():
+    raise SystemExit("Windows playtest documentation must state that the harness does not publish")
+if "windows_demo_signoff.ps1" not in wrapper.lower() or "does not" not in wrapper.lower():
+    raise SystemExit("One-click Windows sign-off wrapper is not wired or lacks its no-release warning")
+
+# This iteration creates evidence tooling only. It must not promote roadmap gates.
+if not re.search(r"Overall progress:\*\*\s*`\s*84\.8%`", roadmap):
+    raise SystemExit("Windows sign-off tooling must not inflate overall project progress")
+if "Demo Release readiness: 60.0%" not in roadmap:
+    raise SystemExit("Windows sign-off tooling must keep Demo Release readiness at verified 60.0%")
+for open_gate in (
+    "- [ ] Standalone legal content package",
+    "- [ ] Release notes",
+    "- [ ] GitHub Release",
+):
+    if open_gate not in roadmap:
+        raise SystemExit(f"Windows sign-off tooling must not close release gate: {open_gate}")
+if "docs/WINDOWS_PLAYTEST.md" not in roadmap:
+    raise SystemExit("ROADMAP must link the reproducible target-Windows sign-off procedure")
+
+# SVG-only presentation remains enforced: numeric fallback is allowed, text-art
+# progress bars are not.
+legacy_progress_meter = re.compile(r"(?:[█▓▒░]{2,})|(?:\[(?:[#=\-]{4,})\])")
+for path, text in ((README, readme), (ROADMAP, roadmap)):
+    if legacy_progress_meter.search(text):
+        raise SystemExit(f"Legacy character progress meter returned in {path.name}")
+
+# CI may parse/static-test the harness, but it must never execute the interactive
+# sign-off and pretend hosted runners are physical target-machine evidence.
+for marker in (
+    "python tools/test_windows_demo_signoff_contract.py",
+    "Parse Windows demo sign-off scripts",
+    "System.Management.Automation.Language.Parser",
+    "powershell-signoff-parse-report",
+):
+    if marker not in workflow:
+        raise SystemExit(f"CI is not protecting the Windows sign-off kit: {marker}")
+if re.search(r"(?m)^\s*run:\s*\.\\tools\\windows_demo_signoff\.ps1\s*$", workflow):
+    raise SystemExit("Hosted CI must not execute the interactive Windows sign-off harness")
+
+print("Target Windows demo sign-off contract: PASS")
+print("Exact RC verification/save-load automation stays separate from mandatory human Windows/controller/balance/performance evidence.")

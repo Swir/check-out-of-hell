@@ -43,6 +43,9 @@ jobs:
       - name: GZDoom save/load runtime validation contract test
         run: python tools/test_gzdoom_save_load_smoke_contract.py
 
+      - name: Target Windows demo sign-off contract test
+        run: python tools/test_windows_demo_signoff_contract.py
+
       - name: SWIR README PRO v2 contract test
         run: python tools/test_readme_standard_contract.py
 
@@ -161,6 +164,42 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Parse Windows demo sign-off scripts
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Path "dist" -Force | Out-Null
+          $report = Join-Path $PWD "dist\powershell-parse-report.txt"
+          $messages = New-Object System.Collections.Generic.List[string]
+          $scripts = @(
+            ".\tools\windows_demo_signoff.ps1",
+            ".\tools\gzdoom_save_load_smoke.ps1"
+          )
+          foreach ($script in $scripts) {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $script), [ref]$tokens, [ref]$errors)
+            if ($errors.Count -eq 0) {
+              $messages.Add("PASS $script")
+              continue
+            }
+            foreach ($parseError in $errors) {
+              $messages.Add("FAIL $script line $($parseError.Extent.StartLineNumber), column $($parseError.Extent.StartColumnNumber): $($parseError.Message)")
+            }
+          }
+          $messages | Set-Content -LiteralPath $report -Encoding UTF8
+          Get-Content -LiteralPath $report
+          if ($messages | Where-Object { $_ -like "FAIL *" }) {
+            throw "PowerShell syntax validation failed; see powershell-parse-report artifact."
+          }
+
+      - name: Upload PowerShell parse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powershell-signoff-parse-report
+          path: dist/powershell-parse-report.txt
+          if-no-files-found: warn
 
       - name: Resolve pinned official runtime assets
         shell: powershell
