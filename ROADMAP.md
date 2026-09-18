@@ -1,14 +1,14 @@
 # ROADMAP — CHECKOUT OF HELL
 <!-- SWIR-PROGRESS-SVG-PRO:v1 -->
 
-**Overall progress:** `████████░░ 82.8%`
+**Overall progress:** `████████░░ 84.8%`
 
 **Measured scope:** Implemented/testable project milestones  
 **Progress status:** HARDENING
 
-<img width="100%" src="assets/readme/progress-mini.svg" alt="CHECKOUT OF HELL project progress — 82.8% implemented/testable; demo release readiness tracked separately" />
+<img width="100%" src="assets/readme/progress-mini.svg" alt="CHECKOUT OF HELL project progress — 84.8% implemented/testable; demo release readiness tracked separately" />
 
-**Progress fallback:** **82.8%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 50.0%**, tracked separately.
+**Progress fallback:** **84.8%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 60.0%**, tracked separately.
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -26,7 +26,7 @@ Project completion is a weighted roll-up of the verified phase percentages in th
 | Full Game | 5% |
 <!-- SWIR-PROGRESS-WEIGHTS:END -->
 
-Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (50 × 20%) + (0 × 5%) = 82.75%`, displayed as **82.8%**. Geometry uses the unrounded `82.75%` fraction.
+Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (60 × 20%) + (0 × 5%) = 84.75%`, displayed as **84.8%**. Geometry uses the unrounded `84.75%` fraction.
 
 ## Phase 0 — Foundation — 100%
 - [x] Project identity and concept
@@ -119,10 +119,10 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (50 ×
 - [x] Original soundtrack for every currently playable department, generated deterministically and regression-tested
 - [x] End-to-end runtime save/load validation with a real two-process pinned-GZDoom round-trip; target-Windows interactive confirmation remains a demo sign-off task
 
-## Phase 3 — Demo Release — 50%
+## Phase 3 — Demo Release — 60%
 - [x] Automatic first-run dependency bootstrap design implemented
 - [x] Portable Windows development artifact builder verified in CI
-- [ ] Installer/portable Windows release package
+- [x] Installer/portable Windows release package — verified non-public release-candidate ZIP with local SHA-256 manifest and Windows integrity check
 - [ ] Standalone legal content package
 - [x] Controller support pass
 - [x] Accessibility options
@@ -132,7 +132,7 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (50 ×
 
 **Release rule:** a normal Windows player must not need to search for dependencies manually. A demo release must either contain every legally redistributable required runtime file or automatically obtain missing redistributable dependencies from official upstream sources on first run.
 
-**Current demo-readiness gate:** finish an interactive target-Windows playtest of Closing Time, including save/load confirmation, real-controller confirmation, final balance/polish sign-off and a real-hardware performance sanity check before any public demo is published. The automated post-boss polish pass does not replace this manual sign-off.
+**Current demo-readiness gate:** finish an interactive target-Windows playtest of Closing Time, including save/load confirmation, real-controller confirmation, final balance/polish sign-off and a real-hardware performance sanity check before any public demo is published. The verified CI release-candidate package does not replace this manual sign-off, release notes or the remaining legal-content packaging decision.
 
 ## Phase 4 — Full Game — 0%
 - [ ] Full campaign
