@@ -51,11 +51,11 @@ harness_markers = (
     "package_release_candidate.py",
     "CHECKOUT-OF-HELL-Windows-Portable-rc.zip",
     "Expand-Archive -LiteralPath $RcZip -DestinationPath $PackageDir -Force",
-    '"tools\\verify_player_package.ps1"',
-    '"tools\\bootstrap_runtime.ps1"',
-    '"external\\gzdoom\\gzdoom.exe"',
-    '"external\\freedoom2.wad"',
-    '"game\\CHECKOUT-OF-HELL.pk3"',
+    r'"tools\verify_player_package.ps1"',
+    r'"tools\bootstrap_runtime.ps1"',
+    r'"external\gzdoom\gzdoom.exe"',
+    r'"external\freedoom2.wad"',
+    r'"game\CHECKOUT-OF-HELL.pk3"',
     "gzdoom_save_load_smoke.ps1",
     "-PreparedRuntime",
     '"Closing Crew"',
@@ -78,8 +78,8 @@ for marker in harness_markers:
     if marker not in harness:
         raise SystemExit(f"Windows demo sign-off harness is missing required marker: {marker}")
 
-verify_call = '& (Join-Path $PackageDir "tools\\verify_player_package.ps1")'
-bootstrap_call = '& (Join-Path $PackageDir "tools\\bootstrap_runtime.ps1")'
+verify_call = r'& (Join-Path $PackageDir "tools\verify_player_package.ps1")'
+bootstrap_call = r'& (Join-Path $PackageDir "tools\bootstrap_runtime.ps1")'
 save_load_call = "& $SaveLoadHelper `"
 if not (harness.index(verify_call) < harness.index(bootstrap_call) < harness.index(save_load_call)):
     raise SystemExit("Required execution order is RC integrity -> pinned runtime bootstrap -> exact-RC save/load")
@@ -123,8 +123,8 @@ for path, text in ((README, readme), (ROADMAP, roadmap)):
 workflow_markers = (
     "python tools/test_windows_demo_signoff_contract.py",
     "Parse Windows demo sign-off scripts",
-    ".\\tools\\windows_demo_signoff.ps1",
-    ".\\tools\\gzdoom_save_load_smoke.ps1",
+    r".\tools\windows_demo_signoff.ps1",
+    r".\tools\gzdoom_save_load_smoke.ps1",
     "System.Management.Automation.Language.Parser",
     "powershell-signoff-parse-report",
 )
