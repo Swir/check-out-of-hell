@@ -4,6 +4,9 @@
     "repo": "ZDoom/gzdoom",
     "tag": "g4.14.2",
     "asset_regex": "^gzdoom-.*-windows\\.zip$",
+    "asset_name": "gzdoom-4-14-2-windows.zip",
+    "asset_id": 251530238,
+    "asset_bytes": 21879627,
     "linux_asset_regex": "^gzdoom_.*_amd64\\.deb$"
   },
   "freedoom": {
