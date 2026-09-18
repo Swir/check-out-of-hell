@@ -20,22 +20,28 @@ Current prototype includes:
 - an `Employee of the Month Stash` reward inside the optional room,
 - no mandatory breaker inside the optional room, preserving route clarity,
 - clearance-aware Overtime hazard anchors that stop creating fresh electrical hazards once the Night Manager is down,
-- an original `CLOCK OUT` guide that appears near the front lanes only after supervisor clearance, pointing back toward the existing physical completion zone without changing the trigger.
+- an original `CLOCK OUT` guide that appears near the front lanes only after supervisor clearance, pointing back toward the existing physical completion zone without changing the trigger,
+- a conservative combat-readability pass that clears the front-to-rear center strip of initial hostile/reinforcement anchors, moves management-response spawns to the rear flanks and mirrors non-blocking Lane 06 wayfinding at the front approach.
 
 The Staff Only room is deliberately a reward loop rather than a key hunt. Partial power gives the
 player a useful side benefit before the main objective is complete, teaching that restoring store
 systems can change the environment without making every side route mandatory.
 
 The supervisor encounter is now a pressure sequence rather than one isolated monster spawn. Full
-power activates two management-response anchors on opposite sides of the rear arena. Once the Night
-Manager is defeated, surviving threats still matter on the run back to the registers, but new
-management reinforcements and fresh Overtime floor hazards retire. The front-lane `CLOCK OUT` guide
-then becomes visible, preserving tension while making the final workplace objective unambiguous.
+power activates two management-response anchors on opposite rear flanks. Their authored timing is
+unchanged, but the spatial pass avoids spawning that sequence on the central supervisor sightline.
+Once the Night Manager is defeated, surviving threats still matter on the run back to the registers,
+but new management reinforcements and fresh Overtime floor hazards retire. The front-lane `CLOCK OUT`
+guide then becomes visible, preserving tension while making the final workplace objective unambiguous.
+
+The readability pass deliberately changes spawn placement and non-blocking wayfinding only. It does
+not move solid checkout geometry, objective triggers, breaker routes or combat timing without actual
+playtest evidence.
 
 Remaining Closing Time polish:
 - complete an interactive target-Windows full-level pass with manual save/load, physical-controller and real-hardware performance confirmation,
 - finish balance/sign-off on all three difficulty modes using that real playtest evidence,
-- strengthen checkout-lane cover and sightlines only where the playtest shows a readability or pacing problem,
+- change solid checkout cover or sightline geometry only where the playtest shows a readability or pacing problem,
 - keep any additional lighting/geometry reactions subordinate to combat readability rather than adding decoration for its own sake.
 
 ## MAP02 — Warehouse 13.5
