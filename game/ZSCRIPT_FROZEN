@@ -227,3 +227,212 @@ class FrozenCompressorResetSpawner : Actor
         }
     }
 }
+
+// Keep the optional compressor isolation local to Frozen Foods while preserving it through normal
+// save/restore. Fresh map transitions strip a token carried out of MAP03 before gameplay resumes.
+class FrozenSurgeStateHandler : EventHandler
+{
+    bool freshWorldInitPending;
+
+    override void WorldLoaded(WorldEvent e)
+    {
+        if (e.IsSaveGame)
+        {
+            return;
+        }
+        freshWorldInitPending = true;
+    }
+
+    override void WorldTick()
+    {
+        if (!freshWorldInitPending || !players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        p.A_TakeInventory("FrozenSurgeIsolation", 1);
+        freshWorldInitPending = false;
+    }
+}
+
+// Full power reveals one optional safety control on a side aisle. It never grants progression and
+// only suppresses the department-specific refrigerant surge; management and enemy Overtime remain.
+class FrozenSurgeIsolationSpawner : Actor
+{
+    bool spawned;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (spawned || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0 || p.CountInv("FrozenSurgeIsolation") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        Actor.Spawn("TeleportFog", Pos);
+        Actor isolation = Actor.Spawn("FrozenSurgeIsolation", Pos);
+        if (isolation)
+        {
+            spawned = true;
+            Destroy();
+        }
+    }
+}
+
+// The reset compressor becomes unstable only after full power and only once Overtime begins. Each
+// burst receives a two-second warning, stays off the central completion lane, and slows itself at
+// lower pressure stages. Isolation or supervisor clearance cancels even an already-armed warning.
+class FrozenCompressorSurgeSpawner : Actor
+{
+    bool warningArmed;
+    int burstTic;
+    int nextCheck;
+    int nextSurgeTic;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        warningArmed = false;
+        burstTic = 0;
+        nextCheck = Level.maptime + 7;
+        nextSurgeTic = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0 || p.CountInv("FrozenSurgeIsolation") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("CheckoutFuse") < 3)
+        {
+            return;
+        }
+
+        int stage = CheckoutShiftDirector.GetOvertimeStage();
+        if (stage <= 0)
+        {
+            return;
+        }
+
+        if (warningArmed)
+        {
+            if (Level.maptime < burstTic)
+            {
+                return;
+            }
+
+            Actor.Spawn("FrozenRefrigerantBurst", Pos);
+            warningArmed = false;
+
+            int delaySeconds = 34;
+            if (stage >= 3)
+            {
+                delaySeconds = 20;
+            }
+            else if (stage >= 2)
+            {
+                delaySeconds = 26;
+            }
+            nextSurgeTic = Level.maptime + 35 * delaySeconds;
+            return;
+        }
+
+        if (nextSurgeTic == 0)
+        {
+            nextSurgeTic = Level.maptime + 35 * 18;
+            return;
+        }
+        if (Level.maptime < nextSurgeTic)
+        {
+            return;
+        }
+
+        Actor.Spawn("OvertimeWarningFlash", Pos);
+        warningArmed = true;
+        burstTic = Level.maptime + 35 * 2;
+    }
+}
