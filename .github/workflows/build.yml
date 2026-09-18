@@ -138,6 +138,9 @@ jobs:
       - name: Release-candidate package contract test
         run: python tools/test_release_candidate_package.py
 
+      - name: Standalone legal content bundle contract test
+        run: python tools/test_legal_content_bundle.py
+
       - name: Upload prototype artifact
         uses: actions/upload-artifact@v4
         with:
@@ -161,6 +164,15 @@ jobs:
           path: |
             dist/CHECKOUT-OF-HELL-Windows-Portable-rc.zip
             dist/CHECKOUT-OF-HELL-Windows-Portable-rc.zip.sha256
+          if-no-files-found: error
+
+      - name: Upload standalone legal content release-candidate artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkout-of-hell-legal-content-rc
+          path: |
+            dist/CHECKOUT-OF-HELL-Legal-Content-rc.zip
+            dist/CHECKOUT-OF-HELL-Legal-Content-rc.zip.sha256
           if-no-files-found: error
 
   runtime-resolution:
@@ -225,6 +237,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python tools/package_release_candidate.py
+
+      - name: Verify standalone legal content bundle on Windows
+        run: python tools/test_legal_content_bundle.py
 
       - name: Verify extracted release-candidate package on Windows
         shell: powershell
