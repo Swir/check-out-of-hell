@@ -6,18 +6,20 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 HARNESS = ROOT / "tools" / "windows_demo_signoff.ps1"
 SAVE_LOAD = ROOT / "tools" / "gzdoom_save_load_smoke.ps1"
+EVIDENCE_VERIFIER = ROOT / "tools" / "verify_windows_signoff_evidence.py"
 DOC = ROOT / "docs" / "WINDOWS_PLAYTEST.md"
 WRAPPER = ROOT / "WINDOWS-DEMO-SIGNOFF.bat"
 WORKFLOW = ROOT / ".github" / "workflows" / "build.yml"
 ROADMAP = ROOT / "ROADMAP.md"
 README = ROOT / "README.md"
 
-for required in (HARNESS, SAVE_LOAD, DOC, WRAPPER, WORKFLOW, ROADMAP, README):
+for required in (HARNESS, SAVE_LOAD, EVIDENCE_VERIFIER, DOC, WRAPPER, WORKFLOW, ROADMAP, README):
     if not required.is_file():
         raise SystemExit(f"Windows demo sign-off contract is missing required file: {required.relative_to(ROOT)}")
 
 harness = HARNESS.read_text(encoding="utf-8")
 save_load = SAVE_LOAD.read_text(encoding="utf-8")
+evidence_verifier = EVIDENCE_VERIFIER.read_text(encoding="utf-8")
 doc = DOC.read_text(encoding="utf-8")
 wrapper = WRAPPER.read_text(encoding="utf-8")
 workflow = WORKFLOW.read_text(encoding="utf-8")
@@ -92,7 +94,28 @@ if not (verify_pos < bootstrap_pos < roundtrip_pos):
 if "^[0-9a-f]{40}$" not in harness or "$Evidence.source.clean -eq $true" not in harness:
     raise SystemExit("Final Windows PASS must remain bound to a clean commit-addressable source snapshot")
 
-# The harness is evidence tooling, never a publisher.
+# The independent verifier must re-check the completed evidence package instead of
+# trusting PASS text alone. It remains evidence validation, never a publisher or a
+# substitute for the human play/controller/performance judgments.
+for marker in (
+    "--expected-commit",
+    "runtime-lock.json",
+    "package-manifest.json",
+    "runtime-manifest.json",
+    "FREEDOOM-PROVENANCE.json",
+    "COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE",
+    "manual-saves",
+    "controller_haptics",
+    "final_polish_signoff",
+    "No release should be published from this result.",
+):
+    if marker not in evidence_verifier:
+        raise SystemExit(f"Windows sign-off evidence verifier lost required behavior: {marker}")
+for forbidden_publish in ("gh release create", "New-GitHubRelease", "Invoke-RestMethod -Method Post"):
+    if forbidden_publish.lower() in evidence_verifier.lower():
+        raise SystemExit(f"Evidence verifier must not publish releases: {forbidden_publish}")
+
+# The harness itself is evidence tooling, never a publisher.
 for forbidden_publish in ("gh release create", "New-GitHubRelease", "Invoke-RestMethod -Method Post"):
     if forbidden_publish.lower() in harness.lower():
         raise SystemExit(f"Interactive sign-off harness must not publish releases: {forbidden_publish}")
@@ -106,10 +129,13 @@ for required_privacy_text in ("controller_names", "cpu_names", "gpu_names", "mem
         raise SystemExit(f"Windows sign-off evidence is missing bounded hardware context: {required_privacy_text}")
 
 # Documentation must preserve the distinction between automated preparation and
-# real manual target-Windows evidence.
+# real manual target-Windows evidence, and completed PASS evidence must have a
+# reproducible independent consistency check before it is accepted as release evidence.
 for marker in (
     "WINDOWS-DEMO-SIGNOFF.bat",
     "windows_demo_signoff.ps1",
+    "verify_windows_signoff_evidence.py",
+    "--expected-commit",
     "-PrepareOnly",
     "INCOMPLETE",
     "physical controller",
@@ -122,7 +148,7 @@ if "does not publish" not in doc.lower():
 if "windows_demo_signoff.ps1" not in wrapper.lower() or "does not" not in wrapper.lower():
     raise SystemExit("One-click Windows sign-off wrapper is not wired or lacks its no-release warning")
 
-# This iteration creates evidence tooling only. It must not promote roadmap gates.
+# This iteration strengthens evidence validation only. It must not promote roadmap gates.
 if not re.search(r"Overall progress:\*\*\s*`\s*84\.8%`", roadmap):
     raise SystemExit("Windows sign-off tooling must not inflate overall project progress")
 if "Demo Release readiness: 60.0%" not in roadmap:
@@ -134,8 +160,8 @@ for open_gate in (
 ):
     if open_gate not in roadmap:
         raise SystemExit(f"Windows sign-off tooling must not close release gate: {open_gate}")
-if "docs/WINDOWS_PLAYTEST.md" not in roadmap:
-    raise SystemExit("ROADMAP must link the reproducible target-Windows sign-off procedure")
+if "docs/WINDOWS_PLAYTEST.md" not in roadmap or "verify_windows_signoff_evidence.py" not in roadmap:
+    raise SystemExit("ROADMAP must link both target-Windows sign-off and independent evidence verification")
 
 # SVG-only presentation remains enforced: numeric fallback is allowed, text-art
 # progress bars are not.
@@ -148,6 +174,7 @@ for path, text in ((README, readme), (ROADMAP, roadmap)):
 # sign-off and pretend hosted runners are physical target-machine evidence.
 for marker in (
     "python tools/test_windows_demo_signoff_contract.py",
+    "python tools/test_windows_signoff_evidence_verifier.py",
     "Parse Windows demo sign-off scripts",
     "System.Management.Automation.Language.Parser",
     "powershell-signoff-parse-report",
@@ -158,4 +185,4 @@ if re.search(r"(?m)^\s*run:\s*\.\\tools\\windows_demo_signoff\.ps1\s*$", workflo
     raise SystemExit("Hosted CI must not execute the interactive Windows sign-off harness")
 
 print("Target Windows demo sign-off contract: PASS")
-print("Exact RC verification/save-load automation stays separate from mandatory human Windows/controller/balance/performance evidence.")
+print("Exact RC verification/save-load automation and independent evidence validation stay separate from mandatory human Windows/controller/balance/performance evidence.")

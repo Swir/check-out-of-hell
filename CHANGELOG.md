@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.32.3-dev — 2026-09-18
+
+### Added
+- `tools/verify_windows_signoff_evidence.py`, a stdlib-only independent verifier for completed target-Windows sign-off evidence. It binds a `PASS` directory to the exact candidate commit and re-validates required human/automated gates, extracted RC manifest entries, pinned runtime identity/hashes, Freedoom provenance, the manual save and the two-process save/load completion markers.
+- `tools/test_windows_signoff_evidence_verifier.py`, a synthetic evidence contract that accepts a consistent fixture and deliberately rejects a tampered game PK3, a failed physical-controller haptics gate and a mismatched expected commit.
+
+### Changed
+- `docs/WINDOWS_PLAYTEST.md` and the active ROADMAP demo gate now require completed `PASS` evidence to survive independent consistency verification against the exact candidate commit before it is accepted as release-gate evidence.
+- GitHub Actions runs the verifier contract alongside the existing Windows sign-off contract. Hosted CI still never performs or claims the human gameplay/controller/performance sign-off.
+- Project progress remains **84.8%** and Demo Release readiness remains **60.0%**. Evidence hardening does not mark Closing Time polished, complete the real target-Windows playtest, finish the standalone legal-content decision, write release notes or create a GitHub Release.
+
+### Validation
+- The independent verifier and synthetic tamper contract pass locally; the full repository CI remains the merge gate for this change.
+- Existing README PRO v2, Progress SVG PRO, package integrity, official-source runtime, offline-reuse, pinned-GZDoom parser and real two-process save/load gates remain in force. No public demo or GitHub Release was created.
+
 ## 0.32.2-dev — 2026-09-18
 
 ### Added

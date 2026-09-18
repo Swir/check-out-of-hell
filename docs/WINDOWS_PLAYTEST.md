@@ -82,6 +82,18 @@ REPORT.md
 
 It intentionally does **not** collect user/account names, machine names, serial numbers, hardware IDs or device IDs. Evidence is not uploaded automatically.
 
+## Independent evidence verification
+
+After a real `PASS`, verify the completed evidence directory again from a trusted clean checkout before treating it as Windows release-gate evidence:
+
+```powershell
+python .\tools\verify_windows_signoff_evidence.py .\dist\windows-demo-signoff\<UTC timestamp> --expected-commit <40-character commit>
+```
+
+The verifier does **not** replay or replace the human gameplay judgment. It independently rejects stale or tampered evidence when the source commit/branch/clean state, required manual and automated gates, extracted package manifest entries, pinned runtime identity and hashes, Freedoom provenance, manual-save presence or save/load completion markers no longer agree. `--expected-commit` binds the result to the exact candidate revision being evaluated.
+
+This verification is local, uploads nothing and does not publish or authorize a demo. A failed consistency check invalidates the evidence until the underlying problem is resolved and a trustworthy sign-off is produced.
+
 ## Result semantics
 
 - `PASS` means every automated check and every required manual target-Windows check passed on a clean, commit-addressable source snapshot.
@@ -89,7 +101,7 @@ It intentionally does **not** collect user/account names, machine names, serial 
 - `FAILED_AUTOMATION` means package/runtime/save-load preparation failed before manual sign-off.
 - `INCOMPLETE` means the harness was run with `-PrepareOnly`, so manual evidence was intentionally not collected.
 
-A `PASS` is **necessary evidence for the interactive Windows gate, not permission to publish by itself**. The current `ROADMAP.md` remains authoritative: legal-content packaging/release-notes/GitHub Release gates must still be completed, and no public demo should be created until the project is genuinely ready.
+A `PASS` is **necessary evidence for the interactive Windows gate, not permission to publish by itself**. Before it is used as release-gate evidence, the resulting directory should also pass `verify_windows_signoff_evidence.py` against the exact candidate commit. The current `ROADMAP.md` remains authoritative: legal-content packaging/release-notes/GitHub Release gates must still be completed, and no public demo should be created until the project is genuinely ready.
 
 ## Automated-only preparation
 
