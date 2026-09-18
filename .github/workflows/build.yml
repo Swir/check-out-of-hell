@@ -43,6 +43,9 @@ jobs:
       - name: GZDoom save/load runtime validation contract test
         run: python tools/test_gzdoom_save_load_smoke_contract.py
 
+      - name: Target Windows demo sign-off contract test
+        run: python tools/test_windows_demo_signoff_contract.py
+
       - name: SWIR README PRO v2 contract test
         run: python tools/test_readme_standard_contract.py
 
@@ -161,6 +164,19 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Parse Windows demo sign-off scripts
+        shell: powershell
+        run: |
+          $scripts = @(
+            ".\tools\windows_demo_signoff.ps1",
+            ".\tools\gzdoom_save_load_smoke.ps1"
+          )
+          foreach ($script in $scripts) {
+            $source = Get-Content -LiteralPath $script -Raw
+            $null = [scriptblock]::Create($source)
+            Write-Host "Parsed $script"
+          }
 
       - name: Resolve pinned official runtime assets
         shell: powershell
