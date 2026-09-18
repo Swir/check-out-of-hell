@@ -189,29 +189,29 @@ if not cache_match or abs(float(cache_match.group(1))) < 320.0 or float(cache_ma
 if not guide_match or abs(float(guide_match.group(1))) > 100.0 or float(guide_match.group(2)) > -280.0:
     raise SystemExit("Warehouse post-clear guide must remain on the front entry/clock-out approach")
 
-stock_matches = re.findall(r"x = ([0-9.]+); y = 56\.0; angle = 0; type = 17136", map02)
+stock_matches = re.findall(r"x = ([0-9.]+); y = 116\.0; angle = 0; type = 17136", map02)
 if len(stock_matches) != 4:
-    raise SystemExit("Warehouse stock piles must form the authored four-pile damaged-goods barrier at y=56")
+    raise SystemExit("Warehouse stock piles must form the authored four-pile damaged-goods barrier at y=116")
 stock_x = [float(value) for value in stock_matches]
 if min(stock_x) < 390.0 or max(stock_x) > 610.0 or any(
     (right - left) > 70.0 for left, right in zip(stock_x, stock_x[1:])
 ):
     raise SystemExit("Warehouse stock-pile barrier has an unintended player-sized gap or left its side lane")
-if 'vertex { x = 360.0; y = 40.0; }' not in map02 or 'vertex { x = 360.0; y = 220.0; }' not in map02:
+if 'vertex { x = 360.0; y = 100.0; }' not in map02 or 'vertex { x = 360.0; y = 220.0; }' not in map02:
     raise SystemExit("Warehouse damaged-goods nook is missing its authored side-wall geometry")
-if 'x = 470.0; y = 142.0; angle = 180; type = 17130' not in map02:
+if 'x = 470.0; y = 170.0; angle = 180; type = 17130' not in map02:
     raise SystemExit("Warehouse damaged-goods label reward left the optional cage")
-if 'x = 560.0; y = 142.0; angle = 180; type = 17126' not in map02:
+if 'x = 560.0; y = 170.0; angle = 180; type = 17126' not in map02:
     raise SystemExit("Warehouse break-snack reward left the optional cage")
 
 # The cage is an optional ammo-for-supplies decision: no breaker, lift control or boss anchor may
-# move into its authored x>=360, y>=40 side nook.
+# move into its authored x>=360, y>=100 side nook.
 for mandatory_type in (17111, 17133, 17104):
     pattern = re.compile(
         rf"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = [0-9]+; type = {mandatory_type}"
     )
     for x_text, y_text in pattern.findall(map02):
-        if float(x_text) >= 360.0 and float(y_text) >= 40.0:
+        if float(x_text) >= 360.0 and 100.0 <= float(y_text) <= 220.0:
             raise SystemExit(f"Mandatory Warehouse objective type {mandatory_type} moved into the optional stock cage")
 
 
