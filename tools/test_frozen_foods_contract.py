@@ -21,6 +21,7 @@ for marker in (
 mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
 for marker in (
     '17139 = "FrozenDepartmentInitSpawner"',
+    '17140 = "FrozenBreakerResponseSpawner"',
     'map MAP03 "Frozen Foods"',
     'music = "D_COH03"',
 ):
@@ -48,9 +49,30 @@ for marker in (
 if "EventHandler" in frozen_logic:
     raise SystemExit("Frozen Foods memo initialization must stay map-local, not become a global save-state handler")
 
+if "class FrozenBreakerResponseSpawner : Actor" not in frozen_logic:
+    raise SystemExit("Frozen Foods is missing its breaker-linked cold-chain response spawner")
+response_logic = frozen_logic.split("class FrozenBreakerResponseSpawner : Actor", 1)[1]
+for marker in (
+    "nextCheck = Level.maptime + 7;",
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    "pendingFuse = observedFuseCount + 1;",
+    "responseTic = Level.maptime + 35 * 3;",
+    'Actor.Spawn("OvertimeWarningFlash", Pos);',
+    "if (pendingFuse == 1)",
+    'Actor.Spawn("ScannerTurret", Pos);',
+    "else if (pendingFuse == 2)",
+    'Actor.Spawn("CartOfDoom", Pos);',
+    "observedFuseCount < 2",
+):
+    if marker not in response_logic:
+        raise SystemExit(f"Frozen Foods breaker response lost a readability/gating contract: {marker}")
+if 'Actor.Spawn("PalletJack", Pos);' in response_logic:
+    raise SystemExit("Frozen Foods breaker response must hand full-power pressure to the boss systems, not add a third instant enemy")
+
 map03 = (GAME / "MAP03.udmf").read_text(encoding="utf-8")
 required_counts = {
     17139: 1,  # fresh-entry optional-state initializer
+    17140: 1,  # breaker-linked cold-chain flank response
     17111: 3,  # breaker fuses
     17101: 1,  # power-gated Night Manager spawner
     17103: 1,  # deterministic management response
@@ -71,12 +93,15 @@ if "type = 17003" in map03:
 start = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 90; type = 1", map03)
 manager = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 270; type = 17101", map03)
 guide = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 90; type = 17132", map03)
+response_anchor = re.search(r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = 180; type = 17140", map03)
 if not start or abs(float(start.group(1))) > 80.0 or float(start.group(2)) > -350.0:
     raise SystemExit("Frozen Foods player start must stay on the front clock-out approach")
 if not manager or abs(float(manager.group(1))) > 100.0 or float(manager.group(2)) < 300.0:
     raise SystemExit("Frozen Foods supervisor must remain at the rear of the department")
 if not guide or abs(float(guide.group(1))) > 100.0 or float(guide.group(2)) > -300.0:
     raise SystemExit("Frozen Foods post-clear guide must remain near the entry/clock-out route")
+if not response_anchor or float(response_anchor.group(1)) < 500.0 or not -80.0 <= float(response_anchor.group(2)) <= 220.0:
+    raise SystemExit("Frozen Foods breaker response must remain on the right-side freezer flank")
 
 # Four authored shelf lines are the minimum department geometry: MAP03 must not regress into a flat
 # box arena while still leaving a central service lane between the inner shelving runs.
@@ -133,8 +158,12 @@ with zipfile.ZipFile(PK3, "r") as archive:
     packaged_zscript = archive.read("ZSCRIPT").decode("utf-8")
     if 'map MAP03 "Frozen Foods"' not in packaged_mapinfo or 'music = "D_COH03"' not in packaged_mapinfo:
         raise SystemExit("Packaged MAPINFO lost Frozen Foods registration")
+    if '17140 = "FrozenBreakerResponseSpawner"' not in packaged_mapinfo:
+        raise SystemExit("Packaged MAPINFO lost the Frozen Foods breaker-response registration")
     if "class FrozenDepartmentInitSpawner : Actor" not in packaged_zscript:
         raise SystemExit("Packaged ZSCRIPT lost the Frozen Foods initializer")
+    if "class FrozenBreakerResponseSpawner : Actor" not in packaged_zscript:
+        raise SystemExit("Packaged ZSCRIPT lost the Frozen Foods breaker-response logic")
 
     wad = archive.read("maps/MAP03.wad")
     ident, numlumps, dir_offset = struct.unpack("<4sII", wad[:12])
@@ -149,7 +178,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
         raise SystemExit("Packaged MAP03 lost canonical MAP03 -> TEXTMAP -> ENDMAP ordering")
     text_offset, text_size, _ = entries[1]
     textmap = wad[text_offset : text_offset + text_size].decode("utf-8")
-    for marker in ("type = 17139", "type = 17101", "type = 17106", "type = 17121"):
+    for marker in ("type = 17139", "type = 17140", "type = 17101", "type = 17106", "type = 17121"):
         if marker not in textmap:
             raise SystemExit(f"Packaged MAP03 TEXTMAP is missing playable Frozen Foods marker {marker}")
 
