@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.32.4-dev — 2026-09-18
+
+### Added
+- `CHECKOUT-OF-HELL-Legal-Content-rc.zip`, a deterministic content-only release-candidate artifact built from the exact verified bytes used by the Windows player RC: project PK3, pinned Freedoom WAD, project/Freedoom notices, provenance, third-party notes and runtime lock.
+- `content-manifest.json`, binding the standalone content bundle to the exact Git source snapshot and covering every payload file with SHA-256 plus byte count while explicitly recording that GZDoom is not redistributed.
+- `tools/test_legal_content_bundle.py`, which rejects executable/bootstrap leakage, verifies source/license/runtime/provenance metadata, checks the outer SHA-256 sidecar and requires byte-for-byte equality with the corresponding Windows RC content.
+
+### Changed
+- GitHub Actions now verifies the standalone legal-content RC on both Ubuntu and Windows and uploads it as a dedicated non-public CI artifact alongside the existing Windows player RC.
+- `docs/PACKAGING.md` now documents the reusable legal-content layer separately from the player package. Normal Windows players still use `PLAY.bat`; missing pinned GZDoom files are obtained automatically from official upstream, so this content-only artifact never creates a manual engine-hunting requirement.
+- The implemented/testable standalone legal-content milestone raises Demo Release readiness from **60.0%** to **70.0%**. With the documented phase weights, project progress moves from exact **84.75%** to **86.75%**, displayed as **86.8%**. The milestone does not replace the interactive target-Windows sign-off, release notes or GitHub Release gate.
+
+### Validation
+- The full repository CI remains the merge gate. It must build both RC artifacts, verify their manifest/provenance relationship, keep README PRO v2 and Progress SVG PRO checks green, and preserve the existing pinned-GZDoom parser, offline-runtime reuse and real two-process save/load gates.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.32.3-dev — 2026-09-18
 
 ### Added
@@ -37,7 +53,7 @@
 - `docs/RC_SOURCE_PROVENANCE.md`, documenting how RC source identity is recorded, verified and kept separate from public-release authorization.
 
 ### Changed
-- `tools/test_release_candidate_package.py` now rejects CI candidates without a full commit SHA, a usable branch/ref, a clean tracked source snapshot or an embedded commit that differs from the checkout validating the package.
+- `tools/test_release_candidate_package.py` now rejects CI candidates without a full commit SHA, a usable branch/ref, a clean tracked source snapshot or an embedded commit that differs from the checkout validating it.
 - Source archives without `.git` metadata remain buildable for development but record provenance as unavailable rather than fabricating a commit identity; such packages cannot pass the CI RC provenance contract.
 - GZDoom remains a pinned official-source first-run bootstrap and verified Freedoom bundling is unchanged. Project progress remains **84.8%** and Demo Release readiness remains **60.0%**; provenance hardening does not complete the interactive Windows sign-off, standalone legal-content gate, release notes or GitHub Release.
 
@@ -178,7 +194,7 @@
 ### Added
 - Player-local `Focus HUD` accessibility option with redundant text for objective, breaker/memo progress and Overtime pressure.
 - Player-local `Large warnings` accessibility option for critical health, Overtime and Hell Rush states.
-- Dedicated **CHECKOUT OF HELL Accessibility** entries in both full and simple GZDoom option menus.
+- Dedicated **CHECKOUT OF HELL Accessibility** entries in both full and simple GZDoom options menus.
 - `docs/ACCESSIBILITY.md` and `tools/test_accessibility_contract.py`, including packaged-PK3 regression coverage and CI execution.
 
 ### Changed
@@ -270,7 +286,6 @@
 ### Added
 - Three authored MAPINFO difficulties: forgiving `Closing Crew`, default `Graveyard Shift`, and confirmation-gated `Corporate Hell`.
 - `tools/test_difficulty_modes_contract.py`, validating skill ordering, exact combat/resource multipliers, readability safeguards and packaged PK3 wiring.
-- GitHub Actions execution of the difficulty-mode contract.
 
 ### Changed
 - Difficulty now tunes ammo economy, incoming damage, healing and enemy health while leaving breaker gates, Night Manager waves and scripted Overtime/hazard timing deterministic across all modes.

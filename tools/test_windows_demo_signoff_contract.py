@@ -148,13 +148,14 @@ if "does not publish" not in doc.lower():
 if "windows_demo_signoff.ps1" not in wrapper.lower() or "does not" not in wrapper.lower():
     raise SystemExit("One-click Windows sign-off wrapper is not wired or lacks its no-release warning")
 
-# This iteration strengthens evidence validation only. It must not promote roadmap gates.
-if not re.search(r"Overall progress:\*\*\s*`\s*84\.8%`", roadmap):
-    raise SystemExit("Windows sign-off tooling must not inflate overall project progress")
-if "Demo Release readiness: 60.0%" not in roadmap:
-    raise SystemExit("Windows sign-off tooling must keep Demo Release readiness at verified 60.0%")
+# Release-gate checks are intentionally milestone-aware instead of freezing an old
+# percentage. Progress math belongs to the SWIR Progress SVG generator/check. This
+# contract protects the important semantic distinction: automated packaging may
+# complete independently, while the real human target-Windows sign-off, release
+# notes and GitHub Release must remain open until their own evidence exists.
+if "- [x] Standalone legal content package" not in roadmap:
+    raise SystemExit("ROADMAP must reflect the implemented/testable standalone legal-content package")
 for open_gate in (
-    "- [ ] Standalone legal content package",
     "- [ ] Release notes",
     "- [ ] GitHub Release",
 ):
@@ -162,6 +163,17 @@ for open_gate in (
         raise SystemExit(f"Windows sign-off tooling must not close release gate: {open_gate}")
 if "docs/WINDOWS_PLAYTEST.md" not in roadmap or "verify_windows_signoff_evidence.py" not in roadmap:
     raise SystemExit("ROADMAP must link both target-Windows sign-off and independent evidence verification")
+if "interactive target-Windows sign-off" not in roadmap:
+    raise SystemExit("ROADMAP must keep the human target-Windows sign-off as an explicit release gate")
+
+# README and ROADMAP must agree on ordinary numeric fallback while the dedicated
+# progress generator remains authoritative for weighted math and SVG geometry.
+readme_progress = re.search(r"Implemented/testable progress \| \*\*(\d+(?:\.\d+)?)%\*\*", readme)
+roadmap_progress = re.search(r"Overall progress:\*\*\s*`\s*(\d+(?:\.\d+)?)%`", roadmap)
+if not readme_progress or not roadmap_progress or readme_progress.group(1) != roadmap_progress.group(1):
+    raise SystemExit("README/ROADMAP project progress must remain synchronized")
+if "Public demo | **Not published yet**" not in readme:
+    raise SystemExit("README must not claim a public demo before human release gates pass")
 
 # SVG-only presentation remains enforced: numeric fallback is allowed, text-art
 # progress bars are not.

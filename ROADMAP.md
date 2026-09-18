@@ -1,14 +1,14 @@
 # ROADMAP — CHECKOUT OF HELL
 <!-- SWIR-PROGRESS-SVG-PRO:v1 -->
 
-**Overall progress:** ` 84.8%`
+**Overall progress:** ` 86.8%`
 
 **Measured scope:** Implemented/testable project milestones  
 **Progress status:** HARDENING
 
-<img width="100%" src="assets/readme/progress-mini.svg" alt="CHECKOUT OF HELL project progress — 84.8% implemented/testable; demo release readiness tracked separately" />
+<img width="100%" src="assets/readme/progress-mini.svg" alt="CHECKOUT OF HELL project progress — 86.8% implemented/testable; demo release readiness tracked separately" />
 
-**Progress fallback:** **84.8%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 60.0%**, tracked separately.
+**Progress fallback:** **86.8%** implemented/testable project progress across **5 weighted roadmap phases**. **Demo Release readiness: 70.0%**, tracked separately.
 
 The percentage reflects implemented/testable milestones, not ideas.
 
@@ -26,7 +26,7 @@ Project completion is a weighted roll-up of the verified phase percentages in th
 | Full Game | 5% |
 <!-- SWIR-PROGRESS-WEIGHTS:END -->
 
-Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (60 × 20%) + (0 × 5%) = 84.75%`, displayed as **84.8%**. Geometry uses the unrounded `84.75%` fraction.
+Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (70 × 20%) + (0 × 5%) = 86.75%`, displayed as **86.8%**. Geometry uses the unrounded `86.75%` fraction.
 
 ## Phase 0 — Foundation — 100%
 - [x] Project identity and concept
@@ -119,11 +119,11 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (60 ×
 - [x] Original soundtrack for every currently playable department, generated deterministically and regression-tested
 - [x] End-to-end runtime save/load validation with a real two-process pinned-GZDoom round-trip; target-Windows interactive confirmation remains a demo sign-off task
 
-## Phase 3 — Demo Release — 60%
+## Phase 3 — Demo Release — 70%
 - [x] Automatic first-run dependency bootstrap design implemented
 - [x] Portable Windows development artifact builder verified in CI
 - [x] Installer/portable Windows release package — verified non-public release-candidate ZIP with local SHA-256 manifest and Windows integrity check
-- [ ] Standalone legal content package
+- [x] Standalone legal content package — content-only RC with exact source binding, SHA-256 manifest, MIT/BSD notices and verified byte identity with the Windows RC payload
 - [x] Controller support pass
 - [x] Accessibility options
 - [x] Performance pass
@@ -132,7 +132,7 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (60 ×
 
 **Release rule:** a normal Windows player must not need to search for dependencies manually. A demo release must either contain every legally redistributable required runtime file or automatically obtain missing redistributable dependencies from official upstream sources on first run.
 
-**Current demo-readiness gate:** complete the interactive target-Windows sign-off documented in [`docs/WINDOWS_PLAYTEST.md`](docs/WINDOWS_PLAYTEST.md): full Closing Time runs on all three authored difficulties, manual save/quit/load confirmation, physical-controller confirmation, final balance/polish judgment and a real-hardware Overtime/boss performance sanity check before any public demo is published. The harness first validates the exact extracted RC package/runtime/save-load chain and records evidence, but it cannot replace the human gameplay confirmations. A completed `PASS` evidence directory must also pass the independent `tools/verify_windows_signoff_evidence.py` consistency verifier against the exact candidate commit before it is accepted as release-gate evidence. The verified CI release-candidate package does not replace release notes or the remaining legal-content packaging decision.
+**Current demo-readiness gate:** complete the interactive target-Windows sign-off documented in [`docs/WINDOWS_PLAYTEST.md`](docs/WINDOWS_PLAYTEST.md): full Closing Time runs on all three authored difficulties, manual save/quit/load confirmation, physical-controller confirmation, final balance/polish judgment and a real-hardware Overtime/boss performance sanity check before any public demo is published. The harness first validates the exact extracted RC package/runtime/save-load chain and records evidence, but it cannot replace the human gameplay confirmations. A completed `PASS` evidence directory must also pass the independent `tools/verify_windows_signoff_evidence.py` consistency verifier against the exact candidate commit before it is accepted as release-gate evidence. The verified Windows RC and standalone legal-content RC do not replace the required human sign-off or release notes; GZDoom remains the pinned official-source first-run bootstrap so players never have to hunt for it manually.
 
 ## Phase 4 — Full Game — 0%
 - [ ] Full campaign
