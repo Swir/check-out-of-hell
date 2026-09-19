@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.35.3-dev — 2026-09-19
+
+### Added
+- Closing Time now has one authored deep-Overtime side-lane security lockdown. After at least two breakers are restored and Overtime reaches stage 2, the outer-left checkout lane gets a two-second project-owned warning before a five-second shutter closure.
+
+### Changed
+- The first lockdown waits 14 seconds after its gates become active, then repeats on deterministic `28 / 20` second spacing as Overtime deepens. The anchor remains outside the central `x=-300..300` navigation corridor and away from the physical `y<=-350` clock-out trigger, so the main escape route stays readable.
+- Supervisor clearance immediately retires the lockdown watcher, including an armed warning, so no new shutter can interfere with the post-boss return leg. Project progress remains **86.8%** from exact weighted **86.75%**, while Demo Release readiness remains **70.0%**.
+
+### Validation
+- `tools/test_closing_time_pacing_contract.py` protects the single authored lockdown anchor, off-center/clock-out-safe placement, two-breaker + Overtime-stage gate, two-second warning, five-second closure, `28 / 20` cadence, supervisor-clearance retirement and packaged PK3/MAP01 wiring.
+- Full repository CI remains the merge gate, including build/smoke, pinned-GZDoom parser/runtime, real two-process save/load, Windows/legal-content RC, README PRO v2 and Progress SVG PRO checks. No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
+
 ## 0.35.2-dev — 2026-09-19
 
 ### Added
@@ -127,7 +140,7 @@
 - `FrozenBreakerResponseSpawner` uses sparse seven-tic polling, preserves pending/observed response state across normal save restores, retires on supervisor clearance, and never places a third immediate enemy at full power.
 
 ### Changed
-- The third breaker deliberately hands pressure to the existing full-power Night Manager and deterministic management-response systems instead of stacking another instant spawn on top of the boss transition, keeping the repair → combat escalation readable.
+- The third breaker deliberately hands pressure to the existing full-power Night Manager and deterministic management-response systems instead of stacking another instant side enemy on top of the boss transition, keeping the repair → combat escalation readable.
 - `tools/test_frozen_foods_contract.py` now protects DoomEdNum registration, exactly one side-lane response anchor, the three-second warning, first/second-breaker enemy sequence, clearance cleanup, full-power handoff and packaged MAP03/ZScript payload.
 - Project progress remains **86.8%** and Demo Release readiness remains **70.0%**. This is playable Frozen Foods encounter polish; it does not complete a weighted phase, the target-Windows human sign-off, release notes or a public release.
 
@@ -145,7 +158,7 @@
 
 ### Changed
 - The playable department chain is now `Closing Time -> Warehouse 13.5 -> Frozen Foods -> Closing Time`; the build, smoke test, soundtrack contract, CI workflow, README, roadmap and design/gameplay/music documentation all recognize the third playable department.
-- Frozen Foods deliberately reuses hardened breaker, Overtime, Night Manager response and physical clock-out systems instead of claiming an unvalidated new boss or random slippery-floor gimmick. Its department identity comes from route geometry, cold-storage dressing, optional exploration and original music while preserving fast readable combat.
+- Frozen Foods deliberately reuses hardened breaker, Overtime, Night Manager response and physical clock-out systems instead of inventing an unvalidated new boss or random slippery-floor gimmick. Its department identity comes from route geometry, cold-storage dressing, optional exploration and original music while preserving fast readable combat.
 - Project progress remains **86.8%** and Demo Release readiness remains **70.0%**. Completing the first playable MAP03 implementation checks the existing Frozen Foods roadmap milestone but does not retroactively invent a new phase percentage, mark any level polished, complete the target-Windows human sign-off, write release notes or create a public release.
 
 ### Validation
