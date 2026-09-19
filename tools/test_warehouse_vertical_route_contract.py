@@ -9,6 +9,32 @@ PK3 = ROOT / "dist" / "checkout-of-hell-prototype.pk3"
 if not PK3.exists():
     raise SystemExit("PK3 missing. Run: python tools/build.py")
 
+# The lift-to-boss handoff must remain readable: the authored MAP02 Regional Manager anchor now
+# uses the Warehouse-specific arrival spawner, which gives the player a deterministic four-second
+# visual/audio warning after the lift override before management materializes.
+mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
+warehouse_zscript = (GAME / "ZSCRIPT_WAREHOUSE").read_text(encoding="utf-8")
+if '17104 = "WarehouseRegionalManagerArrivalSpawner"' not in mapinfo:
+    raise SystemExit("Warehouse Regional Manager anchor is not registered to the warned arrival spawner")
+if '17104 = "CheckoutRegionalManagerSpawner"' in mapinfo:
+    raise SystemExit("Warehouse Regional Manager must not use the instant generic boss spawner")
+for marker in (
+    "class WarehouseRegionalManagerArrivalSpawner : Actor",
+    "bool arrivalArmed;",
+    "int arrivalTic;",
+    'p.CountInv("WarehouseDepartmentToken") < 1',
+    'p.CountInv("CheckoutFuse") < 3',
+    'p.CountInv("WarehouseLiftOverride") < 1',
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    "arrivalTic = Level.maptime + 35 * 4;",
+    'Actor.Spawn("OvertimeWarningFlash", Pos);',
+    'p.A_StartSound("coh/regionalphase", CHAN_AUTO);',
+    'Actor.Spawn("TeleportFog", Pos);',
+    'Actor manager = Actor.Spawn("RegionalManager", Pos);',
+):
+    if marker not in warehouse_zscript:
+        raise SystemExit(f"Warehouse Regional Manager arrival pacing is incomplete: {marker}")
+
 decorate = (GAME / "DECORATE_ENVIRONMENT").read_text(encoding="utf-8")
 for marker in (
     "actor WarehouseShelfBridge 17138",
@@ -126,6 +152,8 @@ for marker in (
 
 with zipfile.ZipFile(PK3, "r") as archive:
     runtime_decorate = archive.read("DECORATE").decode("utf-8")
+    runtime_zscript = archive.read("ZSCRIPT").decode("utf-8")
+    runtime_mapinfo = archive.read("MAPINFO").decode("utf-8")
     runtime_map = archive.read("maps/MAP02.wad")
     for marker in (
         "actor WarehouseShelfBridge 17138",
@@ -136,6 +164,15 @@ with zipfile.ZipFile(PK3, "r") as archive:
         if marker not in runtime_decorate:
             raise SystemExit(f"Packaged DECORATE lost Warehouse high-route marker: {marker}")
     for marker in (
+        "class WarehouseRegionalManagerArrivalSpawner : Actor",
+        "arrivalTic = Level.maptime + 35 * 4;",
+        'Actor manager = Actor.Spawn("RegionalManager", Pos);',
+    ):
+        if marker not in runtime_zscript:
+            raise SystemExit(f"Packaged ZSCRIPT lost Warehouse boss-arrival marker: {marker}")
+    if '17104 = "WarehouseRegionalManagerArrivalSpawner"' not in runtime_mapinfo:
+        raise SystemExit("Packaged MAPINFO lost the warned Warehouse Regional Manager registration")
+    for marker in (
         b"type = 17138",
         b"type = 17158",
         b"x = -580.0; y =  80.0; angle = 0; type = 17136",
@@ -145,5 +182,5 @@ with zipfile.ZipFile(PK3, "r") as archive:
         if marker not in runtime_map:
             raise SystemExit(f"Packaged MAP02 lost Warehouse optional-route marker: {marker!r}")
 
-print("Warehouse 13.5 vertical overstock + hidden Staff Room contract: PASS")
-print("The west-wall catwalk and breakable-door Staff Room add optional elevation, a shortcut and useful rewards while mandatory lanes remain untouched.")
+print("Warehouse 13.5 vertical overstock + hidden Staff Room + Regional Manager handoff contract: PASS")
+print("The optional west route and four-second warned boss arrival improve elevation, shortcuts and management pacing while mandatory lanes remain untouched.")

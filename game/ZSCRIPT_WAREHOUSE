@@ -1,7 +1,95 @@
 // CHECKOUT OF HELL - Warehouse 13.5 authored pallet-lane pressure.
-// This layer stays separate from the shared Overtime system so the warehouse can gain a distinctive
-// moving workplace hazard without changing the global pressure schedule or the Lockout/Tagout permit.
+// This layer stays separate from the shared Overtime system so the warehouse can gain distinctive
+// moving workplace hazards and a readable Regional Manager handoff without changing global pressure.
 // Two authored side lanes keep the center objective/clock-out corridor permanently available.
+
+// Freight-lift activation now gets a short, deterministic management-arrival warning instead of
+// placing The Regional Manager on the floor on the same interaction tick. The actor is still behind
+// the existing three-breaker + lift-override gate, keeps the authored boss anchor, survives saves
+// through normal actor serialization and cancels cleanly if supervisor clearance already exists.
+class WarehouseRegionalManagerArrivalSpawner : Actor
+{
+    bool arrivalArmed;
+    int arrivalTic;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP;
+        +NOSECTOR;
+        +NOGRAVITY;
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        arrivalArmed = false;
+        arrivalTic = 0;
+        nextCheck = 0;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("WarehouseDepartmentToken") < 1 ||
+            p.CountInv("CheckoutFuse") < 3 ||
+            p.CountInv("WarehouseLiftOverride") < 1)
+        {
+            return;
+        }
+
+        if (!arrivalArmed)
+        {
+            arrivalArmed = true;
+            arrivalTic = Level.maptime + 35 * 4;
+            Actor.Spawn("OvertimeWarningFlash", Pos);
+            p.A_StartSound("coh/regionalphase", CHAN_AUTO);
+            return;
+        }
+
+        if (Level.maptime < arrivalTic)
+        {
+            return;
+        }
+
+        Actor.Spawn("TeleportFog", Pos);
+        Actor manager = Actor.Spawn("RegionalManager", Pos);
+        if (manager)
+        {
+            manager.A_StartSound("coh/regionalphase", CHAN_BODY);
+            Destroy();
+        }
+    }
+}
 
 class WarehousePalletLaneWarning : Actor
 {
