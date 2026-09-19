@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.35.1-dev — 2026-09-19
+
+### Added
+- A fifth deterministic project-owned theme, `D_COH05.mid` — **Customer Service — Please Hold Forever**. Its deliberately too-polite hold-music motif sits over uneasy drones, sparse service-bell chimes and restrained office-machine percussion so MAP05 has its own identity without masking the twelve-second refund-audit combat cues.
+
+### Changed
+- `MAP05 — Customer Service` now uses `D_COH05` instead of reusing Electronics' `D_COH04` theme.
+- `tools/test_music_contract.py` now protects one distinct authored soundtrack mapping for every currently playable department in both source and packaged MAPINFO, while keeping deterministic MIDI structure and package-byte checks.
+- `docs/MUSIC.md` now documents all five playable-department themes. Project progress remains **86.8%** from exact weighted **86.75%**, and Demo Release readiness remains **70.0%**; filling this presentation/content gap does not complete a weighted milestone or target-Windows sign-off.
+
+### Validation
+- Full repository CI remains the merge gate: deterministic soundtrack regeneration/package validation, pinned-GZDoom parser/runtime, real two-process save/load, Windows/legal-content RC, README PRO v2 and Progress SVG PRO must stay green.
+- No proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.35.0-dev — 2026-09-19
 
 ### Added
