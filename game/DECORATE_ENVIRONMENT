@@ -270,3 +270,25 @@ actor WarehouseStockPile 17136
         Stop
     }
 }
+
+// Closing Time deep Overtime can temporarily seal one authored side checkout lane without blocking
+// the central navigation/clock-out corridor. Reuse the project-owned staff-shutter presentation and
+// interaction cue; five seconds of collision creates route pressure without becoming a progression trap.
+actor ClosingTimeOvertimeShutter
+{
+    Tag "Closing Time Overtime Shutter"
+    Radius 96
+    Height 72
+    Scale 2.0
+    +SOLID
+    +NOGRAVITY
+
+    States
+    {
+    Spawn:
+        COSH A 1 Bright A_PlaySound("coh/shutter", CHAN_BODY)
+        COSH A 175 Bright
+        COSH A 1 Bright A_PlaySound("coh/shutter", CHAN_BODY)
+        Stop
+    }
+}
