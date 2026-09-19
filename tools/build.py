@@ -97,6 +97,7 @@ def zscript_payload() -> bytes:
     """Compose shift logic, department helpers, post-boss polish and opt-in accessibility."""
     chunks = [
         (GAME / "ZSCRIPT").read_text(encoding="utf-8").rstrip(),
+        (GAME / "ZSCRIPT_WAREHOUSE").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_FROZEN").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ELECTRONICS").read_text(encoding="utf-8").rstrip(),
