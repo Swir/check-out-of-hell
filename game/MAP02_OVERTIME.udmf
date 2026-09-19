@@ -3,11 +3,11 @@
 // control, Regional Manager spawn and Damaged Goods cage. The shared spawner escalates from
 // warnings to readable floor arcs and retires as soon as supervisor clearance is recorded.
 thing { x = -500.0; y = -40.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =  500.0; y = -40.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 500.0; y = -40.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Authored moving-pallet lanes for deep Overtime. The west anchor launches northbound from y=-300;
 // the east anchor launches southbound from y=300. Both run at x=+/-300, leaving the permanent
 // central x=-180..180 objective/clock-out corridor open. The ZScript spawner supplies a two-second
 // warning and deterministic stagger before every pallet.
-thing { x = -300.0; y = -300.0; angle = 90;  type = 17157; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =  300.0; y =  300.0; angle = 270; type = 17157; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -300.0; y = -300.0; angle = 90; type = 17157; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 300.0; y = 300.0; angle = 270; type = 17157; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
