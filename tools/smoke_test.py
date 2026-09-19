@@ -87,7 +87,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
     packaged_decorate = archive.read("DECORATE").decode("utf-8")
     for marker in (
         "actor EmergencyMop",
-        "actor CheckoutOvertimeWarning",
+        "actor OvertimeWarningFlash",
         "actor FrozenCompressorReset",
         "actor ElectronicsNetworkReboot",
     ):
