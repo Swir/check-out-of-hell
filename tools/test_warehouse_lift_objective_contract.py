@@ -236,10 +236,6 @@ if map02.count("type = 17137") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one optional full-power safety-lockout anchor")
 if map02.count("type = 17132") != 1:
     raise SystemExit("Warehouse 13.5 needs exactly one post-clear return-guide anchor")
-if map02.count("type = 17136") != 4:
-    raise SystemExit("Warehouse 13.5 damaged-goods nook must be sealed by exactly four breakable stock piles")
-if map02.count("type = 17130") != 1 or map02.count("type = 17126") != 1:
-    raise SystemExit("Warehouse damaged-goods nook must contain exactly one label stash and one break snack")
 if "type = 17006" in map02:
     raise SystemExit("Warehouse 13.5 must not pre-place the Regional Manager")
 
@@ -266,6 +262,8 @@ if abs(float(safety_match.group(1))) < 320.0:
 if not guide_match or abs(float(guide_match.group(1))) > 100.0 or float(guide_match.group(2)) > -280.0:
     raise SystemExit("Warehouse post-clear guide must remain on the front entry/clock-out approach")
 
+# Scope the Damaged Goods assertions to its authored east-side cage so other optional stock/reward
+# routes can safely reuse the same project-owned actors without weakening this objective contract.
 stock_matches = re.findall(r"x = ([0-9.]+); y = 116\.0; angle = 0; type = 17136", map02)
 if len(stock_matches) != 4:
     raise SystemExit("Warehouse stock piles must form the authored four-pile damaged-goods barrier at y=116")
