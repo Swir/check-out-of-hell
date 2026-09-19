@@ -68,3 +68,50 @@ actor CustomerServiceQueueReset : CustomInventory
         Stop
     }
 }
+
+// Customer Service gets one authored department-specific escalation without adding a new art
+// dependency: the Returns Policy Enforcer reuses the project's original Self-Checkout presentation
+// but behaves as a tougher red-tape miniboss. The three-way projectile fan is visually readable,
+// uses already-original Corporate Red Tape art, and does not alter shared Night Manager logic.
+actor ReturnsPolicyEnforcer : AngrySelfCheckout
+{
+    Tag "Returns Policy Enforcer"
+    Health 220
+    Speed 12
+    PainChance 95
+
+    States
+    {
+    Spawn:
+        SCKO A 10 A_Look
+        Loop
+    See:
+        SCKO A 4 A_Chase
+        SCKO B 4 A_Chase
+        SCKO C 4 A_Chase
+        SCKO D 4 A_Chase
+        Loop
+    Missile:
+        SCKO E 5 A_FaceTarget
+        SCKO F 4 Bright A_PlaySound("coh/checkoutattack", CHAN_WEAPON)
+        SCKO F 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 28, 0, -10)
+        SCKO F 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 28, 0, 0)
+        SCKO F 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 28, 0, 10)
+        SCKO E 6
+        Goto See
+    Pain:
+        SCKO G 3
+        SCKO G 3 A_Pain
+        Goto See
+    Death:
+        SCKO H 5
+        SCKO I 5 A_NoBlocking
+        SCKO J -1
+        Stop
+    Raise:
+        SCKO J 5
+        SCKO I 5
+        SCKO H 5
+        Goto See
+    }
+}
