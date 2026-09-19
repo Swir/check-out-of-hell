@@ -88,6 +88,7 @@ def decorate_payload() -> bytes:
         (GAME / "DECORATE_ENVIRONMENT").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_FROZEN").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_ELECTRONICS").read_text(encoding="utf-8").rstrip(),
+        (GAME / "DECORATE_CUSTOMER_SERVICE").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
 
@@ -99,6 +100,7 @@ def zscript_payload() -> bytes:
         (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_FROZEN").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ELECTRONICS").read_text(encoding="utf-8").rstrip(),
+        (GAME / "ZSCRIPT_CUSTOMER_SERVICE").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ACCESSIBILITY").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
