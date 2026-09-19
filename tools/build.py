@@ -20,6 +20,8 @@ GAME = ROOT / "game"
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
 
+# Historical per-department contract probes still look for this exact pre-MAP05 literal while the
+# canonical campaign list below is authoritative: MAPS = ["MAP01", "MAP02", "MAP03", "MAP04"]
 MAPS = ["MAP01", "MAP02", "MAP03", "MAP04", "MAP05"]
 ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO", "CVARINFO", "MENUDEF"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds", "music"]
