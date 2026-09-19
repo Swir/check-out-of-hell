@@ -49,6 +49,13 @@ for marker in (
     'CountInv("WarehouseDepartmentToken")',
     'CountInv("WarehouseLiftOverride")',
     '"POWER %d/3  //  LIFT %s"',
+    'CountInv("ElectronicsDepartmentToken")',
+    'CountInv("ElectronicsRebootPending")',
+    '"ELECTRONICS %d/3  //  MEMOS %d/3"',
+    '"OBJECTIVE  RESTORE SHOWROOM CIRCUITS  %d/2"',
+    '"OBJECTIVE  START STORE NETWORK REBOOT"',
+    '"OBJECTIVE  HOLD STORE NETWORK REBOOT"',
+    '"OBJECTIVE  RETURN TO ELECTRONICS ENTRY"',
 ):
     if marker not in access:
         raise SystemExit(f"Accessibility overlay marker missing: {marker}")
@@ -93,6 +100,9 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "CheckoutShiftDirector.GetDepartmentObjectiveText",
         'CountInv("WarehouseDepartmentToken")',
         'CountInv("WarehouseLiftOverride")',
+        'CountInv("ElectronicsDepartmentToken")',
+        'CountInv("ElectronicsRebootPending")',
+        '"OBJECTIVE  HOLD STORE NETWORK REBOOT"',
     ):
         if marker not in packed_zscript:
             raise SystemExit(f"Packaged accessibility HUD lost department-aware objective support: {marker}")
@@ -100,4 +110,4 @@ with zipfile.ZipFile(PK3, "r") as archive:
         raise SystemExit("Built PK3 still contains rapid fluorescent flash cadence")
 
 print("Accessibility contract: PASS")
-print("Optional focus HUD and large textual warnings are packaged, department-aware objectives are preserved, and the fluorescent effect uses a slower default cadence.")
+print("Optional focus HUD and large textual warnings are packaged, Warehouse/Electronics department-aware objectives are preserved, and the fluorescent effect uses a slower default cadence.")
