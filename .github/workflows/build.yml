@@ -121,6 +121,9 @@ jobs:
       - name: Electronics playable department contract test
         run: python tools/test_electronics_contract.py
 
+      - name: Customer Service refund audit contract test
+        run: python tools/test_customer_service_contract.py
+
       - name: Bootstrap contract test
         run: python tools/test_bootstrap_contract.py
 

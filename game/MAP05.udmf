@@ -73,11 +73,14 @@ thing { x = -175.0; y = -355.0; angle = 0; type = 2001; skill1 = true; skill2 = 
 thing { x =  175.0; y = -355.0; angle = 180; type = 2002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =    0.0; y = -245.0; angle = 0; type = 17010; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
-// Three service-desk power repairs are the non-combat backbone. Their separation makes the player
-// traverse the full queue twice before management can enter, rather than camping one arena.
+// Two service-desk power repairs make the player traverse the full serpentine queue. Once both are
+// restored, the rear Refund Authorization Terminal replaces the old third loose fuse with a real
+// twelve-second hold objective. The audit sequence enters from the left rear lane and grants the
+// authoritative third CheckoutFuse only after the player survives Corporate's verification queue.
 thing { x = -655.0; y = -205.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  650.0; y =   80.0; angle = 180; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =    0.0; y =  425.0; angle = 180; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =    0.0; y =  425.0; angle = 180; type = 17151; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -615.0; y =  360.0; angle = 0; type = 17152; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Initial hazards sell the department fantasy without filling the central lane with unavoidable fire.
 thing { x = -570.0; y = -360.0; angle = 0; type = 17001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
