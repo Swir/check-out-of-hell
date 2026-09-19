@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import struct
 import tempfile
 import zipfile
@@ -16,6 +17,14 @@ TRACKS = {
     "D_COH02.mid": b"Warehouse 13.5 - Forklift Graveyard",
     "D_COH03.mid": b"Frozen Foods - Compressor Choir",
     "D_COH04.mid": b"Electronics - Dead Pixel Choir",
+    "D_COH05.mid": b"Customer Service - Please Hold Forever",
+}
+MAP_TRACKS = {
+    "MAP01": "D_COH01",
+    "MAP02": "D_COH02",
+    "MAP03": "D_COH03",
+    "MAP04": "D_COH04",
+    "MAP05": "D_COH05",
 }
 LUMPS = tuple(filename.removesuffix(".mid") for filename in TRACKS)
 
@@ -26,6 +35,20 @@ mapinfo = MAPINFO.read_text(encoding="utf-8")
 for lump_name in LUMPS:
     if f'music = "{lump_name}"' not in mapinfo:
         raise SystemExit(f"MAPINFO is not wired to original soundtrack lump {lump_name}")
+
+if len(set(MAP_TRACKS.values())) != len(MAP_TRACKS):
+    raise SystemExit("Playable departments must not share soundtrack mappings")
+
+for map_name, lump_name in MAP_TRACKS.items():
+    block = re.search(
+        rf'map\s+{re.escape(map_name)}\s+"[^"]+"\s*\{{(.*?)\}}',
+        mapinfo,
+        flags=re.DOTALL,
+    )
+    if not block:
+        raise SystemExit(f"MAPINFO is missing playable department block {map_name}")
+    if f'music = "{lump_name}"' not in block.group(1):
+        raise SystemExit(f"{map_name} must use its authored soundtrack lump {lump_name}")
 
 for inherited in ("$MUSIC_RUNNIN", "$MUSIC_STALKS"):
     if inherited in mapinfo:
@@ -99,8 +122,13 @@ with zipfile.ZipFile(PK3, "r") as archive:
         if packaged != expected:
             raise SystemExit(f"Packaged {archive_name} differs from deterministic generated source")
 
-    for lump_name in LUMPS:
-        if f'music = "{lump_name}"' not in packaged_mapinfo:
-            raise SystemExit(f"Packaged MAPINFO lost soundtrack mapping for {lump_name}")
+    for map_name, lump_name in MAP_TRACKS.items():
+        block = re.search(
+            rf'map\s+{re.escape(map_name)}\s+"[^"]+"\s*\{{(.*?)\}}',
+            packaged_mapinfo,
+            flags=re.DOTALL,
+        )
+        if not block or f'music = "{lump_name}"' not in block.group(1):
+            raise SystemExit(f"Packaged MAPINFO lost soundtrack mapping {map_name} -> {lump_name}")
 
 print("Original soundtrack contract: PASS")
