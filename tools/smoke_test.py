@@ -9,12 +9,13 @@ DECORATE = ROOT / "game" / "DECORATE"
 MAPINFO = ROOT / "game" / "MAPINFO"
 ZSCRIPT = ROOT / "game" / "ZSCRIPT"
 
-PLAYABLE_MAPS = ("MAP01", "MAP02", "MAP03", "MAP04")
+PLAYABLE_MAPS = ("MAP01", "MAP02", "MAP03", "MAP04", "MAP05")
 EXPECTED_CHAIN = {
     "MAP01": "MAP02",
     "MAP02": "MAP03",
     "MAP03": "MAP04",
-    "MAP04": "MAP01",
+    "MAP04": "MAP05",
+    "MAP05": "MAP01",
 }
 MAP_LAYER_SUFFIXES = ("OVERTIME", "ENVIRONMENT")
 
@@ -210,8 +211,20 @@ if map04.count("type = 17149") != 1 or map04.count("type = 17150") != 1:
 if "type = 17003" in map04:
     raise SystemExit("MAP04 must not pre-place Night Manager before electronics power restoration")
 
+map05 = (ROOT / "game" / "MAP05.udmf").read_text(encoding="utf-8")
+if map05.count("type = 17111") != 3:
+    raise SystemExit("MAP05 must use exactly three Customer Service power repairs")
+if map05.count("type = 17101") != 1:
+    raise SystemExit("MAP05 must contain exactly one gated Night Manager spawner")
+if map05.count("type = 17106") < 2:
+    raise SystemExit("MAP05 must contain at least two telegraphed Overtime hazard anchors")
+if map05.count("type = 17105") < 3:
+    raise SystemExit("MAP05 must retain the three optional corporate memo secrets")
+if "type = 17003" in map05:
+    raise SystemExit("MAP05 must not pre-place Night Manager before Customer Service power restoration")
+
 print("Smoke test: PASS")
 print(
     "PK3 structure, exact packaged UDMF parity, campaign topology and staged objective loops "
-    "for MAP01/MAP02/MAP03/MAP04 look valid."
+    "for MAP01/MAP02/MAP03/MAP04/MAP05 look valid."
 )
