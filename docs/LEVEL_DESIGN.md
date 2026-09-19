@@ -59,6 +59,8 @@ Current prototype includes:
 - project-owned freight signage, restock clutter, readable slow-failing lights and loading-bay dressing placed off the central objective/combat lane,
 - an optional damaged-goods cage whose four project-owned shootable stock piles trade ammunition for a label stash and break snack without hiding mandatory progression,
 - an optional full-power `Lockout/Tagout Permit` on the opposite rear side lane that isolates future Warehouse electrical floor arcs without disabling hostile Overtime reinforcements or management pressure,
+- two authored deep-Overtime moving-pallet lanes on the outer warehouse routes; after at least two circuits are live and Overtime reaches stage 2, the west/east lanes arm on staggered `12 / 27` second starts, telegraph for two seconds and repeat on deterministic `30 / 22` second spacing while the central `x=-180..180` objective/clock-out corridor stays open,
+- supervisor clearance retires future pallet launches, while Lockout/Tagout remains scoped to electrical floor arcs and never disables moving equipment,
 - project-owned retail surfaces and an original department soundtrack.
 
 The first Warehouse 13.5 objective sequence is now explicit: restore all three circuits, cross to the
@@ -77,11 +79,18 @@ without becoming a key hunt or muddying the central lift/Regional Manager sightl
 The left-side Lockout/Tagout station adds a second workplace choice after full power. Taking the permit
 retires only future Warehouse electrical floor arcs, representing a useful system repair rather than a
 magic combat-off button. Ambient Overtime enemy reinforcements, the freight-lift objective, management
-response waves and The Regional Manager all remain active, so the player trades a short detour for a
-safer floor while preserving the department's combat pressure.
+response waves, moving pallet traffic and The Regional Manager all remain active, so the player trades
+a short detour for a safer floor while preserving the department's combat pressure.
+
+Deep Overtime now adds predictable equipment movement instead of random lane punishment. Once at least
+two warehouse circuits are live and Overtime reaches stage 2, the west and east outer lanes arm at
+staggered `12 / 27` second offsets. Every Runaway Restock Pallet receives a full two-second warning,
+then travels only along its authored Y-axis lane at `x=-300` or `x=300`. Stage 2 repeats every 30
+seconds per lane and Hell Rush tightens that to 22 seconds. The permanent central `x=-180..180`
+objective/clock-out corridor therefore never closes, and supervisor clearance retires an armed warning
+or future launch before the return-to-entry leg.
 
 Remaining Warehouse 13.5 polish:
-- authored moving pallet hazards that communicate their lane before becoming dangerous,
 - stronger vertical shelf routes instead of a mostly flat combat floor,
 - a hidden staff-room shortcut/reward loop,
 - department-specific encounter pacing around the lift activation and Regional Manager phases,

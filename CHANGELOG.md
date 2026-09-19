@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.35.4-dev — 2026-09-19
+
+### Added
+- Warehouse 13.5 now has two authored deep-Overtime moving-pallet lanes. Once at least two warehouse circuits are live and Overtime reaches stage 2, the west/east outer lanes arm on staggered `12 / 27` second starts and every Runaway Restock Pallet receives a full two-second warning before entering its lane.
+- The pallet anchors stay at `x=-300` and `x=300`, travel only along their authored Y-axis routes and therefore preserve the permanent central `x=-180..180` objective/clock-out corridor.
+
+### Changed
+- Stage 2 pallet traffic repeats every `30` seconds per lane and Hell Rush tightens that to `22` seconds. Supervisor clearance immediately retires future launches, including an armed warning before the final return-to-entry leg.
+- The optional Warehouse `Lockout / Tag Out` permit remains scoped to electrical floor arcs only; it does not disable moving pallet traffic, ambient hostile Overtime, management waves, the freight-lift objective or The Regional Manager.
+- README and `docs/LEVEL_DESIGN.md` now describe the implemented moving-pallet system and remove it from the remaining Warehouse polish list. Project progress remains **86.8%** from exact weighted **86.75%**, while Demo Release readiness remains **70.0%**.
+
+### Validation
+- `tools/test_warehouse_lift_objective_contract.py` protects exactly two authored pallet anchors, the permanent safe central corridor, the two-circuit + Overtime-stage gate, two-second warning, staggered starts, `30 / 22` cadence, supervisor-clearance retirement, Lockout/Tagout separation and packaged MAP02/ZScript wiring.
+- Full repository CI remains the merge gate, including build/smoke, Overtime, README PRO v2, Progress SVG PRO, pinned-GZDoom parser/runtime, real two-process save/load and Windows/legal-content RC checks. No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
+
 ## 0.35.3-dev — 2026-09-19
 
 ### Added
