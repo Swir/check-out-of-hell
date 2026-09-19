@@ -118,6 +118,6 @@ map MAP05 "Customer Service"
     levelnum = 5
     next = "MAP01"
     sky1 = "SKY1"
-    music = "D_COH04"
+    music = "D_COH05"
     nointermission
 }
