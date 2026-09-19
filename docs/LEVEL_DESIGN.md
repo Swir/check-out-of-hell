@@ -172,20 +172,58 @@ movement without becoming mandatory. Taking it removes only this Electronics-spe
 Overtime enemies, shared electrical anchors and management continue normally.
 
 This is playable development content, not a polished final campaign level. Future work should deepen showroom
-secrets, add department-specific objective/HUD wording and diversify hardware encounters only after real play
-confirms that the alternating display walls stay readable during Overtime and the Night Manager sequence.
+secrets and diversify hardware encounters only after real play confirms that the alternating display walls
+stay readable during Overtime and the Night Manager sequence.
 
 Remaining Electronics polish:
 - target-machine balance/readability playtesting across all three difficulty modes,
-- department-specific HUD phrasing for the network reboot and final return leg,
 - stronger showroom secrets and useful joke interactions without hiding mandatory power work,
 - final lighting/geometry and encounter polish after the current route survives real play.
 
-## Later departments
+## MAP05 — Customer Service
+Purpose: a tighter complaint-desk department built around serpentine queue sightlines, a real refund-authorization task and escalating customer-pressure jokes that remain readable combat mechanics.
 
-### Customer Service
-Queue barriers, returns counters and escalating complaint-themed encounters create a tighter,
-more comedic combat space before management access opens.
+Current prototype includes:
+- a long serpentine queue that shapes movement without blocking the central return lane,
+- two mandatory service-desk circuits on opposite queue routes,
+- a physical rear `Refund Authorization Terminal` that appears after both circuits are restored,
+- a save-safe twelve-second Corporate verification hold instead of an instant third power token,
+- an authored outer-queue audit sequence: Angry Self-Checkout at 2 seconds, warnings at 5 and 9 seconds, Security Price Scanner at 7 seconds and the Returns Policy Enforcer at 10 seconds,
+- the final authoritative `CheckoutFuse 3/3` only at 12 seconds, keeping the shared Night Manager/full-power/clock-out gates authoritative,
+- the **Returns Policy Enforcer** miniboss with 220 health, project-owned Self-Checkout presentation and a readable three-way Corporate Red Tape volley,
+- a complaint-queue Overtime layer that starts only after a desk circuit is live, waits 20 seconds, warns for two seconds and then calls stage-scaled extra customers at deterministic `38 / 30 / 22` second spacing,
+- an eight-second complaint-queue recovery window after the refund audit so the department-specific pressure systems do not stack unfairly,
+- an optional opposite-side `Take-A-Number Queue Reset` that suppresses only future complaint-queue calls while standard Overtime and management pressure remain active,
+- three optional Corporate Compliance Memos, an optional stash and the existing shared recovery/clock-out systems,
+- the original deterministic **Customer Service — Please Hold Forever** soundtrack.
+
+The refund terminal turns a workplace joke into a real objective without forking progression state. The
+player restores the two service circuits, crosses to the rear desk and deliberately starts the twelve-second
+audit. The first two responses are familiar retail threats, but the final 10-second answer is the
+Customer Service-specific Returns Policy Enforcer rather than another Cart of Doom. Its three-way red-tape
+fan raises pressure while reusing only project-owned presentation; it never owns a fuse, supervisor token or
+separate completion flag. Surviving until 12 seconds grants the same final `CheckoutFuse` consumed by the
+shared full-power and Night Manager logic.
+
+Customer Service's extra Overtime layer is deliberately separate from the fixed refund audit. Once a desk
+circuit is live and Overtime begins, one authored outer queue lane can call an additional hostile customer
+after a 20-second grace period and two-second warning. The response escalates from Angry Self-Checkout to
+Security Price Scanner to Cart of Doom as Overtime deepens. While the audit is active the complaint caller
+pauses, then gives the player eight seconds to recover before it can resume. Taking the optional Queue Reset
+retires only this department-specific caller; it does not disable global Overtime, standard floor hazards,
+management waves or the Night Manager.
+
+This is playable development content, not a polished final campaign level. Future work should strengthen
+Customer Service-specific visual dressing, secrets and encounter variety only after target-machine playtests
+confirm that the queue remains readable during the refund hold, complaint calls and Night Manager pressure.
+
+Remaining Customer Service polish:
+- target-machine balance/readability playtesting across all three difficulty modes, especially the 10-second Enforcer handoff and complaint-queue spacing,
+- stronger returns-counter/customer-service presentation without replacing project-owned combat assets with proprietary material,
+- more useful joke interactions and secrets that do not hide the two service circuits or refund terminal,
+- final lighting/geometry and encounter polish after the current route survives real play.
+
+## Later departments
 
 ### Management Floor
 The campaign's corporate nightmare: cleaner geometry, increasingly absurd executive hazards,
