@@ -71,16 +71,50 @@ stash = re.findall(
 if stash != [("-590.0", "190.0", "96.0")]:
     raise SystemExit(f"Warehouse high-route stash drifted: {stash!r}")
 
-# No mandatory power/lift/boss/safety actor may be moved onto the optional high route.
+# The hidden Staff Room is a real same-sector room with two 80-unit doorway gaps. The catwalk passes
+# through both gaps at x=-590, while one shootable stock pile seals only the floor-level south entrance.
+vertex_pattern = re.compile(r"vertex\s*\{\s*x\s*=\s*(-?[0-9.]+);\s*y\s*=\s*(-?[0-9.]+);\s*\}")
+vertices = {(float(x), float(y)) for x, y in vertex_pattern.findall(map02)}
+required_staff_vertices = {
+    (-640.0, 80.0), (-620.0, 80.0), (-540.0, 80.0), (-480.0, 80.0),
+    (-480.0, 220.0), (-540.0, 220.0), (-620.0, 220.0), (-640.0, 220.0),
+}
+if not required_staff_vertices.issubset(vertices):
+    raise SystemExit("Warehouse hidden Staff Room geometry drifted")
+
+for marker in (
+    "linedef { v1 = 7;  v2 = 8;  sidefront = 8;  sideback = 9;  blocking = true; }",
+    "linedef { v1 = 9;  v2 = 10; sidefront = 10; sideback = 11; blocking = true; }",
+    "linedef { v1 = 10; v2 = 11; sidefront = 12; sideback = 13; blocking = true; }",
+    "linedef { v1 = 11; v2 = 12; sidefront = 14; sideback = 15; blocking = true; }",
+    "linedef { v1 = 13; v2 = 14; sidefront = 16; sideback = 17; blocking = true; }",
+):
+    if marker not in map02:
+        raise SystemExit(f"Warehouse hidden Staff Room wall/gap layout drifted: {marker}")
+
+thing_pattern = re.compile(
+    r"x\s*=\s*(-?[0-9.]+);\s*y\s*=\s*(-?[0-9.]+);(?:\s*height\s*=\s*[0-9.]+;)?\s*angle\s*=\s*[0-9]+;\s*type\s*=\s*([0-9]+)"
+)
+things = [(float(x), float(y), int(actor_type)) for x, y, actor_type in thing_pattern.findall(map02)]
+if (-580.0, 80.0, 17136) not in things:
+    raise SystemExit("Warehouse hidden Staff Room lost its shootable ground-level entrance")
+if (-520.0, 140.0, 17131) not in things or (-520.0, 180.0, 17130) not in things:
+    raise SystemExit("Warehouse hidden Staff Room lost its useful optional rewards")
+
+# No mandatory power/lift/boss/safety actor may be moved onto the optional high route or into the room.
 for mandatory_type in (17111, 17133, 17104, 17137):
     pattern = re.compile(
         rf"x\s*=\s*(-?[0-9.]+);\s*y\s*=\s*(-?[0-9.]+);(?:\s*height\s*=\s*[0-9.]+;)?\s*angle\s*=\s*[0-9]+;\s*type\s*=\s*{mandatory_type}"
     )
-    for x_text, _y_text in pattern.findall(map02):
-        if float(x_text) <= -550.0:
+    for x_text, y_text in pattern.findall(map02):
+        x = float(x_text)
+        y = float(y_text)
+        if x <= -550.0:
             raise SystemExit(f"Mandatory Warehouse type {mandatory_type} moved onto the optional catwalk")
+        if -640.0 <= x <= -480.0 and 80.0 <= y <= 220.0:
+            raise SystemExit(f"Mandatory Warehouse type {mandatory_type} moved into the hidden Staff Room")
 
-# Existing route guarantees remain authoritative while the new route adds optional elevation.
+# Existing route guarantees remain authoritative while the new routes add optional elevation/shortcut value.
 for marker in (
     "x = 0.0; y = 280.0; angle = 270; type = 17133",
     "x = 0.0; y = 390.0; angle = 270; type = 17104",
@@ -88,7 +122,7 @@ for marker in (
     "x = 0.0; y = -300.0; angle = 90; type = 17132",
 ):
     if marker not in map02:
-        raise SystemExit(f"Warehouse core route moved while adding optional elevation: {marker}")
+        raise SystemExit(f"Warehouse core route moved while adding optional routes: {marker}")
 
 with zipfile.ZipFile(PK3, "r") as archive:
     runtime_decorate = archive.read("DECORATE").decode("utf-8")
@@ -101,9 +135,15 @@ with zipfile.ZipFile(PK3, "r") as archive:
     ):
         if marker not in runtime_decorate:
             raise SystemExit(f"Packaged DECORATE lost Warehouse high-route marker: {marker}")
-    for marker in (b"type = 17138", b"type = 17158"):
+    for marker in (
+        b"type = 17138",
+        b"type = 17158",
+        b"x = -580.0; y =  80.0; angle = 0; type = 17136",
+        b"x = -520.0; y = 140.0; angle = 0; type = 17131",
+        b"x = -520.0; y = 180.0; angle = 0; type = 17130",
+    ):
         if marker not in runtime_map:
-            raise SystemExit(f"Packaged MAP02 lost Warehouse high-route marker: {marker!r}")
+            raise SystemExit(f"Packaged MAP02 lost Warehouse optional-route marker: {marker!r}")
 
-print("Warehouse 13.5 vertical overstock route contract: PASS")
-print("Ten fixed west-wall bridge stacks create an optional elevated shortcut with a project-owned ammo stash while mandatory lanes remain untouched.")
+print("Warehouse 13.5 vertical overstock + hidden Staff Room contract: PASS")
+print("The west-wall catwalk and breakable-door Staff Room add optional elevation, a shortcut and useful rewards while mandatory lanes remain untouched.")
