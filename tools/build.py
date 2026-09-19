@@ -20,7 +20,7 @@ GAME = ROOT / "game"
 DIST = ROOT / "dist"
 DIST.mkdir(exist_ok=True)
 
-MAPS = ["MAP01", "MAP02", "MAP03", "MAP04"]
+MAPS = ["MAP01", "MAP02", "MAP03", "MAP04", "MAP05"]
 ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO", "CVARINFO", "MENUDEF"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds", "music"]
 MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]
