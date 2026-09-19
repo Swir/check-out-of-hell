@@ -10,6 +10,7 @@ MAP04 = GAME / "MAP04.udmf"
 MAP04_OVERTIME = GAME / "MAP04_OVERTIME.udmf"
 MAPINFO = GAME / "MAPINFO"
 BUILD = ROOT / "tools" / "build.py"
+CORE_ZSCRIPT = GAME / "ZSCRIPT"
 ZSCRIPT = GAME / "ZSCRIPT_ELECTRONICS"
 DECORATE = GAME / "DECORATE_ELECTRONICS"
 PRESENTATION = ROOT / "tools" / "generate_presentation_assets.py"
@@ -21,6 +22,7 @@ source_map = MAP04.read_text(encoding="utf-8")
 overtime_map = MAP04_OVERTIME.read_text(encoding="utf-8")
 mapinfo = MAPINFO.read_text(encoding="utf-8")
 build_source = BUILD.read_text(encoding="utf-8")
+core_zscript = CORE_ZSCRIPT.read_text(encoding="utf-8")
 zscript = ZSCRIPT.read_text(encoding="utf-8")
 decorate = DECORATE.read_text(encoding="utf-8")
 presentation = PRESENTATION.read_text(encoding="utf-8")
@@ -129,6 +131,8 @@ for marker in (
     'p.A_TakeInventory("CorporateMemo", 3);',
     'p.A_TakeInventory("ElectronicsDisplayKillSwitch", 1);',
     'p.A_TakeInventory("ElectronicsRebootPending", 1);',
+    'p.A_GiveInventory("ElectronicsDepartmentToken", 1);',
+    "nextCheck = Level.maptime + 7;",
     "responseTic = Level.maptime + 35 * 3;",
     'Actor.Spawn("ScannerTurret", Pos);',
     'Actor.Spawn("AngrySelfCheckout", Pos);',
@@ -156,6 +160,21 @@ for marker in (
 ):
     require(zscript, marker, "Electronics ZScript behavior")
 
+for marker in (
+    'p.A_TakeInventory("ElectronicsDepartmentToken", 1);',
+    'bool electronics = p.CountInv("ElectronicsDepartmentToken") > 0;',
+    'bool rebootPending = p.CountInv("ElectronicsRebootPending") > 0;',
+    'powerPulseText = "ELECTRONICS POWER 1/3 - SHOWROOM CIRCUIT ONLINE";',
+    'powerPulseText = "ELECTRONICS POWER 2/3 - NETWORK REBOOT AVAILABLE";',
+    'powerPulseText = "NETWORK ONLINE - SUPERVISOR ACCESS RESTORED";',
+    'taskText = "OBJECTIVE  START STORE NETWORK REBOOT";',
+    'taskText = "OBJECTIVE  HOLD STORE NETWORK REBOOT";',
+    'taskText = "OBJECTIVE  CLEAR THE NIGHT MANAGER";',
+    'taskText = "OBJECTIVE  RETURN TO ELECTRONICS ENTRY";',
+    'powerText = String.Format("ELECTRONICS POWER  %d/3", fuses);',
+):
+    require(core_zscript, marker, "department-specific Electronics HUD/state")
+
 lockdown_section = zscript.split("class ElectronicsLockdownSpawner : Actor", 1)[1]
 if 'CountInv("ElectronicsDisplayKillSwitch")' in lockdown_section:
     raise SystemExit("Demo Wall Kill Switch must not disable the independent Overtime security lockdown")
@@ -165,6 +184,7 @@ if "delaySeconds = 18;" not in lockdown_section:
     raise SystemExit("HELL RUSH must tighten the Electronics lockdown recurrence")
 
 for marker in (
+    "actor ElectronicsDepartmentToken : Inventory",
     "actor ElectronicsRebootPending : Inventory",
     "actor ElectronicsNetworkReboot : CustomInventory",
     'A_GiveInventory("ElectronicsRebootPending", 1)',
@@ -217,9 +237,12 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "class ElectronicsNetworkRebootSequence : Actor",
         "class ElectronicsDemoSurgeSpawner : Actor",
         "class ElectronicsLockdownSpawner : Actor",
+        'bool electronics = p.CountInv("ElectronicsDepartmentToken") > 0;',
+        'taskText = "OBJECTIVE  HOLD STORE NETWORK REBOOT";',
     ):
         require(packaged_zscript, marker, "packaged Electronics ZScript")
     for marker in (
+        "actor ElectronicsDepartmentToken",
         "actor ElectronicsRebootPending",
         "actor ElectronicsNetworkReboot",
         "actor ElectronicsDisplayBurst",
