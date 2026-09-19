@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.35.0-dev — 2026-09-19
+
+### Added
+- `MAP05 — Customer Service` is now documented as real playable development content: a serpentine queue, two service-desk power repairs, standard Overtime pressure, a power-gated Night Manager, optional Corporate Compliance Memos, an optional stash and the existing physical return-to-entry clock-out flow.
+- After the two desk circuits are restored, a physical **Refund Authorization Terminal** now replaces the former third loose Breaker Fuse. Interacting with it starts a save-safe twelve-second Corporate verification hold instead of granting full power immediately.
+- The refund audit uses a readable authored sequence from an outer rear queue lane: Angry Self-Checkout at 2 seconds, warning at 5, Security Price Scanner at 7, warning at 9, Cart of Doom at 10, and the authoritative final `CheckoutFuse` at 12 seconds.
+- `tools/test_customer_service_contract.py` protects source registration, exact objective counts/timing, project packaging and byte-exact built `MAP05` TEXTMAP parity; the smoke test now understands the two-circuit + refund-audit loop as well.
+
+### Changed
+- The playable campaign chain is `Closing Time -> Warehouse 13.5 -> Frozen Foods -> Electronics -> Customer Service -> Closing Time`, while Customer Service continues to reuse hardened shared Night Manager, Overtime and clock-out systems instead of inventing a second completion ledger.
+- README and ROADMAP now treat Customer Service as playable first-pass content, keep Management Floor as the next unexpanded department, and record the new work as Full Game evidence without closing the plural `More departments / biomes` milestone.
+- Project progress remains **86.8%** from the exact weighted **86.75%** calculation and Demo Release readiness remains **70.0%**. This playable department/objective work does not mark a level polished, complete the target-Windows human sign-off, write release notes or authorize a public release.
+
+### Validation
+- PR #65 and the resulting `main` CI passed the dedicated Customer Service contract, build/smoke, README PRO v2, Progress SVG PRO, pinned-GZDoom Windows parser/runtime gates, verified Windows/legal-content RC packaging and the real pinned-GZDoom two-process save → exit → load regression.
+- The Refund Authorization terminal reuses project-owned presentation; no proprietary Doom, Star Wars or other ripped commercial assets were added. No public demo or GitHub Release was created.
+
 ## 0.34.2-dev — 2026-09-19
 
 ### Changed
