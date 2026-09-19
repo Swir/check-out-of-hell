@@ -105,6 +105,15 @@ map MAP03 "Frozen Foods"
 map MAP04 "Electronics"
 {
     levelnum = 4
+    next = "MAP05"
+    sky1 = "SKY1"
+    music = "D_COH04"
+    nointermission
+}
+
+map MAP05 "Customer Service"
+{
+    levelnum = 5
     next = "MAP01"
     sky1 = "SKY1"
     music = "D_COH04"
