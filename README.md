@@ -22,7 +22,7 @@
 | Item | Status |
 | --- | --- |
 | Current stage | Prototype / vertical-slice development |
-| Version | `0.35.0-dev` |
+| Version | `0.35.1-dev` |
 | Implemented/testable progress | **86.8%** |
 | Playable departments | `MAP01 — Closing Time`, `MAP02 — Warehouse 13.5`, `MAP03 — Frozen Foods`, `MAP04 — Electronics`, `MAP05 — Customer Service` |
 | Public demo | **Not published yet** |
@@ -153,7 +153,7 @@ Three optional Corporate Compliance Memos and two Emergency Break Snacks reward 
 
 Customer Service now ships as playable development content rather than a roadmap-only placeholder. A long serpentine queue shapes sightlines and movement around a readable service route. Two mandatory service-desk circuit repairs pull the player across opposite queue lanes; after both are live, the rear **Refund Authorization Terminal** appears. Using it starts a twelve-second Corporate verification hold: Angry Self-Checkout pressure at 2 seconds, a warning at 5, Security Price Scanner pressure at 7, another warning at 9 and Cart of Doom pressure at 10. Only surviving through 12 seconds supplies the final authoritative `3/3` power state, after which the shared full-power cache, Night Manager and physical return-to-entry clock-out systems continue normally.
 
-The audit sequence is save-safe, uses sparse polling and enters from an outer rear queue lane instead of the center route. Standard Overtime hazards remain active independently, while three optional Corporate Compliance Memos and the existing stash reward exploration without gating progression. Customer Service currently reuses project-owned retail presentation and the project-owned Electronics music cue while its own department-specific art/music pass remains future polish. This is a first playable department implementation, not a polished final level.
+The audit sequence is save-safe, uses sparse polling and enters from an outer rear queue lane instead of the center route. Standard Overtime hazards remain active independently, while three optional Corporate Compliance Memos and the existing stash reward exploration without gating progression. Customer Service still reuses shared project-owned retail presentation, but now has its own deterministic original **Customer Service — Please Hold Forever** MIDI theme. This is a first playable department implementation, not a polished final level.
 
 Planned later department — **Management Floor** — remains intentionally unexpanded until it has real playable content.
 
@@ -167,7 +167,7 @@ Every currently playable department uses project-owned music instead of inherite
 - **Warehouse 13.5 — Forklift Graveyard** — colder low-register drones, restrained machinery-like percussion and a darker warehouse motif.
 - **Frozen Foods — Compressor Choir** — thin icy chimes over slow cold-storage drones and restrained compressor-like percussion.
 - **Electronics — Dead Pixel Choir** — sparse high chimes, uneasy pad movement and restrained machine accents that leave scanner and surge warnings readable.
-- **Customer Service** currently reuses the project-owned `D_COH04` development cue; a distinct department theme has not yet been claimed as complete.
+- **Customer Service — Please Hold Forever** — a deliberately too-polite hold-music motif over uneasy drones, sparse service-bell chimes and restrained office-machine percussion that leaves the refund-audit warnings readable.
 
 The tracks are deterministic Standard MIDI files produced by `tools/generate_music_assets.py` using only Python's standard library, regenerated during builds and protected by a dedicated regression contract. See [`docs/MUSIC.md`](docs/MUSIC.md).
 
@@ -325,7 +325,7 @@ See [`docs/ASSET_POLICY.md`](docs/ASSET_POLICY.md), [`docs/THIRD_PARTY.md`](docs
 - `Warehouse 13.5` now has breakers → optional recovery/Lockout safety choices → freight-lift override → management-response → Regional Manager → return progression, plus the Damaged Goods side route and dedicated Overtime side-lane hazards, but still needs stronger vertical routes, more authored department-specific encounter polish and interactive balance/readability sign-off before it is called polished.
 - `Frozen Foods` is now playable with freezer-aisle routing, two breaker repairs → rear compressor reset → full-power Night Manager pressure, telegraphed compressor surges plus optional surge isolation, standard Overtime hazards, optional memos, department dressing and its own music, but it remains first-pass vertical-slice content rather than a polished final level.
 - `Electronics` is now playable with alternating showroom routes, two circuit repairs → timed rear network reboot → full-power Night Manager pressure, department-specific HUD guidance, telegraphed demo-wall surges plus an optional kill switch, temporary Overtime aisle lockdowns, standard floor hazards, optional memos, department dressing and its own music; it remains first-pass development content rather than a polished final level.
-- `Customer Service` is now playable with serpentine queue routing, two circuit repairs → timed Refund Authorization hold → full-power Night Manager pressure, standard Overtime hazards, optional memos and a stash, but it still reuses shared presentation/music and remains first-pass development content rather than a polished final level.
+- `Customer Service` is now playable with serpentine queue routing, two circuit repairs → timed Refund Authorization hold → full-power Night Manager pressure, standard Overtime hazards, optional memos, a stash and its own original soundtrack; it still reuses shared retail presentation and remains first-pass development content rather than a polished final level.
 - The cross-process save/load serialization gate is green on the exact pinned engine; the Windows sign-off kit repeats that round-trip against the exact extracted RC, but the required human save/quit/load confirmation remains open until a target-Windows run records PASS evidence.
 - Controller setup/haptics and the script-overhead performance pass are implemented and contract-tested, but physical controller and real-hardware performance confirmation remain part of the target-Windows demo sign-off.
 - The Windows player RC and standalone legal-content RC are integrity/provenance checked in CI but are not a public demo; release notes and the final interactive Windows sign-off remain open release gates.
