@@ -39,9 +39,10 @@ build = (ROOT / "tools" / "build.py").read_text(encoding="utf-8")
 for marker in (
     "from generate_warehouse_assets import generate_warehouse_assets",
     "generate_warehouse_assets(GAME)",
+    '(GAME / "ZSCRIPT_WAREHOUSE").read_text(encoding="utf-8").rstrip()',
 ):
     if marker not in build:
-        raise SystemExit(f"Warehouse asset generator is not wired into the build: {marker}")
+        raise SystemExit(f"Warehouse build composition is incomplete: {marker}")
 
 decorate_env = (GAME / "DECORATE_ENVIRONMENT").read_text(encoding="utf-8")
 for marker in (
@@ -81,6 +82,7 @@ for marker in (
     '17133 = "WarehouseLiftControlSpawner"',
     '17135 = "WarehouseManagementWaveSpawner"',
     '17137 = "WarehouseSafetyLockoutSpawner"',
+    '17157 = "WarehousePalletRushSpawner"',
 ):
     if marker not in mapinfo:
         raise SystemExit(f"Warehouse DoomEdNum/state registration is missing: {marker}")
@@ -99,6 +101,34 @@ for marker in (
 ):
     if marker not in zscript:
         raise SystemExit(f"Warehouse objective logic is incomplete: {marker}")
+
+warehouse_zscript = (GAME / "ZSCRIPT_WAREHOUSE").read_text(encoding="utf-8")
+for marker in (
+    "class WarehousePalletLaneWarning : Actor",
+    "class WarehouseRunawayPallet : Actor",
+    'Tag "Runaway Restock Pallet";',
+    "Speed 10;",
+    "Damage 20;",
+    "Projectile;",
+    "BOXE A 1 Bright",
+    "class WarehousePalletRushSpawner : Actor",
+    'p.CountInv("WarehouseDepartmentToken") < 1',
+    'p.CountInv("CheckoutFuse") < 2',
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    "overtimeStage < 2",
+    "initialDelaySeconds = Pos.Y < 0 ? 12 : 27",
+    'Actor.Spawn("OvertimeWarningFlash", Pos)',
+    'Actor.Spawn("WarehousePalletLaneWarning", Pos)',
+    "launchTic = Level.maptime + 35 * 2",
+    'Actor.Spawn("WarehouseRunawayPallet", Pos)',
+    "pallet.Vel.Y = laneDirection * 10.0",
+    "delaySeconds = 30",
+    "delaySeconds = 22",
+):
+    if marker not in warehouse_zscript:
+        raise SystemExit(f"Warehouse pallet-lane pressure contract is incomplete: {marker}")
+if "WarehouseSafetyLockout" in warehouse_zscript:
+    raise SystemExit("Warehouse Lockout/Tagout permit must isolate electrical arcs, not moving pallet traffic")
 
 clockout_zscript = (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8")
 for marker in (
@@ -131,7 +161,7 @@ for marker in (
         raise SystemExit(f"Warehouse lockout must retire only fresh environmental floor hazards: {marker}")
 
 # The optional permit is a physical-safety choice, not an Overtime off switch. Ambient enemy
-# pressure must keep its existing stage cadence after the player isolates the electrical arcs.
+# pressure and authored moving pallet traffic must remain active after electrical isolation.
 overtime_enemy_block = zscript.split("class CheckoutOvertimeSpawner : Actor", 1)[1].split(
     "class CheckoutManagerSpawner : Actor", 1
 )[0]
@@ -269,6 +299,23 @@ for prop_type in ("17125", "17127", "17124"):
     if f"type = {prop_type}" not in environment:
         raise SystemExit(f"Warehouse 13.5 environment layer is missing safe retail prop type {prop_type}")
 
+overtime = (GAME / "MAP02_OVERTIME.udmf").read_text(encoding="utf-8")
+if overtime.count("type = 17157") != 2:
+    raise SystemExit("Warehouse 13.5 needs exactly two authored moving-pallet lane anchors")
+pallet_anchors = re.findall(
+    r"x = (-?[0-9.]+); y = (-?[0-9.]+); angle = (90|270);\s+type = 17157",
+    overtime,
+)
+if len(pallet_anchors) != 2:
+    raise SystemExit("Warehouse moving-pallet lane coordinates are not in the expected UDMF form")
+parsed_pallet_anchors = {(float(x), float(y), int(angle)) for x, y, angle in pallet_anchors}
+expected_pallet_anchors = {(-300.0, -300.0, 90), (300.0, 300.0, 270)}
+if parsed_pallet_anchors != expected_pallet_anchors:
+    raise SystemExit(f"Warehouse pallet lanes drifted: {parsed_pallet_anchors!r}")
+for x, _y, _angle in parsed_pallet_anchors:
+    if abs(x) < 260.0:
+        raise SystemExit("Warehouse moving pallets must never occupy the central x=-180..180 safe route")
+
 with zipfile.ZipFile(PK3, "r") as archive:
     names = set(archive.namelist())
     for rel in ("sprites/WCTLA0.png", "sprites/WSGNA0.png", "sprites/WLOKA0.png", "maps/MAP02.wad"):
@@ -287,6 +334,10 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "class WarehouseSafetyLockoutSpawner : Actor",
         'p.CountInv("WarehouseSafetyLockout") > 0',
         "WLOK A -1 Bright;",
+        "class WarehousePalletLaneWarning : Actor",
+        "class WarehouseRunawayPallet : Actor",
+        "class WarehousePalletRushSpawner : Actor",
+        "pallet.Vel.Y = laneDirection * 10.0",
     ):
         if marker not in runtime_zscript:
             raise SystemExit(f"Packaged ZSCRIPT lost Warehouse readability/safety logic: {marker}")
@@ -311,9 +362,10 @@ with zipfile.ZipFile(PK3, "r") as archive:
         b"type = 17136",
         b"type = 17130",
         b"type = 17126",
+        b"type = 17157",
     ):
         if marker not in runtime_map:
             raise SystemExit(f"Packaged MAP02 lost warehouse objective/environment marker: {marker!r}")
 
-print("Warehouse 13.5 freight-lift objective + management-response + optional stock-cage/lockout + return-readability contract: PASS")
-print("Full power now offers a distinct side-lane electrical lockout without disabling hostile Overtime, lift progression, Regional Management or the clock-out return.")
+print("Warehouse 13.5 freight-lift + management + optional stock/lockout + pallet-lane + return-readability contract: PASS")
+print("Deep Overtime now adds two warned side-lane moving pallets while the central objective/clock-out route stays permanently open.")

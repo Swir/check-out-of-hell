@@ -1,0 +1,179 @@
+// CHECKOUT OF HELL - Warehouse 13.5 authored pallet-lane pressure.
+// This layer stays separate from the shared Overtime system so the warehouse can gain a distinctive
+// moving workplace hazard without changing the global pressure schedule or the Lockout/Tagout permit.
+// Two authored side lanes keep the center objective/clock-out corridor permanently available.
+
+class WarehousePalletLaneWarning : Actor
+{
+    Default
+    {
+        Radius 4;
+        Height 64;
+        Scale 0.65;
+        +NOBLOCKMAP;
+        +NOGRAVITY;
+        +NOCLIP;
+    }
+
+    States
+    {
+    Spawn:
+        WSGN A 10 Bright;
+        TNT1 A 8;
+        WSGN A 10 Bright;
+        TNT1 A 8;
+        WSGN A 10 Bright;
+        TNT1 A 8;
+        WSGN A 16 Bright;
+        Stop;
+    }
+}
+
+class WarehouseRunawayPallet : Actor
+{
+    Default
+    {
+        Tag "Runaway Restock Pallet";
+        Radius 22;
+        Height 34;
+        Speed 10;
+        Damage 20;
+        Projectile;
+        +NOBLOOD;
+    }
+
+    States
+    {
+    Spawn:
+        BOXE A 1 Bright A_PlaySound("coh/palletdown", CHAN_BODY);
+    Move:
+        BOXE A 1 Bright;
+        Loop;
+    Death:
+        BOXE A 4;
+        Stop;
+    }
+}
+
+// Deep Overtime turns two clearly marked warehouse side lanes into predictable pallet traffic.
+// The first northbound lane is armed 12 seconds after its gates are active; the opposite lane is
+// offset to 27 seconds. Every run receives a two-second visual/audio warning. Stage 2 repeats at
+// 30 seconds per lane and Hell Rush tightens that to 22 seconds. Because the two anchors live at
+// x=-300 and x=300 and pallets travel only along Y, the central x=-180..180 route never closes.
+// Actor fields serialize normally, so save/restore resumes the current warning/cadence.
+class WarehousePalletRushSpawner : Actor
+{
+    bool warningArmed;
+    int launchTic;
+    int nextCheck;
+    int nextRushTic;
+    int laneDirection;
+    int initialDelaySeconds;
+
+    Default
+    {
+        +NOBLOCKMAP;
+        +NOSECTOR;
+        +NOGRAVITY;
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        warningArmed = false;
+        launchTic = 0;
+        nextCheck = Level.maptime + 7;
+        nextRushTic = 0;
+        laneDirection = Pos.Y < 0 ? 1 : -1;
+        initialDelaySeconds = Pos.Y < 0 ? 12 : 27;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+        if (p.CountInv("SupervisorClearanceToken") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("WarehouseDepartmentToken") < 1)
+        {
+            return;
+        }
+        if (p.CountInv("CheckoutFuse") < 2)
+        {
+            return;
+        }
+
+        int overtimeStage = CheckoutShiftDirector.GetOvertimeStage();
+        if (overtimeStage < 2)
+        {
+            return;
+        }
+
+        if (warningArmed)
+        {
+            if (Level.maptime < launchTic)
+            {
+                return;
+            }
+
+            Actor pallet = Actor.Spawn("WarehouseRunawayPallet", Pos);
+            if (pallet)
+            {
+                pallet.Vel.X = 0;
+                pallet.Vel.Y = laneDirection * 10.0;
+            }
+
+            warningArmed = false;
+            launchTic = 0;
+
+            int delaySeconds = 30;
+            if (overtimeStage >= 3)
+            {
+                delaySeconds = 22;
+            }
+            nextRushTic = Level.maptime + 35 * delaySeconds;
+            return;
+        }
+
+        if (nextRushTic == 0)
+        {
+            nextRushTic = Level.maptime + 35 * initialDelaySeconds;
+            return;
+        }
+        if (Level.maptime < nextRushTic)
+        {
+            return;
+        }
+
+        Actor.Spawn("OvertimeWarningFlash", Pos);
+        Actor.Spawn("WarehousePalletLaneWarning", Pos);
+        warningArmed = true;
+        launchTic = Level.maptime + 35 * 2;
+    }
+}
