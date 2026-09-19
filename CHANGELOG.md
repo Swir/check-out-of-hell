@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.34.2-dev — 2026-09-19
+
+### Changed
+- Electronics now carries an explicit department marker that is cleared only on a genuinely fresh map transition and re-established by the delayed MAP04 initializer, so the shared HUD can distinguish Electronics without leaking department state into other levels or breaking save restores.
+- The default HUD and optional Focus HUD now describe the real Electronics loop: two showroom circuits, the rear Store Network Reboot, the active ten-second reboot hold, Night Manager clearance and the return-to-entry clock-out leg. Power pulse text now reports Electronics-specific circuit/network states instead of generic breaker language.
+- README documentation now matches the implemented ten-second reboot defence and the independent Overtime security-shutter lockdown: the kill switch still affects only demo-wall surges, the central service lane remains open and supervisor clearance retires future locks.
+- Project progress remains **86.8%** and Demo Release readiness remains **70.0%** because this is verified HUD/readability and documentation hardening, not completion of a weighted milestone or target-Windows sign-off gate.
+
+### Validation
+- `tools/test_electronics_contract.py` now protects the department marker, fresh-map cleanup, normal/Fokus HUD objective states and packaged ZScript/DECORATE payload; `tools/test_accessibility_contract.py` also requires Electronics-aware Focus HUD output.
+- Full repository CI remains the merge gate, including the pinned-GZDoom parser/runtime, real two-process save/load, Windows/legal-content RC, README PRO v2 and Progress SVG PRO checks. No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
+
 ## 0.34.1-dev — 2026-09-19
 
 ### Changed

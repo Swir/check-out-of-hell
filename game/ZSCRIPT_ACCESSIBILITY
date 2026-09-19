@@ -54,6 +54,8 @@ class CheckoutAccessibilityHandler : EventHandler
         bool cleared = p.CountInv("SupervisorClearanceToken") > 0;
         bool warehouse = p.CountInv("WarehouseDepartmentToken") > 0;
         bool liftEngaged = p.CountInv("WarehouseLiftOverride") > 0;
+        bool electronics = p.CountInv("ElectronicsDepartmentToken") > 0;
+        bool rebootPending = p.CountInv("ElectronicsRebootPending") > 0;
         String taskText = CheckoutShiftDirector.GetDepartmentObjectiveText(
             fuses, cleared, false, warehouse, liftEngaged);
         String statusText = String.Format("%s  //  %s",
@@ -62,6 +64,29 @@ class CheckoutAccessibilityHandler : EventHandler
         String progressText = warehouse
             ? String.Format("POWER %d/3  //  LIFT %s", fuses, liftEngaged ? "ONLINE" : "OFFLINE")
             : String.Format("POWER %d/3  //  MEMOS %d/3", fuses, memos);
+
+        if (electronics)
+        {
+            progressText = String.Format("ELECTRONICS %d/3  //  MEMOS %d/3", fuses, memos);
+            if (fuses < 2)
+            {
+                taskText = String.Format("OBJECTIVE  RESTORE SHOWROOM CIRCUITS  %d/2", fuses);
+            }
+            else if (fuses < 3)
+            {
+                taskText = rebootPending
+                    ? "OBJECTIVE  HOLD STORE NETWORK REBOOT"
+                    : "OBJECTIVE  START STORE NETWORK REBOOT";
+            }
+            else if (!cleared)
+            {
+                taskText = "OBJECTIVE  CLEAR THE NIGHT MANAGER";
+            }
+            else
+            {
+                taskText = "OBJECTIVE  RETURN TO ELECTRONICS ENTRY";
+            }
+        }
 
         if (focusHud)
         {

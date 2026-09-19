@@ -1,9 +1,10 @@
 // CHECKOUT OF HELL - Electronics department-local state and encounter helpers.
 
 // MAP04 places exactly one initializer near the player start. It clears optional memo, display
-// isolation and reboot hand-off state carried from a previous department, then destroys itself. A
-// destroyed map actor remains destroyed in savegames, so normal save/restore inside Electronics
-// preserves new progress.
+// isolation and reboot hand-off state carried from a previous department, then grants the department
+// marker used by the shared HUD. The seven-tic delay lets CheckoutShiftDirector finish its fresh-map
+// cleanup first. A destroyed map actor remains destroyed in savegames, so normal save/restore inside
+// Electronics preserves all newly acquired local state.
 class ElectronicsDepartmentInitSpawner : Actor
 {
     int nextCheck;
@@ -25,7 +26,7 @@ class ElectronicsDepartmentInitSpawner : Actor
     override void PostBeginPlay()
     {
         Super.PostBeginPlay();
-        nextCheck = 0;
+        nextCheck = Level.maptime + 7;
     }
 
     override void Tick()
@@ -52,6 +53,7 @@ class ElectronicsDepartmentInitSpawner : Actor
         p.A_TakeInventory("CorporateMemo", 3);
         p.A_TakeInventory("ElectronicsDisplayKillSwitch", 1);
         p.A_TakeInventory("ElectronicsRebootPending", 1);
+        p.A_GiveInventory("ElectronicsDepartmentToken", 1);
         Destroy();
     }
 }

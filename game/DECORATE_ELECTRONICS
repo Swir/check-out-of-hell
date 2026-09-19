@@ -1,6 +1,21 @@
 // CHECKOUT OF HELL - Electronics department-local controls and display hazards.
 // Visible art is generated deterministically by tools/generate_presentation_assets.py.
 
+// Invisible department marker used only to keep the shared HUD honest in MAP04. The map-local
+// initializer grants it after the fresh-world cleanup pass; normal save/restore preserves it.
+actor ElectronicsDepartmentToken : Inventory
+{
+    Tag "Electronics Department Marker"
+    Inventory.MaxAmount 1
+
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+}
+
 // Hidden hand-off token for the timed Store Network Reboot sequence. The map-local sequence actor
 // owns the actual final CheckoutFuse grant so the pickup cannot instantly skip the authored defence.
 actor ElectronicsRebootPending : Inventory
