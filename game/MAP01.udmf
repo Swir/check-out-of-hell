@@ -124,3 +124,7 @@ thing { x = -620.0; y = 390.0; angle = 0; type = 17112; skill1 = true; skill2 = 
 thing { x = -690.0; y = -310.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  690.0; y =  235.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -620.0; y =  455.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Deep Overtime can temporarily close this outer-left checkout lane after a readable warning.
+// Its radius stays entirely outside the central x=-300..300 route and the y<=-350 clock-out trigger.
+thing { x = -520.0; y = -70.0; angle = 0; type = 17156; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

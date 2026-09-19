@@ -35,6 +35,7 @@ DoomEdNums
     17153 = "CustomerServiceDepartmentInitSpawner"
     17154 = "CustomerServiceQueueResetSpawner"
     17155 = "CustomerServiceComplaintQueueSpawner"
+    17156 = "ClosingTimeLockdownSpawner"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
