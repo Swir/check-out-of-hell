@@ -30,6 +30,8 @@ DoomEdNums
     17148 = "ElectronicsKillSwitchSpawner"
     17149 = "ElectronicsNetworkRebootSequence"
     17150 = "ElectronicsLockdownSpawner"
+    17151 = "CustomerServiceRefundAuthorizationSpawner"
+    17152 = "CustomerServiceRefundAuditSequence"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
