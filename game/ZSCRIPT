@@ -232,12 +232,14 @@ class CheckoutShiftDirector : EventHandler
             p.A_TakeInventory("SupervisorClearanceToken", 1);
             p.A_TakeInventory("WarehouseDepartmentToken", 1);
             p.A_TakeInventory("WarehouseLiftOverride", 1);
+            p.A_TakeInventory("ElectronicsDepartmentToken", 1);
             freshWorldInitPending = false;
         }
 
         int fuses = p.CountInv("CheckoutFuse");
         int memos = p.CountInv("CorporateMemo");
         bool warehouse = p.CountInv("WarehouseDepartmentToken") > 0;
+        bool electronics = p.CountInv("ElectronicsDepartmentToken") > 0;
 
         // A serialized clearance token is also a recovery marker for older/dev saves where
         // handler state may have changed between builds.
@@ -271,6 +273,21 @@ class CheckoutShiftDirector : EventHandler
                 else
                 {
                     powerPulseText = "FULL POWER - FREIGHT LIFT OVERRIDE AVAILABLE";
+                }
+            }
+            else if (electronics)
+            {
+                if (fuses == 1)
+                {
+                    powerPulseText = "ELECTRONICS POWER 1/3 - SHOWROOM CIRCUIT ONLINE";
+                }
+                else if (fuses == 2)
+                {
+                    powerPulseText = "ELECTRONICS POWER 2/3 - NETWORK REBOOT AVAILABLE";
+                }
+                else
+                {
+                    powerPulseText = "NETWORK ONLINE - SUPERVISOR ACCESS RESTORED";
                 }
             }
             else if (fuses == 1)
@@ -386,6 +403,8 @@ class CheckoutShiftDirector : EventHandler
         int cans = p.CountInv("RocketAmmo");
         bool warehouse = p.CountInv("WarehouseDepartmentToken") > 0;
         bool liftEngaged = p.CountInv("WarehouseLiftOverride") > 0;
+        bool electronics = p.CountInv("ElectronicsDepartmentToken") > 0;
+        bool rebootPending = p.CountInv("ElectronicsRebootPending") > 0;
 
         String clockText = String.Format("SHIFT %02d:%02d  //  CLOCK-OUT TARGET 06:00", minutes, seconds);
         String stageText = String.Format("OVERTIME  %s", GetOvertimeLabel(stage));
@@ -394,6 +413,47 @@ class CheckoutShiftDirector : EventHandler
         String memoText = warehouse ? String.Format("LIFT  %s", liftEngaged ? "ONLINE" : "OFFLINE") : String.Format("MEMOS  %d/3", memos);
         String taskText = GetDepartmentObjectiveText(fuses, bossCleared, exitPending, warehouse, liftEngaged);
         String hintText = GetDepartmentObjectiveHint(fuses, bossCleared, warehouse, liftEngaged);
+
+        if (electronics)
+        {
+            powerText = String.Format("ELECTRONICS POWER  %d/3", fuses);
+            memoText = String.Format("MEMOS  %d/3", memos);
+
+            if (exitPending)
+            {
+                taskText = "OBJECTIVE  ELECTRONICS SHIFT COMPLETE";
+                hintText = "ROUTE: TIMECARD ACCEPTED";
+            }
+            else if (fuses < 2)
+            {
+                taskText = String.Format("OBJECTIVE  RESTORE SHOWROOM CIRCUITS  %d/2", fuses);
+                hintText = "ROUTE: CHECK OPPOSITE DISPLAY AISLES";
+            }
+            else if (fuses < 3)
+            {
+                if (rebootPending)
+                {
+                    taskText = "OBJECTIVE  HOLD STORE NETWORK REBOOT";
+                    hintText = "ROUTE: KEEP THE SERVICE LANE CLEAR UNTIL NETWORK ONLINE";
+                }
+                else
+                {
+                    taskText = "OBJECTIVE  START STORE NETWORK REBOOT";
+                    hintText = "ROUTE: REAR SERVICE CONSOLE IS NOW POWERED";
+                }
+            }
+            else if (!bossCleared)
+            {
+                taskText = "OBJECTIVE  CLEAR THE NIGHT MANAGER";
+                hintText = "ROUTE: MANAGEMENT RESPONSE ACTIVE";
+            }
+            else
+            {
+                taskText = "OBJECTIVE  RETURN TO ELECTRONICS ENTRY";
+                hintText = "ROUTE: CLOCK OUT AT THE FRONT SERVICE LANE";
+            }
+        }
+
         String overtimeText = "MAXIMUM OVERTIME";
         String healthText = String.Format("WORKER HP  %03d", p.health);
         String ammoText = String.Format("RESERVES  LABELS %03d  RECEIPTS %02d  CANS %02d", labels, receipts, cans);
