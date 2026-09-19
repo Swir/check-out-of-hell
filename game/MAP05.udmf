@@ -68,6 +68,9 @@ thing
     single = true; coop = true; dm = true;
 }
 
+// One-shot department cleanup runs after the shared fresh-map objective reset, then destroys itself.
+thing { x = 0.0; y = -405.0; angle = 90; type = 17153; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
 // Basic shift kit is visible from spawn, but the queue geometry immediately forces a route choice.
 thing { x = -175.0; y = -355.0; angle = 0; type = 2001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  175.0; y = -355.0; angle = 180; type = 2002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
@@ -81,6 +84,12 @@ thing { x = -655.0; y = -205.0; angle = 0; type = 17111; skill1 = true; skill2 =
 thing { x =  650.0; y =   80.0; angle = 180; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =    0.0; y =  425.0; angle = 180; type = 17151; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -615.0; y =  360.0; angle = 0; type = 17152; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// After the first repair, the right-front side lane offers an optional Take-A-Number reset. Leaving it
+// alone allows a separate left-rear complaint queue to add telegraphed Overtime pressure. The two
+// anchors sit on opposite outer lanes and never occupy the central service/clock-out path.
+thing { x =  690.0; y =  -25.0; angle = 180; type = 17154; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -690.0; y =  245.0; angle = 0; type = 17155; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Initial hazards sell the department fantasy without filling the central lane with unavoidable fire.
 thing { x = -570.0; y = -360.0; angle = 0; type = 17001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

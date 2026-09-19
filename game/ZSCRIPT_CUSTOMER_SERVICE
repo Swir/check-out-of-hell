@@ -202,3 +202,258 @@ class CustomerServiceRefundAuditSequence : Actor
         }
     }
 }
+
+// Fresh Customer Service entry clears only its optional queue-reset state and any stale audit token.
+// The actor destroys itself after the delayed cleanup, so save/restore inside MAP05 preserves choices.
+class CustomerServiceDepartmentInitSpawner : Actor
+{
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        p.A_TakeInventory("CustomerServiceQueueResetToken", 1);
+        p.A_TakeInventory("CustomerServiceRefundPending", 1);
+        Destroy();
+    }
+}
+
+// After the first desk circuit comes online, a project-owned queue control appears on the opposite
+// side of the department. It is optional: taking it suppresses only future complaint-queue calls.
+class CustomerServiceQueueResetSpawner : Actor
+{
+    bool spawned;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        spawned = false;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (spawned || Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        if (p.CountInv("SupervisorClearanceToken") > 0 || p.CountInv("CustomerServiceQueueResetToken") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("CheckoutFuse") < 1)
+        {
+            return;
+        }
+
+        Actor.Spawn("OvertimeWarningFlash", Pos);
+        Actor reset = Actor.Spawn("CustomerServiceQueueReset", Pos);
+        if (reset)
+        {
+            spawned = true;
+            Destroy();
+        }
+    }
+}
+
+// Overtime now changes Customer Service encounter pressure as well as global store pressure. Once a
+// desk circuit is online, one authored outer queue lane can call an extra hostile "customer" after a
+// 20-second grace period. Every call warns for two seconds and follows deterministic stage-scaled
+// spacing. The refund audit pauses these calls and leaves an eight-second recovery window afterward.
+class CustomerServiceComplaintQueueSpawner : Actor
+{
+    bool warningArmed;
+    int responseTic;
+    int nextCallTic;
+    int nextCheck;
+
+    Default
+    {
+        +NOBLOCKMAP
+        +NOSECTOR
+        +NOGRAVITY
+    }
+
+    States
+    {
+    Spawn:
+        TNT1 A -1;
+        Stop;
+    }
+
+    override void PostBeginPlay()
+    {
+        Super.PostBeginPlay();
+        warningArmed = false;
+        responseTic = 0;
+        nextCallTic = 0;
+        nextCheck = Level.maptime + 7;
+    }
+
+    override void Tick()
+    {
+        Super.Tick();
+
+        if (Level.maptime < nextCheck)
+        {
+            return;
+        }
+        nextCheck = Level.maptime + 7;
+
+        if (!players[0].mo)
+        {
+            return;
+        }
+
+        PlayerPawn p = PlayerPawn(players[0].mo);
+        if (!p)
+        {
+            return;
+        }
+
+        if (p.CountInv("SupervisorClearanceToken") > 0 || p.CountInv("CustomerServiceQueueResetToken") > 0)
+        {
+            Destroy();
+            return;
+        }
+        if (p.CountInv("CheckoutFuse") < 1)
+        {
+            return;
+        }
+
+        int overtimeStage = CheckoutShiftDirector.GetOvertimeStage();
+        if (overtimeStage <= 0)
+        {
+            return;
+        }
+
+        // The authored refund defence gets exclusive use of this department's extra pressure layer.
+        // Re-arm an eight-second grace window instead of stacking another queue call on the audit.
+        if (p.CountInv("CustomerServiceRefundPending") > 0)
+        {
+            warningArmed = false;
+            responseTic = 0;
+            nextCallTic = Level.maptime + 35 * 8;
+            return;
+        }
+
+        if (warningArmed)
+        {
+            if (Level.maptime < responseTic)
+            {
+                return;
+            }
+
+            Actor.Spawn("TeleportFog", Pos);
+            if (overtimeStage >= 3)
+            {
+                Actor.Spawn("CartOfDoom", Pos);
+            }
+            else if (overtimeStage >= 2)
+            {
+                Actor.Spawn("ScannerTurret", Pos);
+            }
+            else
+            {
+                Actor.Spawn("AngrySelfCheckout", Pos);
+            }
+            warningArmed = false;
+
+            int delaySeconds = 38;
+            if (overtimeStage >= 3)
+            {
+                delaySeconds = 22;
+            }
+            else if (overtimeStage >= 2)
+            {
+                delaySeconds = 30;
+            }
+            nextCallTic = Level.maptime + 35 * delaySeconds;
+            return;
+        }
+
+        if (nextCallTic == 0)
+        {
+            nextCallTic = Level.maptime + 35 * 20;
+            return;
+        }
+        if (Level.maptime < nextCallTic)
+        {
+            return;
+        }
+
+        Actor.Spawn("OvertimeWarningFlash", Pos);
+        p.A_StartSound("coh/overtime", CHAN_AUTO);
+        warningArmed = true;
+        responseTic = Level.maptime + 35 * 2;
+    }
+}
