@@ -108,26 +108,35 @@ for marker in (
         raise SystemExit(f"Regional Manager generator is not wired into the build: {marker}")
 
 mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
-if '17104 = "CheckoutRegionalManagerSpawner"' not in mapinfo:
-    raise SystemExit("Regional Manager objective spawner DoomEdNum is missing")
+if '17104 = "WarehouseRegionalManagerArrivalSpawner"' not in mapinfo:
+    raise SystemExit("Warehouse 13.5 Regional Manager arrival spawner DoomEdNum is missing")
+if '17104 = "CheckoutRegionalManagerSpawner"' in mapinfo:
+    raise SystemExit("Warehouse 13.5 still maps the legacy instant Regional Manager spawner")
 
-zscript = (GAME / "ZSCRIPT").read_text(encoding="utf-8")
+warehouse = (GAME / "ZSCRIPT_WAREHOUSE").read_text(encoding="utf-8")
 for marker in (
-    "class CheckoutRegionalManagerSpawner : Actor",
+    "class WarehouseRegionalManagerArrivalSpawner : Actor",
+    'p.CountInv("WarehouseDepartmentToken") < 1',
     'p.CountInv("CheckoutFuse") < 3',
-    'Actor.Spawn("RegionalManager", Pos)',
+    'p.CountInv("WarehouseLiftOverride") < 1',
+    'p.CountInv("SupervisorClearanceToken") > 0',
+    "arrivalTic = Level.maptime + 35 * 4",
+    'Actor.Spawn("OvertimeWarningFlash", Pos)',
+    'p.A_StartSound("coh/regionalphase", CHAN_AUTO)',
+    'Actor.Spawn("TeleportFog", Pos)',
+    'Actor manager = Actor.Spawn("RegionalManager", Pos)',
 ):
-    if marker not in zscript:
-        raise SystemExit(f"Regional Manager power-gate logic is incomplete: {marker}")
+    if marker not in warehouse:
+        raise SystemExit(f"Regional Manager warned-arrival logic is incomplete: {marker}")
 
 map02 = (GAME / "MAP02.udmf").read_text(encoding="utf-8")
 if "type = 17104" not in map02:
-    raise SystemExit("Warehouse 13.5 is missing the Regional Manager power-gated spawner")
+    raise SystemExit("Warehouse 13.5 is missing the Regional Manager warned-arrival spawner")
 if "type = 17006" in map02:
-    raise SystemExit("Warehouse 13.5 still pre-places the Regional Manager before power restoration")
+    raise SystemExit("Warehouse 13.5 still pre-places the Regional Manager before lift activation")
 for surface in ('texturefloor = "CHKFLR"', 'textureceiling = "CHKCEIL"', 'texturemiddle = "CHKWALL"'):
     if surface not in map02:
         raise SystemExit(f"Warehouse 13.5 still lacks project-owned retail surface use: {surface}")
 
 print("Regional Manager boss contract: PASS")
-print("Regional Manager uses project-owned generated presentation, a two-phase attack kit and a three-breaker arrival gate in Warehouse 13.5.")
+print("Regional Manager uses project-owned generated presentation, a two-phase attack kit and a warned four-second Warehouse arrival after the breaker + lift gate.")
