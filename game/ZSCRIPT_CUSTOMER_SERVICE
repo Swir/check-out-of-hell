@@ -78,8 +78,9 @@ class CustomerServiceRefundAuthorizationSpawner : Actor
 
 // Corporate takes twelve seconds to authorize the final repair. Enemy responses are deliberately
 // telegraphed and enter from one authored outer queue lane so the player can read the pressure while
-// defending the desk. The third CheckoutFuse is granted only when the hold completes, which keeps
-// the existing supervisor/clock-out gates authoritative instead of adding a parallel completion flag.
+// defending the desk. The final response is Customer Service's own Returns Policy Enforcer, while
+// the third CheckoutFuse is granted only when the hold completes. This keeps the existing
+// supervisor/clock-out gates authoritative instead of adding a parallel completion flag.
 class CustomerServiceRefundAuditSequence : Actor
 {
     bool active;
@@ -188,7 +189,7 @@ class CustomerServiceRefundAuditSequence : Actor
         if (stage == 4 && elapsed >= 35 * 10)
         {
             Actor.Spawn("TeleportFog", Pos);
-            Actor.Spawn("CartOfDoom", Pos);
+            Actor.Spawn("ReturnsPolicyEnforcer", Pos);
             stage = 5;
         }
 

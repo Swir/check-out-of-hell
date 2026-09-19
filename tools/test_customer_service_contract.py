@@ -63,6 +63,12 @@ def main() -> None:
     zscript = (GAME / "ZSCRIPT_CUSTOMER_SERVICE").read_text(encoding="utf-8")
     build = (ROOT / "tools" / "build.py").read_text(encoding="utf-8")
 
+    audit_block = zscript.split("class CustomerServiceRefundAuditSequence : Actor", 1)[1].split(
+        "class CustomerServiceDepartmentInitSpawner : Actor", 1
+    )[0]
+    complaint_block = zscript.split("class CustomerServiceComplaintQueueSpawner : Actor", 1)[1]
+    enforcer_block = decorate.split("actor ReturnsPolicyEnforcer : AngrySelfCheckout", 1)[1]
+
     # MAP05 must keep two real circuit repairs and replace the former third loose fuse with one
     # physical refund terminal plus exactly one save-safe timed audit sequence.
     if count_type(map_text, 17111) != 2:
@@ -145,6 +151,20 @@ def main() -> None:
     )
     require(decorate, "Overtime is still active", "non-combat-off pickup wording")
 
+    # The last audit answer must be a department-specific miniboss built only from project-owned
+    # presentation and existing original projectiles. It must not create another progress ledger.
+    require(
+        decorate,
+        "actor ReturnsPolicyEnforcer : AngrySelfCheckout",
+        "Customer Service miniboss actor",
+    )
+    require(enforcer_block, 'Tag "Returns Policy Enforcer"', "Customer Service miniboss identity")
+    require(enforcer_block, "Health 220", "Customer Service miniboss durability")
+    if enforcer_block.count('A_CustomMissile("CorporateRedTapeProjectile"') != 3:
+        raise AssertionError("Returns Policy Enforcer must keep exactly one readable three-way red-tape volley")
+    if "CheckoutFuse" in enforcer_block or "SupervisorClearanceToken" in enforcer_block:
+        raise AssertionError("Returns Policy Enforcer must not own objective/clearance progression state")
+
     require(
         zscript,
         "class CustomerServiceRefundAuthorizationSpawner : Actor",
@@ -160,9 +180,11 @@ def main() -> None:
     require(zscript, "elapsed >= 35 * 7", "second response timing")
     require(zscript, "elapsed >= 35 * 10", "third response timing")
     require(zscript, "elapsed >= 35 * 12", "audit completion timing")
-    require(zscript, 'Actor.Spawn("AngrySelfCheckout", Pos)', "first queue response")
-    require(zscript, 'Actor.Spawn("ScannerTurret", Pos)', "second queue response")
-    require(zscript, 'Actor.Spawn("CartOfDoom", Pos)', "third queue response")
+    require(audit_block, 'Actor.Spawn("AngrySelfCheckout", Pos)', "first audit response")
+    require(audit_block, 'Actor.Spawn("ScannerTurret", Pos)', "second audit response")
+    require(audit_block, 'Actor.Spawn("ReturnsPolicyEnforcer", Pos)', "final audit miniboss response")
+    if 'Actor.Spawn("CartOfDoom", Pos)' in audit_block:
+        raise AssertionError("refund audit must keep Cart of Doom reserved for complaint/Ontime pressure")
     require(zscript, 'p.A_GiveInventory("CheckoutFuse", 1)', "authoritative final repair")
     require(zscript, 'p.A_TakeInventory("CustomerServiceRefundPending", 1)', "pending cleanup")
 
@@ -200,6 +222,7 @@ def main() -> None:
     require(zscript, 'p.CountInv("CustomerServiceRefundPending") > 0', "refund-audit pressure pause")
     require(zscript, "Level.maptime + 35 * 8", "post-audit complaint recovery window")
     require(zscript, 'p.CountInv("CustomerServiceQueueResetToken") > 0', "queue-only safety gate")
+    require(complaint_block, 'Actor.Spawn("CartOfDoom", Pos)', "Hell Rush complaint customer")
     if 'A_TakeInventory("CheckoutOvertime' in zscript or 'A_TakeInventory("SupervisorClearanceToken"' in zscript:
         raise AssertionError("Customer Service queue reset must not disable global Overtime or management")
 
@@ -237,9 +260,19 @@ def main() -> None:
         "PK3 DECORATE queue reset",
     )
     require(
+        packed_decorate,
+        "actor ReturnsPolicyEnforcer : AngrySelfCheckout",
+        "PK3 DECORATE Customer Service miniboss",
+    )
+    require(
         packed_zscript,
         "class CustomerServiceRefundAuditSequence : Actor",
         "PK3 ZScript objective sequence",
+    )
+    require(
+        packed_zscript,
+        'Actor.Spawn("ReturnsPolicyEnforcer", Pos)',
+        "PK3 ZScript refund-audit miniboss",
     )
     require(
         packed_zscript,
@@ -261,7 +294,7 @@ def main() -> None:
     if packed_map05 != expected_textmap:
         raise AssertionError("built MAP05 TEXTMAP is not byte-exact with game/MAP05.udmf")
 
-    print("PASS: Customer Service refund audit + complaint queue contract")
+    print("PASS: Customer Service refund audit + policy enforcer + complaint queue contract")
 
 
 if __name__ == "__main__":

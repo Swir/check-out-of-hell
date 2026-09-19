@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.35.2-dev — 2026-09-19
+
+### Added
+- `Returns Policy Enforcer`, a Customer Service-specific 220-health miniboss that reuses project-owned Self-Checkout presentation and fires one readable three-way `CorporateRedTapeProjectile` fan without owning fuse or supervisor progression state.
+- A department-specific Customer Service complaint-queue Overtime layer: after one desk circuit is live, it waits 20 seconds, telegraphs for two seconds and escalates extra outer-lane customers on deterministic `38 / 30 / 22` second spacing as Overtime deepens.
+- An optional opposite-side `Take-A-Number Queue Reset` that suppresses only future complaint-queue calls; standard Overtime, floor hazards, management and the Night Manager remain active.
+
+### Changed
+- The fixed twelve-second Refund Authorization audit now ends its combat escalation with the Returns Policy Enforcer at 10 seconds instead of another Cart of Doom. Angry Self-Checkout remains at 2 seconds, Security Price Scanner at 7 seconds, warnings remain at 5 and 9 seconds, and the authoritative final `CheckoutFuse` is still granted only at 12 seconds.
+- Complaint-queue pressure pauses during the refund audit and leaves an eight-second recovery window afterward so the two Customer Service pressure systems do not stack unfairly.
+- README and `docs/LEVEL_DESIGN.md` now describe the implemented refund-audit miniboss, complaint queue, Queue Reset and unchanged shared progression/release gates. Project progress remains **86.8%** from exact weighted **86.75%**, while Demo Release readiness remains **70.0%**.
+
+### Validation
+- `tools/test_customer_service_contract.py` protects the Enforcer identity/durability/three-way volley, audit timing and package wiring while keeping Cart of Doom reserved for Hell Rush complaint pressure and keeping objective state authoritative outside the miniboss.
+- Full repository CI remains the merge gate, including build/smoke, pinned-GZDoom parser/runtime, real two-process save/load, Windows/legal-content RC, README PRO v2 and Progress SVG PRO checks. No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
+
 ## 0.35.1-dev — 2026-09-19
 
 ### Added
@@ -124,7 +140,7 @@
 ### Added
 - `MAP03 — Frozen Foods` as a real playable third department with four authored freezer-aisle barriers, three cold-chain breaker routes, a power-gated Night Manager encounter, a deterministic management-response anchor, full-power recovery, four telegraphed Overtime hazard anchors, three optional Corporate Compliance Memos and a post-clear return guide.
 - Project-owned Frozen Foods presentation using the existing generated `FROZEN FOODS` signs, safe restock/cone clutter, slow-failing lights and optional Emergency Break Snacks, plus the new deterministic original `D_COH03.mid` theme **Frozen Foods — Compressor Choir**.
-- `FrozenDepartmentInitSpawner`, a map-local one-shot initializer that clears optional memo progress carried into a fresh MAP03 and then destroys itself so ordinary save/restore inside the department preserves newly collected memos.
+- `FrozenDepartmentInitSpawner`, a map-local one-shot initializer that clears optional memo progress carried from the previous department and then destroys itself so ordinary save/restore inside the department preserves newly collected memos.
 - `tools/test_frozen_foods_contract.py`, covering source layout, objective counts, entry/rear placement, generated presentation, MAPINFO/build wiring, packaged MAP03 WAD structure, composed ZScript and the new music payload.
 
 ### Changed
@@ -377,7 +393,7 @@
 ## 0.26.0-dev — 2026-09-18
 
 ### Added
-- Dedicated **CHECKOUT OF HELL Controller** menu in both full and simple GZDoom options, exposing remappable core gameplay actions plus direct links to engine device/stick and full-binding screens.
+- Dedicated **CHECKOUT OF HELL Controller** menu in both full and simple GZDoom options, exposing remappable core gameplay actions plus direct links to engine device/stick and complete control-binding screens.
 - Restrained GZDoom haptic mappings for the Emergency Mop, Receipt Ripper, Price-Gun SMG and Turbo Can Launcher using built-in rumble profiles only on player weapon cues.
 - `docs/CONTROLLER.md` with the engine-default gamepad baseline, setup path, haptic policy and explicit target-Windows hardware sign-off requirement.
 - `tools/test_controller_support_contract.py` with source and packaged-PK3 coverage, wired into GitHub Actions.
