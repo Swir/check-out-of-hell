@@ -91,6 +91,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "actor OvertimeWarningFlash",
         "actor FrozenCompressorReset",
         "actor ElectronicsNetworkReboot",
+        "actor CustomerServiceRefundAuthorization",
     ):
         if marker not in packaged_decorate:
             raise SystemExit(f"Packaged DECORATE lost subsystem marker: {marker}")
@@ -101,6 +102,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "class CheckoutClockOutGuideSpawner : Actor",
         "class FrozenCompressorResetSpawner : Actor",
         "class ElectronicsNetworkRebootSequence : Actor",
+        "class CustomerServiceRefundAuditSequence : Actor",
         "class CheckoutAccessibilityHandler : EventHandler",
     ):
         if marker not in packaged_zscript:
@@ -157,6 +159,10 @@ if '17144 = "ElectronicsDepartmentInitSpawner"' not in mapinfo:
     raise SystemExit("Electronics department initializer DoomEdNum is missing")
 if '17146 = "ElectronicsNetworkRebootSpawner"' not in mapinfo:
     raise SystemExit("Electronics network reboot DoomEdNum is missing")
+if '17151 = "CustomerServiceRefundAuthorizationSpawner"' not in mapinfo:
+    raise SystemExit("Customer Service refund terminal DoomEdNum is missing")
+if '17152 = "CustomerServiceRefundAuditSequence"' not in mapinfo:
+    raise SystemExit("Customer Service refund audit DoomEdNum is missing")
 
 zscript = ZSCRIPT.read_text(encoding="utf-8")
 for required in (
@@ -212,8 +218,10 @@ if "type = 17003" in map04:
     raise SystemExit("MAP04 must not pre-place Night Manager before electronics power restoration")
 
 map05 = (ROOT / "game" / "MAP05.udmf").read_text(encoding="utf-8")
-if map05.count("type = 17111") != 3:
-    raise SystemExit("MAP05 must use exactly three Customer Service power repairs")
+if map05.count("type = 17111") != 2:
+    raise SystemExit("MAP05 must use exactly two physical Customer Service power repairs")
+if map05.count("type = 17151") != 1 or map05.count("type = 17152") != 1:
+    raise SystemExit("MAP05 must contain one refund terminal spawner and one refund audit sequence")
 if map05.count("type = 17101") != 1:
     raise SystemExit("MAP05 must contain exactly one gated Night Manager spawner")
 if map05.count("type = 17106") < 2:
