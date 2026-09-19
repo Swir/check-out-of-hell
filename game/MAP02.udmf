@@ -11,6 +11,18 @@ vertex { x = 360.0; y = 100.0; }
 vertex { x = 360.0; y = 220.0; }
 vertex { x = 640.0; y = 220.0; }
 
+// Hidden staff room on the west wall. Two 80-unit door gaps are centered on x=-580 so the elevated
+// overstock route can pass through the room while a shootable stock pile seals the ground-level
+// south entrance. The north gap becomes a useful shortcut only after the optional barrier is broken.
+vertex { x = -640.0; y =  80.0; }
+vertex { x = -620.0; y =  80.0; }
+vertex { x = -540.0; y =  80.0; }
+vertex { x = -480.0; y =  80.0; }
+vertex { x = -480.0; y = 220.0; }
+vertex { x = -540.0; y = 220.0; }
+vertex { x = -620.0; y = 220.0; }
+vertex { x = -640.0; y = 220.0; }
+
 sector
 {
     heightfloor = 0;
@@ -31,12 +43,32 @@ sidedef { sector = 0; texturemiddle = "CHKWALL"; }
 sidedef { sector = 0; texturemiddle = "CHKWALL"; }
 sidedef { sector = 0; texturemiddle = "CHKWALL"; }
 
+// The hidden staff room also uses two-sided same-sector blockers. Door gaps remain real traversable
+// openings rather than teleport tricks, so the shortcut reads as ordinary warehouse architecture.
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+
 linedef { v1 = 0; v2 = 1; sidefront = 0; blocking = true; }
 linedef { v1 = 1; v2 = 2; sidefront = 1; blocking = true; }
 linedef { v1 = 2; v2 = 3; sidefront = 2; blocking = true; }
 linedef { v1 = 3; v2 = 0; sidefront = 3; blocking = true; }
 linedef { v1 = 4; v2 = 5; sidefront = 4; sideback = 5; blocking = true; }
 linedef { v1 = 5; v2 = 6; sidefront = 6; sideback = 7; blocking = true; }
+
+// Five staff-room wall segments deliberately leave the south and north x=-620..-540 openings clear.
+linedef { v1 = 7;  v2 = 8;  sidefront = 8;  sideback = 9;  blocking = true; }
+linedef { v1 = 9;  v2 = 10; sidefront = 10; sideback = 11; blocking = true; }
+linedef { v1 = 10; v2 = 11; sidefront = 12; sideback = 13; blocking = true; }
+linedef { v1 = 11; v2 = 12; sidefront = 14; sideback = 15; blocking = true; }
+linedef { v1 = 13; v2 = 14; sidefront = 16; sideback = 17; blocking = true; }
 
 thing
 {
@@ -94,3 +126,27 @@ thing { x =    0.0; y =  180.0; angle = 0; type = 17111; skill1 = true; skill2 =
 
 thing { x = -560.0; y = 320.0; angle = 315; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  560.0; y = 320.0; angle = 225; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Optional Staff-Only Overstock catwalk. Ten fixed bridge stacks climb the far west wall in safe
+// 16-unit steps, then stay level toward the rear bay. The route is outside both moving-pallet lanes
+// and the permanent central objective corridor, so it adds elevation/route choice without hiding work.
+thing { x = -590.0; y = -300.0; height = 0.0;  angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y = -240.0; height = 16.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y = -180.0; height = 32.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y = -120.0; height = 48.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =  -60.0; height = 64.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =    0.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =   60.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =  120.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =  180.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =  240.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Useful optional payoff on the high rear shelf; it never owns an objective token or mandatory key.
+thing { x = -590.0; y = 190.0; height = 96.0; angle = 0; type = 17158; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Hidden Staff Room: the elevated catwalk passes through both open door gaps. At floor level the
+// south door is concealed by one familiar shootable stock pile; breaking it opens a west-wall shortcut
+// to the north door and two useful project-owned rewards. No power, lift, boss or safety state lives here.
+thing { x = -580.0; y =  80.0; angle = 0; type = 17136; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -520.0; y = 140.0; angle = 0; type = 17131; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -520.0; y = 180.0; angle = 0; type = 17130; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

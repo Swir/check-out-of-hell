@@ -10,7 +10,7 @@ DoomEdNums
     17101 = "CheckoutManagerSpawner"
     17102 = "CheckoutStaffShutter"
     17103 = "CheckoutBossWaveSpawner"
-    17104 = "CheckoutRegionalManagerSpawner"
+    17104 = "WarehouseRegionalManagerArrivalSpawner"
     17105 = "CorporateMemo"
     17106 = "CheckoutOvertimeHazardSpawner"
     17128 = "CheckoutFullPowerCacheSpawner"

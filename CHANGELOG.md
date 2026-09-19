@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.35.5-dev — 2026-09-20
+
+### Added
+- Warehouse 13.5 now has a ten-step west-wall **Staff-Only Overstock Catwalk** built from project-owned warehouse presentation. The elevated route stays outside the moving-pallet lanes and permanent central objective/clock-out corridor, adding vertical movement without hiding mandatory work.
+- A hidden **Staff Room** links into the catwalk. Its south floor entrance is sealed by one familiar shootable stock pile; breaking it opens a ground shortcut and exposes optional health/label rewards while keeping every breaker, the Freight Lift Override, Regional Manager anchor and Lockout/Tagout state outside the room.
+
+### Changed
+- Engaging the Warehouse Freight Lift Override now arms a deterministic four-second project-owned visual/audio Regional Manager arrival warning before the boss materializes. The authored boss anchor and existing `12 / 30 / 52` second rear-flank management-response cadence remain unchanged.
+- README and `docs/LEVEL_DESIGN.md` now describe the implemented vertical route, hidden Staff Room shortcut/reward loop and warned Regional Manager handoff. Project progress remains **86.8%** from exact weighted **86.75%**, while Demo Release readiness remains **70.0%** because these improvements do not complete a polished-level or target-Windows human sign-off gate.
+
+### Validation
+- `tools/test_warehouse_vertical_route_contract.py` protects the catwalk geometry, Staff Room doorway gaps, breakable south entrance, optional rewards, mandatory-objective exclusion and packaged MAP02/MAPINFO/ZScript wiring.
+- `tools/test_regional_manager_contract.py` protects the four-second breaker + lift-gated arrival warning and rejects the legacy instant Warehouse boss spawner. Full repository CI remains the merge gate, including build/smoke, Warehouse contracts, README PRO v2, Progress SVG PRO, pinned-GZDoom Windows parser/runtime, real two-process save/load and Windows/legal-content RC checks. No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
+
 ## 0.35.4-dev — 2026-09-19
 
 ### Added
