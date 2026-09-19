@@ -29,7 +29,7 @@ for marker in (
 
 map02 = (GAME / "MAP02.udmf").read_text(encoding="utf-8")
 bridge_pattern = re.compile(
-    r"x = (-?[0-9.]+); y = (-?[0-9.]+); height = ([0-9.]+);\s+angle = 0; type = 17138"
+    r"x\s*=\s*(-?[0-9.]+);\s*y\s*=\s*(-?[0-9.]+);\s*height\s*=\s*([0-9.]+);\s*angle\s*=\s*0;\s*type\s*=\s*17138"
 )
 bridges = [(float(x), float(y), float(z)) for x, y, z in bridge_pattern.findall(map02)]
 expected = [
@@ -65,7 +65,7 @@ if max(z + 16.0 for _x, _y, z in bridges) > 96.0:
     raise SystemExit("Warehouse catwalk exceeds the authored 96-unit top height")
 
 stash = re.findall(
-    r"x = (-?[0-9.]+); y = (-?[0-9.]+); height = ([0-9.]+); angle = 0; type = 17158",
+    r"x\s*=\s*(-?[0-9.]+);\s*y\s*=\s*(-?[0-9.]+);\s*height\s*=\s*([0-9.]+);\s*angle\s*=\s*0;\s*type\s*=\s*17158",
     map02,
 )
 if stash != [("-590.0", "190.0", "96.0")]:
@@ -74,7 +74,7 @@ if stash != [("-590.0", "190.0", "96.0")]:
 # No mandatory power/lift/boss/safety actor may be moved onto the optional high route.
 for mandatory_type in (17111, 17133, 17104, 17137):
     pattern = re.compile(
-        rf"x = (-?[0-9.]+); y = (-?[0-9.]+);(?: height = [0-9.]+;)? angle = [0-9]+; type = {mandatory_type}"
+        rf"x\s*=\s*(-?[0-9.]+);\s*y\s*=\s*(-?[0-9.]+);(?:\s*height\s*=\s*[0-9.]+;)?\s*angle\s*=\s*[0-9]+;\s*type\s*=\s*{mandatory_type}"
     )
     for x_text, _y_text in pattern.findall(map02):
         if float(x_text) <= -550.0:
