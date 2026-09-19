@@ -238,10 +238,41 @@ def generate_music_assets(game_dir: Path) -> None:
         ],
     )
 
+    customer_service = _make_track(
+        "Customer Service - Please Hold Forever",
+        tempo_bpm=56,
+        bars=24,
+        chords=[
+            (41, 48, 53),
+            (40, 47, 52),
+            (38, 45, 50),
+            (36, 43, 48),
+        ],
+        melody=[
+            (0, 0.5, 72, 0.5, 24),
+            (0, 1.5, 76, 0.5, 26),
+            (1, 0.5, 74, 1.0, 23),
+            (3, 2.0, 67, 0.75, 20),
+            (4, 0.5, 71, 0.5, 24),
+            (4, 1.5, 74, 0.5, 25),
+            (5, 0.5, 72, 1.0, 22),
+            (7, 2.5, 64, 1.25, 18),
+        ],
+        chimes=[
+            (2, 3.5, (79, 83, 86), 28),
+            (6, 3.5, (77, 81, 84), 25),
+        ],
+        drums=[
+            (0.0, 37, 8),
+            (2.0, 42, 7),
+        ],
+    )
+
     (music_dir / "D_COH01.mid").write_bytes(closing_time)
     (music_dir / "D_COH02.mid").write_bytes(warehouse)
     (music_dir / "D_COH03.mid").write_bytes(frozen_foods)
     (music_dir / "D_COH04.mid").write_bytes(electronics)
+    (music_dir / "D_COH05.mid").write_bytes(customer_service)
 
 
 if __name__ == "__main__":
