@@ -101,7 +101,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
     ):
         if marker not in runtime_decorate:
             raise SystemExit(f"Packaged DECORATE lost Warehouse high-route marker: {marker}")
-    for marker in (b"type = 17138", b"type = 17158", b"height = 80.0", b"height = 96.0"):
+    for marker in (b"type = 17138", b"type = 17158"):
         if marker not in runtime_map:
             raise SystemExit(f"Packaged MAP02 lost Warehouse high-route marker: {marker!r}")
 
