@@ -55,20 +55,25 @@ Current prototype includes:
 - three warehouse breakers that restore the loading-bay circuits,
 - a project-owned `Freight Lift Override` that appears only after all three circuits are live,
 - The Regional Manager held off-floor until the player deliberately engages that powered lift control,
+- a deterministic four-second project-owned visual/audio Regional Manager arrival warning after the lift override before the boss enters the floor,
 - warehouse-specific HUD/Focus HUD objective states for breakers, lift activation, Regional Management and the return-to-entry leg,
 - project-owned freight signage, restock clutter, readable slow-failing lights and loading-bay dressing placed off the central objective/combat lane,
 - an optional damaged-goods cage whose four project-owned shootable stock piles trade ammunition for a label stash and break snack without hiding mandatory progression,
 - an optional full-power `Lockout/Tagout Permit` on the opposite rear side lane that isolates future Warehouse electrical floor arcs without disabling hostile Overtime reinforcements or management pressure,
 - two authored deep-Overtime moving-pallet lanes on the outer warehouse routes; after at least two circuits are live and Overtime reaches stage 2, the west/east lanes arm on staggered `12 / 27` second starts, telegraph for two seconds and repeat on deterministic `30 / 22` second spacing while the central `x=-180..180` objective/clock-out corridor stays open,
+- a ten-step west-wall Staff-Only Overstock Catwalk that creates an elevated optional route outside both moving-pallet lanes and the permanent central objective corridor,
+- a hidden Staff Room threaded into the elevated route; its south floor entrance is sealed by one project-owned shootable stock pile, and breaking it creates a ground shortcut to optional health/label rewards without hiding any breaker, lift control, boss anchor or safety state,
 - supervisor clearance retires future pallet launches, while Lockout/Tagout remains scoped to electrical floor arcs and never disables moving equipment,
 - project-owned retail surfaces and an original department soundtrack.
 
 The first Warehouse 13.5 objective sequence is now explicit: restore all three circuits, cross to the
 rear loading bay, engage the freight-lift override, survive the Regional Manager response, then return
 to the warehouse entry to finish the department. The lift control is separated from the boss spawn
-anchor so interacting with the objective cannot immediately overlap the player with the boss. The
-extra loading-bay props are non-blocking and deliberately stay out of the central route so the level
-gains identity without sacrificing readable combat.
+anchor and now begins a full four-second project-owned visual/audio warning before Regional Management
+materializes, so interacting with the objective cannot immediately overlap the player with the boss.
+The existing rear-flank `12 / 30 / 52` second management-response cadence remains intact. Extra
+loading-bay props stay non-blocking and deliberately avoid the central route so the level gains identity
+without sacrificing readable combat.
 
 A right-side damaged-goods nook adds the first breakable-stock tactical choice. Four solid, shootable
 stock piles seal the opening; breaking any useful gap costs ammunition but opens access to optional
@@ -90,11 +95,23 @@ seconds per lane and Hell Rush tightens that to 22 seconds. The permanent centra
 objective/clock-out corridor therefore never closes, and supervisor clearance retires an armed warning
 or future launch before the return-to-entry leg.
 
+The west-wall Overstock Catwalk turns the previously flat Warehouse into a deliberate vertical side
+route without creating a second mandatory progression path. Ten authored bridge steps climb along the
+wall outside both pallet lanes and the central corridor, letting the player reposition above equipment
+pressure while keeping all breakers, the lift objective and Regional Management readable from the main
+floor. The route uses only project-owned warehouse presentation and remains optional.
+
+The hidden Staff Room gives that vertical route a useful workplace-comedy payoff and a two-way shortcut.
+The elevated path reaches the room from above, while one familiar shootable stock pile seals its south
+floor entrance. Breaking the barrier opens a ground shortcut and exposes optional health/label rewards.
+No breaker, Freight Lift Override, boss anchor or Lockout/Tagout state lives inside the room, so the
+secret changes routing and resource economy without becoming a key hunt or bypassing the department's
+objective logic.
+
 Remaining Warehouse 13.5 polish:
-- stronger vertical shelf routes instead of a mostly flat combat floor,
-- a hidden staff-room shortcut/reward loop,
-- department-specific encounter pacing around the lift activation and Regional Manager phases,
-- full interactive balance/readability sign-off before the level is called polished.
+- complete an interactive target-machine balance/readability pass across all three authored difficulties, including the four-second boss handoff, pallet traffic and optional elevated/Staff Room routes,
+- confirm manual save/quit/load, physical-controller behavior and real-hardware Overtime/boss performance as part of the shared target-Windows sign-off,
+- change final encounter timing, cover or route geometry only where that interactive evidence identifies a real pacing/readability problem before calling the level polished.
 
 ## MAP03 — Frozen Foods
 Purpose: first playable cold-storage department with readable aisle routing, refrigeration atmosphere and a breaker → compressor reset → management → clock-out loop.
