@@ -292,3 +292,42 @@ actor ClosingTimeOvertimeShutter
         Stop
     }
 }
+
+// Warehouse 13.5 uses a chain of project-owned overstock stacks as a real elevated traversal route.
+// ACTLIKEBRIDGE gives players stable walkable tops, while NOLIFTDROP keeps this authored route fixed
+// if nearby sector actions occur. The route stays hard against the west wall, away from pallet lanes,
+// mandatory breaker/lift interactions and the permanent central objective corridor.
+actor WarehouseShelfBridge 17138
+{
+    Tag "Staff-Only Overstock Catwalk"
+    Radius 40
+    Height 16
+    +SOLID
+    +NOGRAVITY
+    +NOLIFTDROP
+    +ACTLIKEBRIDGE
+
+    States
+    {
+    Spawn:
+        BOXE A -1
+        Stop
+    }
+}
+
+// Optional payoff at the high rear end of the Warehouse shelf route. Backpack inheritance gives a
+// useful multi-ammo reward without creating progression state, and BOXE keeps presentation project-owned.
+actor WarehouseOverstockStash : Backpack 17158
+{
+    Tag "Unlogged Overstock Stash"
+    Inventory.PickupMessage "Unlogged overstock found. Inventory insists this shelf does not exist."
+    Inventory.PickupSound "coh/breaksnack"
+    +NOGRAVITY
+
+    States
+    {
+    Spawn:
+        BOXE A -1 Bright
+        Stop
+    }
+}

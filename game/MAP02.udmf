@@ -94,3 +94,20 @@ thing { x =    0.0; y =  180.0; angle = 0; type = 17111; skill1 = true; skill2 =
 
 thing { x = -560.0; y = 320.0; angle = 315; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  560.0; y = 320.0; angle = 225; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Optional Staff-Only Overstock catwalk. Ten fixed bridge stacks climb the far west wall in safe
+// 16-unit steps, then stay level toward the rear bay. The route is outside both moving-pallet lanes
+// and the permanent central objective corridor, so it adds elevation/route choice without hiding work.
+thing { x = -590.0; y = -300.0; height = 0.0;  angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y = -240.0; height = 16.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y = -180.0; height = 32.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y = -120.0; height = 48.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =  -60.0; height = 64.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =    0.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =   60.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =  120.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =  180.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -590.0; y =  240.0; height = 80.0; angle = 0; type = 17138; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Useful optional payoff on the high rear shelf; it never owns an objective token or mandatory key.
+thing { x = -590.0; y = 190.0; height = 96.0; angle = 0; type = 17158; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

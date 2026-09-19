@@ -115,6 +115,9 @@ jobs:
       - name: Warehouse 13.5 freight-lift objective contract test
         run: python tools/test_warehouse_lift_objective_contract.py
 
+      - name: Warehouse 13.5 vertical overstock route contract test
+        run: python tools/test_warehouse_vertical_route_contract.py
+
       - name: Frozen Foods playable department contract test
         run: python tools/test_frozen_foods_contract.py
 
