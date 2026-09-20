@@ -23,6 +23,13 @@ def read_number(block: str, field: str) -> float:
     return float(match.group(1))
 
 
+def read_bool(block: str, field: str) -> bool:
+    match = re.search(rf"\b{field}\s*=\s*(true|false)\s*;", block)
+    if not match:
+        raise SystemExit(f"Missing {field} in thing block: {block}")
+    return match.group(1) == "true"
+
+
 def parse_things(text: str):
     parsed = []
     for block in re.findall(r"thing\s*\{(.*?)\}", text, flags=re.DOTALL):
@@ -31,6 +38,7 @@ def parse_things(text: str):
                 "type": int(read_number(block, "type")),
                 "x": read_number(block, "x"),
                 "y": read_number(block, "y"),
+                "skills": tuple(read_bool(block, f"skill{i}") for i in range(1, 6)),
             }
         )
     return parsed
@@ -38,6 +46,15 @@ def parse_things(text: str):
 
 def positions(things, thing_type: int):
     return {(thing["x"], thing["y"]) for thing in things if thing["type"] == thing_type}
+
+
+def hostile_population(things, skill_index: int) -> int:
+    hostile_types = {17001, 17002, 17004, 17005}
+    return sum(
+        1
+        for thing in things
+        if thing["type"] in hostile_types and thing["skills"][skill_index]
+    )
 
 
 def read_textmap(path: Path) -> str:
@@ -81,6 +98,25 @@ centerline_hostiles = [
 if centerline_hostiles:
     raise SystemExit(f"Initial hostile placement blocks the authored center strip: {centerline_hostiles}")
 
+# Closing Crew now receives a real population relief pass instead of relying only on global
+# damage/resource multipliers. Normal and Hard retain the full authored encounter footprint.
+expected_population = (5, 5, 8, 8, 8)
+actual_population = tuple(hostile_population(core, index) for index in range(5))
+if actual_population != expected_population:
+    raise SystemExit(
+        f"Unexpected Closing Time per-skill hostile population: {actual_population}; expected {expected_population}"
+    )
+
+relief_contract = {
+    (17002, 510.0, 170.0),
+    (17001, 220.0, 90.0),
+    (17004, 420.0, 360.0),
+}
+for thing in core:
+    key = (thing["type"], thing["x"], thing["y"])
+    if key in relief_contract and thing["skills"] != (False, False, True, True, True):
+        raise SystemExit(f"Closing Crew relief actor has unexpected skill mask: {key} -> {thing['skills']}")
+
 # Ambient Overtime pressure stays distributed around the floor rather than materializing in the
 # front-to-rear centerline/clock-out approach.
 expected_overtime = {(-330.0, 430.0), (700.0, 440.0), (500.0, -120.0)}
@@ -121,7 +157,7 @@ for marker in (
     if marker not in zscript:
         raise SystemExit(f"Physical clock-out contract changed during readability pass: {marker}")
 
-# Verify the built map contains exactly the same layout, not merely the source files.
+# Verify the built map contains exactly the same layout and difficulty masks, not merely the source files.
 built_things = parse_things(read_textmap(MAP_WAD))
 if positions(built_things, 17100) != expected_overtime:
     raise SystemExit("Built MAP01 lost the flanked Overtime layout")
@@ -129,6 +165,12 @@ if positions(built_things, 17103) != expected_boss_waves:
     raise SystemExit("Built MAP01 lost the flanked management-response layout")
 if positions(built_things, 17123) != expected_lane_signs:
     raise SystemExit("Built MAP01 lost the mirrored front-lane signs")
+
+built_population = tuple(hostile_population(built_things, index) for index in range(5))
+if built_population != expected_population:
+    raise SystemExit(
+        f"Built MAP01 lost the authored Closing Crew population relief: {built_population}"
+    )
 
 with zipfile.ZipFile(PK3, "r") as archive:
     if "maps/MAP01.wad" not in archive.namelist():
@@ -140,6 +182,6 @@ with zipfile.ZipFile(PK3, "r") as archive:
 
 print("Closing Time combat readability contract: PASS")
 print(
-    "Center navigation strip stays clear of initial hostiles/reinforcement anchors; "
-    "management waves flank the rear approach and mirrored non-blocking Lane 06 signs frame the exit lane."
+    "Center navigation stays clear; Closing Crew runs 5 initial hostiles versus 8 on Normal/Hard; "
+    "management waves remain flanked and mirrored non-blocking Lane 06 signs frame the exit lane."
 )
