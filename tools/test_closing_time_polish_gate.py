@@ -194,7 +194,7 @@ def main() -> int:
 
     # Automated evidence can prepare a candidate, but the canonical polished-level checkbox remains human-gated.
     for marker in (
-        "full `MAP01 — Closing Time` runs",
+        "three real `MAP01 — Closing Time` runs",
         "explicit confirmation that Closing Time is polished enough",
     ):
         if marker not in windows_doc:
