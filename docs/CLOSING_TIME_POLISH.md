@@ -37,7 +37,7 @@ The six project-owned failing fluorescent fixtures are now split evenly across t
 
 Closing Crew keeps five initial signature threats so its first-room pressure is meaningfully lighter instead of relying only on global damage/resource multipliers. Its inner Self-Checkout flank now sits at `x=-360`, west of the authored shelf line and outside the full `x=-300..300` permanent combat/clock-out corridor, instead of occupying that corridor at `x=-220`. Graveyard Shift and Corporate Hell still use the full eight-threat footprint, but the three additional actors remain in a second east-side ring behind the authored shelf lines. Those three hard-mode additions also use the UDMF `ambush` flag, so front-lane weapon noise cannot wake them through the occluding shelves before visual contact; they reveal as player movement exposes the second ring. This preserves the harder-mode population while turning immediate spawn-side crossfire into a movement-driven escalation.
 
-`tools/test_closing_time_combat_readability_contract.py` protects the `5 / 5 / 8 / 8 / 8` per-skill population, the full `x=-300..300` initial-hostile exclusion zone, exact easy/hard flank positions, required hard-only `ambush = true` sight-gating and built MAP01 parity.
+`tools/test_closing_time_combat_readability_contract.py` protects the `5 / 5 / 8 / 8 / 8` per-skill population, the full `x=-300..300` initial-hostile exclusion zone, exact easy/hard flank positions, required hard-only `ambush = true` sight-gating and built MAP01 parity. `tools/test_closing_time_polish_gate.py` independently enforces the same full-width hostile exclusion so route-sign and combat-readability definitions cannot drift apart again.
 
 ## One-click exact-candidate evidence kit
 
