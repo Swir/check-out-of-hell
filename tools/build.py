@@ -22,7 +22,7 @@ DIST.mkdir(exist_ok=True)
 
 # Historical per-department contract probes still look for this exact pre-MAP05 literal while the
 # canonical campaign list below is authoritative: MAPS = ["MAP01", "MAP02", "MAP03", "MAP04"]
-MAPS = ["MAP01", "MAP02", "MAP03", "MAP04", "MAP05"]
+MAPS = ["MAP01", "MAP02", "MAP03", "MAP04", "MAP05", "MAP06"]
 ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO", "CVARINFO", "MENUDEF"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds", "music"]
 MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]
@@ -89,6 +89,7 @@ def decorate_payload() -> bytes:
         (GAME / "DECORATE_FROZEN").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_ELECTRONICS").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_CUSTOMER_SERVICE").read_text(encoding="utf-8").rstrip(),
+        (GAME / "DECORATE_MANAGEMENT").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
 
@@ -102,6 +103,7 @@ def zscript_payload() -> bytes:
         (GAME / "ZSCRIPT_FROZEN").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ELECTRONICS").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_CUSTOMER_SERVICE").read_text(encoding="utf-8").rstrip(),
+        (GAME / "ZSCRIPT_MANAGEMENT").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ACCESSIBILITY").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")

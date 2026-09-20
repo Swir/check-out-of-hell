@@ -18,6 +18,7 @@ TRACKS = {
     "D_COH03.mid": b"Frozen Foods - Compressor Choir",
     "D_COH04.mid": b"Electronics - Dead Pixel Choir",
     "D_COH05.mid": b"Customer Service - Please Hold Forever",
+    "D_COH06.mid": b"Management Floor - Synergy Funeral",
 }
 MAP_TRACKS = {
     "MAP01": "D_COH01",
@@ -25,6 +26,7 @@ MAP_TRACKS = {
     "MAP03": "D_COH03",
     "MAP04": "D_COH04",
     "MAP05": "D_COH05",
+    "MAP06": "D_COH06",
 }
 LUMPS = tuple(filename.removesuffix(".mid") for filename in TRACKS)
 

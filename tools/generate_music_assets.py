@@ -268,11 +268,40 @@ def generate_music_assets(game_dir: Path) -> None:
         ],
     )
 
+    management_floor = _make_track(
+        "Management Floor - Synergy Funeral",
+        tempo_bpm=50,
+        bars=24,
+        chords=[
+            (39, 46, 51),
+            (37, 44, 49),
+            (36, 43, 48),
+            (34, 41, 46),
+        ],
+        melody=[
+            (0, 1.0, 75, 0.5, 23),
+            (1, 2.5, 70, 0.75, 20),
+            (2, 3.0, 78, 0.5, 25),
+            (4, 0.5, 73, 1.0, 22),
+            (5, 2.0, 68, 0.75, 19),
+            (7, 1.0, 80, 0.5, 24),
+        ],
+        chimes=[
+            (1, 3.5, (82, 87, 91), 27),
+            (5, 3.5, (80, 85, 89), 24),
+        ],
+        drums=[
+            (0.0, 36, 7),
+            (2.0, 37, 6),
+        ],
+    )
+
     (music_dir / "D_COH01.mid").write_bytes(closing_time)
     (music_dir / "D_COH02.mid").write_bytes(warehouse)
     (music_dir / "D_COH03.mid").write_bytes(frozen_foods)
     (music_dir / "D_COH04.mid").write_bytes(electronics)
     (music_dir / "D_COH05.mid").write_bytes(customer_service)
+    (music_dir / "D_COH06.mid").write_bytes(management_floor)
 
 
 if __name__ == "__main__":
