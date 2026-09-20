@@ -7,9 +7,17 @@
 thing { x = -420.0; y = -215.0; angle = 90; type = 17161; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  420.0; y = -215.0; angle = 90; type = 17162; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
+// Destination confirmation: reuse the same project-owned FUSE signs beside the two side-lane
+// breaker targets. The duplicates are visual breadcrumbs only; they are non-blocking actors and
+// do not grant power, alter encounter state or create a second objective ledger.
+thing { x = -690.0; y = 160.0; angle = 0;   type = 17161; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  690.0; y = 360.0; angle = 180; type = 17162; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
 // Rear route hierarchy: the third breaker remains a deliberate staff-zone detour rather than
-// a centerline pickup. The sign sits outside the center strip and does not become cover.
+// a centerline pickup. The first sign pulls the player rearward; the second confirms the destination
+// from the left edge of the rear lane without becoming cover or occupying the center corridor.
 thing { x = -210.0; y = 285.0; angle = 270; type = 17163; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -210.0; y = 420.0; angle = 270; type = 17163; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // The authored deep-Overtime side-lane shutter already warns before closing. This static sign
 // makes that lane's role legible before pressure peaks without revealing or blocking progression.

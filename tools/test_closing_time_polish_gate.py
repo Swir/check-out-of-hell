@@ -11,10 +11,10 @@ PK3 = ROOT / "dist" / "checkout-of-hell-prototype.pk3"
 MAP_WAD = ROOT / "dist" / "MAP01.wad"
 
 ROUTE_SIGNS = {
-    17161: ((-420.0, -215.0), "ClosingTimeLeftFuseSign", "LFSN", "LFSNA0.png"),
-    17162: ((420.0, -215.0), "ClosingTimeRightFuseSign", "RFSN", "RFSNA0.png"),
-    17163: ((-210.0, 285.0), "ClosingTimeStaffFuseSign", "SFSN", "SFSNA0.png"),
-    17170: ((-650.0, -75.0), "ClosingTimeOvertimeLaneSign", "OTSN", "OTSNA0.png"),
+    17161: (((-420.0, -215.0), (-690.0, 160.0)), "ClosingTimeLeftFuseSign", "LFSN", "LFSNA0.png"),
+    17162: (((420.0, -215.0), (690.0, 360.0)), "ClosingTimeRightFuseSign", "RFSN", "RFSNA0.png"),
+    17163: (((-210.0, 285.0), (-210.0, 420.0)), "ClosingTimeStaffFuseSign", "SFSN", "SFSNA0.png"),
+    17170: (((-650.0, -75.0),), "ClosingTimeOvertimeLaneSign", "OTSN", "OTSNA0.png"),
 }
 
 LIGHT_PHASES = {
@@ -112,17 +112,25 @@ def main() -> int:
         if marker not in roadmap:
             fail(f"Closing Time polish gate must remain pending before manual evidence: {marker}")
 
-    # Deterministic project-owned route signs must be exact, unique and outside the permanent center strip.
+    # Deterministic project-owned route signs form a two-stage breadcrumb chain for each breaker.
+    # Every instance must stay exact, non-blocking and outside the permanent center strip.
     polish_things = parse_things(polish_text)
-    for doomednum, (expected_pos, actor_name, sprite, png_name) in ROUTE_SIGNS.items():
+    for doomednum, (expected_positions, actor_name, sprite, png_name) in ROUTE_SIGNS.items():
         matches = [thing for thing in polish_things if thing["type"] == doomednum]
-        if len(matches) != 1:
-            fail(f"Closing Time polish layer expected exactly one type {doomednum}, found {len(matches)}")
-        actual_pos = (matches[0]["x"], matches[0]["y"])
-        if actual_pos != expected_pos:
-            fail(f"Closing Time polish sign {doomednum} moved: expected {expected_pos}, got {actual_pos}")
-        if abs(float(matches[0]["x"])) < 160.0:
-            fail(f"Closing Time polish sign {doomednum} entered the permanent center corridor")
+        if len(matches) != len(expected_positions):
+            fail(
+                f"Closing Time polish layer expected {len(expected_positions)} type {doomednum} signs, "
+                f"found {len(matches)}"
+            )
+        actual_positions = {(thing["x"], thing["y"]) for thing in matches}
+        if actual_positions != set(expected_positions):
+            fail(
+                f"Closing Time polish sign {doomednum} positions changed: "
+                f"expected {set(expected_positions)}, got {actual_positions}"
+            )
+        for match in matches:
+            if abs(float(match["x"])) < 160.0:
+                fail(f"Closing Time polish sign {doomednum} entered the permanent center corridor")
 
         actor_match = re.search(
             rf"actor\s+{re.escape(actor_name)}\s+{doomednum}\s*\{{(.*?)\n\}}",
@@ -268,15 +276,20 @@ def main() -> int:
         "Gameplay pacing / balance",
         "Target-Windows human evidence",
         "staggered fluorescent phases",
+        "destination confirmation",
     ):
         if marker not in polish_doc:
             fail(f"Closing Time polish acceptance note missing: {marker}")
 
     # Verify actual built source-to-package parity rather than trusting only source files.
     built_text = read_textmap(MAP_WAD)
-    for doomednum in ROUTE_SIGNS:
-        if built_text.count(f"type = {doomednum}") != 1:
-            fail(f"Built MAP01 lost Closing Time polish sign {doomednum}")
+    for doomednum, (expected_positions, _, _, _) in ROUTE_SIGNS.items():
+        expected_count = len(expected_positions)
+        if built_text.count(f"type = {doomednum}") != expected_count:
+            fail(
+                f"Built MAP01 lost Closing Time polish sign instances for {doomednum}: "
+                f"expected {expected_count}"
+            )
     for doomednum in LIGHT_PHASES:
         if built_text.count(f"type = {doomednum}") != 2:
             fail(f"Built MAP01 lost Closing Time fluorescent phase {doomednum}")
