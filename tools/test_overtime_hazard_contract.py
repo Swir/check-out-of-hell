@@ -137,7 +137,7 @@ for marker in (
     "generate_overtime_assets(GAME)",
     'GAME / "DECORATE_OVERTIME"',
     'GAME / "ZSCRIPT_CLOCKOUT"',
-    'MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]',
+    'MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT", "POLISH"]',
     'extension = GAME / f"{map_name}_{suffix}.udmf"',
 ):
     if marker not in build:
