@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import struct
 import wave
 import zipfile
@@ -6,6 +7,15 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
 PK3 = ROOT / "dist" / "checkout-of-hell-prototype.pk3"
+
+CLOSING_TIME_CENTER_HALF_WIDTH = 300.0
+OVERTIME_ARC_RADIUS = 72.0
+CLOSING_TIME_OVERTIME_ANCHORS = {
+    (-510.0, -60.0),
+    (510.0, -60.0),
+    (-390.0, 220.0),
+    (390.0, 220.0),
+}
 
 
 def png_chunks(data: bytes):
@@ -29,6 +39,34 @@ def read_textmap(wad: bytes) -> str:
         if name == "TEXTMAP":
             return wad[offset : offset + size].decode("utf-8")
     raise SystemExit("Map WAD has no TEXTMAP lump")
+
+
+def overtime_anchor_positions(text: str) -> set[tuple[float, float]]:
+    positions: set[tuple[float, float]] = set()
+    for block in re.findall(r"thing\s*\{(.*?)\}", text, flags=re.DOTALL):
+        if not re.search(r"\btype\s*=\s*17106\s*;", block):
+            continue
+        x_match = re.search(r"\bx\s*=\s*(-?\d+(?:\.\d+)?)\s*;", block)
+        y_match = re.search(r"\by\s*=\s*(-?\d+(?:\.\d+)?)\s*;", block)
+        if not x_match or not y_match:
+            raise SystemExit("Overtime hazard anchor is missing x/y coordinates")
+        positions.add((float(x_match.group(1)), float(y_match.group(1))))
+    return positions
+
+
+def verify_closing_time_anchor_geometry(text: str, source: str) -> None:
+    positions = overtime_anchor_positions(text)
+    if positions != CLOSING_TIME_OVERTIME_ANCHORS:
+        raise SystemExit(
+            f"{source} Closing Time Overtime anchors changed: "
+            f"expected {sorted(CLOSING_TIME_OVERTIME_ANCHORS)}, got {sorted(positions)}"
+        )
+    for x, y in positions:
+        if abs(x) - OVERTIME_ARC_RADIUS <= CLOSING_TIME_CENTER_HALF_WIDTH:
+            raise SystemExit(
+                f"{source} Overtime arc at ({x}, {y}) reaches the permanent "
+                f"x=-{CLOSING_TIME_CENTER_HALF_WIDTH:.0f}..{CLOSING_TIME_CENTER_HALF_WIDTH:.0f} center corridor"
+            )
 
 
 if not PK3.exists():
@@ -108,6 +146,7 @@ if map_extension.count("type = 17106") != 4:
     raise SystemExit("Closing Time must contain exactly four Overtime hazard anchors")
 if "y = -430.0" in map_extension or "y = -365.0" in map_extension:
     raise SystemExit("Overtime hazards must not occupy the player start/clock-out zone")
+verify_closing_time_anchor_geometry(map_extension, "Source")
 
 warehouse_extension = (GAME / "MAP02_OVERTIME.udmf").read_text(encoding="utf-8")
 if warehouse_extension.count("type = 17106") != 2:
@@ -167,6 +206,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
     textmap = read_textmap(archive.read("maps/MAP01.wad"))
     if textmap.count("type = 17106") != 4:
         raise SystemExit("Packaged MAP01 does not contain all four Overtime hazard anchors")
+    verify_closing_time_anchor_geometry(textmap, "Packaged MAP01")
 
     warehouse_textmap = read_textmap(archive.read("maps/MAP02.wad"))
     if warehouse_textmap.count("type = 17106") != 2:
@@ -179,4 +219,4 @@ with zipfile.ZipFile(PK3, "r") as archive:
             raise SystemExit(f"Packaged MAP02 lost Warehouse Overtime side-lane placement: {marker}")
 
 print("Overtime environmental hazard contract: PASS")
-print("Closing Time preserves the authored schedule, and Warehouse 13.5 now adds two side-lane arcs that retire after supervisor clearance.")
+print("Closing Time keeps each 72-unit floor arc outside its permanent center corridor, and Warehouse 13.5 preserves its side-lane pressure.")
