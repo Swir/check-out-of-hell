@@ -1,0 +1,16 @@
+// Closing Time final-polish candidate layer.
+// This layer adds only non-blocking visual hierarchy; it never changes objective state,
+// collision, boss gates or the physical clock-out trigger.
+
+// Front-of-store route hierarchy: mirrored fuse signs pull the player's eye into the two
+// side departments while keeping the permanent center combat/clock-out corridor clean.
+thing { x = -420.0; y = -215.0; angle = 90; type = 17161; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  420.0; y = -215.0; angle = 90; type = 17162; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Rear route hierarchy: the third breaker remains a deliberate staff-zone detour rather than
+// a centerline pickup. The sign sits outside the center strip and does not become cover.
+thing { x = -210.0; y = 285.0; angle = 270; type = 17163; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// The authored deep-Overtime side-lane shutter already warns before closing. This static sign
+// makes that lane's role legible before pressure peaks without revealing or blocking progression.
+thing { x = -650.0; y = -75.0; angle = 90; type = 17164; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
