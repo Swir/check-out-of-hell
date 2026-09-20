@@ -14,7 +14,7 @@ This document is the acceptance bridge between the existing automated Closing Ti
 | Lighting / atmosphere | Six ceiling-mounted fixtures use three deterministic staggered fluorescent phases with the same slow reduced-flash cycle; the contract proves there is no all-fixture dark interval and route signs remain text-readable without relying on color alone. | Confirm the creepy empty-store atmosphere is strong without warning/hazard information disappearing into darkness or flicker. |
 | Clutter / visual hierarchy | Existing low-profile cone/box clutter budget stays fixed; new signs are `+NOBLOCKMAP` and remain outside the permanent center corridor. | Confirm the floor looks dressed but not visually noisy and that movement/combat lanes remain clean. |
 | Gameplay pacing / balance | Full-power recovery cache, spaced Night Manager response cadence, post-clear pressure cutoff and warned side-lane Overtime lock remain contract-tested. | Confirm each difficulty fulfils its intended role and Overtime/Night Manager pressure feels fair enough for a public demo. |
-| Target-Windows human evidence | The existing sign-off harness records per-difficulty completion/readability/balance, manual save/quit/load, controller/haptics, real-hardware performance and `final_polish_signoff`; the independent verifier binds PASS evidence to the exact commit. | A real Windows run must produce `PASS`, then `tools/verify_windows_signoff_evidence.py <evidence-dir> --expected-commit <candidate-sha>` must also pass. |
+| Target-Windows human evidence | The sign-off flows record per-difficulty completion/readability/balance, manual save/quit/load, controller/haptics, real-hardware performance and `final_polish_signoff`; the independent verifier binds PASS evidence to the exact commit. | A real Windows run must produce `PASS`, then the evidence must independently verify against the exact candidate SHA. |
 
 ## Candidate route-sign package
 
@@ -32,13 +32,19 @@ The six project-owned failing fluorescent fixtures are now split evenly across t
 
 `tools/test_closing_time_polish_gate.py` protects the exact `2 / 2 / 2` fixture distribution, non-blocking actors, slow-state timings, unique editor numbers, built MAP01/PK3 parity and mathematically checks six full cycles for any synchronized all-fixture dark interval. The lighting pass changes presentation only: objective state, collision, combat spawns, hazard timing and the physical clock-out trigger are unchanged.
 
+## One-click exact-candidate evidence kit
+
+CI now builds `checkout-of-hell-closing-time-windows-signoff-kit` from the exact PR commit. Its embedded `CHECKOUT-OF-HELL-Windows-Portable-rc.zip` is SHA-256-bound to `SIGNOFF-CANDIDATE.json`, and the kit refuses to start human evidence if the RC package manifest does not identify the same clean source commit/branch.
+
+A tester can extract the kit, connect the physical controller and double-click `RUN-SIGNOFF.bat`; no Git clone, local build, Python installation, runtime search or WAD hunt is required. `VERIFY-EVIDENCE.bat` then performs the independent evidence check against that same commit, bootstrapping pinned portable Python from the official `python.org` source when necessary. The kit never publishes a release. See `docs/WINDOWS_SIGNOFF_KIT.md`.
+
 ## Canonical closure rule
 
 Do **not** check either Closing Time polish roadmap item merely because CI is green. Both may be closed only when:
 
 1. the exact candidate commit passes the automated build/contracts and package parity checks;
-2. `WINDOWS-DEMO-SIGNOFF.bat` produces real target-Windows `PASS` evidence on a clean checkout of that same commit;
+2. either the exact-commit CI sign-off kit (`RUN-SIGNOFF.bat`) or the clean-checkout developer harness (`WINDOWS-DEMO-SIGNOFF.bat`) produces real target-Windows `PASS` evidence for that same commit;
 3. the evidence includes successful runs on all three difficulties, readability/balance confirmations, physical-controller/haptics confirmation, real-hardware Overtime/Night Manager performance sanity and `final_polish_signoff = true`;
-4. `verify_windows_signoff_evidence.py` accepts that evidence with `--expected-commit` bound to the candidate SHA.
+4. `verify_windows_signoff_evidence.py` (directly or through the kit's `VERIFY-EVIDENCE.bat`) accepts that evidence with the expected commit bound to the candidate SHA.
 
 Until then, project progress remains **86.8%** (exact weighted **86.75%**) and Demo Release readiness remains **70.0%**. No public demo or GitHub Release is authorized by this candidate package.

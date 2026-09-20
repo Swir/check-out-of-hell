@@ -1,0 +1,76 @@
+name: Build Closing Time sign-off kit
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: closing-time-signoff-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-signoff-kit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build current PK3
+        run: python tools/build.py
+
+      - name: Build exact non-public Windows RC
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python tools/package_release_candidate.py
+
+      - name: Build one-click target-Windows sign-off kit
+        run: python tools/package_windows_signoff_kit.py
+
+      - name: Verify one-click sign-off kit binding
+        run: python tools/test_windows_signoff_kit.py
+
+      - name: Upload exact candidate sign-off kit
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkout-of-hell-closing-time-windows-signoff-kit
+          path: |
+            dist/CHECKOUT-OF-HELL-Windows-Signoff-Kit.zip
+            dist/CHECKOUT-OF-HELL-Windows-Signoff-Kit.zip.sha256
+          if-no-files-found: error
+
+  windows-script-parse:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+
+      - name: Parse sign-off-kit PowerShell
+        shell: powershell
+        run: |
+          $scripts = @(
+            ".\tools\windows_signoff_kit.ps1",
+            ".\tools\verify_signoff_kit.ps1"
+          )
+          $failed = $false
+          foreach ($script in $scripts) {
+            $tokens = $null
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $script), [ref]$tokens, [ref]$errors)
+            if ($errors.Count -gt 0) {
+              $failed = $true
+              foreach ($error in $errors) {
+                Write-Error "$script line $($error.Extent.StartLineNumber): $($error.Message)"
+              }
+            }
+          }
+          if ($failed) { throw "Sign-off-kit PowerShell syntax validation failed." }
