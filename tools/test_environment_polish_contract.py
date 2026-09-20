@@ -108,7 +108,7 @@ if "coh/breaksnack      sounds/breaksnack" not in sndinfo:
 build = (ROOT / "tools" / "build.py").read_text(encoding="utf-8")
 for marker in (
     "from generate_environment_assets import generate_environment_assets",
-    'MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]',
+    'MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT", "POLISH"]',
     '(GAME / "DECORATE_ENVIRONMENT").read_text',
     "generate_environment_assets(GAME)",
 ):
