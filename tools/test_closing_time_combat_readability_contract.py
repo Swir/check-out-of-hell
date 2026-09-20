@@ -81,10 +81,10 @@ environment = parse_things(env_text)
 # The center strip is the player's strongest navigation line between the front registers and
 # the rear objective. Initial combat must pressure its edges without standing directly on it.
 initial_checkout_positions = positions(core, 17001)
-expected_inner_checkouts = {(-220.0, 90.0), (220.0, 90.0)}
-if not expected_inner_checkouts.issubset(initial_checkout_positions):
+expected_checkout_flanks = {(-220.0, 90.0), (330.0, 130.0)}
+if not expected_checkout_flanks.issubset(initial_checkout_positions):
     raise SystemExit(
-        "Closing Time inner Self-Checkout pair must remain flanked at x=+/-220, y=90"
+        "Closing Time inner Self-Checkout pressure must keep the easy-side flank plus staged hard-side shelf reveal"
     )
 
 hostile_types = {17001, 17002, 17004, 17005}
@@ -98,8 +98,9 @@ centerline_hostiles = [
 if centerline_hostiles:
     raise SystemExit(f"Initial hostile placement blocks the authored center strip: {centerline_hostiles}")
 
-# Closing Crew now receives a real population relief pass instead of relying only on global
-# damage/resource multipliers. Normal and Hard retain the full authored encounter footprint.
+# Closing Crew receives a real population relief pass instead of relying only on global
+# damage/resource multipliers. Normal and Hard retain eight threats, but the three extra actors
+# form a second east-side ring behind shelf geometry so the harder footprint unfolds with movement.
 expected_population = (5, 5, 8, 8, 8)
 actual_population = tuple(hostile_population(core, index) for index in range(5))
 if actual_population != expected_population:
@@ -107,15 +108,22 @@ if actual_population != expected_population:
         f"Unexpected Closing Time per-skill hostile population: {actual_population}; expected {expected_population}"
     )
 
-relief_contract = {
-    (17002, 510.0, 170.0),
-    (17001, 220.0, 90.0),
-    (17004, 420.0, 360.0),
+staged_hard_only = {
+    (17002, 590.0, 210.0),
+    (17001, 330.0, 130.0),
+    (17004, 520.0, 390.0),
 }
+found_staged = set()
 for thing in core:
     key = (thing["type"], thing["x"], thing["y"])
-    if key in relief_contract and thing["skills"] != (False, False, True, True, True):
-        raise SystemExit(f"Closing Crew relief actor has unexpected skill mask: {key} -> {thing['skills']}")
+    if key in staged_hard_only:
+        found_staged.add(key)
+        if thing["skills"] != (False, False, True, True, True):
+            raise SystemExit(f"Staged Normal/Hard-only actor has unexpected skill mask: {key} -> {thing['skills']}")
+        if thing["x"] < 300.0 or thing["y"] < 120.0:
+            raise SystemExit(f"Staged Normal/Hard-only actor drifted out of the protected east-side second ring: {key}")
+if found_staged != staged_hard_only:
+    raise SystemExit(f"Closing Time hard-mode staging set changed: {found_staged} != {staged_hard_only}")
 
 # Ambient Overtime pressure stays distributed around the floor rather than materializing in the
 # front-to-rear centerline/clock-out approach.
@@ -171,6 +179,14 @@ if built_population != expected_population:
     raise SystemExit(
         f"Built MAP01 lost the authored Closing Crew population relief: {built_population}"
     )
+built_staged = {
+    (thing["type"], thing["x"], thing["y"])
+    for thing in built_things
+    if (thing["type"], thing["x"], thing["y"]) in staged_hard_only
+    and thing["skills"] == (False, False, True, True, True)
+}
+if built_staged != staged_hard_only:
+    raise SystemExit(f"Built MAP01 lost the staged Normal/Hard-only second ring: {built_staged}")
 
 with zipfile.ZipFile(PK3, "r") as archive:
     if "maps/MAP01.wad" not in archive.namelist():
@@ -182,6 +198,6 @@ with zipfile.ZipFile(PK3, "r") as archive:
 
 print("Closing Time combat readability contract: PASS")
 print(
-    "Center navigation stays clear; Closing Crew runs 5 initial hostiles versus 8 on Normal/Hard; "
-    "management waves remain flanked and mirrored non-blocking Lane 06 signs frame the exit lane."
+    "Center navigation stays clear; Closing Crew runs 5 initial hostiles versus 8 on Normal/Hard, "
+    "with the three extra threats staged behind the east-side shelf ring instead of front-loading crossfire."
 )
