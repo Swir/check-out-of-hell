@@ -70,7 +70,8 @@ jobs:
           $scripts = @(
             ".\tools\windows_signoff_kit.ps1",
             ".\tools\closing_time_polish_review.ps1",
-            ".\tools\verify_signoff_kit.ps1"
+            ".\tools\verify_signoff_kit.ps1",
+            ".\tools\verify_latest_windows_signoff.ps1"
           )
           $failed = $false
           foreach ($script in $scripts) {
