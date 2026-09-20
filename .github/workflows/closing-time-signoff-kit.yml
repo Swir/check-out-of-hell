@@ -19,11 +19,16 @@ jobs:
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Exact-head workflow contract
+        run: python tools/test_signoff_exact_head_workflow.py
 
       - name: Build current PK3
         run: python tools/build.py
@@ -53,6 +58,11 @@ jobs:
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Exact-head workflow contract
+        run: python tools/test_signoff_exact_head_workflow.py
 
       - name: Parse sign-off-kit PowerShell
         shell: powershell
