@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.36.0-dev — 2026-09-20
+
+### Added
+- `MAP06 — Management Floor` as playable development content with paired executive-office wings, two opposite-side **Executive Access circuits**, powered rear boardroom shutters, a physical **Boardroom Breaker Authorization**, deep-Overtime Executive Audit pressure and the existing physical return-to-clock-out rule.
+- A save-safe ten-second **Boardroom Review**: Security Price Scanner at 4 seconds, a second warning at 7 seconds, Angry Self-Checkout at 9 seconds and the authoritative final `CheckoutFuse 3/3` only at 10 seconds.
+- **The District Director**, a 1400-health first-pass corporate boss that reuses only project-owned Regional Manager presentation while changing durability/projectile rhythm; progression remains outside the boss actor and shared supervisor clearance is granted by a dedicated death handler.
+- A sixth deterministic project-owned soundtrack, `D_COH06.mid` — **Management Floor — Synergy Funeral**, plus `docs/MANAGEMENT_FLOOR.md` as the implementation/remaining-work note.
+
+### Changed
+- Full authorization now arms a separate four-second visual/audio District Director arrival warning. The recurring Executive Audit cannot begin before both circuits plus Overtime stage 2, warns for two seconds, repeats at deterministic `32 / 22` second spacing, pauses during the fixed Boardroom Review and leaves eight seconds of recovery afterward.
+- Build/smoke/music wiring now treats MAP06 as real playable content and the campaign loop is `Closing Time -> Warehouse 13.5 -> Frozen Foods -> Electronics -> Customer Service -> Management Floor -> Closing Time`.
+- README, ROADMAP, `docs/LEVEL_DESIGN.md` and `docs/MUSIC.md` now describe the implemented Management Floor content. README development version is `0.36.0-dev`; project progress remains **86.8%** from exact weighted **86.75%**, while Demo Release readiness remains **70.0%** because the new first-pass department does not close the broader Full Game department milestone or target-Windows human sign-off gate.
+
+### Validation
+- `tools/test_management_floor_contract.py` protects exact objective counts/placement, the `4 / 7 / 9 / 10` Boardroom Review timing, no-direct-fuse authorization rule, four-second District Director arrival, Executive Audit pause/recovery and `32 / 22` cadence, packaged MAP06/DECORATE/ZScript/MAPINFO parity and the Management Floor implementation note. `tools/build.py` runs that contract against the freshly closed PK3.
+- Exact-head repository CI remains the merge gate, including build/smoke, README PRO v2, Progress SVG PRO, pinned-GZDoom Windows parser/runtime, real two-process save/load and Windows/legal-content RC checks. No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
+
 ## 0.35.5-dev — 2026-09-20
 
 ### Added
@@ -80,7 +97,7 @@
 ### Added
 - `MAP05 — Customer Service` is now documented as real playable development content: a serpentine queue, two service-desk power repairs, standard Overtime pressure, a power-gated Night Manager, optional Corporate Compliance Memos, an optional stash and the existing physical return-to-entry clock-out flow.
 - After the two desk circuits are restored, a physical **Refund Authorization Terminal** now replaces the former third loose Breaker Fuse. Interacting with it starts a save-safe twelve-second Corporate verification hold instead of granting full power immediately.
-- The refund audit uses a readable authored sequence from an outer rear queue lane: Angry Self-Checkout at 2 seconds, warning at 5, Security Price Scanner at 7 seconds, warning at 9, Cart of Doom at 10, and the authoritative final `CheckoutFuse` at 12 seconds.
+- The refund audit uses a readable authored sequence from an outer rear queue lane: Angry Self-Checkout at 2 seconds, warning at 5, Security Price Scanner at 7, warning at 9, Cart of Doom at 10, and the authoritative final `CheckoutFuse` at 12 seconds.
 - `tools/test_customer_service_contract.py` protects source registration, exact objective counts/timing, project packaging and byte-exact built `MAP05` TEXTMAP parity; the smoke test now understands the two-circuit + refund-audit loop as well.
 
 ### Changed

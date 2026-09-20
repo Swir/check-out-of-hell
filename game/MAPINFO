@@ -1,7 +1,7 @@
 gameinfo
 {
     PlayerClasses = "DoomPlayer"
-    AddEventHandlers = "CheckoutShiftDirector", "CheckoutAccessibilityHandler", "WarehouseSafetyStateHandler", "FrozenSurgeStateHandler"
+    AddEventHandlers = "CheckoutShiftDirector", "CheckoutAccessibilityHandler", "WarehouseSafetyStateHandler", "FrozenSurgeStateHandler", "ManagementDirectorClearHandler"
 }
 
 DoomEdNums
@@ -37,6 +37,9 @@ DoomEdNums
     17155 = "CustomerServiceComplaintQueueSpawner"
     17156 = "ClosingTimeLockdownSpawner"
     17157 = "WarehousePalletRushSpawner"
+    17158 = "ManagementDirectorArrivalSpawner"
+    17159 = "ManagementExecutiveAuditSpawner"
+    17160 = "ManagementBoardroomReviewSequence"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
@@ -121,8 +124,17 @@ map MAP04 "Electronics"
 map MAP05 "Customer Service"
 {
     levelnum = 5
-    next = "MAP01"
+    next = "MAP06"
     sky1 = "SKY1"
     music = "D_COH05"
+    nointermission
+}
+
+map MAP06 "Management Floor"
+{
+    levelnum = 6
+    next = "MAP01"
+    sky1 = "SKY1"
+    music = "D_COH06"
     nointermission
 }

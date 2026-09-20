@@ -9,13 +9,14 @@ DECORATE = ROOT / "game" / "DECORATE"
 MAPINFO = ROOT / "game" / "MAPINFO"
 ZSCRIPT = ROOT / "game" / "ZSCRIPT"
 
-PLAYABLE_MAPS = ("MAP01", "MAP02", "MAP03", "MAP04", "MAP05")
+PLAYABLE_MAPS = ("MAP01", "MAP02", "MAP03", "MAP04", "MAP05", "MAP06")
 EXPECTED_CHAIN = {
     "MAP01": "MAP02",
     "MAP02": "MAP03",
     "MAP03": "MAP04",
     "MAP04": "MAP05",
-    "MAP05": "MAP01",
+    "MAP05": "MAP06",
+    "MAP06": "MAP01",
 }
 MAP_LAYER_SUFFIXES = ("OVERTIME", "ENVIRONMENT")
 
@@ -92,6 +93,8 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "actor FrozenCompressorReset",
         "actor ElectronicsNetworkReboot",
         "actor CustomerServiceRefundAuthorization",
+        "actor ManagementBoardroomAuthorization",
+        "actor DistrictDirector",
     ):
         if marker not in packaged_decorate:
             raise SystemExit(f"Packaged DECORATE lost subsystem marker: {marker}")
@@ -103,6 +106,8 @@ with zipfile.ZipFile(PK3, "r") as archive:
         "class FrozenCompressorResetSpawner : Actor",
         "class ElectronicsNetworkRebootSequence : Actor",
         "class CustomerServiceRefundAuditSequence : Actor",
+        "class ManagementDirectorArrivalSpawner : Actor",
+        "class ManagementExecutiveAuditSpawner : Actor",
         "class CheckoutAccessibilityHandler : EventHandler",
     ):
         if marker not in packaged_zscript:
@@ -147,6 +152,8 @@ for map_name in PLAYABLE_MAPS:
 
 if 'AddEventHandlers = "CheckoutShiftDirector"' not in mapinfo:
     raise SystemExit("CheckoutShiftDirector is not registered in MAPINFO")
+if '"ManagementDirectorClearHandler"' not in mapinfo:
+    raise SystemExit("Management Floor director-clear handler is not registered in MAPINFO")
 if '17100 = "CheckoutOvertimeSpawner"' not in mapinfo:
     raise SystemExit("Overtime spawner DoomEdNum is missing")
 if '17101 = "CheckoutManagerSpawner"' not in mapinfo:
@@ -163,6 +170,10 @@ if '17151 = "CustomerServiceRefundAuthorizationSpawner"' not in mapinfo:
     raise SystemExit("Customer Service refund terminal DoomEdNum is missing")
 if '17152 = "CustomerServiceRefundAuditSequence"' not in mapinfo:
     raise SystemExit("Customer Service refund audit DoomEdNum is missing")
+if '17158 = "ManagementDirectorArrivalSpawner"' not in mapinfo:
+    raise SystemExit("Management Floor District Director arrival DoomEdNum is missing")
+if '17159 = "ManagementExecutiveAuditSpawner"' not in mapinfo:
+    raise SystemExit("Management Floor Executive Audit DoomEdNum is missing")
 
 zscript = ZSCRIPT.read_text(encoding="utf-8")
 for required in (
@@ -231,8 +242,22 @@ if map05.count("type = 17105") < 3:
 if "type = 17003" in map05:
     raise SystemExit("MAP05 must not pre-place Night Manager before Customer Service power restoration")
 
+map06 = (ROOT / "game" / "MAP06.udmf").read_text(encoding="utf-8")
+if map06.count("type = 17111") != 2:
+    raise SystemExit("MAP06 must use exactly two Executive Access circuit repairs")
+if map06.count("type = 17102") != 2 or map06.count("type = 17020") != 1:
+    raise SystemExit("MAP06 must gate one Boardroom Breaker Authorization behind two powered shutters")
+if map06.count("type = 17158") != 1 or map06.count("type = 17159") != 1:
+    raise SystemExit("MAP06 must contain one District Director arrival and one Executive Audit anchor")
+if map06.count("type = 17106") < 2:
+    raise SystemExit("MAP06 must keep at least two telegraphed Overtime hazard anchors off the center route")
+if map06.count("type = 17105") < 3:
+    raise SystemExit("MAP06 must retain three optional corporate memo discoveries")
+if "type = 17006" in map06:
+    raise SystemExit("MAP06 must not pre-place Regional Manager before boardroom authorization")
+
 print("Smoke test: PASS")
 print(
     "PK3 structure, exact packaged UDMF parity, campaign topology and staged objective loops "
-    "for MAP01/MAP02/MAP03/MAP04/MAP05 look valid."
+    "for MAP01/MAP02/MAP03/MAP04/MAP05/MAP06 look valid."
 )

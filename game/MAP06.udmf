@@ -1,0 +1,123 @@
+namespace = "ZDoom";
+
+vertex { x = -780.0; y = -500.0; }
+vertex { x =  780.0; y = -500.0; }
+vertex { x =  780.0; y =  500.0; }
+vertex { x = -780.0; y =  500.0; }
+
+// Management Floor uses paired executive-office wings around a permanently open central corridor.
+vertex { x = -620.0; y = -260.0; }
+vertex { x = -180.0; y = -260.0; }
+vertex { x =  180.0; y = -260.0; }
+vertex { x =  620.0; y = -260.0; }
+vertex { x = -620.0; y =    0.0; }
+vertex { x = -180.0; y =    0.0; }
+vertex { x =  180.0; y =    0.0; }
+vertex { x =  620.0; y =    0.0; }
+vertex { x = -620.0; y =  260.0; }
+vertex { x = -180.0; y =  260.0; }
+vertex { x =  180.0; y =  260.0; }
+vertex { x =  620.0; y =  260.0; }
+
+// Rear boardroom wall leaves one narrow center doorway. Two powered shutters seal the doorway until
+// both executive access circuits are restored, so the final authorization cannot be grabbed early.
+vertex { x = -600.0; y = 330.0; }
+vertex { x =  -50.0; y = 330.0; }
+vertex { x =   50.0; y = 330.0; }
+vertex { x =  600.0; y = 330.0; }
+
+sector
+{
+    heightfloor = 0;
+    heightceiling = 176;
+    texturefloor = "CHKFLR";
+    textureceiling = "CHKCEIL";
+    lightlevel = 136;
+}
+
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+sidedef { sector = 0; texturemiddle = "CHKWALL"; }
+
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+sidedef { sector = 0; texturemiddle = "CHKSHELF"; }
+
+linedef { v1 = 0; v2 = 1; sidefront = 0; blocking = true; }
+linedef { v1 = 1; v2 = 2; sidefront = 1; blocking = true; }
+linedef { v1 = 2; v2 = 3; sidefront = 2; blocking = true; }
+linedef { v1 = 3; v2 = 0; sidefront = 3; blocking = true; }
+
+linedef { v1 = 4;  v2 = 5;  sidefront = 4;  sideback = 5;  blocking = true; }
+linedef { v1 = 6;  v2 = 7;  sidefront = 6;  sideback = 7;  blocking = true; }
+linedef { v1 = 8;  v2 = 9;  sidefront = 8;  sideback = 9;  blocking = true; }
+linedef { v1 = 10; v2 = 11; sidefront = 10; sideback = 11; blocking = true; }
+linedef { v1 = 12; v2 = 13; sidefront = 12; sideback = 13; blocking = true; }
+linedef { v1 = 14; v2 = 15; sidefront = 14; sideback = 15; blocking = true; }
+linedef { v1 = 16; v2 = 17; sidefront = 16; sideback = 17; blocking = true; }
+linedef { v1 = 18; v2 = 19; sidefront = 18; sideback = 19; blocking = true; }
+
+thing
+{
+    x = 0.0; y = -430.0; angle = 90; type = 1;
+    skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true;
+    single = true; coop = true; dm = true;
+}
+
+// Core shift kit keeps the first Management Floor pass immediately playable from a clean start.
+thing { x = -180.0; y = -365.0; angle = 0; type = 2001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  180.0; y = -365.0; angle = 180; type = 2002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =    0.0; y = -235.0; angle = 0; type = 17010; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Two Executive Access circuits pull the player through opposite office wings.
+thing { x = -655.0; y = -120.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  655.0; y =  105.0; angle = 180; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// The boardroom doorway is physically closed until 2/3 power. The project-owned authorization file
+// starts a ten-second Boardroom Review instead of granting the last power token immediately. One
+// authored outer-left response anchor owns that fixed objective beat so the center route remains clear.
+thing { x = -18.0; y = 330.0; angle = 90; type = 17102; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  18.0; y = 330.0; angle = 90; type = 17102; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =   0.0; y = 410.0; angle = 180; type = 17020; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -560.0; y = 410.0; angle = 0; type = 17160; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Full authorization arms a four-second executive arrival warning before the District Director enters.
+thing { x = 0.0; y = 390.0; angle = 270; type = 17158; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -560.0; y = 385.0; angle = 0; type = 17103; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  555.0; y = 385.0; angle = 180; type = 17128; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// A department-specific executive audit joins deep Overtime only after both office circuits are live.
+// It warns for two seconds and uses the outer-right lane, leaving the center boardroom/clock-out route open.
+// The Boardroom Review temporarily pauses this recurring pressure and grants eight seconds of recovery.
+thing { x = 650.0; y = 225.0; angle = 180; type = 17159; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Baseline Overtime stays on outer lanes. The physical exit remains the shared front-center trigger.
+thing { x = -690.0; y =  185.0; angle = 0; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  690.0; y =  -70.0; angle = 180; type = 17100; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -520.0; y =   65.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  520.0; y =  270.0; angle = 180; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 0.0; y = -365.0; angle = 90; type = 17132; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+
+// Initial pressure and optional corporate jokes live off the central corridor.
+thing { x = -560.0; y = -350.0; angle = 0; type = 17001; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  565.0; y = -220.0; angle = 180; type = 17004; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -575.0; y =  115.0; angle = 315; type = 17002; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  565.0; y =  300.0; angle = 225; type = 17005; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -700.0; y =  -15.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  700.0; y =  250.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -360.0; y =  430.0; angle = 0; type = 17105; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  360.0; y =  430.0; angle = 180; type = 17112; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

@@ -14,6 +14,7 @@ from generate_warehouse_assets import generate_warehouse_assets
 from generate_clockout_assets import generate_clockout_assets
 from generate_combat_audio_polish import generate_combat_audio_polish
 from generate_music_assets import generate_music_assets
+from test_management_floor_contract import main as validate_management_floor_contract
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
@@ -22,7 +23,7 @@ DIST.mkdir(exist_ok=True)
 
 # Historical per-department contract probes still look for this exact pre-MAP05 literal while the
 # canonical campaign list below is authoritative: MAPS = ["MAP01", "MAP02", "MAP03", "MAP04"]
-MAPS = ["MAP01", "MAP02", "MAP03", "MAP04", "MAP05"]
+MAPS = ["MAP01", "MAP02", "MAP03", "MAP04", "MAP05", "MAP06"]
 ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO", "CVARINFO", "MENUDEF"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds", "music"]
 MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]
@@ -89,6 +90,7 @@ def decorate_payload() -> bytes:
         (GAME / "DECORATE_FROZEN").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_ELECTRONICS").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_CUSTOMER_SERVICE").read_text(encoding="utf-8").rstrip(),
+        (GAME / "DECORATE_MANAGEMENT").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
 
@@ -102,6 +104,7 @@ def zscript_payload() -> bytes:
         (GAME / "ZSCRIPT_FROZEN").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ELECTRONICS").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_CUSTOMER_SERVICE").read_text(encoding="utf-8").rstrip(),
+        (GAME / "ZSCRIPT_MANAGEMENT").read_text(encoding="utf-8").rstrip(),
         (GAME / "ZSCRIPT_ACCESSIBILITY").read_text(encoding="utf-8").rstrip(),
     ]
     return ("\n\n".join(chunks) + "\n").encode("utf-8")
@@ -145,6 +148,10 @@ with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
 
     for map_wad in built_maps:
         archive.write(map_wad, f"maps/{map_wad.name}")
+
+# Run the dedicated Management Floor objective/pressure contract immediately after the package is
+# closed so every normal build validates source-to-PK3 parity for this new campaign department.
+validate_management_floor_contract()
 
 print(f"Built: {pk3}")
 for map_wad in built_maps:

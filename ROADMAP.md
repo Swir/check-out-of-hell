@@ -143,4 +143,4 @@ Current weighted calculation: `(100 × 10%) + (99 × 25%) + (95 × 40%) + (70 ×
 - [ ] Co-op investigation
 - [ ] Localization
 
-**Implemented evidence without milestone closure:** `MAP04 — Electronics` and `MAP05 — Customer Service` now exist as playable development departments with their own objective/hazard contracts. Phase 4 intentionally remains **0%** because two first-pass departments do not complete the broader `More departments / biomes` milestone or any other Full Game checklist item.
+**Implemented evidence without milestone closure:** `MAP04 — Electronics`, `MAP05 — Customer Service` and `MAP06 — Management Floor` now exist as playable development departments with their own objective/pressure contracts. MAP06 currently implements two Executive Access circuits, a save-safe ten-second Boardroom Review, a warned District Director handoff and stage-scaled Executive Audit pressure; see [`docs/MANAGEMENT_FLOOR.md`](docs/MANAGEMENT_FLOOR.md). Phase 4 intentionally remains **0%** because three first-pass departments do not complete the broader `More departments / biomes` milestone or any other Full Game checklist item.

@@ -1,0 +1,100 @@
+// CHECKOUT OF HELL - Management Floor development actors.
+// The first playable Management Floor pass reuses only project-owned presentation already shipped
+// by this repository. No proprietary Doom, Star Wars or other ripped commercial assets are used.
+
+// Hidden hand-off state for the boardroom review. The physical authorization pickup starts a timed
+// corporate approval hold; the sequence actor owns the final authoritative CheckoutFuse grant.
+actor ManagementBoardroomReviewPending : Inventory
+{
+    Tag "Boardroom Review Pending"
+    Inventory.MaxAmount 1
+
+    States
+    {
+    Spawn:
+        TNT1 A -1
+        Stop
+    }
+}
+
+// Physical boardroom work item. It lives behind the existing 2/3-power staff shutters and starts a
+// timed approval hold instead of granting the final power token immediately.
+actor ManagementBoardroomAuthorization : CustomInventory 17020
+{
+    Tag "Boardroom Breaker Authorization"
+    Inventory.PickupMessage "Boardroom review started. Hold the floor for corporate approval."
+    Inventory.PickupSound "coh/fuse"
+    Inventory.MaxAmount 1
+
+    States
+    {
+    Spawn:
+        ENRB A -1 Bright
+        Stop
+    Pickup:
+        TNT1 A 0 A_GiveInventory("ManagementBoardroomReviewPending", 1)
+        Stop
+    }
+}
+
+// First Management Floor boss prototype. It intentionally reuses the project's own Regional Manager
+// sprite/audio family while changing health and projectile rhythm, so the gameplay can be validated
+// before a later unique visual pass is justified.
+actor DistrictDirector : RegionalManager
+{
+    Tag "The District Director"
+    Health 1400
+    Speed 11
+    PainChance 28
+
+    States
+    {
+    Spawn:
+        RMGR A 10 A_Look
+        Loop
+    See:
+        RMGR A 3 A_Chase
+        RMGR B 3 A_Chase
+        RMGR C 3 A_Chase
+        RMGR D 3 A_Chase
+        Loop
+    Missile:
+        RMGR E 0 A_JumpIfHealthLower(700, "MissileRage")
+        RMGR E 5 A_FaceTarget
+        RMGR F 4 Bright A_PlaySound("coh/regionalstamp", CHAN_WEAPON)
+        RMGR F 0 Bright A_CustomMissile("ExecutiveStampProjectile", 44, 0, 0)
+        RMGR G 4 Bright A_PlaySound("coh/regionalattack", CHAN_WEAPON)
+        RMGR G 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 42, 0, 14)
+        RMGR G 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 42, 0, -14)
+        RMGR E 5
+        Goto See
+    MissileRage:
+        RMGR H 4 Bright A_FaceTarget
+        RMGR H 0 Bright A_PlaySound("coh/regionalphase", CHAN_BODY)
+        RMGR I 3 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, -24)
+        RMGR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, -12)
+        RMGR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, 0)
+        RMGR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, 12)
+        RMGR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, 24)
+        RMGR J 5 Bright A_PlaySound("coh/regionalstamp", CHAN_WEAPON)
+        RMGR J 0 Bright A_CustomMissile("ExecutiveStampProjectile", 46, 0, 0)
+        RMGR H 4
+        Goto See
+    Pain:
+        RMGR K 3
+        RMGR K 3 A_Pain
+        Goto See
+    Death:
+        RMGR L 6 A_PlaySound("coh/regionaldown", CHAN_BODY)
+        RMGR M 6
+        RMGR N 7 A_NoBlocking
+        RMGR O -1
+        Stop
+    Raise:
+        RMGR O 5
+        RMGR N 5
+        RMGR M 5
+        RMGR L 5
+        Goto See
+    }
+}
