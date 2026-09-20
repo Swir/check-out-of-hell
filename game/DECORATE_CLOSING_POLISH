@@ -1,0 +1,59 @@
+// CHECKOUT OF HELL - Closing Time final-polish candidate props
+// All visible assets are generated deterministically by tools/generate_closing_time_polish_assets.py.
+// These signs are deliberately non-blocking: they improve visual hierarchy without becoming cover.
+
+actor ClosingTimeLeftFuseSign 17161
+{
+    Radius 6
+    Height 100
+    +NOBLOCKMAP
+    +NOGRAVITY
+    States
+    {
+    Spawn:
+        LFSN A -1 Bright
+        Stop
+    }
+}
+
+actor ClosingTimeRightFuseSign 17162
+{
+    Radius 6
+    Height 100
+    +NOBLOCKMAP
+    +NOGRAVITY
+    States
+    {
+    Spawn:
+        RFSN A -1 Bright
+        Stop
+    }
+}
+
+actor ClosingTimeStaffFuseSign 17163
+{
+    Radius 6
+    Height 100
+    +NOBLOCKMAP
+    +NOGRAVITY
+    States
+    {
+    Spawn:
+        SFSN A -1 Bright
+        Stop
+    }
+}
+
+actor ClosingTimeOvertimeLaneSign 17170
+{
+    Radius 6
+    Height 100
+    +NOBLOCKMAP
+    +NOGRAVITY
+    States
+    {
+    Spawn:
+        OTSN A -1 Bright
+        Stop
+    }
+}

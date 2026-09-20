@@ -66,8 +66,12 @@ actor_markers = (
     "actor RestockBoxes 17125",
     "actor EmployeeBreakSnack : Stimpack 17126",
     "actor FailingFluorescent 17127",
+    "actor FailingFluorescentPhaseB 17220",
+    "actor FailingFluorescentPhaseC 17221",
     'Inventory.PickupSound "coh/breaksnack"',
     "FLIT A 70 Bright",
+    "FLIT A 24 Bright",
+    "FLIT A 48 Bright",
     "FLIT B 12",
     "FLIT C 18 Bright",
     "FLIT D 12",
@@ -85,7 +89,9 @@ expected_counts = {
     17124: 2,
     17125: 2,
     17126: 2,
-    17127: 6,
+    17127: 2,
+    17220: 2,
+    17221: 2,
 }
 for doomednum, expected in expected_counts.items():
     actual = layer.count(f"type = {doomednum}")
@@ -94,8 +100,10 @@ for doomednum, expected in expected_counts.items():
             f"Closing Time environment layer expected {expected} placements of {doomednum}, found {actual}"
         )
 
-if "height = 154.0" not in layer:
-    raise SystemExit("Closing Time fluorescent fixtures must stay ceiling-mounted")
+if sum(layer.count(f"type = {doomednum}") for doomednum in (17127, 17220, 17221)) != 6:
+    raise SystemExit("Closing Time must keep exactly six ceiling-mounted fluorescent fixtures across all timing phases")
+if layer.count("height = 154.0") != 6:
+    raise SystemExit("All six Closing Time fluorescent fixtures must stay ceiling-mounted")
 if "x = -710.0; y = -455.0" not in layer or "x = -700.0; y =  470.0" not in layer:
     raise SystemExit("Closing Time exploration snack rewards moved from their deliberate side-route positions")
 if "x = -185.0; y = -430.0" not in layer or "x =  185.0; y = -430.0" not in layer:
@@ -108,7 +116,7 @@ if "coh/breaksnack      sounds/breaksnack" not in sndinfo:
 build = (ROOT / "tools" / "build.py").read_text(encoding="utf-8")
 for marker in (
     "from generate_environment_assets import generate_environment_assets",
-    'MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]',
+    'MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT", "POLISH"]',
     '(GAME / "DECORATE_ENVIRONMENT").read_text',
     "generate_environment_assets(GAME)",
 ):
@@ -124,7 +132,13 @@ with zipfile.ZipFile(PK3, "r") as archive:
     if "sounds/breaksnack.wav" not in names:
         raise SystemExit("Emergency Break Snack cue missing from PK3")
     decorate = archive.read("DECORATE").decode("utf-8")
-    for marker in ("CustomerServiceSign", "EmployeeBreakSnack", "FailingFluorescent"):
+    for marker in (
+        "CustomerServiceSign",
+        "EmployeeBreakSnack",
+        "FailingFluorescent",
+        "FailingFluorescentPhaseB",
+        "FailingFluorescentPhaseC",
+    ):
         if marker not in decorate:
             raise SystemExit(f"Packaged DECORATE is missing environment actor: {marker}")
 
@@ -134,4 +148,7 @@ for doomednum in expected_counts:
         raise SystemExit(f"Built MAP01 does not contain environment DoomEdNum {doomednum}")
 
 print("Closing Time environment polish contract: PASS")
-print("Department signs, mirrored Lane 06 wayfinding, safe clutter, reduced-flash failing fixtures and optional joke-reward snacks are packaged and placed.")
+print(
+    "Department signs, mirrored Lane 06 wayfinding, safe clutter, six staggered reduced-flash failing fixtures "
+    "and optional joke-reward snacks are packaged and placed."
+)

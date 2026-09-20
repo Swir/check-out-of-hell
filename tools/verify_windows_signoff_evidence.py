@@ -119,7 +119,16 @@ def verify_evidence(evidence_dir: Path, *, expected_commit: str | None = None) -
         for field in ("engine_exit_ok", "completed", "no_softlock", "combat_readable", "balance_acceptable"):
             require_true(get(evidence, "manual", difficulty, field), f"manual.{difficulty}.{field}")
     require_true(get(evidence, "manual", "graveyard_shift", "save_quit_load"), "manual.graveyard_shift.save_quit_load")
-    for field in ("controller_core_actions", "controller_haptics", "performance_sanity", "final_polish_signoff"):
+    for field in (
+        "environment_art_consistent",
+        "objective_route_readable",
+        "lighting_atmosphere_acceptable",
+        "clutter_visual_hierarchy_clean",
+        "controller_core_actions",
+        "controller_haptics",
+        "performance_sanity",
+        "final_polish_signoff",
+    ):
         require_true(get(evidence, "manual", field), f"manual.{field}")
 
     package_root = evidence_dir / "package"
@@ -257,6 +266,14 @@ def verify_evidence(evidence_dir: Path, *, expected_commit: str | None = None) -
         fail("REPORT.md does not record PASS")
     if source_commit not in report_text.lower():
         fail("REPORT.md does not contain the source commit")
+    for marker in (
+        "Environment / art consistency",
+        "Objective / route readability",
+        "Lighting / atmosphere",
+        "Clutter / visual hierarchy",
+    ):
+        if marker not in report_text:
+            fail(f"REPORT.md is missing explicit Closing Time polish gate: {marker}")
 
     return {
         "commit": source_commit,

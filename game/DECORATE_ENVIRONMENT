@@ -115,6 +115,47 @@ actor FailingFluorescent 17127
     }
 }
 
+// Phase-shifted variants use the same project-owned fixture art and the same slow 112-tic cycle,
+// but begin 24/48 tics later while remaining visibly lit. This prevents a whole-floor synchronized
+// blackout without adding rapid flashes, random behavior or gameplay collision.
+actor FailingFluorescentPhaseB 17220
+{
+    Radius 4
+    Height 18
+    +NOBLOCKMAP
+    +NOGRAVITY
+    States
+    {
+    Spawn:
+        FLIT A 24 Bright
+    CycleB:
+        FLIT A 70 Bright
+        FLIT B 12
+        FLIT C 18 Bright
+        FLIT D 12
+        Goto CycleB
+    }
+}
+
+actor FailingFluorescentPhaseC 17221
+{
+    Radius 4
+    Height 18
+    +NOBLOCKMAP
+    +NOGRAVITY
+    States
+    {
+    Spawn:
+        FLIT A 48 Bright
+    CycleC:
+        FLIT A 70 Bright
+        FLIT B 12
+        FLIT C 18 Bright
+        FLIT D 12
+        Goto CycleC
+    }
+}
+
 // Invisible state token used by the pacing director. It is never placed directly in a map.
 actor SupervisorClearanceToken : Inventory
 {

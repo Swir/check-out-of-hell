@@ -10,10 +10,12 @@ from generate_regional_manager_assets import generate_regional_manager_assets
 from generate_presentation_assets import generate_presentation_assets
 from generate_overtime_assets import generate_overtime_assets
 from generate_environment_assets import generate_environment_assets
+from generate_closing_time_polish_assets import generate_closing_time_polish_assets
 from generate_warehouse_assets import generate_warehouse_assets
 from generate_clockout_assets import generate_clockout_assets
 from generate_combat_audio_polish import generate_combat_audio_polish
 from generate_music_assets import generate_music_assets
+from test_closing_time_polish_gate import main as validate_closing_time_polish_gate
 from test_management_floor_contract import main as validate_management_floor_contract
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,7 +28,7 @@ DIST.mkdir(exist_ok=True)
 MAPS = ["MAP01", "MAP02", "MAP03", "MAP04", "MAP05", "MAP06"]
 ROOT_LUMPS = ["DECORATE", "MAPINFO", "LANGUAGE", "ZSCRIPT", "SNDINFO", "CVARINFO", "MENUDEF"]
 ASSET_DIRS = ["textures", "flats", "sprites", "sounds", "music"]
-MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT"]
+MAP_LAYER_SUFFIXES = ["OVERTIME", "ENVIRONMENT", "POLISH"]
 
 
 def map_source(map_name: str) -> bytes:
@@ -87,6 +89,7 @@ def decorate_payload() -> bytes:
         (GAME / "DECORATE").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_OVERTIME").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_ENVIRONMENT").read_text(encoding="utf-8").rstrip(),
+        (GAME / "DECORATE_CLOSING_POLISH").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_FROZEN").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_ELECTRONICS").read_text(encoding="utf-8").rstrip(),
         (GAME / "DECORATE_CUSTOMER_SERVICE").read_text(encoding="utf-8").rstrip(),
@@ -117,6 +120,7 @@ generate_regional_manager_assets(GAME)
 generate_presentation_assets(GAME)
 generate_overtime_assets(GAME)
 generate_environment_assets(GAME)
+generate_closing_time_polish_assets(GAME)
 generate_warehouse_assets(GAME)
 generate_clockout_assets(GAME)
 generate_combat_audio_polish(GAME)
@@ -149,8 +153,11 @@ with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
     for map_wad in built_maps:
         archive.write(map_wad, f"maps/{map_wad.name}")
 
-# Run the dedicated Management Floor objective/pressure contract immediately after the package is
-# closed so every normal build validates source-to-PK3 parity for this new campaign department.
+# Closing Time is the current supervisor-priority polish gate. Validate its complete automated
+# sign-off candidate immediately after the package closes; the human Windows PASS remains separate.
+validate_closing_time_polish_gate()
+
+# Keep the existing Management Floor regression contract active while campaign expansion is paused.
 validate_management_floor_contract()
 
 print(f"Built: {pk3}")
