@@ -88,10 +88,12 @@ thing { x = -655.0; y = -120.0; angle = 0; type = 17111; skill1 = true; skill2 =
 thing { x =  655.0; y =  105.0; angle = 180; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // The boardroom doorway is physically closed until 2/3 power. The project-owned authorization file
-// behind it supplies the final authoritative CheckoutFuse; it is a work task, not a separate key ledger.
+// starts a ten-second Boardroom Review instead of granting the last power token immediately. One
+// authored outer-left response anchor owns that fixed objective beat so the center route remains clear.
 thing { x = -18.0; y = 330.0; angle = 90; type = 17102; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  18.0; y = 330.0; angle = 90; type = 17102; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =   0.0; y = 410.0; angle = 180; type = 17020; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -560.0; y = 410.0; angle = 0; type = 17160; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Full authorization arms a four-second executive arrival warning before the District Director enters.
 thing { x = 0.0; y = 390.0; angle = 270; type = 17158; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
@@ -100,6 +102,7 @@ thing { x =  555.0; y = 385.0; angle = 180; type = 17128; skill1 = true; skill2 
 
 // A department-specific executive audit joins deep Overtime only after both office circuits are live.
 // It warns for two seconds and uses the outer-right lane, leaving the center boardroom/clock-out route open.
+// The Boardroom Review temporarily pauses this recurring pressure and grants eight seconds of recovery.
 thing { x = 650.0; y = 225.0; angle = 180; type = 17159; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Baseline Overtime stays on outer lanes. The physical exit remains the shared front-center trigger.

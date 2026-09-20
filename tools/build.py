@@ -14,6 +14,7 @@ from generate_warehouse_assets import generate_warehouse_assets
 from generate_clockout_assets import generate_clockout_assets
 from generate_combat_audio_polish import generate_combat_audio_polish
 from generate_music_assets import generate_music_assets
+from test_management_floor_contract import main as validate_management_floor_contract
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME = ROOT / "game"
@@ -147,6 +148,10 @@ with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
 
     for map_wad in built_maps:
         archive.write(map_wad, f"maps/{map_wad.name}")
+
+# Run the dedicated Management Floor objective/pressure contract immediately after the package is
+# closed so every normal build validates source-to-PK3 parity for this new campaign department.
+validate_management_floor_contract()
 
 print(f"Built: {pk3}")
 for map_wad in built_maps:

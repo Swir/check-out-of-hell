@@ -39,6 +39,7 @@ DoomEdNums
     17157 = "WarehousePalletRushSpawner"
     17158 = "ManagementDirectorArrivalSpawner"
     17159 = "ManagementExecutiveAuditSpawner"
+    17160 = "ManagementBoardroomReviewSequence"
 }
 
 // Three authored shift difficulties keep the same readable objective and Overtime timing.
