@@ -144,8 +144,9 @@ class ManagementBoardroomReviewSequence : Actor
     }
 }
 
-// Full executive authorization gets a readable four-second arrival warning. Actor state serializes
-// normally, so save/restore resumes the warning instead of creating an instant or duplicate boss.
+// Full executive authorization gets a readable four-second arrival warning. The warning now uses
+// the District Director's own generated boardroom cue family. Actor state serializes normally, so
+// save/restore resumes the warning instead of creating an instant or duplicate boss.
 class ManagementDirectorArrivalSpawner : Actor
 {
     bool arrivalArmed;
@@ -209,7 +210,7 @@ class ManagementDirectorArrivalSpawner : Actor
             arrivalArmed = true;
             arrivalTic = Level.maptime + 35 * 4;
             Actor.Spawn("OvertimeWarningFlash", Pos);
-            p.A_StartSound("coh/regionalphase", CHAN_AUTO);
+            p.A_StartSound("coh/directorphase", CHAN_AUTO);
             return;
         }
 
@@ -222,7 +223,7 @@ class ManagementDirectorArrivalSpawner : Actor
         Actor director = Actor.Spawn("DistrictDirector", Pos);
         if (director)
         {
-            director.A_StartSound("coh/regionalphase", CHAN_BODY);
+            director.A_StartSound("coh/directorphase", CHAN_BODY);
             Destroy();
         }
     }

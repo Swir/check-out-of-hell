@@ -35,11 +35,13 @@ This keeps the Overtime escalation learnable and readable: the player can antici
 
 ## District Director
 
-The first District Director implementation is a gameplay prototype built entirely from project-owned presentation already present in the repository. It inherits the Regional Manager visual/audio family for this development pass, raises durability to 1400 health and changes the projectile rhythm into executive-stamp and Corporate Red Tape patterns.
+The District Director is now a distinct project-owned corporate boss presentation rather than a Regional Manager reskin. `tools/generate_district_director_assets.py` deterministically generates the full `DDIR A–O` sprite family: a tall executive silhouette with a cyan KPI visor, split cyan/magenta lapels, performance-review clipboard tell and oversized KPI-stamp rage tell. It also generates deterministic project-owned cue families for idle, attack, phase, stamp, pain and death sounds. The four-second boardroom arrival warning uses the same Director-specific phase cue, so the handoff and the fight share one readable audio language.
+
+The actor keeps `RegionalManager` inheritance only for already-tested collision and projectile defaults; every visible actor state uses `DDIR` frames and every boss-owned combat cue uses the `coh/director*` family. The first attack rhythm combines an executive stamp with a three-way Corporate Red Tape volley. Below half health, the Director changes to a five-way paperwork fan plus a paired executive-stamp follow-up. The gameplay remains deterministic and keeps the same 1400-health durability so this presentation pass does not quietly invalidate existing balance assumptions.
 
 The boss actor deliberately does not own fuse or supervisor progression state. A separate Management Floor death handler grants the shared `SupervisorClearanceToken`, keeping post-boss Overtime retirement and clock-out logic authoritative in one existing system.
 
-A later visual pass may give the District Director more unique presentation. No proprietary Doom, Star Wars or other ripped commercial asset is permitted to fill that gap.
+All boss art and sound are generated inside this repository. No proprietary Doom, Star Wars or other ripped commercial asset is permitted or required.
 
 ## Soundtrack
 
@@ -59,13 +61,12 @@ python tools/test_management_floor_contract.py
 python tools/test_music_contract.py
 ```
 
-The contract protects the two-circuit objective, powered shutters, physical authorization, exact `4 / 7 / 9 / 10` Boardroom Review timing, authoritative final-power hand-off, warned District Director arrival, Executive Audit pause/recovery and `32 / 22` cadence, MAP06/MAPINFO/package parity and this implementation note.
+The contract protects the two-circuit objective, powered shutters, physical authorization, exact `4 / 7 / 9 / 10` Boardroom Review timing, authoritative final-power hand-off, warned District Director arrival, Executive Audit pause/recovery and `32 / 22` cadence, the full generated `DDIR` sprite/audio family, no Regional Manager sprite-frame fallback inside the boss actor, MAP06/MAPINFO/package parity and this implementation note.
 
 ## Remaining work
 
 - Add Management Floor-specific HUD / Focus HUD wording instead of relying on shared generic objective language.
 - Add optional executive-floor secrets or useful workplace interactions only where they do not hide the two circuits, boardroom authorization or clock-out route.
-- Give the District Director a more distinct project-owned visual identity after its gameplay survives real playtesting.
 - Perform target-Windows balance/readability runs on all three authored difficulty modes, including the Boardroom Review, Executive Audit spacing, boss handoff, controller behavior, manual save/load and real-hardware performance.
 - Finalize lighting, cover and route geometry only from real playtest evidence.
 

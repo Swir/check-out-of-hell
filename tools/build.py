@@ -7,6 +7,7 @@ from generate_assets import generate_assets
 from generate_combat_assets import generate_combat_assets
 from generate_vehicle_enemy_assets import generate_vehicle_enemy_assets
 from generate_regional_manager_assets import generate_regional_manager_assets
+from generate_district_director_assets import generate_district_director_assets
 from generate_presentation_assets import generate_presentation_assets
 from generate_overtime_assets import generate_overtime_assets
 from generate_environment_assets import generate_environment_assets
@@ -114,6 +115,7 @@ generate_assets(GAME)
 generate_combat_assets(GAME)
 generate_vehicle_enemy_assets(GAME)
 generate_regional_manager_assets(GAME)
+generate_district_director_assets(GAME)
 generate_presentation_assets(GAME)
 generate_overtime_assets(GAME)
 generate_environment_assets(GAME)
@@ -149,8 +151,8 @@ with zipfile.ZipFile(pk3, "w", zipfile.ZIP_DEFLATED) as archive:
     for map_wad in built_maps:
         archive.write(map_wad, f"maps/{map_wad.name}")
 
-# Run the dedicated Management Floor objective/pressure contract immediately after the package is
-# closed so every normal build validates source-to-PK3 parity for this new campaign department.
+# Run the dedicated Management Floor objective/pressure/presentation contract immediately after the
+# package is closed so every normal build validates source-to-PK3 parity for this campaign department.
 validate_management_floor_contract()
 
 print(f"Built: {pk3}")
