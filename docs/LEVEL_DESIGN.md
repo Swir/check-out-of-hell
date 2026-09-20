@@ -128,6 +128,7 @@ Current prototype includes:
 - four telegraphed environmental Overtime hazard anchors kept away from the entry/clock-out approach,
 - one full-power compressor-surge anchor on the right service flank that activates only once Overtime is live, waits 18 seconds before its first burst, telegraphs for two seconds and repeats at deterministic `34 / 26 / 20` second spacing as pressure rises,
 - one optional opposite-side `Compressor Surge Isolation` control that suppresses only future refrigeration bursts while hostile Overtime and management remain active,
+- one optional rear-left **Recall Freezer** enclosed by project-owned shelf geometry and sealed by a shootable `Recall-Hold Stock Pile`; opening it yields a compliance memo, useful multi-ammo stash and contained Angry Self-Checkout without moving any breaker, compressor, management or Overtime anchor into the secret,
 - paired project-owned `FROZEN FOODS` signs, generated compressor-reset/isolation/burst sprites, safe restock/cone clutter, slow-failing lights and optional Emergency Break Snacks,
 - three department-local Corporate Compliance Memos as an optional exploration route,
 - a map-local initializer that clears only memo progress carried from the previous department and then destroys itself so normal save/restore inside MAP03 preserves newly collected memos,
@@ -155,14 +156,21 @@ anchors, management waves and the Night Manager remain active. Supervisor cleara
 armed compressor burst so the post-boss return remains readable. This creates a real workplace choice:
 spend movement/time on safety or accept a predictable side-lane hazard while fighting management.
 
+The rear-left Recall Freezer adds a second kind of optional decision without touching the cold-chain
+objective. One shootable project-owned stock pile seals a 64-unit shelf doorway; spending ammunition to
+open it exposes a Corporate Compliance Memo, a useful multi-ammo stash and one contained Angry
+Self-Checkout. Breakers, the compressor reset, recovery/safety controls, management anchors and Overtime
+hazards remain outside, so the secret increases cold-storage-specific exploration and encounter variety
+without becoming a key hunt or obscuring the central service lane.
+
 This is playable vertical-slice content, not a claim that Frozen Foods is a polished final campaign
-level. Future passes should deepen secrets and cold-storage encounter variety only after the current
-route survives real gameplay validation; additional refrigeration gimmicks must never become random
-punishment or obscure the central service lane.
+level. Future passes should deepen encounter variety only after the current route survives real gameplay
+validation; additional refrigeration gimmicks must never become random punishment or obscure the central
+service lane.
 
 Remaining Frozen Foods polish:
-- target-machine balance/readability playtesting across all three difficulty modes, including surge spacing and isolation-station placement,
-- stronger cold-storage-specific secrets and encounter variation without obscuring the two breaker routes or compressor task,
+- target-machine balance/readability playtesting across all three difficulty modes, including surge spacing, isolation-station placement and the Recall Freezer risk/reward loop,
+- additional cold-storage encounter variation only where it remains readable around the two breaker routes and compressor task,
 - final lighting/geometry polish after the objective route and refrigeration pressure survive real play.
 
 ## MAP04 — Electronics

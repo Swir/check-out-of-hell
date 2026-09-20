@@ -5,14 +5,17 @@
 ### Added
 - Warehouse 13.5 now has a ten-step west-wall **Staff-Only Overstock Catwalk** built from project-owned warehouse presentation. The elevated route stays outside the moving-pallet lanes and permanent central objective/clock-out corridor, adding vertical movement without hiding mandatory work.
 - A hidden **Staff Room** links into the catwalk. Its south floor entrance is sealed by one familiar shootable stock pile; breaking it opens a ground shortcut and exposes optional health/label rewards while keeping every breaker, the Freight Lift Override, Regional Manager anchor and Lockout/Tagout state outside the room.
+- Frozen Foods now has an optional rear-left **Recall Freezer** built from project-owned shelf geometry and sealed by one shootable `Recall-Hold Stock Pile`. Opening it exposes a Corporate Compliance Memo, a useful multi-ammo stash and one contained Angry Self-Checkout while all breakers, the compressor reset, safety control, management anchors and Overtime hazards remain outside the secret.
 
 ### Changed
 - Engaging the Warehouse Freight Lift Override now arms a deterministic four-second project-owned visual/audio Regional Manager arrival warning before the boss materializes. The authored boss anchor and existing `12 / 30 / 52` second rear-flank management-response cadence remain unchanged.
 - README and `docs/LEVEL_DESIGN.md` now describe the implemented vertical route, hidden Staff Room shortcut/reward loop and warned Regional Manager handoff. Project progress remains **86.8%** from exact weighted **86.75%**, while Demo Release readiness remains **70.0%** because these improvements do not complete a polished-level or target-Windows human sign-off gate.
+- `docs/LEVEL_DESIGN.md` now records the Recall Freezer risk/reward route and removes the generic stronger-secrets item from Frozen Foods' remaining polish list. Project progress remains **86.8%** from exact weighted **86.75%**, and Demo Release readiness remains **70.0%** because this optional encounter does not complete a weighted polished-level or human sign-off gate.
 
 ### Validation
 - `tools/test_warehouse_vertical_route_contract.py` protects the catwalk geometry, Staff Room doorway gaps, breakable south entrance, optional rewards, mandatory-objective exclusion and packaged MAP02/MAPINFO/ZScript wiring.
 - `tools/test_regional_manager_contract.py` protects the four-second breaker + lift-gated arrival warning and rejects the legacy instant Warehouse boss spawner. Full repository CI remains the merge gate, including build/smoke, Warehouse contracts, README PRO v2, Progress SVG PRO, pinned-GZDoom Windows parser/runtime, real two-process save/load and Windows/legal-content RC checks. No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
+- `tools/test_frozen_recall_secret_contract.py` protects the Recall Freezer enclosure/doorway, shootable stock pile, three-memo route, contained Self-Checkout payoff, optional stash, mandatory-objective exclusion and packaged MAP03/DECORATE payload. The full exact-head CI remains required before merge.
 
 ## 0.35.4-dev — 2026-09-19
 
@@ -27,7 +30,7 @@
 
 ### Validation
 - `tools/test_warehouse_lift_objective_contract.py` protects exactly two authored pallet anchors, the permanent safe central corridor, the two-circuit + Overtime-stage gate, two-second warning, staggered starts, `30 / 22` cadence, supervisor-clearance retirement, Lockout/Tagout separation and packaged MAP02/ZScript wiring.
-- Full repository CI remains the merge gate, including build/smoke, Overtime, README PRO v2, Progress SVG PRO, pinned-GZDoom parser/runtime, real two-process save/load and Windows/legal-content RC checks. No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
+- Full repository CI remains the merge gate, including build/smoke, Overtime, README PRO v2, Progress SVG PRO, pinned-GZDoom Windows parser/runtime, real two-process save/load and Windows/legal-content RC checks. No proprietary Doom, Star Wars or other ripped commercial assets were added, and no public demo or GitHub Release was created.
 
 ## 0.35.3-dev — 2026-09-19
 
@@ -77,7 +80,7 @@
 ### Added
 - `MAP05 — Customer Service` is now documented as real playable development content: a serpentine queue, two service-desk power repairs, standard Overtime pressure, a power-gated Night Manager, optional Corporate Compliance Memos, an optional stash and the existing physical return-to-entry clock-out flow.
 - After the two desk circuits are restored, a physical **Refund Authorization Terminal** now replaces the former third loose Breaker Fuse. Interacting with it starts a save-safe twelve-second Corporate verification hold instead of granting full power immediately.
-- The refund audit uses a readable authored sequence from an outer rear queue lane: Angry Self-Checkout at 2 seconds, warning at 5, Security Price Scanner at 7, warning at 9, Cart of Doom at 10, and the authoritative final `CheckoutFuse` at 12 seconds.
+- The refund audit uses a readable authored sequence from an outer rear queue lane: Angry Self-Checkout at 2 seconds, warning at 5, Security Price Scanner at 7 seconds, warning at 9, Cart of Doom at 10, and the authoritative final `CheckoutFuse` at 12 seconds.
 - `tools/test_customer_service_contract.py` protects source registration, exact objective counts/timing, project packaging and byte-exact built `MAP05` TEXTMAP parity; the smoke test now understands the two-circuit + refund-audit loop as well.
 
 ### Changed

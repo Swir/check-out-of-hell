@@ -121,6 +121,9 @@ jobs:
       - name: Frozen Foods playable department contract test
         run: python tools/test_frozen_foods_contract.py
 
+      - name: Frozen Foods Recall Freezer secret contract test
+        run: python tools/test_frozen_recall_secret_contract.py
+
       - name: Electronics playable department contract test
         run: python tools/test_electronics_contract.py
 
