@@ -39,7 +39,7 @@ The first District Director implementation is a gameplay prototype built entirel
 
 The boss actor deliberately does not own fuse or supervisor progression state. A separate Management Floor death handler grants the shared `SupervisorClearanceToken`, keeping post-boss Overtime retirement and clock-out logic authoritative in one existing system.
 
-A later visual pass may give the District Director more unique presentation, but no proprietary Doom, Star Wars or other ripped commercial asset is permitted to fill that gap.
+A later visual pass may give the District Director more unique presentation. No proprietary Doom, Star Wars or other ripped commercial asset is permitted to fill that gap.
 
 ## Soundtrack
 
