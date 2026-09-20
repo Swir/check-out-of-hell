@@ -30,6 +30,13 @@ def read_bool(block: str, field: str) -> bool:
     return match.group(1) == "true"
 
 
+def read_optional_bool(block: str, field: str, default: bool = False) -> bool:
+    match = re.search(rf"\b{field}\s*=\s*(true|false)\s*;", block)
+    if not match:
+        return default
+    return match.group(1) == "true"
+
+
 def parse_things(text: str):
     parsed = []
     for block in re.findall(r"thing\s*\{(.*?)\}", text, flags=re.DOTALL):
@@ -39,6 +46,7 @@ def parse_things(text: str):
                 "x": read_number(block, "x"),
                 "y": read_number(block, "y"),
                 "skills": tuple(read_bool(block, f"skill{i}") for i in range(1, 6)),
+                "ambush": read_optional_bool(block, "ambush"),
             }
         )
     return parsed
@@ -100,7 +108,8 @@ if centerline_hostiles:
 
 # Closing Crew receives a real population relief pass instead of relying only on global
 # damage/resource multipliers. Normal and Hard retain eight threats, but the three extra actors
-# form a second east-side ring behind shelf geometry so the harder footprint unfolds with movement.
+# form a second east-side ring behind shelf geometry and are sight-gated with the UDMF ambush flag,
+# so front-lane weapon noise cannot prematurely wake them through the occluding shelf lines.
 expected_population = (5, 5, 8, 8, 8)
 actual_population = tuple(hostile_population(core, index) for index in range(5))
 if actual_population != expected_population:
@@ -122,6 +131,8 @@ for thing in core:
             raise SystemExit(f"Staged Normal/Hard-only actor has unexpected skill mask: {key} -> {thing['skills']}")
         if thing["x"] < 300.0 or thing["y"] < 120.0:
             raise SystemExit(f"Staged Normal/Hard-only actor drifted out of the protected east-side second ring: {key}")
+        if not thing["ambush"]:
+            raise SystemExit(f"Staged Normal/Hard-only actor must remain sight-gated with ambush=true: {key}")
 if found_staged != staged_hard_only:
     raise SystemExit(f"Closing Time hard-mode staging set changed: {found_staged} != {staged_hard_only}")
 
@@ -165,7 +176,8 @@ for marker in (
     if marker not in zscript:
         raise SystemExit(f"Physical clock-out contract changed during readability pass: {marker}")
 
-# Verify the built map contains exactly the same layout and difficulty masks, not merely the source files.
+# Verify the built map contains exactly the same layout, difficulty masks and sight-gating,
+# not merely the source files.
 built_things = parse_things(read_textmap(MAP_WAD))
 if positions(built_things, 17100) != expected_overtime:
     raise SystemExit("Built MAP01 lost the flanked Overtime layout")
@@ -184,9 +196,10 @@ built_staged = {
     for thing in built_things
     if (thing["type"], thing["x"], thing["y"]) in staged_hard_only
     and thing["skills"] == (False, False, True, True, True)
+    and thing["ambush"]
 }
 if built_staged != staged_hard_only:
-    raise SystemExit(f"Built MAP01 lost the staged Normal/Hard-only second ring: {built_staged}")
+    raise SystemExit(f"Built MAP01 lost the sight-gated Normal/Hard-only second ring: {built_staged}")
 
 with zipfile.ZipFile(PK3, "r") as archive:
     if "maps/MAP01.wad" not in archive.namelist():
@@ -199,5 +212,5 @@ with zipfile.ZipFile(PK3, "r") as archive:
 print("Closing Time combat readability contract: PASS")
 print(
     "Center navigation stays clear; Closing Crew runs 5 initial hostiles versus 8 on Normal/Hard, "
-    "with the three extra threats staged behind the east-side shelf ring instead of front-loading crossfire."
+    "with the three extra threats sight-gated behind the east-side shelf ring instead of waking from front-lane noise."
 )
