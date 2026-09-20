@@ -62,6 +62,7 @@ def main() -> None:
     decorate = (GAME / "DECORATE_MANAGEMENT").read_text(encoding="utf-8")
     zscript = (GAME / "ZSCRIPT_MANAGEMENT").read_text(encoding="utf-8")
     build = (ROOT / "tools" / "build.py").read_text(encoding="utf-8")
+    management_doc = (ROOT / "docs" / "MANAGEMENT_FLOOR.md").read_text(encoding="utf-8")
 
     auth_block = decorate.split("actor ManagementBoardroomAuthorization : CustomInventory 17020", 1)[1].split(
         "actor DistrictDirector : RegionalManager", 1
@@ -152,6 +153,17 @@ def main() -> None:
     require(audit_block, "delaySeconds = 22", "Hell Rush audit cadence")
     require(audit_block, 'Actor.Spawn("ScannerTurret", Pos)', "stage-two audit response")
     require(audit_block, 'Actor.Spawn("CartOfDoom", Pos)', "Hell Rush audit response")
+
+    # The implementation note is contract-bound to the real objective timings and legal presentation.
+    require(management_doc, "# MAP06 — Management Floor", "Management Floor documentation title")
+    require(management_doc, "Executive Access circuits", "Management Floor circuit documentation")
+    require(management_doc, "10-second Boardroom Review", "Management Floor review documentation")
+    require(management_doc, "`4 / 7 / 9 / 10`", "Management Floor review timing documentation")
+    require(management_doc, "Executive Audit", "Management Floor Overtime documentation")
+    require(management_doc, "`32 / 22`", "Management Floor audit cadence documentation")
+    require(management_doc, "The District Director", "Management Floor boss documentation")
+    require(management_doc, "Management Floor — Synergy Funeral", "Management Floor music documentation")
+    require(management_doc, "No proprietary Doom, Star Wars", "Management Floor legal asset documentation")
 
     require(build, '(GAME / "DECORATE_MANAGEMENT").read_text', "DECORATE packaging")
     require(build, '(GAME / "ZSCRIPT_MANAGEMENT").read_text', "ZScript packaging")
