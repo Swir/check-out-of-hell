@@ -207,18 +207,18 @@ def main() -> int:
             if re.search(rf"\bactor\s+\w+(?:\s*:\s*\w+)?\s+{doomednum}\b", text):
                 fail(f"Closing Time fluorescent phase DoomEdNum {doomednum} also belongs to {source.name}")
 
-    # Initial combat, recurring Overtime and boss response must still leave the strongest navigation line readable.
+    # Initial combat, recurring Overtime and boss response must preserve the full authored center corridor.
     core_things = parse_things(core_text)
     hostile_types = {17001, 17002, 17004, 17005}
     blocked_center = [
         thing
         for thing in core_things
         if thing["type"] in hostile_types
-        and abs(float(thing["x"])) < 180.0
+        and abs(float(thing["x"])) <= 300.0
         and -300.0 < float(thing["y"]) < 260.0
     ]
     if blocked_center:
-        fail(f"Closing Time polish candidate blocks the center combat route: {blocked_center}")
+        fail(f"Closing Time polish candidate blocks the authored x=-300..300 center combat route: {blocked_center}")
     if {(thing["x"], thing["y"]) for thing in core_things if thing["type"] == 17103} != {
         (-430.0, 300.0),
         (430.0, 300.0),
