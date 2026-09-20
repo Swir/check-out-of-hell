@@ -9,7 +9,7 @@ This document is the acceptance bridge between the existing automated Closing Ti
 | Area | Automated candidate evidence | Manual evidence required before roadmap closure |
 | --- | --- | --- |
 | Environment / art consistency | Project-owned supermarket surfaces, props and deterministic route-sign assets; built PK3 parity is checked. | Confirm the level reads as one coherent supermarket night shift rather than disconnected prototype pieces. |
-| Combat readability | Initial threats stay off the strongest front-to-rear navigation strip; Closing Crew uses five initial threats while Normal/Hard retain eight with the three extra actors staged behind east-side shelf geometry; management-response pressure flanks the rear approach. | Confirm enemies, warnings and firefights remain readable on Closing Crew, Graveyard Shift and Corporate Hell. |
+| Combat readability | Initial threats stay off the strongest front-to-rear navigation strip; Closing Crew uses five initial threats while Normal/Hard retain eight with the three extra actors staged behind east-side shelf geometry and sight-gated with the UDMF ambush flag so opening gunfire cannot wake them through shelf occlusion. | Confirm enemies, warnings and firefights remain readable on Closing Crew, Graveyard Shift and Corporate Hell. |
 | Objective / route readability | Three breaker routes now receive explicit non-blocking `FUSE LEFT`, `FUSE RIGHT` and `FUSE STAFF` visual hierarchy; Lane 06 and post-boss CLOCK OUT guidance remain protected. | Complete breaker -> Night Manager -> physical clock-out on all three authored difficulties without route confusion or progression blockers. |
 | Lighting / atmosphere | Six ceiling-mounted fixtures use three deterministic staggered fluorescent phases with the same slow reduced-flash cycle; the contract proves there is no all-fixture dark interval and route signs remain text-readable without relying on color alone. | Confirm the creepy empty-store atmosphere is strong without warning/hazard information disappearing into darkness or flicker. |
 | Clutter / visual hierarchy | Existing low-profile cone/box clutter budget stays fixed; new signs are `+NOBLOCKMAP` and remain outside the permanent center corridor. | Confirm the floor looks dressed but not visually noisy and that movement/combat lanes remain clean. |
@@ -34,9 +34,9 @@ The six project-owned failing fluorescent fixtures are now split evenly across t
 
 ## Difficulty staging polish
 
-Closing Crew keeps five initial signature threats so its first-room pressure is meaningfully lighter instead of relying only on global damage/resource multipliers. Graveyard Shift and Corporate Hell still use the full eight-threat footprint, but the three additional actors now sit in a second east-side ring behind the authored shelf lines. This preserves the harder-mode population while turning immediate spawn-side crossfire into a movement-driven reveal as the player pushes toward the breaker routes.
+Closing Crew keeps five initial signature threats so its first-room pressure is meaningfully lighter instead of relying only on global damage/resource multipliers. Graveyard Shift and Corporate Hell still use the full eight-threat footprint, but the three additional actors now sit in a second east-side ring behind the authored shelf lines. Those three hard-mode additions also use the UDMF `ambush` flag, so front-lane weapon noise cannot wake them through the occluding shelves before visual contact; they reveal as player movement exposes the second ring. This preserves the harder-mode population while turning immediate spawn-side crossfire into a movement-driven escalation.
 
-`tools/test_closing_time_combat_readability_contract.py` protects both the `5 / 5 / 8 / 8 / 8` per-skill population and the exact hard-only second-ring positions/skill masks in source and built MAP01.
+`tools/test_closing_time_combat_readability_contract.py` protects the `5 / 5 / 8 / 8 / 8` per-skill population, exact hard-only second-ring positions/skill masks, required `ambush = true` sight-gating and built MAP01 parity.
 
 ## One-click exact-candidate evidence kit
 
