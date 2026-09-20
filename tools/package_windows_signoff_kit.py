@@ -29,10 +29,16 @@ echo.
 echo Base gameplay/hardware sign-off passed. Running explicit Closing Time polish review...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\closing_time_polish_review.ps1" -CandidateManifest ".\SIGNOFF-CANDIDATE.json" -EvidenceRoot ".\evidence"
 set "EXITCODE=%ERRORLEVEL%"
+if not "%EXITCODE%"=="0" goto :done
+echo.
+echo Explicit polish review passed. Independently verifying the newest evidence...
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\verify_signoff_kit.ps1"
+set "EXITCODE=%ERRORLEVEL%"
 :done
 echo.
 if "%EXITCODE%"=="0" (
-  echo Sign-off harness and explicit polish review reported PASS. Run VERIFY-EVIDENCE.bat before accepting the evidence.
+  echo Complete gameplay, hardware, explicit polish and evidence-verification chain: PASS.
+  echo VERIFY-EVIDENCE.bat remains available if you want to re-run the verifier later.
 ) else (
   echo Sign-off did not produce a fully verified polish PASS. No release is authorized.
 )
@@ -67,11 +73,13 @@ How to use
 3. Double-click RUN-SIGNOFF.bat.
 4. Follow the three real Closing Time playthroughs and answer only from what
    actually happened on the tested machine.
-5. After the gameplay/hardware pass, complete the explicit final-polish review for
-   environment/art consistency, objective/route readability, lighting/atmosphere,
-   and clutter/visual hierarchy.
-6. After a full PASS, double-click VERIFY-EVIDENCE.bat. The independent verifier
-   checks the newest evidence directory against this kit's exact candidate commit.
+5. Complete the explicit final-polish review for environment/art consistency,
+   objective/route readability, lighting/atmosphere, and clutter/visual hierarchy.
+6. RUN-SIGNOFF.bat automatically runs the independent evidence verifier after a
+   full gameplay/hardware/polish PASS and only reports final success if that verifier
+   accepts the exact candidate evidence.
+7. VERIFY-EVIDENCE.bat remains available to re-run the same independent verification
+   later without replaying the human judgments.
 
 The sign-off harness automatically verifies the embedded RC hash and source
 provenance, extracts the player package, verifies its manifest, obtains missing
@@ -79,7 +87,7 @@ GZDoom only from the pinned official upstream source, reuses the bundled verifie
 Freedoom content, and performs the automated save -> exit -> load round-trip before
 human play begins.
 
-No file in this kit publishes a release. PASS evidence is necessary for the
+No file in this kit publishes a release. VERIFIED PASS evidence is necessary for the
 Closing Time polish gate, but ROADMAP release gates still apply.
 
 Project: https://github.com/Swir/check-out-of-hell

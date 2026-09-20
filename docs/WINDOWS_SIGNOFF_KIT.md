@@ -16,9 +16,11 @@ The embedded player package still follows the normal distribution policy: verifi
 4. Double-click `RUN-SIGNOFF.bat`.
 5. Complete all three guided `MAP01 — Closing Time` passes and answer only from what actually happened.
 6. Complete the explicit polish review for environment/art consistency, objective/route readability, lighting/atmosphere, and clutter/visual hierarchy; a generic final yes/no alone is not sufficient evidence for canonical polish closure.
-7. After full `PASS`, double-click `VERIFY-EVIDENCE.bat` to independently verify the newest evidence directory against the kit's exact candidate commit.
+7. Stay in the same one-click flow while `RUN-SIGNOFF.bat` automatically runs the independent consistency verifier. Final success is reported only if gameplay/hardware, explicit polish and exact-candidate evidence verification all pass.
 
-The tester never needs to search for a runtime, WAD, Python installation or other dependency manually. `VERIFY-EVIDENCE.bat` reuses system Python when available or bootstraps the pinned portable Python build from `python.org`.
+`VERIFY-EVIDENCE.bat` remains available to re-run the independent verification later without replaying the human judgments.
+
+The tester never needs to search for a runtime, WAD, Python installation or other dependency manually. The verifier reuses system Python when available or bootstraps the pinned portable Python build from `python.org`.
 
 ## Candidate binding
 
@@ -34,7 +36,7 @@ Before any manual prompt, `tools/windows_signoff_kit.ps1` verifies the outer RC 
 
 After the base gameplay/hardware pass, `tools/closing_time_polish_review.ps1` records four separate manual judgments into that same evidence record: `environment_art_consistent`, `objective_route_readable`, `lighting_atmosphere_acceptable`, and `clutter_visual_hierarchy_clean`. A failed answer changes the evidence status away from `PASS`.
 
-The resulting evidence schema is consumed by `tools/verify_windows_signoff_evidence.py`. A forged/stale PASS, a missing explicit polish field, a failed polish field, or evidence from a different commit is rejected.
+`RUN-SIGNOFF.bat` then invokes `tools/verify_signoff_kit.ps1`, which feeds the newest evidence directory and the exact candidate commit into `tools/verify_windows_signoff_evidence.py`. A forged/stale PASS, a missing explicit polish field, a failed polish field, or evidence from a different commit is rejected before the one-click runner reports final success.
 
 ## Human gates remain human
 
