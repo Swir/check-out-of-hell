@@ -16,12 +16,14 @@ thing { x = -385.0; y =  438.0; angle = 0;   type = 17125; skill1 = true; skill2
 thing { x =  390.0; y =  430.0; angle = 180; type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Fluorescent fixtures make the empty-store ceiling visibly unstable without changing collision.
+// The three deterministic phase groups are distributed 2/2/2 so the entire floor never drops into
+// a synchronized dark frame while each fixture still keeps the same slow readable failure rhythm.
 thing { x = -500.0; y = -185.0; height = 154.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x = -165.0; y =  -20.0; height = 154.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =  165.0; y =  -20.0; height = 154.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -165.0; y =  -20.0; height = 154.0; angle = 0; type = 17220; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  165.0; y =  -20.0; height = 154.0; angle = 0; type = 17221; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  500.0; y = -185.0; height = 154.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x = -260.0; y =  330.0; height = 154.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =  260.0; y =  330.0; height = 154.0; angle = 0; type = 17127; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -260.0; y =  330.0; height = 154.0; angle = 0; type = 17220; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  260.0; y =  330.0; height = 154.0; angle = 0; type = 17221; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Optional useful joke rewards: visible enough to reward exploration, never required for progression.
 thing { x = -710.0; y = -455.0; angle = 0; type = 17126; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }

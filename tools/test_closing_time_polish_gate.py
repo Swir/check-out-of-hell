@@ -17,6 +17,12 @@ ROUTE_SIGNS = {
     17170: ((-650.0, -75.0), "ClosingTimeOvertimeLaneSign", "OTSN", "OTSNA0.png"),
 }
 
+LIGHT_PHASES = {
+    17127: ("FailingFluorescent", 0),
+    17220: ("FailingFluorescentPhaseB", 24),
+    17221: ("FailingFluorescentPhaseC", 48),
+}
+
 
 def fail(message: str) -> None:
     raise SystemExit(message)
@@ -71,6 +77,14 @@ def read_textmap(path: Path) -> str:
             return data[offset : offset + size].decode("utf-8")
     fail("MAP01 build output has no TEXTMAP lump")
     return ""
+
+
+def fluorescent_is_dim(tick: int, phase_offset: int) -> bool:
+    # Phase variants spend their one-time offset visibly lit, then all use the same slow 112-tic cycle.
+    if tick < phase_offset:
+        return False
+    phase = (tick - phase_offset) % 112
+    return 70 <= phase < 82 or 100 <= phase < 112
 
 
 def main() -> int:
@@ -142,14 +156,48 @@ def main() -> int:
             if re.search(rf"\bactor\s+\w+(?:\s*:\s*\w+)?\s+{doomednum}\b", text):
                 fail(f"Closing Time polish DoomEdNum {doomednum} also belongs to {source.name}")
 
-    # Clutter remains intentionally restrained while the atmosphere layer keeps slow readable light changes.
-    for doomednum, expected in ((17124, 2), (17125, 2), (17127, 6)):
+    # Clutter remains restrained while the atmosphere layer uses three staggered slow-light phases.
+    for doomednum, expected in ((17124, 2), (17125, 2), (17127, 2), (17220, 2), (17221, 2)):
         actual = env_text.count(f"type = {doomednum}")
         if actual != expected:
             fail(f"Closing Time clutter/lighting budget changed for type {doomednum}: expected {expected}, got {actual}")
-    for marker in ("FLIT A 70 Bright", "FLIT B 12", "FLIT C 18 Bright", "FLIT D 12"):
-        if marker not in decorate_env:
-            fail(f"Closing Time slow-flicker lighting contract missing: {marker}")
+
+    for doomednum, (actor_name, offset) in LIGHT_PHASES.items():
+        actor_match = re.search(
+            rf"actor\s+{re.escape(actor_name)}\s+{doomednum}\s*\{{(.*?)\n\}}",
+            decorate_env,
+            flags=re.DOTALL,
+        )
+        if not actor_match:
+            fail(f"Closing Time fluorescent phase actor missing: {actor_name}")
+        actor_block = actor_match.group(1)
+        for marker in ("+NOBLOCKMAP", "+NOGRAVITY", "FLIT A 70 Bright", "FLIT B 12", "FLIT C 18 Bright", "FLIT D 12"):
+            if marker not in actor_block:
+                fail(f"Closing Time fluorescent phase {actor_name} missing readability marker: {marker}")
+        if offset and f"FLIT A {offset} Bright" not in actor_block:
+            fail(f"Closing Time fluorescent phase {actor_name} lost its {offset}-tic visible offset")
+
+    # The stagger must mathematically prevent a synchronized all-fixture dark interval.
+    offsets = tuple(offset for _, offset in LIGHT_PHASES.values())
+    for tick in range(112 * 6):
+        if all(fluorescent_is_dim(tick, offset) for offset in offsets):
+            fail(f"Closing Time fluorescent phases synchronize into a full-floor dark interval at tick {tick}")
+
+    # Keep the new phase editor numbers unique outside the environment actor/layer.
+    for source in sorted(GAME.glob("MAP*.udmf")):
+        if source.name == "MAP01_ENVIRONMENT.udmf":
+            continue
+        text = source.read_text(encoding="utf-8")
+        for doomednum in (17220, 17221):
+            if re.search(rf"\btype\s*=\s*{doomednum}\s*;", text):
+                fail(f"Closing Time fluorescent phase DoomEdNum {doomednum} also appears in {source.name}")
+    for source in sorted(GAME.glob("DECORATE*")):
+        if source.name == "DECORATE_ENVIRONMENT":
+            continue
+        text = source.read_text(encoding="utf-8")
+        for doomednum in (17220, 17221):
+            if re.search(rf"\bactor\s+\w+(?:\s*:\s*\w+)?\s+{doomednum}\b", text):
+                fail(f"Closing Time fluorescent phase DoomEdNum {doomednum} also belongs to {source.name}")
 
     # Initial combat, recurring Overtime and boss response must still leave the strongest navigation line readable.
     core_things = parse_things(core_text)
@@ -219,6 +267,7 @@ def main() -> int:
         "Clutter / visual hierarchy",
         "Gameplay pacing / balance",
         "Target-Windows human evidence",
+        "staggered fluorescent phases",
     ):
         if marker not in polish_doc:
             fail(f"Closing Time polish acceptance note missing: {marker}")
@@ -228,6 +277,9 @@ def main() -> int:
     for doomednum in ROUTE_SIGNS:
         if built_text.count(f"type = {doomednum}") != 1:
             fail(f"Built MAP01 lost Closing Time polish sign {doomednum}")
+    for doomednum in LIGHT_PHASES:
+        if built_text.count(f"type = {doomednum}") != 2:
+            fail(f"Built MAP01 lost Closing Time fluorescent phase {doomednum}")
 
     with zipfile.ZipFile(PK3, "r") as archive:
         names = set(archive.namelist())
@@ -237,10 +289,13 @@ def main() -> int:
                 fail(f"Packaged PK3 missing Closing Time polish sprite: {png_name}")
             if actor_name not in packaged_decorate:
                 fail(f"Packaged DECORATE missing Closing Time polish actor: {actor_name}")
+        for actor_name, _ in LIGHT_PHASES.values():
+            if actor_name not in packaged_decorate:
+                fail(f"Packaged DECORATE missing Closing Time fluorescent phase actor: {actor_name}")
 
     print("Closing Time polish candidate contract: PASS")
     print(
-        "Automated art/readability/lighting/clutter/pacing/package prerequisites are protected; "
+        "Automated art/readability/staggered-lighting/clutter/pacing/package prerequisites are protected; "
         "the canonical polished-level items intentionally remain open until exact-commit target-Windows human PASS evidence."
     )
     return 0
