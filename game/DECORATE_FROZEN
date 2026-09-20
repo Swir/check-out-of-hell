@@ -57,3 +57,45 @@ actor FrozenRefrigerantBurst
         Stop
     }
 }
+
+// Optional Recall Freezer doorway. The project-owned BOXE sprite keeps this secret visually tied to
+// store stock rather than imported commercial art. Breaking it opens only the secret; no objective
+// token, compressor state or Overtime safety state is granted.
+actor FrozenRecallStockPile 17164
+{
+    Tag "Recall-Hold Stock Pile"
+    Health 65
+    Radius 30
+    Height 48
+    +SOLID
+    +SHOOTABLE
+    +NOBLOOD
+
+    States
+    {
+    Spawn:
+        BOXE A -1
+        Stop
+    Death:
+        BOXE A 3 A_PlaySound("coh/palletdown", CHAN_BODY)
+        BOXE A 0 A_NoBlocking
+        TNT1 A 1
+        Stop
+    }
+}
+
+// Optional reward behind the Recall Freezer barrier. Backpack inheritance grants a useful spread of
+// signature ammunition while the project-owned BOXE presentation keeps the joke legally clean.
+actor FrozenRecallStash : Backpack 17165
+{
+    Tag "Recall Freezer Emergency Stash"
+    Inventory.PickupMessage "Recall hold opened. Management stored emergency ammunition next to the condemned peas."
+    Inventory.PickupSound "coh/breaksnack"
+
+    States
+    {
+    Spawn:
+        BOXE A -1 Bright
+        Stop
+    }
+}
