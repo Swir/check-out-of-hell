@@ -87,18 +87,19 @@ thing { x =    0.0; y = -210.0; angle = 0; type = 17010; skill1 = true; skill2 =
 thing { x =  -90.0; y = -365.0; angle = 0; type = 2010; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =   90.0; y = -365.0; angle = 0; type = 2010; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
-// Keep the front-to-rear center strip readable: initial pressure lives in the side lanes
-// instead of standing directly on the player's primary navigation/sightline axis.
+// Keep the full authored x=-300..300 front-to-rear corridor readable: initial pressure lives
+// in the side lanes instead of standing on the player's strongest navigation/sightline axis.
 // Closing Crew removes one member of each mirrored pressure pair so Easy keeps every signature
 // threat type while avoiding the Normal/Hard crossfire density during polish sign-off.
-// The three Normal/Hard-only actors now sit in a second ring behind the east-side shelf lines
-// and use the UDMF ambush flag, so front-lane gunfire cannot wake them before visual contact.
-// This preserves the harder population while making the escalation movement-driven and readable.
+// The easy-side inner Self-Checkout now starts west of the shelf line rather than inside the
+// permanent center corridor. The three Normal/Hard-only actors remain in a second east-side ring
+// behind shelf geometry and use the UDMF ambush flag, so front-lane gunfire cannot wake them
+// before visual contact. This keeps escalation movement-driven and readable.
 thing { x = -560.0; y = -170.0; angle = 0;   type = 17001; skill1 = true;  skill2 = true;  skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  560.0; y = -170.0; angle = 180; type = 17001; skill1 = true;  skill2 = true;  skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -510.0; y =  170.0; angle = 315; type = 17002; skill1 = true;  skill2 = true;  skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  590.0; y =  210.0; angle = 225; type = 17002; skill1 = false; skill2 = false; skill3 = true; skill4 = true; skill5 = true; ambush = true; single = true; coop = true; }
-thing { x = -220.0; y =   90.0; angle = 270; type = 17001; skill1 = true;  skill2 = true;  skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -360.0; y =   90.0; angle = 270; type = 17001; skill1 = true;  skill2 = true;  skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  330.0; y =  130.0; angle = 245; type = 17001; skill1 = false; skill2 = false; skill3 = true; skill4 = true; skill5 = true; ambush = true; single = true; coop = true; }
 thing { x = -330.0; y =  360.0; angle = 315; type = 17004; skill1 = true;  skill2 = true;  skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  520.0; y =  390.0; angle = 225; type = 17004; skill1 = false; skill2 = false; skill3 = true; skill4 = true; skill5 = true; ambush = true; single = true; coop = true; }

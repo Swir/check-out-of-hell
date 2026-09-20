@@ -86,13 +86,14 @@ zscript = ZSCRIPT.read_text(encoding="utf-8")
 core = parse_things(core_text)
 environment = parse_things(env_text)
 
-# The center strip is the player's strongest navigation line between the front registers and
-# the rear objective. Initial combat must pressure its edges without standing directly on it.
+# The full authored x=-300..300 strip is the player's strongest navigation line between the
+# front registers and the rear objective. Initial combat may pressure its edges but must not
+# occupy that permanent combat/clock-out corridor.
 initial_checkout_positions = positions(core, 17001)
-expected_checkout_flanks = {(-220.0, 90.0), (330.0, 130.0)}
+expected_checkout_flanks = {(-360.0, 90.0), (330.0, 130.0)}
 if not expected_checkout_flanks.issubset(initial_checkout_positions):
     raise SystemExit(
-        "Closing Time inner Self-Checkout pressure must keep the easy-side flank plus staged hard-side shelf reveal"
+        "Closing Time inner Self-Checkout pressure must keep the west-side easy flank plus staged hard-side shelf reveal"
     )
 
 hostile_types = {17001, 17002, 17004, 17005}
@@ -100,11 +101,11 @@ centerline_hostiles = [
     thing
     for thing in core
     if thing["type"] in hostile_types
-    and abs(thing["x"]) < 180.0
+    and abs(thing["x"]) <= 300.0
     and -300.0 < thing["y"] < 260.0
 ]
 if centerline_hostiles:
-    raise SystemExit(f"Initial hostile placement blocks the authored center strip: {centerline_hostiles}")
+    raise SystemExit(f"Initial hostile placement blocks the authored x=-300..300 center corridor: {centerline_hostiles}")
 
 # Closing Crew receives a real population relief pass instead of relying only on global
 # damage/resource multipliers. Normal and Hard retain eight threats, but the three extra actors
@@ -137,13 +138,13 @@ if found_staged != staged_hard_only:
     raise SystemExit(f"Closing Time hard-mode staging set changed: {found_staged} != {staged_hard_only}")
 
 # Ambient Overtime pressure stays distributed around the floor rather than materializing in the
-# front-to-rear centerline/clock-out approach.
+# full authored center/clock-out approach.
 expected_overtime = {(-330.0, 430.0), (700.0, 440.0), (500.0, -120.0)}
 actual_overtime = positions(core, 17100)
 if actual_overtime != expected_overtime:
     raise SystemExit(f"Unexpected Closing Time Overtime anchor layout: {actual_overtime}")
-if any(abs(x) < 180.0 for x, _ in actual_overtime):
-    raise SystemExit("An Overtime reinforcement anchor returned to the center navigation strip")
+if any(abs(x) <= 300.0 for x, _ in actual_overtime):
+    raise SystemExit("An Overtime reinforcement anchor returned to the authored x=-300..300 center corridor")
 
 # The Night Manager response should flank the rear approach. Timing remains protected by the
 # pacing contract; this contract protects only the authored spatial presentation.
@@ -179,12 +180,24 @@ for marker in (
 # Verify the built map contains exactly the same layout, difficulty masks and sight-gating,
 # not merely the source files.
 built_things = parse_things(read_textmap(MAP_WAD))
+if not expected_checkout_flanks.issubset(positions(built_things, 17001)):
+    raise SystemExit("Built MAP01 lost the protected inner Self-Checkout flank positions")
 if positions(built_things, 17100) != expected_overtime:
     raise SystemExit("Built MAP01 lost the flanked Overtime layout")
 if positions(built_things, 17103) != expected_boss_waves:
     raise SystemExit("Built MAP01 lost the flanked management-response layout")
 if positions(built_things, 17123) != expected_lane_signs:
     raise SystemExit("Built MAP01 lost the mirrored front-lane signs")
+
+built_centerline_hostiles = [
+    thing
+    for thing in built_things
+    if thing["type"] in hostile_types
+    and abs(thing["x"]) <= 300.0
+    and -300.0 < thing["y"] < 260.0
+]
+if built_centerline_hostiles:
+    raise SystemExit(f"Built MAP01 reintroduced hostile pressure into the center corridor: {built_centerline_hostiles}")
 
 built_population = tuple(hostile_population(built_things, index) for index in range(5))
 if built_population != expected_population:
@@ -211,6 +224,6 @@ with zipfile.ZipFile(PK3, "r") as archive:
 
 print("Closing Time combat readability contract: PASS")
 print(
-    "Center navigation stays clear; Closing Crew runs 5 initial hostiles versus 8 on Normal/Hard, "
-    "with the three extra threats sight-gated behind the east-side shelf ring instead of waking from front-lane noise."
+    "The full x=-300..300 navigation corridor stays clear; Closing Crew runs 5 initial hostiles versus 8 on Normal/Hard, "
+    "with the easy inner flank shifted west of the shelf line and the three extra hard threats sight-gated behind the east-side ring."
 )
