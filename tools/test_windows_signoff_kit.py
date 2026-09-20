@@ -74,6 +74,7 @@ for marker in (
     "exact candidate",
     "RUN-SIGNOFF.bat",
     "VERIFY-EVIDENCE.bat",
+    "automatically runs the independent consistency verifier",
     "environment/art consistency",
     "objective/route readability",
     "lighting/atmosphere",
@@ -147,11 +148,18 @@ with zipfile.ZipFile(KIT, "r") as archive:
     for marker in (
         "windows_signoff_kit.ps1",
         "closing_time_polish_review.ps1",
+        "verify_signoff_kit.ps1",
         "SIGNOFF-CANDIDATE.json",
         "CHECKOUT-OF-HELL-Windows-Portable-rc.zip",
     ):
         if marker not in runner:
             raise SystemExit(f"One-click sign-off runner lost required binding: {marker}")
+    if not (
+        runner.index("windows_signoff_kit.ps1")
+        < runner.index("closing_time_polish_review.ps1")
+        < runner.index("verify_signoff_kit.ps1")
+    ):
+        raise SystemExit("One-click kit order must be base harness -> explicit polish review -> independent verifier")
     if "verify_signoff_kit.ps1" not in verify:
         raise SystemExit("One-click evidence verifier wrapper is not wired")
     for marker in (
@@ -159,6 +167,7 @@ with zipfile.ZipFile(KIT, "r") as archive:
         "physical controller",
         "official upstream",
         "VERIFY-EVIDENCE.bat",
+        "automatically runs the independent evidence verifier",
         "environment/art consistency",
         "objective/route readability",
         "lighting/atmosphere",
@@ -172,3 +181,4 @@ with zipfile.ZipFile(KIT, "r") as archive:
 print("Windows Closing Time sign-off kit contract: PASS")
 print(f"Candidate: {branch} @ {commit}")
 print(f"RC SHA-256: {rc_sha}")
+print("RUN-SIGNOFF.bat now reports final success only after gameplay/hardware, explicit polish and independent exact-candidate evidence verification all pass.")
