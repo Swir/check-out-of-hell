@@ -139,3 +139,26 @@ $random coh/regionalhit { coh/regionalhit_v1 coh/regionalhit_v2 coh/regionalhit_
 coh/regionaldown_v1 sounds/regionaldown_v1
 coh/regionaldown_v2 sounds/regionaldown_v2
 $random coh/regionaldown { coh/regionaldown_v1 coh/regionaldown_v2 }
+
+// District Director: Management Floor-only project-owned cue family.
+coh/directoridle_v1 sounds/directoridle_v1
+coh/directoridle_v2 sounds/directoridle_v2
+$random coh/directoridle { coh/directoridle_v1 coh/directoridle_v2 }
+coh/directorattack_v1 sounds/directorattack_v1
+coh/directorattack_v2 sounds/directorattack_v2
+coh/directorattack_v3 sounds/directorattack_v3
+$random coh/directorattack { coh/directorattack_v1 coh/directorattack_v2 coh/directorattack_v3 }
+coh/directorphase_v1 sounds/directorphase_v1
+coh/directorphase_v2 sounds/directorphase_v2
+$random coh/directorphase { coh/directorphase_v1 coh/directorphase_v2 }
+coh/directorstamp_v1 sounds/directorstamp_v1
+coh/directorstamp_v2 sounds/directorstamp_v2
+coh/directorstamp_v3 sounds/directorstamp_v3
+$random coh/directorstamp { coh/directorstamp_v1 coh/directorstamp_v2 coh/directorstamp_v3 }
+coh/directorhit_v1 sounds/directorhit_v1
+coh/directorhit_v2 sounds/directorhit_v2
+coh/directorhit_v3 sounds/directorhit_v3
+$random coh/directorhit { coh/directorhit_v1 coh/directorhit_v2 coh/directorhit_v3 }
+coh/directordown_v1 sounds/directordown_v1
+coh/directordown_v2 sounds/directordown_v2
+$random coh/directordown { coh/directordown_v1 coh/directordown_v2 }

@@ -1,6 +1,6 @@
 // CHECKOUT OF HELL - Management Floor development actors.
-// The first playable Management Floor pass reuses only project-owned presentation already shipped
-// by this repository. No proprietary Doom, Star Wars or other ripped commercial assets are used.
+// Management Floor presentation is project-owned and generated in-repository. No proprietary Doom,
+// Star Wars or other ripped commercial assets are used.
 
 // Hidden hand-off state for the boardroom review. The physical authorization pickup starts a timed
 // corporate approval hold; the sequence actor owns the final authoritative CheckoutFuse grant.
@@ -37,64 +37,69 @@ actor ManagementBoardroomAuthorization : CustomInventory 17020
     }
 }
 
-// First Management Floor boss prototype. It intentionally reuses the project's own Regional Manager
-// sprite/audio family while changing health and projectile rhythm, so the gameplay can be validated
-// before a later unique visual pass is justified.
+// The District Director now has its own project-owned sprite and audio language rather than borrowing
+// the Regional Manager silhouette. RegionalManager inheritance keeps proven collision/projectile defaults,
+// while every visible state and combat cue below is department-specific and deterministic.
 actor DistrictDirector : RegionalManager
 {
     Tag "The District Director"
     Health 1400
     Speed 11
     PainChance 28
+    SeeSound "coh/directoridle"
+    PainSound "coh/directorhit"
+    DeathSound "coh/directordown"
 
     States
     {
     Spawn:
-        RMGR A 10 A_Look
+        DDIR A 10 A_Look
         Loop
     See:
-        RMGR A 3 A_Chase
-        RMGR B 3 A_Chase
-        RMGR C 3 A_Chase
-        RMGR D 3 A_Chase
+        DDIR A 3 A_Chase
+        DDIR B 3 A_Chase
+        DDIR C 3 A_Chase
+        DDIR D 3 A_Chase
         Loop
     Missile:
-        RMGR E 0 A_JumpIfHealthLower(700, "MissileRage")
-        RMGR E 5 A_FaceTarget
-        RMGR F 4 Bright A_PlaySound("coh/regionalstamp", CHAN_WEAPON)
-        RMGR F 0 Bright A_CustomMissile("ExecutiveStampProjectile", 44, 0, 0)
-        RMGR G 4 Bright A_PlaySound("coh/regionalattack", CHAN_WEAPON)
-        RMGR G 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 42, 0, 14)
-        RMGR G 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 42, 0, -14)
-        RMGR E 5
+        DDIR E 0 A_JumpIfHealthLower(700, "MissileRage")
+        DDIR E 5 A_FaceTarget
+        DDIR F 4 Bright A_PlaySound("coh/directorstamp", CHAN_WEAPON)
+        DDIR F 0 Bright A_CustomMissile("ExecutiveStampProjectile", 44, 0, 0)
+        DDIR G 4 Bright A_PlaySound("coh/directorattack", CHAN_WEAPON)
+        DDIR G 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 42, 0, 16)
+        DDIR G 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 42, 0, 0)
+        DDIR G 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 42, 0, -16)
+        DDIR E 5
         Goto See
     MissileRage:
-        RMGR H 4 Bright A_FaceTarget
-        RMGR H 0 Bright A_PlaySound("coh/regionalphase", CHAN_BODY)
-        RMGR I 3 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, -24)
-        RMGR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, -12)
-        RMGR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, 0)
-        RMGR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, 12)
-        RMGR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 43, 0, 24)
-        RMGR J 5 Bright A_PlaySound("coh/regionalstamp", CHAN_WEAPON)
-        RMGR J 0 Bright A_CustomMissile("ExecutiveStampProjectile", 46, 0, 0)
-        RMGR H 4
+        DDIR H 4 Bright A_FaceTarget
+        DDIR H 0 Bright A_PlaySound("coh/directorphase", CHAN_BODY)
+        DDIR I 3 Bright A_CustomMissile("CorporateRedTapeProjectile", 44, 0, -28)
+        DDIR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 44, 0, -14)
+        DDIR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 44, 0, 0)
+        DDIR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 44, 0, 14)
+        DDIR I 0 Bright A_CustomMissile("CorporateRedTapeProjectile", 44, 0, 28)
+        DDIR J 5 Bright A_PlaySound("coh/directorstamp", CHAN_WEAPON)
+        DDIR J 0 Bright A_CustomMissile("ExecutiveStampProjectile", 48, 0, -10)
+        DDIR J 0 Bright A_CustomMissile("ExecutiveStampProjectile", 48, 0, 10)
+        DDIR H 4
         Goto See
     Pain:
-        RMGR K 3
-        RMGR K 3 A_Pain
+        DDIR K 3
+        DDIR K 3 A_Pain
         Goto See
     Death:
-        RMGR L 6 A_PlaySound("coh/regionaldown", CHAN_BODY)
-        RMGR M 6
-        RMGR N 7 A_NoBlocking
-        RMGR O -1
+        DDIR L 6 A_PlaySound("coh/directordown", CHAN_BODY)
+        DDIR M 6
+        DDIR N 7 A_NoBlocking
+        DDIR O -1
         Stop
     Raise:
-        RMGR O 5
-        RMGR N 5
-        RMGR M 5
-        RMGR L 5
+        DDIR O 5
+        DDIR N 5
+        DDIR M 5
+        DDIR L 5
         Goto See
     }
 }
