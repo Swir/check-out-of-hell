@@ -18,7 +18,7 @@ EXPECTED_CHAIN = {
     "MAP05": "MAP06",
     "MAP06": "MAP01",
 }
-MAP_LAYER_SUFFIXES = ("OVERTIME", "ENVIRONMENT")
+MAP_LAYER_SUFFIXES = ("OVERTIME", "ENVIRONMENT", "POLISH")
 
 if not PK3.exists():
     raise SystemExit("PK3 missing. Run: python tools/build.py")
