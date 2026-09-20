@@ -14,7 +14,7 @@ ROUTE_SIGNS = {
     17161: ((-420.0, -215.0), "ClosingTimeLeftFuseSign", "LFSN", "LFSNA0.png"),
     17162: ((420.0, -215.0), "ClosingTimeRightFuseSign", "RFSN", "RFSNA0.png"),
     17163: ((-210.0, 285.0), "ClosingTimeStaffFuseSign", "SFSN", "SFSNA0.png"),
-    17164: ((-650.0, -75.0), "ClosingTimeOvertimeLaneSign", "OTSN", "OTSNA0.png"),
+    17170: ((-650.0, -75.0), "ClosingTimeOvertimeLaneSign", "OTSN", "OTSNA0.png"),
 }
 
 
