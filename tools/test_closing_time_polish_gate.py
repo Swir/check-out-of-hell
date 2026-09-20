@@ -13,7 +13,7 @@ MAP_WAD = ROOT / "dist" / "MAP01.wad"
 ROUTE_SIGNS = {
     17161: (((-420.0, -215.0), (-690.0, 160.0)), "ClosingTimeLeftFuseSign", "LFSN", "LFSNA0.png"),
     17162: (((420.0, -215.0), (690.0, 360.0)), "ClosingTimeRightFuseSign", "RFSN", "RFSNA0.png"),
-    17163: (((-210.0, 285.0), (-210.0, 420.0)), "ClosingTimeStaffFuseSign", "SFSN", "SFSNA0.png"),
+    17163: (((-320.0, 285.0), (-320.0, 420.0)), "ClosingTimeStaffFuseSign", "SFSN", "SFSNA0.png"),
     17170: (((-650.0, -75.0),), "ClosingTimeOvertimeLaneSign", "OTSN", "OTSNA0.png"),
 }
 
@@ -113,7 +113,7 @@ def main() -> int:
             fail(f"Closing Time polish gate must remain pending before manual evidence: {marker}")
 
     # Deterministic project-owned route signs form a two-stage breadcrumb chain for each breaker.
-    # Every instance must stay exact, non-blocking and outside the permanent center strip.
+    # Every instance must stay exact, non-blocking and outside the authored x=-300..300 center strip.
     polish_things = parse_things(polish_text)
     for doomednum, (expected_positions, actor_name, sprite, png_name) in ROUTE_SIGNS.items():
         matches = [thing for thing in polish_things if thing["type"] == doomednum]
@@ -129,8 +129,8 @@ def main() -> int:
                 f"expected {set(expected_positions)}, got {actual_positions}"
             )
         for match in matches:
-            if abs(float(match["x"])) < 160.0:
-                fail(f"Closing Time polish sign {doomednum} entered the permanent center corridor")
+            if abs(float(match["x"])) <= 300.0:
+                fail(f"Closing Time polish sign {doomednum} entered the authored x=-300..300 center corridor")
 
         actor_match = re.search(
             rf"actor\s+{re.escape(actor_name)}\s+{doomednum}\s*\{{(.*?)\n\}}",
