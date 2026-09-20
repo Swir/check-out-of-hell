@@ -1,8 +1,11 @@
 // Overtime environmental hazard anchors for MAP01 — Closing Time.
 // Kept away from the player start/clock-out zone so escalation pressures routes
 // without randomly punishing the shift-complete interaction.
+// Rear anchors also keep their 72-unit arc radius outside the permanent x=-300..300
+// combat/clock-out corridor, so Overtime raises side-lane pressure without turning the
+// strongest navigation line into unavoidable floor damage.
 
 thing { x = -510.0; y =  -60.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  510.0; y =  -60.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x = -210.0; y =  250.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =  210.0; y =  250.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -390.0; y =  220.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  390.0; y =  220.0; angle = 0; type = 17106; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
