@@ -145,6 +145,10 @@ def build_valid_fixture(root: Path) -> tuple[Path, str]:
             "closing_crew": dict(difficulty),
             "graveyard_shift": graveyard,
             "corporate_hell": dict(difficulty),
+            "environment_art_consistent": True,
+            "objective_route_readable": True,
+            "lighting_atmosphere_acceptable": True,
+            "clutter_visual_hierarchy_clean": True,
             "controller_core_actions": True,
             "controller_haptics": True,
             "performance_sanity": True,
@@ -160,7 +164,13 @@ def build_valid_fixture(root: Path) -> tuple[Path, str]:
     manual_save.parent.mkdir(parents=True, exist_ok=True)
     manual_save.write_bytes(b"synthetic manual save")
     (evidence_dir / "REPORT.md").write_text(
-        f"# Evidence\n\n**Status:** PASS\n**Source commit:** {commit}\n",
+        f"# Evidence\n\n**Status:** PASS\n**Source commit:** {commit}\n\n"
+        "## Closing Time explicit polish review\n\n"
+        "| Gate | Result |\n| --- | --- |\n"
+        "| Environment / art consistency | PASS |\n"
+        "| Objective / route readability | PASS |\n"
+        "| Lighting / atmosphere | PASS |\n"
+        "| Clutter / visual hierarchy | PASS |\n",
         encoding="utf-8",
     )
     return evidence_dir, commit
@@ -195,6 +205,12 @@ with tempfile.TemporaryDirectory() as temp:
     expect_failure(evidence_dir, "failed manual controller haptics gate")
     write_json(evidence_path, valid_evidence)
 
+    failed_polish = deepcopy(valid_evidence)
+    failed_polish["manual"]["lighting_atmosphere_acceptable"] = False
+    write_json(evidence_path, failed_polish)
+    expect_failure(evidence_dir, "failed explicit lighting/atmosphere polish gate")
+    write_json(evidence_path, valid_evidence)
+
     try:
         verify_evidence(evidence_dir, expected_commit="f" * 40)
     except EvidenceError:
@@ -203,4 +219,4 @@ with tempfile.TemporaryDirectory() as temp:
         raise SystemExit("Verifier accepted evidence for the wrong expected commit")
 
 print("Windows sign-off evidence verifier contract: PASS")
-print("Valid evidence passes; tampered package data, failed human gates and stale commits are rejected.")
+print("Valid evidence passes; tampered package data, failed human/polish gates and stale commits are rejected.")

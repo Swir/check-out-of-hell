@@ -13,6 +13,7 @@ KIT_SHA = KIT.with_suffix(KIT.suffix + ".sha256")
 RC = DIST / "CHECKOUT-OF-HELL-Windows-Portable-rc.zip"
 SOURCE_FILES = {
     "tools/windows_signoff_kit.ps1": ROOT / "tools" / "windows_signoff_kit.ps1",
+    "tools/closing_time_polish_review.ps1": ROOT / "tools" / "closing_time_polish_review.ps1",
     "tools/gzdoom_save_load_smoke.ps1": ROOT / "tools" / "gzdoom_save_load_smoke.ps1",
     "tools/bootstrap_python.ps1": ROOT / "tools" / "bootstrap_python.ps1",
     "tools/verify_windows_signoff_evidence.py": ROOT / "tools" / "verify_windows_signoff_evidence.py",
@@ -23,14 +24,16 @@ SHA_RE = re.compile(r"^[0-9a-f]{64}$")
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 
 HARNESS = ROOT / "tools" / "windows_signoff_kit.ps1"
+POLISH_REVIEW = ROOT / "tools" / "closing_time_polish_review.ps1"
 VERIFY_HELPER = ROOT / "tools" / "verify_signoff_kit.ps1"
 WORKFLOW = ROOT / ".github" / "workflows" / "closing-time-signoff-kit.yml"
 DOC = ROOT / "docs" / "WINDOWS_SIGNOFF_KIT.md"
-for required in (HARNESS, VERIFY_HELPER, WORKFLOW, DOC):
+for required in (HARNESS, POLISH_REVIEW, VERIFY_HELPER, WORKFLOW, DOC):
     if not required.is_file():
         raise SystemExit(f"Windows sign-off kit source contract is missing: {required.relative_to(ROOT)}")
 
 harness_text = HARNESS.read_text(encoding="utf-8")
+polish_review_text = POLISH_REVIEW.read_text(encoding="utf-8")
 verify_helper_text = VERIFY_HELPER.read_text(encoding="utf-8")
 workflow_text = WORKFLOW.read_text(encoding="utf-8")
 doc_text = DOC.read_text(encoding="utf-8")
@@ -47,15 +50,35 @@ for marker in (
 for forbidden in ("SerialNumber", "PNPDeviceID", "DeviceID", "$env:USERNAME", "$env:COMPUTERNAME", "gh release create", "New-GitHubRelease"):
     if forbidden.lower() in harness_text.lower():
         raise SystemExit(f"Windows sign-off kit harness contains forbidden behavior/data: {forbidden}")
+for marker in (
+    "environment_art_consistent",
+    "objective_route_readable",
+    "lighting_atmosphere_acceptable",
+    "clutter_visual_hierarchy_clean",
+    "CLOSING-TIME-POLISH-REVIEW:START",
+    "Base target-Windows sign-off must report PASS",
+):
+    if marker not in polish_review_text:
+        raise SystemExit(f"Closing Time explicit polish review lost required behavior: {marker}")
 for marker in ("bootstrap_python.ps1", "verify_windows_signoff_evidence.py", "--expected-commit"):
     if marker not in verify_helper_text:
         raise SystemExit(f"Kit evidence helper lost required behavior: {marker}")
-for marker in ("package_windows_signoff_kit.py", "test_windows_signoff_kit.py", "actions/upload-artifact@v4", "windows-script-parse"):
+for marker in ("package_windows_signoff_kit.py", "test_windows_signoff_kit.py", "actions/upload-artifact@v4", "windows-script-parse", "closing_time_polish_review.ps1"):
     if marker not in workflow_text:
         raise SystemExit(f"Sign-off-kit workflow lost required gate: {marker}")
 if "windows_signoff_kit.ps1" in workflow_text and r"-File .\tools\windows_signoff_kit.ps1" in workflow_text:
     raise SystemExit("Hosted CI must not execute the interactive Windows sign-off kit harness")
-for marker in ("physical controller", "not a public demo", "exact candidate", "RUN-SIGNOFF.bat", "VERIFY-EVIDENCE.bat"):
+for marker in (
+    "physical controller",
+    "not a public demo",
+    "exact candidate",
+    "RUN-SIGNOFF.bat",
+    "VERIFY-EVIDENCE.bat",
+    "environment/art consistency",
+    "objective/route readability",
+    "lighting/atmosphere",
+    "clutter/visual hierarchy",
+):
     if marker.lower() not in doc_text.lower():
         raise SystemExit(f"Sign-off kit documentation lost required guidance: {marker}")
 
@@ -121,12 +144,26 @@ with zipfile.ZipFile(KIT, "r") as archive:
     runner = archive.read("RUN-SIGNOFF.bat").decode("utf-8")
     verify = archive.read("VERIFY-EVIDENCE.bat").decode("utf-8")
     readme = archive.read("README-SIGNOFF.txt").decode("utf-8")
-    for marker in ("windows_signoff_kit.ps1", "SIGNOFF-CANDIDATE.json", "CHECKOUT-OF-HELL-Windows-Portable-rc.zip"):
+    for marker in (
+        "windows_signoff_kit.ps1",
+        "closing_time_polish_review.ps1",
+        "SIGNOFF-CANDIDATE.json",
+        "CHECKOUT-OF-HELL-Windows-Portable-rc.zip",
+    ):
         if marker not in runner:
             raise SystemExit(f"One-click sign-off runner lost required binding: {marker}")
     if "verify_signoff_kit.ps1" not in verify:
         raise SystemExit("One-click evidence verifier wrapper is not wired")
-    for marker in ("not a public demo", "physical controller", "official upstream", "VERIFY-EVIDENCE.bat"):
+    for marker in (
+        "not a public demo",
+        "physical controller",
+        "official upstream",
+        "VERIFY-EVIDENCE.bat",
+        "environment/art consistency",
+        "objective/route readability",
+        "lighting/atmosphere",
+        "clutter/visual hierarchy",
+    ):
         if marker.lower() not in readme.lower():
             raise SystemExit(f"Sign-off kit README lost required guidance: {marker}")
     if "gh release create" in runner.lower() or "gh release create" in verify.lower():

@@ -69,6 +69,7 @@ jobs:
         run: |
           $scripts = @(
             ".\tools\windows_signoff_kit.ps1",
+            ".\tools\closing_time_polish_review.ps1",
             ".\tools\verify_signoff_kit.ps1"
           )
           $failed = $false

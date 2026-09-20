@@ -24,11 +24,17 @@ echo This kit never publishes a release. It records local evidence only.
 echo.
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\windows_signoff_kit.ps1" -CandidateManifest ".\SIGNOFF-CANDIDATE.json" -RcZip ".\candidate\CHECKOUT-OF-HELL-Windows-Portable-rc.zip" -EvidenceRoot ".\evidence"
 set "EXITCODE=%ERRORLEVEL%"
+if not "%EXITCODE%"=="0" goto :done
+echo.
+echo Base gameplay/hardware sign-off passed. Running explicit Closing Time polish review...
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\tools\closing_time_polish_review.ps1" -CandidateManifest ".\SIGNOFF-CANDIDATE.json" -EvidenceRoot ".\evidence"
+set "EXITCODE=%ERRORLEVEL%"
+:done
 echo.
 if "%EXITCODE%"=="0" (
-  echo Sign-off harness reported PASS. Run VERIFY-EVIDENCE.bat before accepting the evidence.
+  echo Sign-off harness and explicit polish review reported PASS. Run VERIFY-EVIDENCE.bat before accepting the evidence.
 ) else (
-  echo Sign-off harness did not produce PASS. No release is authorized.
+  echo Sign-off did not produce a fully verified polish PASS. No release is authorized.
 )
 pause
 exit /b %EXITCODE%
@@ -61,8 +67,11 @@ How to use
 3. Double-click RUN-SIGNOFF.bat.
 4. Follow the three real Closing Time playthroughs and answer only from what
    actually happened on the tested machine.
-5. After a PASS, double-click VERIFY-EVIDENCE.bat. The independent verifier checks
-   the newest evidence directory against this kit's exact candidate commit.
+5. After the gameplay/hardware pass, complete the explicit final-polish review for
+   environment/art consistency, objective/route readability, lighting/atmosphere,
+   and clutter/visual hierarchy.
+6. After a full PASS, double-click VERIFY-EVIDENCE.bat. The independent verifier
+   checks the newest evidence directory against this kit's exact candidate commit.
 
 The sign-off harness automatically verifies the embedded RC hash and source
 provenance, extracts the player package, verifies its manifest, obtains missing
@@ -164,6 +173,7 @@ def main() -> int:
         f"candidate/{RC_CHECKSUM.name}": read_required(RC_CHECKSUM),
         "runtime-lock.json": read_required(ROOT / "runtime-lock.json"),
         "tools/windows_signoff_kit.ps1": read_required(ROOT / "tools" / "windows_signoff_kit.ps1"),
+        "tools/closing_time_polish_review.ps1": read_required(ROOT / "tools" / "closing_time_polish_review.ps1"),
         "tools/gzdoom_save_load_smoke.ps1": read_required(ROOT / "tools" / "gzdoom_save_load_smoke.ps1"),
         "tools/bootstrap_python.ps1": read_required(ROOT / "tools" / "bootstrap_python.ps1"),
         "tools/verify_windows_signoff_evidence.py": read_required(ROOT / "tools" / "verify_windows_signoff_evidence.py"),
