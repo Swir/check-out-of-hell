@@ -257,11 +257,54 @@ Remaining Customer Service polish:
 - more useful joke interactions and secrets that do not hide the two service circuits or refund terminal,
 - final lighting/geometry and encounter polish after the current route survives real play.
 
-## Later departments
+## MAP06 — Management Floor
+Purpose: a first playable executive-floor department built around a real Corporate authorization task, readable boardroom pressure and the next boss-scale management escalation.
 
-### Management Floor
-The campaign's corporate nightmare: cleaner geometry, increasingly absurd executive hazards,
-and the final route toward clocking out at 06:00.
+Current prototype includes:
+- paired executive-office wings around a permanently open center corridor,
+- two opposite-side **Executive Access circuits**,
+- a narrow rear boardroom doorway physically closed by two powered shutters until `2/3` power,
+- one project-owned **Boardroom Breaker Authorization** behind the shutters,
+- a save-safe ten-second Boardroom Review instead of an instant final power token,
+- a fixed outer-boardroom review sequence: Security Price Scanner at 4 seconds, second warning at 7 seconds, Angry Self-Checkout at 9 seconds and the final authoritative `CheckoutFuse 3/3` only at 10 seconds,
+- a separate four-second visual/audio warning after full authorization before **The District Director** enters,
+- a 1400-health first-pass District Director that reuses only project-owned Regional Manager presentation while changing durability and projectile rhythm,
+- a separate death handler that grants shared supervisor clearance so the boss actor does not own progression state,
+- a department-specific deep-Overtime **Executive Audit** that cannot begin until both circuits are live and Overtime reaches stage 2,
+- a 16-second initial audit delay, two-second warning and deterministic `32 / 22` second recurrence, using Scanner pressure at stage 2 and Cart pressure in Hell Rush,
+- Boardroom Review isolation from recurring audit pressure: starting the fixed review cancels any armed audit and leaves eight seconds of recovery afterward,
+- outer-lane baseline Overtime anchors and initial threats kept away from the permanent center route,
+- three optional Corporate Compliance Memos plus a useful off-route reward,
+- the original deterministic **Management Floor — Synergy Funeral** soundtrack,
+- the shared physical front clock-out trigger after supervisor clearance.
+
+The core workplace task is intentionally staged. Restoring both Executive Access circuits does not finish
+power immediately; it only opens the boardroom. The player must then cross into the rear room and deliberately
+start the Boardroom Review. Its exact `4 / 7 / 9 / 10` second sequence creates a short hold-the-floor beat while
+keeping the last `CheckoutFuse` authoritative in the same shared progression system used by earlier departments.
+Full power then begins a separate four-second boss handoff, preventing the District Director from materializing
+on top of the authorization interaction.
+
+Executive Audit is the department's distinct Overtime layer rather than another random trap. Once both office
+circuits are live and Overtime reaches stage 2, the outer-right response lane waits 16 seconds, warns for two
+seconds and produces a Security Price Scanner; Hell Rush substitutes a Cart of Doom. Repeats stay deterministic
+at 32/22 seconds. The fixed Boardroom Review owns its encounter beat, so recurring audits pause for the entire
+review and leave eight seconds of recovery. The central route is never closed by this system.
+
+The District Director is deliberately treated as a gameplay prototype, not a falsely finished final boss.
+The current actor inherits project-owned Regional Manager visual/audio material, raises durability and changes
+its projectile rhythm. Objective state remains outside the actor; a Management Floor death handler supplies the
+existing supervisor-clearance token, preserving the hardened post-boss Overtime retirement and clock-out flow.
+A later unique visual pass is desirable only after real play validates the encounter.
+
+See [`MANAGEMENT_FLOOR.md`](MANAGEMENT_FLOOR.md) for the exact implementation/contract note.
+
+Remaining Management Floor polish:
+- add dedicated normal HUD / Focus HUD wording for Executive Access, active Boardroom Review, District Director clearance and return-to-clock-out,
+- add optional executive-floor secrets/useful workplace interactions only where mandatory circuits and the boardroom route remain obvious,
+- give the District Director a more distinct project-owned visual identity after its gameplay survives real playtesting,
+- complete target-Windows balance/readability playtesting on all three difficulty modes, including manual save/quit/load, physical controller and real-hardware performance,
+- change final cover, lighting or route geometry only from interactive evidence.
 
 ## Design rule
 Every room should have at least one gameplay joke that still works as a useful combat mechanic.
