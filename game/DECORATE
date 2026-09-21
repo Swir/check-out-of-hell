@@ -55,7 +55,7 @@ actor ReceiptRipper : Shotgun replaces Shotgun
     Fire:
         RRPV B 2 Bright A_PlaySound("coh/ripperfire", CHAN_WEAPON)
         RRPV C 4 Bright A_FireBullets(7.0, 5.0, 9, 5, "BulletPuff")
-        RRPV D 4 A_PlaySound("coh/rippercycle", CHAN_WEAPON)
+        RRPV D 4 A_PlaySound("coh/rippercycle", CHAN_AUTO)
         RRPV E 4
         RRPV A 3 A_ReFire
         Goto Ready
@@ -390,10 +390,12 @@ actor NightManager : BaronOfHell 17003
         MNGR D 4 A_Chase
         Loop
     Missile:
-        MNGR E 6 A_FaceTarget
-        MNGR F 7 Bright A_PlaySound("coh/managerattack", CHAN_WEAPON)
+        // Keep the original 19-tic attack cycle, but move more of it before the memo leaves
+        // the manager's hand. The bright/audio warning now lasts 12 tics (~0.34 s) before fire.
+        MNGR E 2 A_FaceTarget
+        MNGR F 12 Bright A_PlaySound("coh/managerattack", CHAN_WEAPON)
         MNGR F 0 Bright A_CustomMissile("ManagerMemoProjectile", 32, 0, 0)
-        MNGR E 6
+        MNGR E 5
         Goto See
     Pain:
         MNGR G 4

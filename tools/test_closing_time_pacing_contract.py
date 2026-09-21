@@ -13,11 +13,52 @@ if not PK3.exists() or not MAP_WAD.exists():
 
 zscript = (GAME / "ZSCRIPT").read_text(encoding="utf-8")
 zscript_clockout = (GAME / "ZSCRIPT_CLOCKOUT").read_text(encoding="utf-8")
+decorate_core = (GAME / "DECORATE").read_text(encoding="utf-8")
 decorate_env = (GAME / "DECORATE_ENVIRONMENT").read_text(encoding="utf-8")
 mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
 map01 = (GAME / "MAP01.udmf").read_text(encoding="utf-8")
 environment = (GAME / "MAP01_ENVIRONMENT.udmf").read_text(encoding="utf-8")
 polish = (GAME / "MAP01_POLISH.udmf").read_text(encoding="utf-8")
+
+
+def validate_night_manager_attack_telegraph(text: str, label: str) -> None:
+    """Keep Closing Time's supervisor readable without silently nerfing his attack cadence."""
+    try:
+        manager_block = text.split("actor NightManager : BaronOfHell 17003", 1)[1].split(
+            "actor ScannerTurret", 1
+        )[0]
+        missile_block = manager_block.split("Missile:", 1)[1].split("Pain:", 1)[0]
+    except IndexError as exc:
+        raise SystemExit(f"{label} Night Manager attack-state boundaries missing") from exc
+
+    sound_match = re.search(
+        r'MNGR F (\d+) Bright A_PlaySound\("coh/managerattack", CHAN_WEAPON\)',
+        missile_block,
+    )
+    if not sound_match:
+        raise SystemExit(f"{label} Night Manager attack cue missing")
+    warning_tics = int(sound_match.group(1))
+    if warning_tics < 12:
+        raise SystemExit(
+            f"{label} Night Manager memo warning is only {warning_tics} tics; require >= 12"
+        )
+
+    projectile_marker = 'MNGR F 0 Bright A_CustomMissile("ManagerMemoProjectile", 32, 0, 0)'
+    if projectile_marker not in missile_block:
+        raise SystemExit(f"{label} Night Manager memo projectile contract drifted")
+    if missile_block.index(sound_match.group(0)) > missile_block.index(projectile_marker):
+        raise SystemExit(f"{label} Night Manager attack sound must precede the memo projectile")
+
+    timed_states = [
+        int(value)
+        for value in re.findall(r"^\s*MNGR\s+\w+\s+(-?\d+)\b", missile_block, re.MULTILINE)
+        if int(value) > 0
+    ]
+    if sum(timed_states) != 19:
+        raise SystemExit(
+            f"{label} Night Manager attack cycle changed to {sum(timed_states)} tics; expected 19"
+        )
+
 
 # A cleared supervisor must stop both ambient Overtime reinforcements and the staged
 # management-response waves, so the return-to-checkout leg remains tense but readable.
@@ -53,6 +94,11 @@ for marker in (
 ):
     if marker not in zscript:
         raise SystemExit(f"Closing Time boss-wave pacing marker missing: {marker}")
+
+# The Night Manager's memo volley keeps the original 19-tic attack-state duration, but its
+# bright/audio warning must lead the projectile by at least 12 tics (~0.34 s). This increases
+# reaction readability without changing health, projectile stats, or the overall attack cycle.
+validate_night_manager_attack_telegraph(decorate_core, "Source")
 
 # Management-response actors must enter from the outer side lanes rather than materialize beside
 # the final FUSE STAFF / MANAGEMENT breadcrumb chain. Preserve the two authored anchors while
@@ -181,6 +227,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
     for marker in ("SupervisorClearanceToken", "CheckoutPowerCache", "ClosingTimeOvertimeShutter"):
         if marker not in decorate_pk3:
             raise SystemExit(f"Packaged DECORATE missing pacing actor marker: {marker}")
+    validate_night_manager_attack_telegraph(decorate_pk3, "Packaged")
     if '17156 = "ClosingTimeLockdownSpawner"' not in mapinfo_pk3:
         raise SystemExit("Packaged MAPINFO missing Closing Time lockdown registration")
 
@@ -197,4 +244,4 @@ for marker in (
         raise SystemExit(f"Built MAP01 missing management-response anchor: {marker!r}")
 
 print("Closing Time pacing contract: PASS")
-print("Full power grants one pre-boss cache; management waves stay clear of rear route signs; deep Overtime can briefly lock one side lane while the central clock-out route remains open.")
+print("Night Manager memo attacks now expose a 12-tic warning while preserving the 19-tic attack cycle; full power grants one pre-boss cache; management waves stay clear of rear route signs; deep Overtime can briefly lock one side lane while the central clock-out route remains open.")
