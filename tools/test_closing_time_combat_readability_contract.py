@@ -225,5 +225,5 @@ with zipfile.ZipFile(PK3, "r") as archive:
 print("Closing Time combat readability contract: PASS")
 print(
     "The full x=-300..300 navigation corridor stays clear; Closing Crew runs 5 initial hostiles versus 8 on Normal/Hard, "
-    "with the easy inner flank shifted west of the shelf line and the three extra hard threats sight-gated behind the east-side ring."
+    "with the easy inner flank at x=-360 and the closest sight-gated hard-only flank at x=360 (guarded against x<340)."
 )
