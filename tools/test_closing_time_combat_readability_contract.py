@@ -90,7 +90,7 @@ environment = parse_things(env_text)
 # front registers and the rear objective. Initial combat may pressure its edges but must not
 # occupy that permanent combat/clock-out corridor.
 initial_checkout_positions = positions(core, 17001)
-expected_checkout_flanks = {(-360.0, 90.0), (330.0, 130.0)}
+expected_checkout_flanks = {(-360.0, 90.0), (360.0, 130.0)}
 if not expected_checkout_flanks.issubset(initial_checkout_positions):
     raise SystemExit(
         "Closing Time inner Self-Checkout pressure must keep the west-side easy flank plus staged hard-side shelf reveal"
@@ -120,7 +120,7 @@ if actual_population != expected_population:
 
 staged_hard_only = {
     (17002, 590.0, 210.0),
-    (17001, 330.0, 130.0),
+    (17001, 360.0, 130.0),
     (17004, 520.0, 390.0),
 }
 found_staged = set()
@@ -130,8 +130,8 @@ for thing in core:
         found_staged.add(key)
         if thing["skills"] != (False, False, True, True, True):
             raise SystemExit(f"Staged Normal/Hard-only actor has unexpected skill mask: {key} -> {thing['skills']}")
-        if thing["x"] < 300.0 or thing["y"] < 120.0:
-            raise SystemExit(f"Staged Normal/Hard-only actor drifted out of the protected east-side second ring: {key}")
+        if thing["x"] < 340.0 or thing["y"] < 120.0:
+            raise SystemExit(f"Staged Normal/Hard-only actor drifted too close to the protected center corridor: {key}")
         if not thing["ambush"]:
             raise SystemExit(f"Staged Normal/Hard-only actor must remain sight-gated with ambush=true: {key}")
 if found_staged != staged_hard_only:
