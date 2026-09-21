@@ -100,7 +100,7 @@ thing { x =  560.0; y = -170.0; angle = 180; type = 17001; skill1 = true;  skill
 thing { x = -510.0; y =  170.0; angle = 315; type = 17002; skill1 = true;  skill2 = true;  skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  590.0; y =  210.0; angle = 225; type = 17002; skill1 = false; skill2 = false; skill3 = true; skill4 = true; skill5 = true; ambush = true; single = true; coop = true; }
 thing { x = -360.0; y =   90.0; angle = 270; type = 17001; skill1 = true;  skill2 = true;  skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =  330.0; y =  130.0; angle = 245; type = 17001; skill1 = false; skill2 = false; skill3 = true; skill4 = true; skill5 = true; ambush = true; single = true; coop = true; }
+thing { x =  360.0; y =  130.0; angle = 245; type = 17001; skill1 = false; skill2 = false; skill3 = true; skill4 = true; skill5 = true; ambush = true; single = true; coop = true; }
 thing { x = -330.0; y =  360.0; angle = 315; type = 17004; skill1 = true;  skill2 = true;  skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  520.0; y =  390.0; angle = 225; type = 17004; skill1 = false; skill2 = false; skill3 = true; skill4 = true; skill5 = true; ambush = true; single = true; coop = true; }
 
