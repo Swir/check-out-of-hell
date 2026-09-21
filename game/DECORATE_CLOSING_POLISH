@@ -44,7 +44,7 @@ actor ClosingTimeStaffFuseSign 17163
     }
 }
 
-actor ClosingTimeManagementRearSign 17164
+actor ClosingTimeManagementRearSign 17222
 {
     Radius 6
     Height 100
