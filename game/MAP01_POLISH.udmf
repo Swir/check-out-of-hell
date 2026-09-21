@@ -21,9 +21,11 @@ thing { x = -320.0; y = 285.0; angle = 270; type = 17163; skill1 = true; skill2 
 thing { x = -320.0; y = 420.0; angle = 270; type = 17163; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Static supermarket wayfinding keeps the post-breaker objective readable without changing the
-// power gate: MANAGEMENT / REAR sits just outside the protected center corridor and points toward
-// the authored Night Manager arena once all three breakers are restored.
+// power gate. MANAGEMENT / REAR now uses the same two-stage breadcrumb logic as the breaker routes:
+// the first sign pulls the player off the rear approach and the second confirms the Night Manager
+// destination. Both remain just outside the protected center corridor and never become cover.
 thing { x = 320.0; y = 285.0; angle = 90; type = 17222; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = 320.0; y = 420.0; angle = 90; type = 17222; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Overtime pressure now lives on both outer lanes: the existing deep left-lane shutter and the
 // mirrored floor-arc lane both stay outside the permanent center corridor. Matching non-blocking
