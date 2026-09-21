@@ -27,10 +27,17 @@ things = [
 boss_waves = [thing for thing in things if thing["type"] == 17103]
 if len(boss_waves) != 2:
     raise SystemExit(f"Closing Time needs two boss-wave anchors, found {len(boss_waves)}")
-if min(thing["x"] for thing in boss_waves) >= 0 or max(thing["x"] for thing in boss_waves) <= 0:
-    raise SystemExit("Boss-wave anchors must pressure both sides of the supervisor arena")
-if min(thing["y"] for thing in boss_waves) < 280:
-    raise SystemExit("Boss-wave anchors must remain in the rear supervisor arena")
+expected_boss_wave_positions = {(-520.0, 240.0), (520.0, 240.0)}
+actual_boss_wave_positions = {(thing["x"], thing["y"]) for thing in boss_waves}
+if actual_boss_wave_positions != expected_boss_wave_positions:
+    raise SystemExit(
+        f"Boss-wave anchors must stay on the verified outer rear-handoff lanes: "
+        f"{actual_boss_wave_positions} != {expected_boss_wave_positions}"
+    )
+if any(abs(thing["x"]) < 500.0 for thing in boss_waves):
+    raise SystemExit("Boss-wave anchors must stay outside the rear objective breadcrumb corridor")
+if any(thing["y"] < 220.0 for thing in boss_waves):
+    raise SystemExit("Boss-wave anchors must remain on the rear management approach")
 
 if '17103 = "CheckoutBossWaveSpawner"' not in MAPINFO:
     raise SystemExit("CheckoutBossWaveSpawner DoomEdNum is not registered")
@@ -62,4 +69,4 @@ if "TIMECARD ACCEPTED - SHIFT COMPLETE" not in ZSCRIPT:
     raise SystemExit("Clock-out interaction needs explicit completion feedback")
 
 print("Boss + escape contract: PASS")
-print("Full power starts tuned staged rear-arena pressure; supervisor clearance requires a readable return to checkout.")
+print("Full power starts tuned staged outer-lane pressure; supervisor clearance requires a readable return to checkout.")
