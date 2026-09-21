@@ -109,6 +109,14 @@ if "x = -710.0; y = -455.0" not in layer or "x = -700.0; y =  470.0" not in laye
 if "x = -185.0; y = -430.0" not in layer or "x =  185.0; y = -430.0" not in layer:
     raise SystemExit("Closing Time mirrored Lane 06 signs moved from their front-lane positions")
 
+# Rear box dressing must not crowd the FUSE STAFF / MANAGEMENT destination-confirmation signs.
+# The ±470 placements leave roughly 150 map units of horizontal clearance from the ±320 sign line.
+if "x = -470.0; y =  438.0" not in layer or "x =  470.0; y =  430.0" not in layer:
+    raise SystemExit("Closing Time rear restock boxes lost their destination-sign visual clearance")
+for legacy in ("x = -385.0; y =  438.0", "x =  390.0; y =  430.0"):
+    if legacy in layer:
+        raise SystemExit(f"Closing Time rear clutter regressed into the destination-sign sightline: {legacy}")
+
 sndinfo = (GAME / "SNDINFO").read_text(encoding="utf-8")
 if "coh/breaksnack      sounds/breaksnack" not in sndinfo:
     raise SystemExit("Emergency Break Snack cue is not registered in SNDINFO")
@@ -149,6 +157,6 @@ for doomednum in expected_counts:
 
 print("Closing Time environment polish contract: PASS")
 print(
-    "Department signs, mirrored Lane 06 wayfinding, safe clutter, six staggered reduced-flash failing fixtures "
-    "and optional joke-reward snacks are packaged and placed."
+    "Department signs, mirrored Lane 06 wayfinding, rear-clutter destination-sign clearance, six staggered "
+    "reduced-flash failing fixtures and optional joke-reward snacks are packaged and placed."
 )

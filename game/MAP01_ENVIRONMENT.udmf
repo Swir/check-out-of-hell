@@ -9,11 +9,13 @@ thing { x =  665.0; y =  105.0; angle = 180; type = 17122; skill1 = true; skill2
 thing { x = -185.0; y = -430.0; angle = 90; type = 17123; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  185.0; y = -430.0; angle = 90; type = 17123; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
-// Low-profile clutter deliberately sits off the main combat/clock-out lanes.
+// Low-profile clutter deliberately sits off the main combat/clock-out lanes. Rear restock boxes
+// stay well outside the two destination-confirmation signs so FUSE STAFF and MANAGEMENT / REAR
+// remain visually dominant at the final breaker/supervisor handoff.
 thing { x = -350.0; y = -105.0; angle = 20;  type = 17124; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x =  365.0; y =   75.0; angle = 340; type = 17124; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x = -385.0; y =  438.0; angle = 0;   type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =  390.0; y =  430.0; angle = 180; type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x = -470.0; y =  438.0; angle = 0;   type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  470.0; y =  430.0; angle = 180; type = 17125; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Fluorescent fixtures make the empty-store ceiling visibly unstable without changing collision.
 // The three deterministic phase groups are distributed 2/2/2 so the entire floor never drops into
