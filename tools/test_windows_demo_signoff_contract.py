@@ -113,6 +113,9 @@ for marker in (
 
 # Developer-checkout verification must bind the newest reviewed evidence to the
 # exact clean local HEAD and run the same independent Python verifier used by the kit.
+# It also locks a plausible human-created Graveyard Shift save to a SHA-256 witness
+# so an autosave, tiny placeholder, deletion or later replacement cannot satisfy the
+# manual save artifact prerequisite by file presence alone.
 for marker in (
     "dist\\windows-demo-signoff",
     "git",
@@ -122,6 +125,13 @@ for marker in (
     "bootstrap_python.ps1",
     "VERIFIED PASS",
     "No release should be published from this result.",
+    "Assert-ManualSaveWitness",
+    "manual-save-witness.sha256",
+    "manual-saves",
+    ".zds",
+    "(?i)^auto",
+    "1024",
+    "Get-FileHash",
 ):
     if marker not in verify_latest:
         raise SystemExit(f"Developer evidence verification helper lost required behavior: {marker}")
@@ -193,6 +203,8 @@ for marker in (
     "closing_time_polish_review.ps1",
     "verify_latest_windows_signoff.ps1",
     "verify_windows_signoff_evidence.py",
+    "manual-save-witness.sha256",
+    "non-autosave",
     "--expected-commit",
     "-PrepareOnly",
     "INCOMPLETE",
@@ -253,4 +265,4 @@ if re.search(r"(?m)^\s*run:\s*\.\\tools\\windows_demo_signoff\.ps1\s*$", workflo
     raise SystemExit("Hosted CI must not execute the interactive Windows sign-off harness")
 
 print("Target Windows demo sign-off contract: PASS")
-print("Top-level developer flow now requires gameplay/hardware, explicit Closing Time polish and independent exact-commit evidence verification before final PASS.")
+print("Top-level developer flow now requires gameplay/hardware, explicit Closing Time polish, a hashed non-autosave Graveyard save witness and independent exact-commit evidence verification before final PASS.")

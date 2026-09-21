@@ -60,7 +60,18 @@ for marker in (
 ):
     if marker not in polish_review_text:
         raise SystemExit(f"Closing Time explicit polish review lost required behavior: {marker}")
-for marker in ("bootstrap_python.ps1", "verify_windows_signoff_evidence.py", "--expected-commit"):
+for marker in (
+    "bootstrap_python.ps1",
+    "verify_windows_signoff_evidence.py",
+    "--expected-commit",
+    "Assert-ManualSaveWitness",
+    "manual-save-witness.sha256",
+    "manual-saves",
+    ".zds",
+    "(?i)^auto",
+    "1024",
+    "Get-FileHash",
+):
     if marker not in verify_helper_text:
         raise SystemExit(f"Kit evidence helper lost required behavior: {marker}")
 for marker in ("package_windows_signoff_kit.py", "test_windows_signoff_kit.py", "actions/upload-artifact@v4", "windows-script-parse", "closing_time_polish_review.ps1"):
@@ -75,6 +86,8 @@ for marker in (
     "RUN-SIGNOFF.bat",
     "VERIFY-EVIDENCE.bat",
     "automatically runs the independent consistency verifier",
+    "manual-save-witness.sha256",
+    "non-autosave",
     "environment/art consistency",
     "objective/route readability",
     "lighting/atmosphere",
@@ -181,4 +194,4 @@ with zipfile.ZipFile(KIT, "r") as archive:
 print("Windows Closing Time sign-off kit contract: PASS")
 print(f"Candidate: {branch} @ {commit}")
 print(f"RC SHA-256: {rc_sha}")
-print("RUN-SIGNOFF.bat now reports final success only after gameplay/hardware, explicit polish and independent exact-candidate evidence verification all pass.")
+print("RUN-SIGNOFF.bat now reports final success only after gameplay/hardware, explicit polish, hashed manual-save witness and independent exact-candidate evidence verification all pass.")

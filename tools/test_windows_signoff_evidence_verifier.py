@@ -162,7 +162,12 @@ def build_valid_fixture(root: Path) -> tuple[Path, str]:
     )
     manual_save = evidence_dir / "manual-saves/checkout-hell-test.zds"
     manual_save.parent.mkdir(parents=True, exist_ok=True)
-    manual_save.write_bytes(b"synthetic manual save")
+    manual_save_data = b"synthetic manual save witness\n" + (b"S" * 2048)
+    manual_save.write_bytes(manual_save_data)
+    (evidence_dir / "manual-save-witness.sha256").write_text(
+        f"{digest(manual_save_data)}  manual-saves/checkout-hell-test.zds\n",
+        encoding="ascii",
+    )
     (evidence_dir / "REPORT.md").write_text(
         f"# Evidence\n\n**Status:** PASS\n**Source commit:** {commit}\n\n"
         "## Closing Time explicit polish review\n\n"
@@ -190,6 +195,8 @@ with tempfile.TemporaryDirectory() as temp:
     result = verify_evidence(evidence_dir, expected_commit=commit)
     if result["commit"] != commit:
         raise SystemExit("Verifier returned the wrong source commit")
+    if not result["manual_save_sha256"]:
+        raise SystemExit("Verifier did not return the manual save witness SHA-256")
 
     game_pk3 = evidence_dir / "package/game/CHECKOUT-OF-HELL.pk3"
     original_game = game_pk3.read_bytes()
@@ -211,6 +218,23 @@ with tempfile.TemporaryDirectory() as temp:
     expect_failure(evidence_dir, "failed explicit lighting/atmosphere polish gate")
     write_json(evidence_path, valid_evidence)
 
+    manual_save = evidence_dir / "manual-saves/checkout-hell-test.zds"
+    original_save = manual_save.read_bytes()
+    manual_save.write_bytes(original_save + b"tampered")
+    expect_failure(evidence_dir, "tampered manual Graveyard save witness")
+    manual_save.write_bytes(original_save)
+
+    witness = evidence_dir / "manual-save-witness.sha256"
+    original_witness = witness.read_text(encoding="ascii")
+    witness.write_text(
+        f"{digest(original_save)}  manual-saves/autosave-test.zds\n",
+        encoding="ascii",
+    )
+    autosave = evidence_dir / "manual-saves/autosave-test.zds"
+    autosave.write_bytes(original_save)
+    expect_failure(evidence_dir, "autosave substituted for manual save witness")
+    witness.write_text(original_witness, encoding="ascii")
+
     try:
         verify_evidence(evidence_dir, expected_commit="f" * 40)
     except EvidenceError:
@@ -219,4 +243,4 @@ with tempfile.TemporaryDirectory() as temp:
         raise SystemExit("Verifier accepted evidence for the wrong expected commit")
 
 print("Windows sign-off evidence verifier contract: PASS")
-print("Valid evidence passes; tampered package data, failed human/polish gates and stale commits are rejected.")
+print("Valid evidence passes; tampered package/save data, autosave substitution, failed human/polish gates and stale commits are rejected.")
