@@ -10,6 +10,7 @@ PK3 = ROOT / "dist" / "checkout-of-hell-prototype.pk3"
 
 CLOSING_TIME_CENTER_HALF_WIDTH = 300.0
 OVERTIME_ARC_RADIUS = 72.0
+MIN_FLOOR_ARC_TELEGRAPH_TICS = 35
 CLOSING_TIME_OVERTIME_ANCHORS = {
     (-510.0, -60.0),
     (510.0, -60.0),
@@ -69,6 +70,30 @@ def verify_closing_time_anchor_geometry(text: str, source: str) -> None:
             )
 
 
+def verify_floor_arc_telegraph(text: str, source: str) -> None:
+    actor_match = re.search(
+        r"actor\s+OvertimeFloorArc\s*\{.*?Spawn:(.*?)A_Explode\(10,\s*72\)",
+        text,
+        flags=re.DOTALL,
+    )
+    if not actor_match:
+        raise SystemExit(f"{source} Overtime floor arc damage sequence is missing")
+
+    telegraph_tics = sum(
+        int(match.group(1))
+        for match in re.finditer(
+            r"^\s*OARC\s+[AB]\s+(\d+)\s+Bright(?:\s|$)",
+            actor_match.group(1),
+            flags=re.MULTILINE,
+        )
+    )
+    if telegraph_tics < MIN_FLOOR_ARC_TELEGRAPH_TICS:
+        raise SystemExit(
+            f"{source} Overtime floor arc telegraph is too short: "
+            f"{telegraph_tics} tics, expected at least {MIN_FLOOR_ARC_TELEGRAPH_TICS}"
+        )
+
+
 if not PK3.exists():
     raise SystemExit("PK3 missing. Run: python tools/build.py")
 
@@ -110,6 +135,7 @@ for marker in (
 ):
     if marker not in extension:
         raise SystemExit(f"Overtime hazard presentation contract missing: {marker}")
+verify_floor_arc_telegraph(extension, "Source")
 if "actor CheckoutOvertimeHazardSpawner" in extension:
     raise SystemExit("Timed Overtime hazard anchor must live in ZSCRIPT_CLOCKOUT for clearance-aware retirement")
 
@@ -200,6 +226,7 @@ with zipfile.ZipFile(PK3, "r") as archive:
     zscript = archive.read("ZSCRIPT").decode("utf-8")
     if "actor OvertimeFloorArc" not in decorate:
         raise SystemExit("Packaged DECORATE does not include Overtime hazard presentation")
+    verify_floor_arc_telegraph(decorate, "Packaged DECORATE")
     if "class CheckoutOvertimeHazardSpawner : Actor" not in zscript:
         raise SystemExit("Packaged ZSCRIPT does not include the clearance-aware Overtime hazard anchor")
 
@@ -219,4 +246,4 @@ with zipfile.ZipFile(PK3, "r") as archive:
             raise SystemExit(f"Packaged MAP02 lost Warehouse Overtime side-lane placement: {marker}")
 
 print("Overtime environmental hazard contract: PASS")
-print("Closing Time keeps each 72-unit floor arc outside its permanent center corridor, and Warehouse 13.5 preserves its side-lane pressure.")
+print("Closing Time keeps each 72-unit floor arc outside its permanent center corridor with at least one second of pre-damage telegraph, and Warehouse 13.5 preserves its side-lane pressure.")
