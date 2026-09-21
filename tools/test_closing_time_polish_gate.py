@@ -222,10 +222,10 @@ def main() -> int:
     if blocked_center:
         fail(f"Closing Time polish candidate blocks the authored x=-300..300 center combat route: {blocked_center}")
     if {(thing["x"], thing["y"]) for thing in core_things if thing["type"] == 17103} != {
-        (-430.0, 300.0),
-        (430.0, 300.0),
+        (-520.0, 240.0),
+        (520.0, 240.0),
     }:
-        fail("Closing Time Night Manager response no longer flanks the rear approach")
+        fail("Closing Time Night Manager response anchors no longer protect the rear breadcrumb sightlines")
 
     # Preserve the authored recovery/pacing evidence that keeps all three difficulties readable.
     for marker in (
