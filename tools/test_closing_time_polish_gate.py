@@ -14,6 +14,7 @@ ROUTE_SIGNS = {
     17161: (((-420.0, -215.0), (-690.0, 160.0)), "ClosingTimeLeftFuseSign", "LFSN", "LFSNA0.png"),
     17162: (((420.0, -215.0), (690.0, 360.0)), "ClosingTimeRightFuseSign", "RFSN", "RFSNA0.png"),
     17163: (((-320.0, 285.0), (-320.0, 420.0)), "ClosingTimeStaffFuseSign", "SFSN", "SFSNA0.png"),
+    17164: (((320.0, 285.0),), "ClosingTimeManagementRearSign", "MGSN", "MGSNA0.png"),
     17170: (((-650.0, -75.0), (650.0, -75.0)), "ClosingTimeOvertimeLaneSign", "OTSN", "OTSNA0.png"),
 }
 
@@ -112,8 +113,9 @@ def main() -> int:
         if marker not in roadmap:
             fail(f"Closing Time polish gate must remain pending before manual evidence: {marker}")
 
-    # Deterministic project-owned route signs form a two-stage breadcrumb chain for each breaker.
-    # Every instance must stay exact, non-blocking and outside the authored x=-300..300 center strip.
+    # Deterministic project-owned route signs form a two-stage breadcrumb chain for each breaker,
+    # add a rear-management confirmation, and mark both Overtime pressure lanes. Every instance
+    # must stay exact, non-blocking and outside the authored x=-300..300 center strip.
     polish_things = parse_things(polish_text)
     for doomednum, (expected_positions, actor_name, sprite, png_name) in ROUTE_SIGNS.items():
         matches = [thing for thing in polish_things if thing["type"] == doomednum]
@@ -277,6 +279,7 @@ def main() -> int:
         "Target-Windows human evidence",
         "staggered fluorescent phases",
         "destination confirmation",
+        "MANAGEMENT / REAR",
     ):
         if marker not in polish_doc:
             fail(f"Closing Time polish acceptance note missing: {marker}")
