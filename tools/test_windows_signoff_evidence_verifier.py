@@ -146,9 +146,11 @@ def build_valid_fixture(root: Path) -> tuple[Path, str]:
             "graveyard_shift": graveyard,
             "corporate_hell": dict(difficulty),
             "environment_art_consistent": True,
+            "combat_readability_polished": True,
             "objective_route_readable": True,
             "lighting_atmosphere_acceptable": True,
             "clutter_visual_hierarchy_clean": True,
+            "gameplay_pacing_balance_polished": True,
             "controller_core_actions": True,
             "controller_haptics": True,
             "performance_sanity": True,
@@ -173,9 +175,11 @@ def build_valid_fixture(root: Path) -> tuple[Path, str]:
         "## Closing Time explicit polish review\n\n"
         "| Gate | Result |\n| --- | --- |\n"
         "| Environment / art consistency | PASS |\n"
+        "| Combat readability | PASS |\n"
         "| Objective / route readability | PASS |\n"
         "| Lighting / atmosphere | PASS |\n"
-        "| Clutter / visual hierarchy | PASS |\n",
+        "| Clutter / visual hierarchy | PASS |\n"
+        "| Gameplay pacing / balance | PASS |\n",
         encoding="utf-8",
     )
     return evidence_dir, commit
@@ -216,6 +220,18 @@ with tempfile.TemporaryDirectory() as temp:
     failed_polish["manual"]["lighting_atmosphere_acceptable"] = False
     write_json(evidence_path, failed_polish)
     expect_failure(evidence_dir, "failed explicit lighting/atmosphere polish gate")
+    write_json(evidence_path, valid_evidence)
+
+    failed_combat_polish = deepcopy(valid_evidence)
+    failed_combat_polish["manual"]["combat_readability_polished"] = False
+    write_json(evidence_path, failed_combat_polish)
+    expect_failure(evidence_dir, "failed whole-level combat readability polish gate")
+    write_json(evidence_path, valid_evidence)
+
+    failed_pacing_polish = deepcopy(valid_evidence)
+    failed_pacing_polish["manual"]["gameplay_pacing_balance_polished"] = False
+    write_json(evidence_path, failed_pacing_polish)
+    expect_failure(evidence_dir, "failed whole-level gameplay pacing/balance polish gate")
     write_json(evidence_path, valid_evidence)
 
     manual_save = evidence_dir / "manual-saves/checkout-hell-test.zds"
