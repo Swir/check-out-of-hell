@@ -147,7 +147,7 @@ if actual_overtime != expected_overtime:
 if any(abs(x) <= 300.0 for x, _ in actual_overtime):
     raise SystemExit("An Overtime reinforcement anchor returned to the authored x=-300..300 center corridor")
 
-rear_confirmation_signs = {(-320.0, 420.0), (320.0, 420.0)}
+rear_confirmation_signs = {(-320.0, 285.0), (-320.0, 420.0), (320.0, 285.0), (320.0, 420.0)}
 min_overtime_sign_clearance = min(
     math.hypot(anchor_x - sign_x, anchor_y - sign_y)
     for anchor_x, anchor_y in actual_overtime
@@ -159,12 +159,23 @@ if min_overtime_sign_clearance < 180.0:
         f"minimum clearance {min_overtime_sign_clearance:.1f}"
     )
 
-# The Night Manager response should flank the rear approach. Timing remains protected by the
-# pacing contract; this contract protects only the authored spatial presentation.
-expected_boss_waves = {(-430.0, 300.0), (430.0, 300.0)}
+# The Night Manager response should pressure from the outer side lanes rather than spawning beside
+# the rear breadcrumb chain. Timing remains protected by the pacing contract; this contract protects
+# the authored spatial presentation and a minimum 190-unit sign clearance.
+expected_boss_waves = {(-520.0, 240.0), (520.0, 240.0)}
 actual_boss_waves = positions(core, 17103)
 if actual_boss_waves != expected_boss_waves:
     raise SystemExit(f"Unexpected Night Manager response anchor layout: {actual_boss_waves}")
+min_boss_wave_sign_clearance = min(
+    math.hypot(anchor_x - sign_x, anchor_y - sign_y)
+    for anchor_x, anchor_y in actual_boss_waves
+    for sign_x, sign_y in rear_confirmation_signs
+)
+if min_boss_wave_sign_clearance < 190.0:
+    raise SystemExit(
+        "A Night Manager response anchor is crowding the rear route-confirmation sightline: "
+        f"minimum clearance {min_boss_wave_sign_clearance:.1f}"
+    )
 
 # Twin Lane 06 signs frame the front approach without becoming cover or blocking the exit zone.
 expected_lane_signs = {(-185.0, -430.0), (185.0, -430.0)}
@@ -214,6 +225,18 @@ if built_min_overtime_sign_clearance < 180.0:
         f"minimum clearance {built_min_overtime_sign_clearance:.1f}"
     )
 
+built_boss_waves = positions(built_things, 17103)
+built_min_boss_wave_sign_clearance = min(
+    math.hypot(anchor_x - sign_x, anchor_y - sign_y)
+    for anchor_x, anchor_y in built_boss_waves
+    for sign_x, sign_y in rear_confirmation_signs
+)
+if built_min_boss_wave_sign_clearance < 190.0:
+    raise SystemExit(
+        "Built MAP01 lets Night Manager response pressure crowd the rear route-confirmation sightline: "
+        f"minimum clearance {built_min_boss_wave_sign_clearance:.1f}"
+    )
+
 built_centerline_hostiles = [
     thing
     for thing in built_things
@@ -250,5 +273,5 @@ with zipfile.ZipFile(PK3, "r") as archive:
 print("Closing Time combat readability contract: PASS")
 print(
     "The full x=-300..300 navigation corridor stays clear; Closing Crew runs 5 initial hostiles versus 8 on Normal/Hard, "
-    "the hard-only second ring remains sight-gated, and ambient Overtime reinforcements stay clear of the rear objective-confirmation sightline."
+    "the hard-only second ring remains sight-gated, and Overtime / Night Manager response pressure stays clear of rear route-confirmation sightlines."
 )
