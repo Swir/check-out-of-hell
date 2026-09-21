@@ -10,6 +10,7 @@ import sys
 PROJECT = "CHECKOUT OF HELL"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
+MANUAL_SAVE_WITNESS_RE = re.compile(r"^([0-9a-f]{64})  (.+)$")
 
 
 class EvidenceError(RuntimeError):
@@ -84,6 +85,52 @@ def verify_entry(package_root: Path, entry_name: str, record: dict) -> None:
             f"Package manifest SHA-256 mismatch for {entry_name}: "
             f"expected {expected_sha}, got {actual_sha}"
         )
+
+
+def verify_manual_save_witness(evidence_dir: Path) -> dict[str, str]:
+    manual_save_dir = (evidence_dir / "manual-saves").resolve()
+    if not manual_save_dir.is_dir():
+        fail("Manual Graveyard Shift evidence is missing the manual-saves directory")
+
+    witness_path = evidence_dir / "manual-save-witness.sha256"
+    if not witness_path.is_file():
+        fail("Missing manual-save-witness.sha256; canonical sign-off verification must lock the real Graveyard Shift manual save")
+    try:
+        witness_text = witness_path.read_text(encoding="ascii").strip()
+    except (OSError, UnicodeDecodeError) as exc:
+        fail(f"Invalid manual save witness: {witness_path}: {exc}")
+    match = MANUAL_SAVE_WITNESS_RE.fullmatch(witness_text)
+    if not match:
+        fail("manual-save-witness.sha256 must contain '<sha256><two spaces><relative path>'")
+
+    expected_sha = match.group(1).lower()
+    relative_text = match.group(2).strip()
+    if not relative_text:
+        fail("Manual save witness path is empty")
+    relative_path = Path(relative_text)
+    if relative_path.is_absolute() or ".." in relative_path.parts:
+        fail("Manual save witness must use a safe path relative to the evidence directory")
+
+    save_path = (evidence_dir / relative_path).resolve()
+    try:
+        save_path.relative_to(manual_save_dir)
+    except ValueError:
+        fail("Manual save witness must point inside the manual-saves evidence directory")
+    if not save_path.is_file():
+        fail(f"Manual save witness points to a missing file: {relative_text}")
+    if save_path.suffix.lower() != ".zds":
+        fail(f"Manual save witness is not a GZDoom .zds save: {relative_text}")
+    if save_path.name.lower().startswith("auto"):
+        fail(f"Manual save witness must not point to an autosave: {relative_text}")
+    if save_path.stat().st_size < 1024:
+        fail(f"Manual save witness is implausibly small (<1 KiB): {relative_text}")
+
+    actual_sha = file_sha256(save_path)
+    if actual_sha != expected_sha:
+        fail(
+            f"Manual Graveyard Shift save witness SHA-256 mismatch: expected {expected_sha}, got {actual_sha}"
+        )
+    return {"path": relative_text, "sha256": actual_sha}
 
 
 def verify_evidence(evidence_dir: Path, *, expected_commit: str | None = None) -> dict[str, str]:
@@ -254,9 +301,7 @@ def verify_evidence(evidence_dir: Path, *, expected_commit: str | None = None) -
         if marker not in log_text:
             fail(f"Save/load evidence log is missing marker: {marker}")
 
-    manual_save_dir = evidence_dir / "manual-saves"
-    if not manual_save_dir.is_dir() or not any(path.is_file() for path in manual_save_dir.rglob("*")):
-        fail("Manual Graveyard Shift evidence contains no saved-game file")
+    manual_save_witness = verify_manual_save_witness(evidence_dir)
 
     report = evidence_dir / "REPORT.md"
     if not report.is_file():
@@ -281,6 +326,7 @@ def verify_evidence(evidence_dir: Path, *, expected_commit: str | None = None) -
         "rc_sha256": outer_rc_sha,
         "gzdoom_tag": expected_gzdoom_tag,
         "freedoom_tag": expected_freedoom_tag,
+        "manual_save_sha256": manual_save_witness["sha256"],
     }
 
 
@@ -308,6 +354,7 @@ def main(argv: list[str] | None = None) -> int:
     print("Windows sign-off evidence verification: PASS")
     print(f"Source: {result['branch']} @ {result['commit']}")
     print(f"RC SHA-256: {result['rc_sha256']}")
+    print(f"Manual Graveyard save SHA-256: {result['manual_save_sha256']}")
     print(f"Runtime: GZDoom {result['gzdoom_tag']} / Freedoom {result['freedoom_tag']}")
     print("This verifier confirms evidence consistency only; it does not publish or authorize a demo by itself.")
     return 0

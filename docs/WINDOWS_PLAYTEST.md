@@ -16,7 +16,7 @@ Extract the artifact ZIP, then extract `CHECKOUT-OF-HELL-Windows-Signoff-Kit.zip
 RUN-SIGNOFF.bat
 ```
 
-The kit is bound to the exact clean CI source snapshot and embedded RC SHA-256 through `SIGNOFF-CANDIDATE.json`. It means the target-Windows tester does **not** need to clone the repository, install Git/Python, rebuild the game or search for GZDoom/Freedoom manually. After the three gameplay passes and explicit Closing Time polish review, the same `RUN-SIGNOFF.bat` flow automatically runs the independent evidence verifier. `VERIFY-EVIDENCE.bat` remains available to re-run verification later. See `docs/WINDOWS_SIGNOFF_KIT.md` for the artifact contract.
+The kit is bound to the exact clean CI source snapshot and embedded RC SHA-256 through `SIGNOFF-CANDIDATE.json`. It means the target-Windows tester does **not** need to clone the repository, install Git/Python, rebuild the game or search for GZDoom/Freedoom manually. After the three gameplay passes and explicit Closing Time polish review, the same `RUN-SIGNOFF.bat` flow automatically runs the independent evidence verifier. Before that verifier accepts the result, it also locks the newest plausible non-autosave Graveyard Shift `.zds` under `manual-saves` into `manual-save-witness.sha256`; later verification rejects deletion, replacement or hash drift of that exact save. `VERIFY-EVIDENCE.bat` remains available to re-run verification later. See `docs/WINDOWS_SIGNOFF_KIT.md` for the artifact contract.
 
 The kit does not publish anything and is not a public demo.
 
@@ -28,7 +28,7 @@ A clean Git checkout of the exact candidate commit remains supported. On the Win
 WINDOWS-DEMO-SIGNOFF.bat
 ```
 
-This wrapper now owns the complete developer-checkout chain: it runs the base gameplay/controller/hardware harness, the explicit Closing Time polish review and then the independent verifier against the exact clean local `HEAD`. Final wrapper `PASS` therefore means all three stages succeeded; it still does **not** publish or authorize a demo.
+This wrapper now owns the complete developer-checkout chain: it runs the base gameplay/controller/hardware harness, the explicit Closing Time polish review and then the independent verifier against the exact clean local `HEAD`. The verifier locks/verifies the same non-autosave manual-save witness before accepting the evidence. Final wrapper `PASS` therefore means all stages succeeded; it still does **not** publish or authorize a demo.
 
 The lower-level gameplay harness can still be run directly when diagnosing the preparation/playtest stage:
 
@@ -60,7 +60,7 @@ Before asking for any gameplay judgment, either flow:
 
 The CI sign-off kit additionally verifies that its `SIGNOFF-CANDIDATE.json`, embedded RC SHA-256 and RC `package-manifest.json` agree on the exact source commit/branch/clean state before any manual play begins.
 
-After the manual gameplay and explicit polish answers, both top-level one-click paths now run independent evidence consistency verification before they report final success.
+After the manual gameplay and explicit polish answers, both top-level one-click paths now require a plausible human-created Graveyard Shift save witness (`.zds`, non-autosave name, at least 1 KiB), bind its SHA-256 into `manual-save-witness.sha256`, and then run independent evidence consistency verification before they report final success. This file witness protects the manual-save artifact itself; it does **not** replace the tester's explicit confirmation that the saved objective state actually restored after a full process exit.
 
 The automated save/load pass deliberately reuses `tools/gzdoom_save_load_smoke.ps1` with caller-supplied RC paths. It does not rebuild or swap the tested payload after package verification.
 
@@ -93,13 +93,14 @@ The evidence directory contains:
 REPORT.md
 evidence.json
 gzdoom-save-load-smoke.log
+manual-save-witness.sha256
 save-load-runtime\...
 manual-saves\...
 playtest.ini
 package\...
 ```
 
-`evidence.json` is the machine-readable source. `REPORT.md` is a compact human-readable summary. The evidence records:
+`evidence.json` is the machine-readable source. `REPORT.md` is a compact human-readable summary. `manual-save-witness.sha256` is created by the canonical verifier after a full gameplay/polish pass; it binds the selected non-autosave `.zds` file to its SHA-256 so later re-verification can detect removal or replacement. The evidence records:
 
 - source branch/commit and verified clean-source provenance,
 - RC SHA-256,
@@ -113,7 +114,7 @@ It intentionally does **not** collect user/account names, machine names, serial 
 
 ## Independent evidence verification
 
-The top-level `WINDOWS-DEMO-SIGNOFF.bat` and kit `RUN-SIGNOFF.bat` now invoke independent verification automatically after all manual/polish gates pass. The verifier does **not** replay or replace the human gameplay judgment; it independently rejects stale or tampered evidence when the source commit/branch/clean state, required manual and automated gates, extracted package manifest entries, pinned runtime identity and hashes, Freedoom provenance, manual-save presence or save/load completion markers no longer agree.
+The top-level `WINDOWS-DEMO-SIGNOFF.bat` and kit `RUN-SIGNOFF.bat` now invoke independent verification automatically after all manual/polish gates pass. Before the existing Python consistency verifier runs, the wrapper requires a plausible non-autosave `.zds` manual save under `manual-saves`, stores its SHA-256/path in `manual-save-witness.sha256`, and verifies that witness unchanged on later runs. The verifier does **not** replay or replace the human gameplay judgment; it independently rejects stale or tampered evidence when the source commit/branch/clean state, required manual and automated gates, extracted package manifest entries, pinned runtime identity and hashes, Freedoom provenance, manual-save presence/witness or save/load completion markers no longer agree.
 
 From a clean developer checkout, completed evidence can also be re-checked manually with:
 
@@ -121,14 +122,14 @@ From a clean developer checkout, completed evidence can also be re-checked manua
 python .\tools\verify_windows_signoff_evidence.py .\dist\windows-demo-signoff\<UTC timestamp> --expected-commit <40-character commit>
 ```
 
-The kit's `VERIFY-EVIDENCE.bat` performs the equivalent re-check against its own exact candidate commit and bootstraps pinned Python from the official `python.org` source when necessary.
+For canonical developer-checkout re-verification, prefer `tools\verify_latest_windows_signoff.ps1` so the manual-save witness is checked before the Python verifier. The kit's `VERIFY-EVIDENCE.bat` performs the equivalent wrapper check against its own exact candidate commit and bootstraps pinned Python from the official `python.org` source when necessary.
 
 This verification is local, uploads nothing and does not publish or authorize a demo. A failed consistency check invalidates the evidence until the underlying problem is resolved and a trustworthy sign-off is produced.
 
 ## Result semantics
 
-- `PASS` from the lower-level gameplay harness means its automated and gameplay/controller/hardware checks passed, but the top-level workflow still requires the explicit Closing Time polish review and independent verifier.
-- Final top-level `PASS` means every automated check, every required manual target-Windows check, the explicit Closing Time polish review and evidence consistency verification passed on the exact clean commit-addressable candidate snapshot.
+- `PASS` from the lower-level gameplay harness means its automated and gameplay/controller/hardware checks passed, but the top-level workflow still requires the explicit Closing Time polish review, manual-save witness and independent verifier.
+- Final top-level `PASS` means every automated check, every required manual target-Windows check, the explicit Closing Time polish review, the hashed non-autosave manual-save witness and evidence consistency verification passed on the exact clean commit-addressable candidate snapshot.
 - `FAIL` means at least one required manual, polish or source-verifiability gate failed.
 - `FAILED_AUTOMATION` means package/runtime/save-load preparation failed before manual sign-off.
 - `INCOMPLETE` means the harness was run in automated-preparation mode, so manual evidence was intentionally not collected.
