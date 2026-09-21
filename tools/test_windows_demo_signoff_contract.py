@@ -98,12 +98,15 @@ if "^[0-9a-f]{40}$" not in harness or "$Evidence.source.clean -eq $true" not in 
     raise SystemExit("Windows base PASS must remain bound to a clean commit-addressable source snapshot")
 
 # Explicit polish review is mandatory after the base harness and before evidence
-# can be treated as canonical Closing Time polish proof.
+# can be treated as canonical Closing Time polish proof. Keep all six supervisor-
+# priority dimensions explicit so a generic final-polish answer cannot substitute.
 for marker in (
     "environment_art_consistent",
+    "combat_readability_polished",
     "objective_route_readable",
     "lighting_atmosphere_acceptable",
     "clutter_visual_hierarchy_clean",
+    "gameplay_pacing_balance_polished",
     "final_polish_signoff",
     "Base target-Windows sign-off must report PASS",
     'Evidence.status = if ($AllPolish) { "PASS" } else { "FAILED_POLISH_REVIEW" }',
@@ -151,9 +154,11 @@ for marker in (
     "COH_RUNTIME_SAVE_LOAD_ROUNDTRIP_COMPLETE",
     "manual-saves",
     "environment_art_consistent",
+    "combat_readability_polished",
     "objective_route_readable",
     "lighting_atmosphere_acceptable",
     "clutter_visual_hierarchy_clean",
+    "gameplay_pacing_balance_polished",
     "controller_haptics",
     "final_polish_signoff",
     "No release should be published from this result.",
@@ -265,4 +270,4 @@ if re.search(r"(?m)^\s*run:\s*\.\\tools\\windows_demo_signoff\.ps1\s*$", workflo
     raise SystemExit("Hosted CI must not execute the interactive Windows sign-off harness")
 
 print("Target Windows demo sign-off contract: PASS")
-print("Top-level developer flow now requires gameplay/hardware, explicit Closing Time polish, a hashed non-autosave Graveyard save witness and independent exact-commit evidence verification before final PASS.")
+print("Top-level developer flow now requires gameplay/hardware, all six explicit Closing Time polish dimensions, a hashed non-autosave Graveyard save witness and independent exact-commit evidence verification before final PASS.")

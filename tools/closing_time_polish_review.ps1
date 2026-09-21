@@ -80,16 +80,20 @@ Write-Host "Judge the exact candidate you just played; do not answer from expect
 Write-Host ""
 
 $EnvironmentArt = Read-RequiredYesNo "Did Closing Time read as one coherent supermarket night-shift environment with consistent project-owned art and dressing?"
+$CombatReadability = Read-RequiredYesNo "Across the full Closing Time run, were enemies, projectiles, hit reactions, Overtime warnings and combat lanes readable enough for clear combat decisions?"
 $ObjectiveRoute = Read-RequiredYesNo "Were the breaker routes, Night Manager transition and physical CLOCK OUT route clear without route confusion?"
 $LightingAtmosphere = Read-RequiredYesNo "Did lighting and flicker preserve the creepy atmosphere without hiding objective, hazard or combat information?"
 $ClutterHierarchy = Read-RequiredYesNo "Was clutter and visual hierarchy clean enough that movement, objectives and combat lanes stayed readable?"
+$PacingBalance = Read-RequiredYesNo "Across all three difficulties, did encounter pacing, recovery windows, resource pressure and Night Manager escalation feel intentional and fair for each mode?"
 
 Set-ManualField "environment_art_consistent" $EnvironmentArt
+Set-ManualField "combat_readability_polished" $CombatReadability
 Set-ManualField "objective_route_readable" $ObjectiveRoute
 Set-ManualField "lighting_atmosphere_acceptable" $LightingAtmosphere
 Set-ManualField "clutter_visual_hierarchy_clean" $ClutterHierarchy
+Set-ManualField "gameplay_pacing_balance_polished" $PacingBalance
 
-$AllPolish = $EnvironmentArt -and $ObjectiveRoute -and $LightingAtmosphere -and $ClutterHierarchy
+$AllPolish = $EnvironmentArt -and $CombatReadability -and $ObjectiveRoute -and $LightingAtmosphere -and $ClutterHierarchy -and $PacingBalance
 $Evidence.status = if ($AllPolish) { "PASS" } else { "FAILED_POLISH_REVIEW" }
 $Evidence.updated_utc = [DateTime]::UtcNow.ToString("o")
 ($Evidence | ConvertTo-Json -Depth 10) + "`n" | Set-Content -LiteralPath $EvidenceJson -Encoding UTF8
@@ -108,11 +112,13 @@ $Section = @(
     "| Gate | Result |",
     "| --- | --- |",
     "| Environment / art consistency | $(Format-Result $EnvironmentArt) |",
+    "| Combat readability | $(Format-Result $CombatReadability) |",
     "| Objective / route readability | $(Format-Result $ObjectiveRoute) |",
     "| Lighting / atmosphere | $(Format-Result $LightingAtmosphere) |",
     "| Clutter / visual hierarchy | $(Format-Result $ClutterHierarchy) |",
+    "| Gameplay pacing / balance | $(Format-Result $PacingBalance) |",
     "",
-    "These judgments are required in addition to the three difficulty-specific combat/balance passes, controller/haptics checks, real-hardware performance sanity and final_polish_signoff.",
+    "These whole-level polish judgments complement the three difficulty-specific combat/balance passes, controller/haptics checks, real-hardware performance sanity and final_polish_signoff.",
     $EndMarker
 ) -join "`r`n"
 
