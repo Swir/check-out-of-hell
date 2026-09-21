@@ -32,7 +32,9 @@ actor OvertimeFloorArc
     States
     {
     Spawn:
-        OARC A 8 Bright A_PlaySound("coh/overtimealarm", CHAN_BODY)
+        OARC A 10 Bright A_PlaySound("coh/overtimealarm", CHAN_BODY)
+        OARC B 10 Bright
+        OARC A 8 Bright
         OARC B 8 Bright
         OARC C 0 Bright A_PlaySound("coh/overtimearc", CHAN_BODY)
         OARC C 0 Bright A_Explode(10, 72)
