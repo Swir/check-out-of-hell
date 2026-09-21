@@ -1,0 +1,148 @@
+name: Publish CHECKOUT OF HELL Beta v0.1.0-beta.1
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/publish-beta-v0.1.0-beta.1.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  publish-beta:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_SHA: a1e6b7543aa977fb807adb588a654652b4cc87a4
+      TAG: v0.1.0-beta.1
+      RELEASE_TITLE: CHECKOUT OF HELL Beta 1
+    steps:
+      - name: Checkout verified release target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 0
+
+      - name: Verify exact release target
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Re-run release-critical verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/build.py
+          python tools/smoke_test.py
+          python tools/test_bootstrap_contract.py
+          python tools/test_legal_content_package_contract.py
+          python tools/test_windows_offline_runtime_cache_contract.py
+          python tools/generate_progress_svgs.py --check
+
+      - name: Build verified Windows Beta package
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/package_release_candidate.py
+          python tools/test_release_candidate_package.py
+          python tools/test_legal_content_bundle.py
+
+          cp dist/CHECKOUT-OF-HELL-Windows-Portable-rc.zip dist/CHECKOUT-OF-HELL-Windows-Beta.zip
+          sha256sum dist/CHECKOUT-OF-HELL-Windows-Beta.zip | sed 's#dist/##' > dist/CHECKOUT-OF-HELL-Windows-Beta.zip.sha256
+
+          cp dist/CHECKOUT-OF-HELL-Legal-Content-rc.zip dist/CHECKOUT-OF-HELL-Legal-Content-Beta.zip
+          sha256sum dist/CHECKOUT-OF-HELL-Legal-Content-Beta.zip | sed 's#dist/##' > dist/CHECKOUT-OF-HELL-Legal-Content-Beta.zip.sha256
+
+          (
+            cd dist
+            sha256sum -c CHECKOUT-OF-HELL-Windows-Beta.zip.sha256
+            sha256sum -c CHECKOUT-OF-HELL-Legal-Content-Beta.zip.sha256
+          )
+
+      - name: Write provenance and release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          WINDOWS_SHA="$(sha256sum dist/CHECKOUT-OF-HELL-Windows-Beta.zip | awk '{print $1}')"
+          LEGAL_SHA="$(sha256sum dist/CHECKOUT-OF-HELL-Legal-Content-Beta.zip | awk '{print $1}')"
+
+          cat > dist/RELEASE-PROVENANCE.txt <<EOF
+          CHECKOUT OF HELL Beta 1
+          Tag: $TAG
+          Target commit: $TARGET_SHA
+          Windows Beta SHA-256: $WINDOWS_SHA
+          Legal Content Beta SHA-256: $LEGAL_SHA
+          Build source: verified exact Git commit
+          Runtime policy: official upstream bootstrap only
+          EOF
+
+          cat > release-notes.md <<EOF
+          # CHECKOUT OF HELL — Beta 1
+
+          Original comedy-horror retro FPS by Swir.
+
+          ## Play
+          1. Download **CHECKOUT-OF-HELL-Windows-Beta.zip**.
+          2. Extract the whole archive.
+          3. Run **PLAY.bat**.
+          4. On first launch the bootstrap retrieves the pinned official GZDoom runtime automatically. No manual WAD/runtime hunting is required.
+
+          ## Beta status
+          - Built from exact commit `$TARGET_SHA`.
+          - Automated build, smoke, bootstrap, package-integrity, legal-content and progress-SVG checks passed in the publication workflow.
+          - The package uses original project content plus legally redistributable dependencies.
+          - This is a **pre-release Beta**, not a final 1.0 release.
+          - Formal target-Windows human polish/hardware sign-off was not recorded before publication; feedback from real Windows play is still welcome.
+
+          ## Integrity
+          SHA-256 sidecars and **RELEASE-PROVENANCE.txt** are attached to this release.
+          EOF
+
+      - name: Publish GitHub pre-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; refusing to overwrite an existing public release."
+            exit 1
+          fi
+
+          gh release create "$TAG"             --repo "$GITHUB_REPOSITORY"             --target "$TARGET_SHA"             --title "$RELEASE_TITLE"             --notes-file release-notes.md             --prerelease             dist/CHECKOUT-OF-HELL-Windows-Beta.zip             dist/CHECKOUT-OF-HELL-Windows-Beta.zip.sha256             dist/CHECKOUT-OF-HELL-Legal-Content-Beta.zip             dist/CHECKOUT-OF-HELL-Legal-Content-Beta.zip.sha256             dist/RELEASE-PROVENANCE.txt
+
+      - name: Post-release verification
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json tagName,isPrerelease,targetCommitish,url,name > dist/PUBLISHED-RELEASE.json
+          cat dist/PUBLISHED-RELEASE.json
+          grep -q '"tagName":"v0.1.0-beta.1"' dist/PUBLISHED-RELEASE.json
+          grep -q '"isPrerelease":true' dist/PUBLISHED-RELEASE.json
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern 'CHECKOUT-OF-HELL-Windows-Beta.zip*' --dir dist/release-download-check
+          (
+            cd dist/release-download-check
+            sha256sum -c CHECKOUT-OF-HELL-Windows-Beta.zip.sha256
+          )
+
+      - name: Upload publication evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkout-of-hell-beta-publication-evidence
+          path: |
+            dist/PUBLISHED-RELEASE.json
+            dist/RELEASE-PROVENANCE.txt
+            dist/CHECKOUT-OF-HELL-Windows-Beta.zip.sha256
+            dist/CHECKOUT-OF-HELL-Legal-Content-Beta.zip.sha256
+          if-no-files-found: error
