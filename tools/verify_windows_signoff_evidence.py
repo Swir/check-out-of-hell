@@ -168,9 +168,11 @@ def verify_evidence(evidence_dir: Path, *, expected_commit: str | None = None) -
     require_true(get(evidence, "manual", "graveyard_shift", "save_quit_load"), "manual.graveyard_shift.save_quit_load")
     for field in (
         "environment_art_consistent",
+        "combat_readability_polished",
         "objective_route_readable",
         "lighting_atmosphere_acceptable",
         "clutter_visual_hierarchy_clean",
+        "gameplay_pacing_balance_polished",
         "controller_core_actions",
         "controller_haptics",
         "performance_sanity",
@@ -313,9 +315,11 @@ def verify_evidence(evidence_dir: Path, *, expected_commit: str | None = None) -
         fail("REPORT.md does not contain the source commit")
     for marker in (
         "Environment / art consistency",
+        "Combat readability",
         "Objective / route readability",
         "Lighting / atmosphere",
         "Clutter / visual hierarchy",
+        "Gameplay pacing / balance",
     ):
         if marker not in report_text:
             fail(f"REPORT.md is missing explicit Closing Time polish gate: {marker}")
