@@ -12,20 +12,20 @@ This document is the acceptance bridge between the existing automated Closing Ti
 | Combat readability | The full authored `x=-300..300` front-to-rear corridor is protected from initial hostiles; Closing Crew uses five initial threats while Normal/Hard retain eight with the three extra actors staged behind east-side shelf geometry and sight-gated with the UDMF ambush flag so opening gunfire cannot wake them through shelf occlusion. Timed Overtime floor arcs also keep their full 72-unit damage radius outside that corridor. | Confirm enemies, warnings, floor hazards and firefights remain readable on Closing Crew, Graveyard Shift and Corporate Hell. |
 | Objective / route readability | Each breaker route now has a two-stage visual chain: front-half orientation plus a destination confirmation sign near the actual repair point; Lane 06 and post-boss CLOCK OUT guidance remain protected. | Complete breaker -> Night Manager -> physical clock-out on all three authored difficulties without route confusion or progression blockers. |
 | Lighting / atmosphere | Six ceiling-mounted fixtures use three deterministic staggered fluorescent phases with the same slow reduced-flash cycle; the contract proves there is no all-fixture dark interval and route signs remain text-readable without relying on color alone. | Confirm the creepy empty-store atmosphere is strong without warning/hazard information disappearing into darkness or flicker. |
-| Clutter / visual hierarchy | Existing low-profile cone/box clutter budget stays fixed; route signs are `+NOBLOCKMAP`, reuse the established supermarket visual family and remain outside the permanent center corridor. | Confirm the floor looks dressed but not visually noisy and that movement/combat lanes remain clean. |
+| Clutter / visual hierarchy | Existing low-profile cone/box clutter budget stays fixed; route signs are `+NOBLOCKMAP`, reuse the established supermarket visual family, remain outside the permanent center corridor and now mirror Overtime lane warnings on both outer sides. | Confirm the floor looks dressed but not visually noisy and that movement/combat lanes remain clean. |
 | Gameplay pacing / balance | Full-power recovery cache, spaced Night Manager response cadence, post-clear pressure cutoff, warned side-lane Overtime lock, staged Normal/Hard second-ring threats and side-lane floor-arc placement remain contract-tested without changing the authored hazard schedule. | Confirm each difficulty fulfils its intended role and Overtime/Night Manager pressure feels fair enough for a public demo. |
 | Target-Windows human evidence | The sign-off flows record per-difficulty completion/readability/balance, manual save/quit/load, controller/haptics, real-hardware performance and `final_polish_signoff`; the independent verifier binds PASS evidence to the exact commit. | A real Windows run must produce `PASS`, then the evidence must independently verify against the exact candidate SHA. |
 
 ## Candidate route-sign package
 
-The final-polish candidate uses **seven non-blocking sign instances from four deterministic project-owned designs** in `game/MAP01_POLISH.udmf`:
+The final-polish candidate uses **eight non-blocking sign instances from four deterministic project-owned designs** in `game/MAP01_POLISH.udmf`:
 
 - `FUSE LEFT` appears once on the front-half approach and once beside the left breaker as destination confirmation;
 - `FUSE RIGHT` appears once on the front-half approach and once beside the right breaker as destination confirmation;
 - `FUSE STAFF` appears once on the rear-route approach and once at the left edge of the rear breaker lane as destination confirmation;
-- `OVERTIME LANE` remains a single sign that makes the authored deep-Overtime side-lane pressure legible before the five-second shutter event can occur.
+- `OVERTIME LANE` appears once on each outer side lane so the hazard role is readable before the five-second left-lane shutter event or the later side-lane floor arcs peak.
 
-The duplicate breaker signs deliberately reuse the same generated art instead of adding a second signage style. All seven instances are non-blocking, non-gravity visual actors and remain outside the permanent center corridor. They do not grant inventory, move objectives, alter enemy counts, change hazard timers or modify the physical clock-out trigger.
+The duplicate breaker signs deliberately reuse the same generated art instead of adding a second signage style. The mirrored Overtime signs reuse the same project-owned warning design so both outer lanes read as intentional pressure space without adding a new visual language. All eight instances are non-blocking, non-gravity visual actors and remain outside the permanent center corridor. They do not grant inventory, move objectives, alter enemy counts, change hazard timers or modify the physical clock-out trigger.
 
 ## Staggered fluorescent phases
 
@@ -43,7 +43,9 @@ Closing Crew keeps five initial signature threats so its first-room pressure is 
 
 Closing Time still uses exactly four authored timed Overtime floor-arc anchors and the existing `90 / 135 / 180 / 212 / 244 / 270` escalation timing remains unchanged. The rear pair now sits at `x=-390` and `x=390`, so each arc's full **72-unit** damage radius stops outside the permanent `x=-300..300` navigation/combat/clock-out corridor instead of reaching into it. The front pair remains at `x=-510` and `x=510`; all four continue to retire after supervisor clearance.
 
-`tools/test_overtime_hazard_contract.py` now verifies the exact source positions, radius-to-corridor separation and packaged MAP01 parity. This is a readability/fairness polish change only: it does not change the number of hazards, their warning cadence, damage behavior, objective state, breaker routing, boss gates or the physical clock-out trigger.
+The final-polish layer now mirrors `OVERTIME LANE` warning signs at `x=-650` and `x=650`, both outside the permanent corridor. They are static non-blocking visual warnings only: the existing left-lane shutter remains the only authored lockdown, while the signs establish both outer lanes as escalation space before floor arcs appear.
+
+`tools/test_overtime_hazard_contract.py` verifies the exact source positions, radius-to-corridor separation and packaged MAP01 parity. `tools/test_closing_time_polish_gate.py` separately locks the mirrored warning-sign count/positions and packaged MAP01 parity. This is a readability/fairness polish change only: it does not change the number of hazards, their warning cadence, damage behavior, objective state, breaker routing, boss gates or the physical clock-out trigger.
 
 ## One-click exact-candidate evidence kit
 
