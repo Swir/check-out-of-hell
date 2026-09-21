@@ -20,6 +20,8 @@ thing { x =  690.0; y = 360.0; angle = 180; type = 17162; skill1 = true; skill2 
 thing { x = -320.0; y = 285.0; angle = 270; type = 17163; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 thing { x = -320.0; y = 420.0; angle = 270; type = 17163; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
-// The authored deep-Overtime side-lane shutter already warns before closing. This static sign
-// makes that lane's role legible before pressure peaks without revealing or blocking progression.
-thing { x = -650.0; y = -75.0; angle = 90; type = 17170; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+// Overtime pressure now lives on both outer lanes: the existing deep left-lane shutter and the
+// mirrored floor-arc lane both stay outside the permanent center corridor. Matching non-blocking
+// signs make that side-lane hazard role legible from either direction before pressure peaks.
+thing { x = -650.0; y = -75.0; angle = 90;  type = 17170; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  650.0; y = -75.0; angle = 270; type = 17170; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
