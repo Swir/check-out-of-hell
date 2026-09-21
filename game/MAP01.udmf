@@ -109,10 +109,11 @@ thing { x =  620.0; y =  340.0; angle = 0; type = 17111; skill1 = true; skill2 =
 thing { x =    0.0; y =  440.0; angle = 0; type = 17111; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 thing { x = 0.0; y = 350.0; angle = 270; type = 17101; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-// Management-response reinforcements flank the supervisor approach instead of materializing
-// on the central rear sightline. Their authored 15/34/54/76-second timing is unchanged.
-thing { x = -430.0; y = 300.0; angle = 0; type = 17103; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
-thing { x =  430.0; y = 300.0; angle = 180; type = 17103; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+// Management-response reinforcements enter from the outer side lanes instead of materializing
+// beside the rear objective breadcrumbs. Their authored 15/34/54/76-second timing is unchanged,
+// while both anchors keep a deliberate clearance from FUSE STAFF / MANAGEMENT confirmation signs.
+thing { x = -520.0; y = 240.0; angle = 0; type = 17103; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
+thing { x =  520.0; y = 240.0; angle = 180; type = 17103; skill1 = true; skill2 = true; skill3 = true; skill4 = true; skill5 = true; single = true; coop = true; }
 
 // Ambient Overtime anchors remain distributed across the store while staying clear of the
 // front-to-rear center lane, physical clock-out approach and rear objective-confirmation signs.

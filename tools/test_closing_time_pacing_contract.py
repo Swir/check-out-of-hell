@@ -1,4 +1,5 @@
 from pathlib import Path
+import math
 import re
 import zipfile
 
@@ -16,6 +17,7 @@ decorate_env = (GAME / "DECORATE_ENVIRONMENT").read_text(encoding="utf-8")
 mapinfo = (GAME / "MAPINFO").read_text(encoding="utf-8")
 map01 = (GAME / "MAP01.udmf").read_text(encoding="utf-8")
 environment = (GAME / "MAP01_ENVIRONMENT.udmf").read_text(encoding="utf-8")
+polish = (GAME / "MAP01_POLISH.udmf").read_text(encoding="utf-8")
 
 # A cleared supervisor must stop both ambient Overtime reinforcements and the staged
 # management-response waves, so the return-to-checkout leg remains tense but readable.
@@ -51,6 +53,41 @@ for marker in (
 ):
     if marker not in zscript:
         raise SystemExit(f"Closing Time boss-wave pacing marker missing: {marker}")
+
+# Management-response actors must enter from the outer side lanes rather than materialize beside
+# the final FUSE STAFF / MANAGEMENT breadcrumb chain. Preserve the two authored anchors while
+# keeping at least 190 map units of center-to-center clearance from every rear confirmation sign.
+response_matches = re.findall(
+    r"thing\s*\{\s*x\s*=\s*(-?\d+(?:\.\d+)?);\s*y\s*=\s*(-?\d+(?:\.\d+)?);[^}]*type\s*=\s*17103;",
+    map01,
+    re.DOTALL,
+)
+response_anchors = {(float(x), float(y)) for x, y in response_matches}
+expected_response_anchors = {(-520.0, 240.0), (520.0, 240.0)}
+if response_anchors != expected_response_anchors:
+    raise SystemExit(
+        f"Closing Time management-response anchors drifted: {sorted(response_anchors)}; "
+        f"expected {sorted(expected_response_anchors)}"
+    )
+
+rear_sign_matches = re.findall(
+    r"thing\s*\{\s*x\s*=\s*(-?\d+(?:\.\d+)?);\s*y\s*=\s*(-?\d+(?:\.\d+)?);[^}]*type\s*=\s*(17163|17222);",
+    polish,
+    re.DOTALL,
+)
+rear_signs = [(float(x), float(y), int(actor_type)) for x, y, actor_type in rear_sign_matches]
+if len(rear_signs) != 4:
+    raise SystemExit(f"Closing Time expected four rear route-confirmation signs, found {len(rear_signs)}")
+for anchor_x, anchor_y in response_anchors:
+    minimum_clearance = min(
+        math.hypot(anchor_x - sign_x, anchor_y - sign_y)
+        for sign_x, sign_y, _ in rear_signs
+    )
+    if minimum_clearance < 190.0:
+        raise SystemExit(
+            f"Management-response anchor ({anchor_x:.1f}, {anchor_y:.1f}) is only "
+            f"{minimum_clearance:.1f} units from a rear route sign; require >= 190"
+        )
 
 # Full power must provide exactly one guaranteed recovery point before the supervisor arena.
 for marker in (
@@ -152,6 +189,12 @@ if b"type = 17128" not in wad_text:
     raise SystemExit("Built MAP01 does not contain the full-power cache spawner")
 if b"type = 17156" not in wad_text:
     raise SystemExit("Built MAP01 does not contain the Overtime lockdown anchor")
+for marker in (
+    b"x = -520.0; y = 240.0; angle = 0; type = 17103;",
+    b"x =  520.0; y = 240.0; angle = 180; type = 17103;",
+):
+    if marker not in wad_text:
+        raise SystemExit(f"Built MAP01 missing management-response anchor: {marker!r}")
 
 print("Closing Time pacing contract: PASS")
-print("Full power grants one pre-boss cache; boss waves stay spaced; deep Overtime can briefly lock one side lane while the central clock-out route remains open.")
+print("Full power grants one pre-boss cache; management waves stay clear of rear route signs; deep Overtime can briefly lock one side lane while the central clock-out route remains open.")
