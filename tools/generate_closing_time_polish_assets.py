@@ -14,6 +14,7 @@ def generate_closing_time_polish_assets(game_dir: Path) -> None:
     _standing_sign(sprites / "LFSNA0.png", "FUSE", "LEFT", (98, 229, 255, 255))
     _standing_sign(sprites / "RFSNA0.png", "FUSE", "RIGHT", (0, 136, 255, 255))
     _standing_sign(sprites / "SFSNA0.png", "FUSE", "STAFF", (239, 190, 53, 255))
+    _standing_sign(sprites / "MGSNA0.png", "MANAGEMENT", "REAR", (154, 116, 255, 255))
     _standing_sign(sprites / "OTSNA0.png", "OVERTIME", "LANE", (213, 84, 90, 255))
 
 
