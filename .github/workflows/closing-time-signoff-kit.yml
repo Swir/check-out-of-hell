@@ -44,6 +44,9 @@ jobs:
       - name: Verify one-click sign-off kit binding
         run: python tools/test_windows_signoff_kit.py
 
+      - name: Verify ready-to-upload evidence export contract
+        run: python tools/test_windows_signoff_evidence_export_contract.py
+
       - name: Upload exact candidate sign-off kit
         uses: actions/upload-artifact@v4
         with:

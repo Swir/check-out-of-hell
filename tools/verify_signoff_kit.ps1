@@ -99,4 +99,39 @@ if (-not (Test-Path -LiteralPath $PythonExe -PathType Leaf)) {
 }
 
 & $PythonExe (Join-Path $PSScriptRoot "verify_windows_signoff_evidence.py") $EvidenceDir --expected-commit $ExpectedCommit
-exit $LASTEXITCODE
+$VerifierExitCode = $LASTEXITCODE
+if ($VerifierExitCode -ne 0) {
+    exit $VerifierExitCode
+}
+
+$ExportRoot = Join-Path $KitRoot "evidence-export"
+New-Item -ItemType Directory -Path $ExportRoot -Force | Out-Null
+$EvidenceName = (Get-Item -LiteralPath $EvidenceDir).Name
+$ShortCommit = $ExpectedCommit.Substring(0, 7).ToLowerInvariant()
+$OutputZip = Join-Path $ExportRoot "CHECKOUT-OF-HELL-Windows-Signoff-Evidence-$ShortCommit-$EvidenceName.zip"
+$OutputChecksum = "$OutputZip.sha256"
+
+if (Test-Path -LiteralPath $OutputZip) {
+    Remove-Item -LiteralPath $OutputZip -Force
+}
+if (Test-Path -LiteralPath $OutputChecksum) {
+    Remove-Item -LiteralPath $OutputChecksum -Force
+}
+
+$BundlePaths = @(
+    Get-ChildItem -LiteralPath $EvidenceDir -Force |
+        ForEach-Object { $_.FullName }
+)
+if ($BundlePaths.Count -lt 1) {
+    throw "Verified evidence directory is unexpectedly empty: $EvidenceDir"
+}
+
+Compress-Archive -Path $BundlePaths -DestinationPath $OutputZip -CompressionLevel Optimal -Force
+$BundleSha = (Get-FileHash -LiteralPath $OutputZip -Algorithm SHA256).Hash.ToLowerInvariant()
+"$BundleSha  $([System.IO.Path]::GetFileName($OutputZip))`r`n" |
+    Set-Content -LiteralPath $OutputChecksum -Encoding ASCII
+
+Write-Host "Verified PASS evidence bundle: $OutputZip"
+Write-Host "Evidence bundle SHA-256: $BundleSha"
+Write-Host "You can upload/send this ZIP as the exact target-Windows sign-off evidence package."
+exit 0
