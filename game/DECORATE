@@ -55,7 +55,7 @@ actor ReceiptRipper : Shotgun replaces Shotgun
     Fire:
         RRPV B 2 Bright A_PlaySound("coh/ripperfire", CHAN_WEAPON)
         RRPV C 4 Bright A_FireBullets(7.0, 5.0, 9, 5, "BulletPuff")
-        RRPV D 4 A_PlaySound("coh/rippercycle", CHAN_AUTO)
+        RRPV D 4 A_PlaySound("coh/rippercycle", CHAN_WEAPON)
         RRPV E 4
         RRPV A 3 A_ReFire
         Goto Ready
