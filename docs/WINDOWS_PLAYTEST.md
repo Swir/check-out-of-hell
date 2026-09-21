@@ -81,7 +81,11 @@ For each applicable run, answer the prompts only from what actually happened. Th
 - signature-weapon haptics that remain useful rather than disruptive,
 - a real-hardware performance sanity check through Overtime and the Night Manager encounter,
 - explicit confirmation that Closing Time is polished enough to represent the intended final direction,
-- explicit environment/art consistency, objective/route readability, lighting/atmosphere and clutter/visual-hierarchy judgments.
+- an explicit whole-level **combat readability** judgment covering enemies, projectiles, hit reactions, Overtime warnings and combat lanes,
+- explicit environment/art consistency, objective/route readability, lighting/atmosphere and clutter/visual-hierarchy judgments,
+- an explicit whole-level **gameplay pacing / balance** judgment covering encounter pacing, recovery windows, resource pressure and Night Manager escalation across the three authored difficulties.
+
+The final explicit polish review writes all six named polish dimensions into `evidence.json` and `REPORT.md`. Independent verification requires every one of them to be present and PASS, so the generic `final_polish_signoff` answer cannot substitute for a missing combat-readability or pacing/balance judgment.
 
 The script intentionally does not invent an FPS threshold. A noticeable sustained performance problem is a failed sign-off and should be investigated before release.
 
@@ -114,7 +118,7 @@ It intentionally does **not** collect user/account names, machine names, serial 
 
 ## Independent evidence verification
 
-The top-level `WINDOWS-DEMO-SIGNOFF.bat` and kit `RUN-SIGNOFF.bat` now invoke independent verification automatically after all manual/polish gates pass. Before the existing Python consistency verifier runs, the wrapper requires a plausible non-autosave `.zds` manual save under `manual-saves`, stores its SHA-256/path in `manual-save-witness.sha256`, and verifies that witness unchanged on later runs. The verifier does **not** replay or replace the human gameplay judgment; it independently rejects stale or tampered evidence when the source commit/branch/clean state, required manual and automated gates, extracted package manifest entries, pinned runtime identity and hashes, Freedoom provenance, manual-save presence/witness or save/load completion markers no longer agree.
+The top-level `WINDOWS-DEMO-SIGNOFF.bat` and kit `RUN-SIGNOFF.bat` now invoke independent verification automatically after all manual/polish gates pass. Before the existing Python consistency verifier runs, the wrapper requires a plausible non-autosave `.zds` manual save under `manual-saves`, stores its SHA-256/path in `manual-save-witness.sha256`, and verifies that witness unchanged on later runs. The verifier does **not** replay or replace the human gameplay judgment; it independently rejects stale or tampered evidence when the source commit/branch/clean state, required manual and automated gates, all six explicit Closing Time polish judgments, extracted package manifest entries, pinned runtime identity and hashes, Freedoom provenance, manual-save presence/witness or save/load completion markers no longer agree.
 
 From a clean developer checkout, completed evidence can also be re-checked manually with:
 
@@ -129,7 +133,7 @@ This verification is local, uploads nothing and does not publish or authorize a 
 ## Result semantics
 
 - `PASS` from the lower-level gameplay harness means its automated and gameplay/controller/hardware checks passed, but the top-level workflow still requires the explicit Closing Time polish review, manual-save witness and independent verifier.
-- Final top-level `PASS` means every automated check, every required manual target-Windows check, the explicit Closing Time polish review, the hashed non-autosave manual-save witness and evidence consistency verification passed on the exact clean commit-addressable candidate snapshot.
+- Final top-level `PASS` means every automated check, every required manual target-Windows check, all six explicit Closing Time polish dimensions, the hashed non-autosave manual-save witness and evidence consistency verification passed on the exact clean commit-addressable candidate snapshot.
 - `FAIL` means at least one required manual, polish or source-verifiability gate failed.
 - `FAILED_AUTOMATION` means package/runtime/save-load preparation failed before manual sign-off.
 - `INCOMPLETE` means the harness was run in automated-preparation mode, so manual evidence was intentionally not collected.
