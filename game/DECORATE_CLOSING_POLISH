@@ -44,6 +44,20 @@ actor ClosingTimeStaffFuseSign 17163
     }
 }
 
+actor ClosingTimeManagementRearSign 17222
+{
+    Radius 6
+    Height 100
+    +NOBLOCKMAP
+    +NOGRAVITY
+    States
+    {
+    Spawn:
+        MGSN A -1 Bright
+        Stop
+    }
+}
+
 actor ClosingTimeOvertimeLaneSign 17170
 {
     Radius 6
